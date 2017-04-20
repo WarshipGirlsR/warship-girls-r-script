@@ -1,0 +1,13 @@
+[res]
+[lib]
+[file]
+StepLabel.lua
+GoMission.lua
+BaseOperate.lua
+warship-girls-r-script.min.lua
+DeviceOrientHock.lua
+KeepScreenHock.lua
+TableLib.lua
+TSLib.lua
+main.lua
+warship-girls-r-script.lua
