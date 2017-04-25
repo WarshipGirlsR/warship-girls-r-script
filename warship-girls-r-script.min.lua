@@ -4,235 +4,7 @@ do
 
 do
 local _ENV = _ENV
-package.preload[ "lib/TableLib" ] = function( ... ) local arg = _G.arg;
--- tableæ–¹æ³•æ·»åŠ 
-local __tmp = (function()
-  table.isArray = table.isArray or function(tab)
-    if (type(tab) ~= "table") then
-      return false
-    end
-    local length = #tab
-    for k, v in pairs(tab) do
-      if ((type(k) ~= "number") or (k > length)) then
-        return false
-      end
-    end
-    return true
-  end
-
-  table.every = table.every or function(tab)
-    for k, v in ipairs(tab) do
-      if (v == false) then
-        return false
-      end
-    end
-    return true
-  end
-
-  table.some = table.some or function(tab)
-    for k, v in ipairs(tab) do
-      if (v == true) then
-        return true
-      end
-    end
-    return false
-  end
-
-  table.push = table.push or function(tab, element)
-    table.insert(tab, element)
-    local length = #tab
-    return length
-  end
-
-  table.pop = table.pop or function(tab)
-    local length = #tab
-    local res = tab[length]
-    table.remove(tab, length)
-    return res
-  end
-
-  table.shift = table.shift or function(tab)
-    local res = tab[1]
-    table.remove(tab, 1)
-    return res
-  end
-
-  table.unshift = table.unshift or function(tab, element)
-    table.insert(tab, 1, element)
-    local length = #tab
-    return length
-  end
-
-  table.first = table.first or function(tab)
-    return tab[1]
-  end
-
-  table.last = table.last or function(tab)
-    return tab[#tab]
-  end
-
-  table.slice = table.slice or function(tab, startIndex, endIndex)
-    local length = #tab
-    if ((type(endIndex) == "nil") or (endIndex == 0)) then
-      endIndex = length
-    end
-    if (endIndex < 0) then
-      endIndex = length + 1 + endIndex
-    end
-    local newTab = {}
-
-    for i = startIndex, endIndex do
-      table.insert(newTab, tab[i])
-    end
-
-    return newTab
-  end
-
-  table.join = table.join or function(tab, exp)
-    if (type(exp) == "nil") then exp = "," end
-    return table.concat(tab, exp)
-  end
-
-  table.merge = table.merge or function(tab, ...)
-    arg = { ... }
-    for k, tabelement in ipairs(arg) do
-      local length = #tabelement
-      for k2, value in ipairs(tabelement) do
-        if ((type(k2) == "number") and (k2 <= length)) then
-          table.insert(tab, value)
-        end
-      end
-      for k2, value in pairs(tabelement) do
-        if ((type(k2) == "number") and (k2 <= length)) then
-        else
-          tab[k2] = value
-        end
-      end
-    end
-    return tab
-  end
-
-  table.values = table.values or function(tab)
-    local values = {}
-    for k, v in pairs(tab) do
-      table.insert(values, v)
-    end
-    return values
-  end
-
-  table.keys = table.keys or function(tab)
-    local keys = {}
-    for k in pairs(tab) do
-      table.insert(keys, k)
-    end
-    return keys
-  end
-
-  -- å°†æ¯ä¸€ç»„é”®å€¼å¯¹å˜æˆæ•°ç»„ï¼Œå†æ”¾å…¥ä¸€ä¸ªå¤§æ•°ç»„ä¸­è¿”å›
-  table.entries = table.entries or function(tab)
-    local ent = {}
-    for k, v in ipairs(tab) do
-      table.insert(ent, { k, v })
-    end
-    return ent
-  end
-
-  -- å¯¹keyæ’åºåæ”¾å…¥æ•°ç»„ä¸­å†è¿”å›ï¼Œç»“æœç±»ä¼¼entries
-  table.sortByKey = table.sortByKey or function(tab, call)
-    local keys = table.keys(tab)
-    if (type(call) == "function") then
-      table.sort(keys, call)
-    else
-      table.sort(keys)
-    end
-    local newTable = {}
-    for _, key in ipairs(keys) do
-      table.insert(newTable, { key, tab[key] })
-    end
-    return newTable
-  end
-
-  table.toString = table.toString or function(tab, space)
-    if ((type(tab) == "function")) then
-      return "[function]"
-    end
-    if ((type(tab) == "number") or (type(tab) == "string")) then
-      return "" .. tab
-    end
-    if (type(tab) == "boolean") then
-      return tab and "true" or "false"
-    end
-    if (type(tab) == "nil") then
-      return "no message"
-    end
-    if (type(tab) ~= "table") then
-      return "[" .. type(tab) .. "]"
-    end
-    if (type(space) ~= "string") then
-      space = ""
-    end
-    local newTab = {}
-    local childSpace = space .. "  "
-    for k, v in pairs(tab) do
-      table.insert(newTab, childSpace .. k .. ": " .. table.toString(v, childSpace))
-    end
-    return "{\n" .. table.concat(newTab, ", \n") .. " \n" .. space .. "}"
-  end
-
-  table.toJsString = table.toJsString or function(tab, other, space)
-    if ((type(tab) == "function")) then
-      return "[function]"
-    end
-    if ((type(tab) == "number") or (type(tab) == "string")) then
-      return "" .. tab
-    end
-    if (type(tab) == "boolean") then
-      return tab and "true" or "false"
-    end
-    if (type(tab) == "nil") then
-      return "no message"
-    end
-    if (type(tab) ~= "table") then
-      return "[" .. type(tab) .. "]"
-    end
-    if (type(space) ~= "string") then
-      space = ""
-    end
-    local isArray = table.isArray(tab)
-    local newTab = {}
-    local childSpace = space .. "  "
-    if (isArray) then
-      for k, v in ipairs(tab) do
-        table.insert(newTab, table.toJsString(v, other, childSpace))
-      end
-      local childStr = table.concat(newTab, ", ")
-
-      if (string.len(childStr) > 50) then
-        newTab = {}
-        for k, v in ipairs(tab) do
-          table.insert(newTab, childSpace .. table.toJsString(v, other, childSpace))
-        end
-        childStr = table.concat(newTab, ", \n")
-        return "[\n" .. childStr .. " \n" .. childSpace .. "]"
-      end
-
-      return space .. "[" .. childStr .. "]"
-    else
-      for k, v in pairs(tab) do
-        if ((other == true) or (type(v) ~= "function")) then
-          table.insert(newTab, childSpace .. k .. ": " .. table.toJsString(v, childSpace))
-        end
-      end
-      return "{\n" .. table.concat(newTab, ", \n") .. " \n" .. space .. "}"
-    end
-  end
-end)()
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "src/BaseOperate" ] = function( ... ) local arg = _G.arg;
+package.preload[ "BaseOperate" ] = function( ... ) local arg = _G.arg;
 -- åŸå­æ“ä½œåˆ—è¡¨
 return function()
   local map = {
@@ -1752,932 +1524,92 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "src/Co_min" ] = function( ... ) local arg = _G.arg;
-
-
-do
-
-do
-local _ENV = _ENV
-package.preload[ "lib/Promise" ] = function( ... ) local arg = _G.arg;
------------------------------------------------------------------------------
--- ES6 Promise in lua v1.1
--- Author: aimingoo@wandoujia.com
--- Copyright (c) 2015.11
---
--- The promise module from NGX_4C architecture
--- 1) N4C is programming framework.
--- 2) N4C = a Controllable & Computable Communication Cluster architectur.
---
--- Promise module, ES6 Promises full supported. @see:
--- 1) https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
--- 2) http://liubin.github.io/promises-book/#ch2-promise-resolve
---
--- Usage:
--- promise = Promise.new(executor)
--- promise:andThen(onFulfilled1):andThen(onFulfilled2, onRejected2)
---
--- History:
--- 2015.10.29	release v1.1, fix some bugs and update testcases
--- 2015.08.10	release v1.0.1, full testcases, minor fix and publish on github
--- 2015.03		release v1.0.0
------------------------------------------------------------------------------
-
-local Promise, promise = {}, {}
-
--- andThen replacer
---  1) replace standard .then() when promised
-local PENDING = {}
-local nil_promise = {}
-
-local function promised(value, action)
-  local ok, result = pcall(action, value)
-  return ok and Promise.resolve(result) or Promise.reject(result) -- .. '.\n' .. debug.traceback())
-end
-
-local function promised_s(self, onFulfilled)
-  return onFulfilled and promised(self, onFulfilled) or self
-end
-
-local function promised_y(self, onFulfilled)
-  return onFulfilled and promised(self[1], onFulfilled) or self
-end
-
-local function promised_n(self, _, onRejected)
-  return onRejected and promised(self[1], onRejected) or self
-end
-
--- inext() list all elementys in array
---	*) next() will list all members for table without order
---	*) @see iter(): http://www.lua.org/pil/7.3.html
-local function inext(a, i)
-  i = i + 1
-  local v = a[i]
-  if v then return i, v end
-end
-
--- put resolved value to p[1], or push lazyed calls/object to p[]
---	1) if resolved a no pending promise, direct call promise.andThen()
-local function nothing(x) return x end
-
-local function resolver(this, resolved, sure)
-  local typ = type(resolved)
-  if (typ == 'table' and resolved.andThen) then
-    local lazy = {
-      this,
-      function(value) return resolver(this, value, true) end,
-      function(reason) return resolver(this, reason, false) end
-    }
-    if resolved[1] == PENDING then
-      table.insert(resolved, lazy) -- lazy again
-    else -- deep resolve for promise instance, until non-promise
-      resolved:andThen(lazy[2], lazy[3])
-    end
-  else -- resolve as value
-    this[1], this.andThen = resolved, sure and promised_y or promised_n
-    for i, lazy, action in inext, this, 1 do -- 2..n
-      action = sure and (lazy[2] or nothing) or (lazy[3] or nothing)
-      pcall(resolver, lazy[1], promised(resolved, action), sure)
-      this[i] = nil
-    end
-  end
-end
-
--- for Promise.all/race, ding coroutine again and again
-local function coroutine_push(co, promises)
-  -- push once
-  coroutine.resume(co)
-
-  -- and try push all
-  --	1) resume a dead coroutine is safe always.
-  -- 	2) if promises[i] promised, skip it
-  local resume_y = function(value) coroutine.resume(co, true, value) end
-  local resume_n = function(reason) coroutine.resume(co, false, reason) end
-  for i = 1, #promises do
-    if promises[i][1] == PENDING then
-      promises[i]:andThen(resume_y, resume_n)
-    end
-  end
-end
-
--- promise as meta_table of all instances
-promise.__index = promise
--- reset __len meta-method
---	1) lua 5.2 or LuaJIT 2 with LUAJIT_ENABLE_LUA52COMPAT enabled
---	2) need table-len patch in 5.1x, @see http://lua-users.org/wiki/LuaPowerPatches
--- promise.__len = function() return 0 end
-
--- promise for basetype
-local number_promise = setmetatable({ andThen = promised_y }, promise)
-local true_promise = setmetatable({ andThen = promised_y, true }, promise)
-local false_promise = setmetatable({ andThen = promised_y, false }, promise)
-number_promise.__index = number_promise
-nil_promise.andThen = promised_y
-getmetatable('').__index.andThen = promised_s
-getmetatable('').__index.catch = function(self) return self end
-setmetatable(nil_promise, promise)
-
-------------------------------------------------------------------------------------------
--- instnace method
--- 1) promise:andThen(onFulfilled, onRejected)
--- 2) promise:catch(onRejected)
-------------------------------------------------------------------------------------------
-function promise:andThen(onFulfilled, onRejected)
-  local lazy = { { PENDING }, onFulfilled, onRejected }
-  table.insert(self, lazy)
-  return setmetatable(lazy[1], promise) -- <lazy[1]> is promise2
-end
-
-function promise:catch(onRejected)
-  return self:andThen(nil, onRejected)
-end
-
-------------------------------------------------------------------------------------------
--- class method
--- 1) Promise.resolve(value)
--- 2) Promise.reject(reason)
--- 3) Promise.all()
-------------------------------------------------------------------------------------------
-
--- resolve() rules:
---	1) promise object will direct return
--- 	2) thenable (with/without string) object
--- 		- case 1: direct return, or
---		- case 2: warp as resolved promise object, it's current selected.
--- 	3) warp other(nil/boolean/number/table/...) as resolved promise object
-function Promise.resolve(value)
-  local valueType = type(value)
-  if valueType == 'nil' then
-    return nil_promise
-  elseif valueType == 'boolean' then
-    return value and true_promise or false_promise
-  elseif valueType == 'number' then
-    return setmetatable({ (value) }, number_promise)
-  elseif valueType == 'string' then
-    return value
-  elseif (valueType == 'table') and (value.andThen ~= nil) then
-    return value.catch ~= nil and value -- or, we can direct return value
-        or setmetatable({ catch = promise.catch }, { __index = value })
-  else
-    return setmetatable({ andThen = promised_y, value }, promise)
-  end
-end
-
-function Promise.reject(reason)
-  return setmetatable({ andThen = promised_n, reason }, promise)
-end
-
-function Promise.all(arr)
-  local this, promises, count = setmetatable({ PENDING }, promise), {}, #arr
-  local co = coroutine.create(function()
-    local i, result, sure, last = 1, {}, true, 0
-    while i <= count do
-      local promise, typ, reason, resolved = promises[i], type(promises[i])
-      if typ == 'table' and promise.andThen and promise[1] == PENDING then
-        sure, reason = coroutine.yield()
-        if not sure then
-          return resolver(this, { index = i, reason = reason }, sure)
-        end
-        -- dont inc <i>, continue and try pick again
-      else
-        -- check reject/resolve of promsied instance
-        --	*) TODO: dont access promise[1] or promised_n
-        sure = (typ == 'string') or (typ == 'table' and promise.andThen ~= promised_n)
-        resolved = (typ == 'string') and promise or promise[1]
-        if not sure then
-          return resolver(this, { index = i, reason = resolved }, sure)
-        end
-        -- pick result from promise, and push once
-        result[i] = resolved
-        if result[i] ~= nil then last = i end
-        i = i + 1
-      end
-    end
-    -- becuse 'result[x]=nil' will reset length to first invalid, so need reset it to last
-    -- 	1) invalid: setmetatable(result, {__len=function() retun count end})
-    -- 	2) obsoleted: table.setn(result, count)
-    resolver(this, sure and { unpack(result, 1, last) } or result, sure)
-  end)
-
-  -- init promises and push
-  for i, item in ipairs(arr) do promises[i] = Promise.resolve(item) end
-  coroutine_push(co, promises)
-  return this
-end
-
-function Promise.race(arr)
-  local this, result, count = setmetatable({ PENDING }, promise), {}, #arr
-  local co = coroutine.create(function()
-    local i, sure, resolved = 1
-    while i < count do
-      local promise, typ = result[i], type(result[i])
-      if typ == 'table' and promise.andThen and promise[1] == PENDING then
-        sure, resolved = coroutine.yield()
-      else
-        -- check reject/resolve of promsied instance
-        --	*) TODO: dont access promise[1] or promised_n
-        sure = (typ == 'string') or (typ == 'table' and promise.andThen ~= promised_n)
-        resolved = typ == 'string' and promise or promise[1]
-      end
-      -- pick resolved once only
-      break
-    end
-    resolver(this, resolved, sure)
-  end)
-
-  -- init promises and push
-  for i, item in ipairs(arr) do promises[i] = Promise.resolve(item) end
-  coroutine_push(co, promises)
-  return this
-end
-
-------------------------------------------------------------------------------------------
--- constructor method
--- 1) Promise.new(func)
--- (*) new() will try execute <func>, but andThen() is lazyed.
-------------------------------------------------------------------------------------------
-function Promise.new(func)
-  local this = setmetatable({ PENDING }, promise)
-  local ok, result = pcall(func,
-    function(value) return resolver(this, value, true) end,
-    function(reason) return resolver(this, reason, false) end)
-  return ok and this or Promise.reject(result) -- .. '.\n' .. debug.traceback())
-end
-
-return Promise
-
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "lib/TableLib" ] = function( ... ) local arg = _G.arg;
--- tableæ–¹æ³•æ·»åŠ 
-table.isArray = table.isArray or function(tab)
-  if (type(tab) ~= "table") then
-    return false
-  end
-  local length = #tab
-  for k, v in pairs(tab) do
-    if ((type(k) ~= "number") or (k > length)) then
-      return false
-    end
-  end
-  return true
-end
-
-table.every = table.every or function(tab)
-  for k, v in ipairs(tab) do
-    if (v == false) then
-      return false
-    end
-  end
-  return true
-end
-
-table.some = table.some or function(tab)
-  for k, v in ipairs(tab) do
-    if (v == true) then
-      return true
-    end
-  end
-  return false
-end
-
-table.push = table.push or function(tab, element)
-  table.insert(tab, element)
-  local length = #tab
-  return length
-end
-
-table.pop = table.pop or function(tab)
-  local length = #tab
-  local res = tab[length]
-  table.remove(tab, length)
-  return res
-end
-
-table.shift = table.shift or function(tab)
-  local res = tab[1]
-  table.remove(tab, 1)
-  return res
-end
-
-table.unshift = table.unshift or function(tab, element)
-  table.insert(tab, 1, element)
-  local length = #tab
-  return length
-end
-
-table.first = table.first or function(tab)
-  return tab[1]
-end
-
-table.last = table.last or function(tab)
-  return tab[#tab]
-end
-
-table.slice = table.slice or function(tab, startIndex, endIndex)
-  local length = #tab
-  if ((type(endIndex) == "nil") or (endIndex == 0)) then
-    endIndex = length
-  end
-  if (endIndex < 0) then
-    endIndex = length + 1 + endIndex
-  end
-  local newTab = {}
-
-  for i = startIndex, endIndex do
-    table.insert(newTab, tab[i])
-  end
-
-  return newTab
-end
-
-table.join = table.join or function(tab, exp)
-  if (type(exp) == "nil") then exp = "," end
-  return table.concat(tab, exp)
-end
-
-table.merge = table.merge or function(tab, ...)
-  arg = { ... }
-  for k, tabelement in ipairs(arg) do
-    local length = #tabelement
-    for k2, value in ipairs(tabelement) do
-      if ((type(k2) == "number") and (k2 <= length)) then
-        table.insert(tab, value)
-      end
-    end
-    for k2, value in pairs(tabelement) do
-      if ((type(k2) == "number") and (k2 <= length)) then
-      else
-        tab[k2] = value
-      end
-    end
-  end
-  return tab
-end
-
-table.map = table.map or function(tab, callback)
-  if (type(callback) ~= 'function') then return tab end
-  local newTab = {}
-  for k, v in ipairs(tab) do
-    table.insert(newTab, callback(v))
-  end
-  return values
-end
-
-table.forEach = table.forEach or function(tab, callback)
-  if (type(callback) ~= 'function') then return end
-  for k, v in ipairs(tab) do
-    callback(v)
-  end
-end
-
-table.values = table.values or function(tab)
-  local values = {}
-  for k, v in pairs(tab) do
-    table.insert(values, v)
-  end
-  return values
-end
-
-table.keys = table.keys or function(tab)
-  local keys = {}
-  for k in pairs(tab) do
-    table.insert(keys, k)
-  end
-  return keys
-end
-
--- å°†æ¯ä¸€ç»„é”®å€¼å¯¹å˜æˆæ•°ç»„ï¼Œå†æ”¾å…¥ä¸€ä¸ªå¤§æ•°ç»„ä¸­è¿”å›
-table.entries = table.entries or function(tab)
-  local ent = {}
-  for k, v in pairs(tab) do
-    table.insert(ent, { k, v })
-  end
-  return ent
-end
-
--- å¯¹keyæ’åºåæ”¾å…¥æ•°ç»„ä¸­å†è¿”å›ï¼Œç»“æœç±»ä¼¼entries
-table.sortByKey = table.sortByKey or function(tab, call)
-  local keys = table.keys(tab)
-  if (type(call) == "function") then
-    table.sort(keys, call)
-  else
-    table.sort(keys)
-  end
-  local newTable = {}
-  for _, key in ipairs(keys) do
-    table.insert(newTable, { key, tab[key] })
-  end
-  return newTable
-end
-
-table.toString = table.toString or function(tab, space)
-  if ((type(tab) == "function")) then
-    return "[function]"
-  end
-  if ((type(tab) == "number") or (type(tab) == "string")) then
-    return "" .. tab
-  end
-  if (type(tab) == "boolean") then
-    return tab and "true" or "false"
-  end
-  if (type(tab) == "nil") then
-    return "no message"
-  end
-  if (type(tab) ~= "table") then
-    return "[" .. type(tab) .. "]"
-  end
-  if (type(space) ~= "string") then
-    space = ""
-  end
-  local newTab = {}
-  local childSpace = space .. "  "
-  for k, v in pairs(tab) do
-    table.insert(newTab, childSpace .. k .. ": " .. table.toString(v, childSpace))
-  end
-  return "{\n" .. table.concat(newTab, ", \n") .. " \n" .. space .. "}"
-end
-
-table.toJsString = table.toJsString or function(tab, other, space)
-  if ((type(tab) == "function")) then
-    return "[function]"
-  end
-  if (type(tab) == "number") then
-    return "" .. tab
-  end
-  if (type(tab) == "string") then
-    return '"' .. tab .. '"'
-  end
-  if (type(tab) == "boolean") then
-    return tab and "true" or "false"
-  end
-  if (type(tab) == "nil") then
-    return "no message"
-  end
-  if (type(tab) ~= "table") then
-    return "[" .. type(tab) .. "]"
-  end
-  if (type(space) ~= "string") then
-    space = ""
-  end
-  local isArray = table.isArray(tab)
-  local newTab = {}
-  local childSpace = space .. "  "
-  if (isArray) then
-    for k, v in ipairs(tab) do
-      table.insert(newTab, table.toJsString(v, other, childSpace))
-    end
-    local childStr = table.concat(newTab, ", ")
-
-    if (string.len(childStr) > 50) then
-      newTab = {}
-      for k, v in ipairs(tab) do
-        table.insert(newTab, childSpace .. table.toJsString(v, other, childSpace))
-      end
-      childStr = table.concat(newTab, ", \n")
-      return "[\n" .. childStr .. " \n" .. childSpace .. "]"
-    end
-
-    return space .. "[" .. childStr .. "]"
-  else
-    for k, v in pairs(tab) do
-      if ((other == true) or (type(v) ~= "function")) then
-        table.insert(newTab, childSpace .. k .. ": " .. table.toJsString(v, childSpace))
-      end
-    end
-    return "{\n" .. table.concat(newTab, ", \n") .. " \n" .. space .. "}"
-  end
-end
-
-table.unpack = unpack or table.unpack
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "lib/TryCall" ] = function( ... ) local arg = _G.arg;
-tryCall = tryCall or function(func, catchFunc)
-  local errTraceBack
-
-  local ret = xpcall(func, function(err)
-    errTraceBack = debug.traceback()
-  end)
-  if (not ret) then
-    if (type(catchFunc) == 'function') then
-      catchFunc(ret, errTraceBack)
-    end
-    return ret, errTraceBack
-  end
-  return nil
-end
-end
-end
-
-end
-
------------------------------------------------------------------------------
--- ES6 co lib in lua 5.1
--- Author: fgfg163@163.com
--- Copyright (c) 2015.11
---
--- This is a lib porting from Co v4 in JavaScript
--- It has some different before.
--- to see https://github.com/tj/co
--- Useage:
--- co(coroutine.create(function()
---     local v1 = coroutine.yield(Promise.resolve(123))
---     local v2 = coroutine.yield({
---     a = Promise.resolve(234),
---     b = Promise.resolve(456),
---   })
---   console.log(v1)
---   console.log(v2)
--- end)):catch(function(err)
---   print(err)
--- end)
-
------------------------------------------------------------------------------
-
-package.path = package.path .. ';..\\?.lua'
-require 'lib/TableLib'
-require 'lib/TryCall'
-
-
-Promise = Promise or require 'lib/Promise'
-
-local unpack = unpack or table.unpack
-
-
-function new(gen, ...)
-  local args = { ... }
-
-  return Promise.new(function(resolve, reject)
-    if (type(gen) == 'function') then
-      gen = gen(args)
-    end
-    if (not isCoroutine(gen)) then
-      return resolve(gen)
-    end
-
-
-
-    -- @param {Mixed} res
-    -- @return {Promise}
-    -- @api private
-    function onFulfilled(res)
-      local done, flag, ret
-
-      local _, errMsg = tryCall(function()
-        flag, ret = coroutine.resume(gen, res)
-      end)
-      if (errMsg) then
-        return reject(errMsg)
-      end
-      done = coroutine.status(gen) == 'dead' and true or false
-      next(done, ret)
-      return nil
-    end
-
-
-    -- @param {Error} err
-    -- @return {Promise}
-    -- @api private
-    function onRejected(err)
-      local ret
-
-      local _, errMsg = tryCall(function()
-        ret = gen.throw(err)
-      end)
-      if (errMsg) then
-        return reject(errMsg)
-      end
-
-      next(ret);
-    end
-
-    -- Get the next value in the generator,
-    -- return a promise.
-    --
-    -- @param {Object} ret
-    -- @return {Promise}
-    -- @api private
-    function next(done, ret)
-      if (done) then return resolve(ret) end
-      local value = toPromise(ret);
-      if (value and isPromise(value)) then return value:andThen(onFulfilled, onRejected) end
-
-      return onRejected(error('You may only yield a function, promise, generator, array, or object, '
-          .. 'but the following object was passed: "' .. ret .. '"'))
-    end
-
-    onFulfilled();
-  end)
-end
-
--- Convert a `yield`ed value into a promise.
---
--- @param {Mixed} obj
--- @return {Promise}
--- @api private
-function toPromise(obj)
-  if (not obj) then return obj end
-
-  if (isPromise(obj)) then return obj end
-  if (isCoroutine(obj)) then return new(obj) end
-  if (type(obj) == 'function') then return thunkToPromise(obj) end
-
-  if (table.isArray(obj)) then
-    return arrayToPromise(obj)
-  elseif (type(obj) == 'table') then
-    return objectToPromise(obj)
-  end
-
-  return obj
-end
-
--- Check if `obj` is a promise.
---
--- @param {Object} obj
--- @return {Boolean}
--- @api private
-function isPromise(obj)
-  if ((type(obj) == 'table') and type(obj.andThen) == 'function') then
-    return true
-  end
-  return false
-end
-
--- Check if `obj` is a generator.
---
--- @param {Mixed} obj
--- @return {Boolean}
--- @api private
-function isCoroutine(obj)
-  if (type(obj) == 'thread') then
-    return true
-  end
-  return false
-end
-
-
--- Convert a thunk to a promise.
---
--- @param {Function}
--- @return {Promise}
--- @api private
-function thunkToPromise(fn)
-  return Promise.new(function(resolve, reject)
-    fn(function(err, res)
-      if (err) then return reject(err) end
-      if (#res > 2) then
-        res = table.slice(res, 0, 1)
-      end
-      resolve(res)
-    end)
-  end)
-end
-
--- Convert an array of "yieldables" to a promise.
--- Uses `Promise.all()` internally.
---
--- @param {Array} obj
--- @return {Promise}
--- @api private
-function arrayToPromise(obj)
-  return Promise.all(table.map(obj, toPromise));
-end
-
--- Convert an object of "yieldables" to a promise.
--- Uses `Promise.all()` internally.
---
--- @param {Object} obj
--- @return {Promise}
--- @api private
-function objectToPromise(obj)
-  local results = {}
-  local promises = {}
-
-  local function defer(promise, key)
-    results[key] = nil
-    table.push(promises, promise:andThen(function(res)
-      results[key] = res
-    end))
-  end
-
-  for _, it in ipairs(table.entries(obj)) do
-    local key = it[1]
-    local value = it[2]
-    local promise = toPromise(value)
-    if (promise and isPromise(promise)) then
-      defer(promise, key)
-    else
-      results[key] = obj[key]
-    end
-  end
-
-  return Promise.all(promises):andThen(function()
-    return results
-  end)
-end
-
-return setmetatable({
-  new = new;
-}, {
-  __call = function(_, ...)
-    return new(...)
-  end
-})
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "src/DeviceOrientHock" ] = function( ... ) local arg = _G.arg;
+package.preload[ "DeviceOrientHock" ] = function( ... ) local arg = _G.arg;
 require "TSLib"
 
-local _tmp = (function()
-  local __init = init
-  init = nil
+local __init = init
 
-  -- 0=ç«–å±ï¼Œ1=å³æ—‹ï¼ˆhomeé”®åœ¨å³è¾¹ï¼‰ï¼Œ2=å·¦æ—‹ï¼ˆhomeé”®åœ¨å·¦è¾¹ï¼‰ï¼Œ3=å€’ç«‹
+-- 0=ç«–å±ï¼Œ1=å³æ—‹ï¼ˆhomeé”®åœ¨å³è¾¹ï¼‰ï¼Œ2=å·¦æ—‹ï¼ˆhomeé”®åœ¨å·¦è¾¹ï¼‰ï¼Œ3=å€’ç«‹
+__init(0)
+local w, h = getScreenSize()
+local m = math.max(w, h)
+local orient = 0;
+local nextUpdateTime = os.time()
+
+-- è®¡ç®—æ–¹å‘è¾…åŠ©ç•Œé¢ï¼Œä¸€åƒç´ å®½åº¦çš„ç™½è‰²è¾¹ç•Œï¼Œä¸€åƒç´ å®½çš„é»‘è‰²è¾¹ç•Œï¼Œç”¨äºæ£€æµ‹æ–¹å‘
+fwShowWnd("orientwid1", 0, 0, 2, m, 0)
+fwShowTextView("orientwid1", "text1", "", "center", "000000", "FEFEFE", 15, 0, 0, 0, 1, m, 1)
+fwShowTextView("orientwid1", "text2", "", "center", "000000", "010101", 15, 0, 1, 0, 2, m, 1)
+
+mSleep(100)
+
+
+-- è®¡ç®—å½“å‰æ–¹å‘
+function calOrient(_orient)
   __init(0)
-  local w, h = getScreenSize()
-  local m = math.max(w, h)
-  local orient = 0;
-  local nextUpdateTime = os.time()
+  local result = _orient
+  -- å¯»æ‰¾ç™½è‰²è¾¹ç•Œ
 
-  -- è®¡ç®—æ–¹å‘è¾…åŠ©ç•Œé¢ï¼Œä¸€åƒç´ å®½åº¦çš„ç™½è‰²è¾¹ç•Œï¼Œä¸€åƒç´ å®½çš„é»‘è‰²è¾¹ç•Œï¼Œç”¨äºæ£€æµ‹æ–¹å‘
-  fwShowWnd("orientwid1", 0, 0, 2, m, 0)
-  fwShowTextView("orientwid1", "text1", "", "center", "000000", "FEFEFE", 15, 0, 0, 0, 1, m, 1)
-  fwShowTextView("orientwid1", "text2", "", "center", "000000", "010101", 15, 0, 1, 0, 2, m, 1)
-
-  mSleep(100)
-
-
-  -- è®¡ç®—å½“å‰æ–¹å‘
-  local function calOrient(_orient)
-    __init(0)
-    local result = _orient
-    -- å¯»æ‰¾ç™½è‰²è¾¹ç•Œ
-    nLog("-----------")
-    nLog(_orient)
-
-    local orientTo0 = {}
-    local orientTo1 = {}
-    local orientTo2 = {}
-
-    if (_orient == 0) then
-      orientTo0 = {
-        { 0, math.floor(0.333 * h), 0xfefefe },
-        { 0, math.floor(0.5 * h), 0xfefefe },
-        { 0, math.floor(0.667 * h), 0xfefefe },
-        { 0, math.floor(0.833 * h), 0xfefefe },
-        { 1, math.floor(0.333 * h), 0x010101 },
-        { 1, math.floor(0.5 * h), 0x010101 },
-        { 1, math.floor(0.667 * h), 0x010101 },
-        { 1, math.floor(0.833 * h), 0x010101 },
-      }
-      orientTo1 = {
-        { math.floor(0.333 * w), 0, 0xfefefe },
-        { math.floor(0.5 * w), 0, 0xfefefe },
-        { math.floor(0.667 * w), 0, 0xfefefe },
-        { math.floor(0.833 * w), 0, 0xfefefe },
-        { math.floor(0.333 * w), 1, 0x010101 },
-        { math.floor(0.5 * w), 1, 0x010101 },
-        { math.floor(0.667 * w), 1, 0x010101 },
-        { math.floor(0.833 * w), 1, 0x010101 },
-      }
-      orientTo2 = {
-        { h, math.floor(0.333 * w), 0xfefefe },
-        { h, math.floor(0.5 * w), 0xfefefe },
-        { h, math.floor(0.667 * w), 0xfefefe },
-        { h, math.floor(0.833 * w), 0xfefefe },
-        { h - 1, math.floor(0.333 * w), 0x010101 },
-        { h - 1, math.floor(0.5 * w), 0x010101 },
-        { h - 1, math.floor(0.667 * w), 0x010101 },
-        { h - 1, math.floor(0.833 * w), 0x010101 },
-      }
-
-    elseif (_orient == 1) then
-      orientTo0 = {
-        { math.floor(0.333 * h), w, 0xfefefe },
-        { math.floor(0.5 * h), w, 0xfefefe },
-        { math.floor(0.667 * h), w, 0xfefefe },
-        { math.floor(0.833 * h), w, 0xfefefe },
-        { math.floor(0.333 * h), w - 1, 0x010101 },
-        { math.floor(0.5 * h), w - 1, 0x010101 },
-        { math.floor(0.667 * h), w - 1, 0x010101 },
-        { math.floor(0.833 * h), w - 1, 0x010101 },
-      }
-      orientTo1 = {
-        { 0, math.floor(0.333 * w), 0xfefefe },
-        { 0, math.floor(0.5 * w), 0xfefefe },
-        { 0, math.floor(0.667 * w), 0xfefefe },
-        { 0, math.floor(0.833 * w), 0xfefefe },
-        { 1, math.floor(0.333 * w), 0x010101 },
-        { 1, math.floor(0.5 * w), 0x010101 },
-        { 1, math.floor(0.667 * w), 0x010101 },
-        { 1, math.floor(0.833 * w), 0x010101 },
-      }
-      orientTo2 = {
-        { h, math.floor(0.333 * w), 0xfefefe },
-        { h, math.floor(0.5 * w), 0xfefefe },
-        { h, math.floor(0.667 * w), 0xfefefe },
-        { h, math.floor(0.833 * w), 0xfefefe },
-        { h - 1, math.floor(0.333 * w), 0x010101 },
-        { h - 1, math.floor(0.5 * w), 0x010101 },
-        { h - 1, math.floor(0.667 * w), 0x010101 },
-        { h - 1, math.floor(0.833 * w), 0x010101 },
-      }
-    elseif (_orient == 2) then
-      orientTo0 = {
-        { math.floor(0.333 * h), 0, 0xfefefe },
-        { math.floor(0.5 * h), 0, 0xfefefe },
-        { math.floor(0.667 * h), 0, 0xfefefe },
-        { math.floor(0.833 * h), 0, 0xfefefe },
-        { math.floor(0.333 * h), 1, 0x010101 },
-        { math.floor(0.5 * h), 1, 0x010101 },
-        { math.floor(0.667 * h), 1, 0x010101 },
-        { math.floor(0.833 * h), 1, 0x010101 },
-      }
-      orientTo1 = {
-        { h, math.floor(0.333 * w), 0xfefefe },
-        { h, math.floor(0.5 * w), 0xfefefe },
-        { h, math.floor(0.667 * w), 0xfefefe },
-        { h, math.floor(0.833 * w), 0xfefefe },
-        { h - 1, math.floor(0.333 * w), 0x010101 },
-        { h - 1, math.floor(0.5 * w), 0x010101 },
-        { h - 1, math.floor(0.667 * w), 0x010101 },
-        { h - 1, math.floor(0.833 * w), 0x010101 },
-      }
-      orientTo2 = {
-        { 0, math.floor(0.333 * w), 0xfefefe },
-        { 0, math.floor(0.5 * w), 0xfefefe },
-        { 0, math.floor(0.667 * w), 0xfefefe },
-        { 0, math.floor(0.833 * w), 0xfefefe },
-        { 1, math.floor(0.333 * w), 0x010101 },
-        { 1, math.floor(0.5 * w), 0x010101 },
-        { 1, math.floor(0.667 * w), 0x010101 },
-        { 1, math.floor(0.833 * w), 0x010101 },
-      }
-    end
-
-    if (multiColor(orientTo0)) then
-      if (_orient ~= 0) then
-        __init(0)
-      end
-      return 0
-    elseif (multiColor(orientTo1)) then
-      if (_orient ~= 1) then
-        __init(1)
-      end
-      return 1
-    elseif (multiColor(orientTo2)) then
-      if (_orient ~= 2) then
-        __init(2)
-      end
-      return 2
-    end
+  local checkOrder = { 0, 1, 2 }
+  if (_orient == 0) then
+    checkOrder = { 0, 1, 2 }
+  elseif (_orient == 1) then
+    checkOrder = { 1, 0, 2 }
+  elseif (_orient == 2) then
+    checkOrder = { 2, 0, 1 }
   end
 
-  local _orient = calOrient(orient)
-  orient = _orient
+  local checkPointList = {
+    { 0, math.floor(0.333 * w), 0xfefefe },
+    { 0, math.floor(0.5 * w), 0xfefefe },
+    { 0, math.floor(0.667 * w), 0xfefefe },
+    { 0, math.floor(0.833 * w), 0xfefefe },
+    { 1, math.floor(0.333 * w), 0x010101 },
+    { 1, math.floor(0.5 * w), 0x010101 },
+    { 1, math.floor(0.667 * w), 0x010101 },
+    { 1, math.floor(0.833 * w), 0x010101 },
+  }
 
-  -- è·å–å½“å‰æ–¹å‘
-  getDeviceOrient = function(useKeep)
-    local newOrient = orient
-    if (os.time() > nextUpdateTime) then
-      if (useKeep == true) then keepScreen(true) end
-      newOrient = calOrient(orient)
-      nLog(newOrient)
-      nextUpdateTime = os.time() + 1
-      __init(newOrient)
-      if (useKeep == true) then keepScreen(false) end
+  for k, v in ipairs(checkOrder) do
+    __init(v)
+    if (multiColor(checkPointList)) then
+      return v
     end
-    return newOrient
   end
+  __init(_orient)
+  return _orient
+end
 
+local _orient = calOrient(orient)
+orient = _orient
 
-  -- è®¾ç½®å½“å‰æ–¹å‘ï¼Œå½“ç„¶åªèƒ½è®¾ç½®initçš„æ–¹å‘
-  setDeviceOrient = function(n)
-    orient = n
-    __init(n)
+-- è·å–å½“å‰æ–¹å‘
+getDeviceOrient = function(useKeep)
+  local newOrient = orient
+  if (os.time() > nextUpdateTime) then
+    local _keepScreenState = keepScreenState
+    if (not _keepScreenState) then keepScreen(true) end
+    newOrient = calOrient(orient)
     nextUpdateTime = os.time() + 1
+    if (not _keepScreenState) then keepScreen(false) end
   end
-  init = setDeviceOrient
+  return newOrient
+end
 
-  mSleep(200)
-  getDeviceOrient()
-end)()
+
+-- è®¾ç½®å½“å‰æ–¹å‘ï¼Œå½“ç„¶åªèƒ½è®¾ç½®initçš„æ–¹å‘
+setDeviceOrient = function(n)
+  orient = n
+  __init(n)
+  nextUpdateTime = os.time() + 1
+end
+init = setDeviceOrient
 end
 end
 
 do
 local _ENV = _ENV
-package.preload[ "src/GoMission" ] = function( ... ) local arg = _G.arg;
+package.preload[ "GoMission" ] = function( ... ) local arg = _G.arg;
 return function(map, stepLabel, setOnceListener)
   local gomission = {}
   -- å‡ºå¾
@@ -4507,7 +3439,7 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "src/KeepScreenHock" ] = function( ... ) local arg = _G.arg;
+package.preload[ "KeepScreenHock" ] = function( ... ) local arg = _G.arg;
 -- å…¨å±€å‡½æ•°ç”Ÿæˆï¼Œç”±äºéƒ¨åˆ†è®¡ç®—è¿‡ç¨‹ä¸æƒ³æš´éœ²æ‰€ä»¥ç”¨äº†é—­åŒ…
 
 local __tmp = (function()
@@ -4525,7 +3457,7 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "src/StepLabel" ] = function( ... ) local arg = _G.arg;
+package.preload[ "StepLabel" ] = function( ... ) local arg = _G.arg;
 return (function()
   local StepLable = {
     originText = "",
@@ -4556,7 +3488,7 @@ end)()
 end
 end
 
-package.preload[ "src/TSLib" ] = assert( (loadstring or load)(
+package.preload[ "TSLib" ] = assert( (loadstring or load)(
 "\27TS1R\000\1\4\4\4\8\000\25“\r\
 \26\
 \000\9\20 —@L{\000¶z\rïø–jr\rW\4’ü]\16ğ7Xh_\4Øj™TnàZ/Z€\r\9\20 SEÔ #–ÂP°Îÿ5ò0ò20\8t\0256\8t\25\6(:.X©p>]¢…5\8Ö-\14£ïMqüBÇD\24\9v\25\16\9v\0252&z\000-ìtƒµÕN™Ô;|\"Ğ\11<VÊ\9iÈ¹Áy—!Ào\1,\8\6 Éo<\7†\26WZ`\24­h[lš\23vR¯B\000\14\8\8 õ\
@@ -4680,15 +3612,7 @@ t\0255\8t\25±~c^îbDv°Š\"aüŞ]~ù?\5L)\11v\25\31\9v\25¥\28íMw.\0046o‚êa7–Ù\18ªE¿a^ò
 t\25:\8t\25‚\14\24\23L´Jy\räá_~ôĞWPcA\\øƒS55\2*boCÅ.æ/ø}$Ÿ‰#$\11v\25\29\9v\25“\6;™ßÆ$-±‡Sø¯sY\01803\18\1+\8\6 –1}j\7ì>\000\14\8\8 ÿ\9“B8rµi\16\8@L\9zŒs@?\7\r@\20\26lÁ{V4\18©1V0½ào7\r—F^Å\000\000\000ÄÁÁÁ€ÁÁÁ@ÁÁ'ÁÁÁÜAÁÁ¤ÁÁÁGA\1Á\000\1ÁÁ\\AÁÀ\6Á€ÀÇ€\000ÁÀÁÁÜ@ÁÀÀAÁAÀÁÃ\000@ÀÁW\000ÀÂœ@ÁÀšÀÁÁÖAËA†\000\000ÀAÀÁÃ\000@ÀÁW\000ÀÂœ@ÁÀFÀ\3ÃZÀÁÁÖAÁAFÀ\3Ã^ÀÁÀÖÁèAAÀAÁ\1ÀÁÃÀƒÃÁ\23ÀCÂ\\@ÁÀZÀÁÁÖæAF\000\000À\1ÀÁÃÀƒÃÁ\23ÀCÂ\\@ÁÀ\6ÀƒÂ\26ÀÁÁÖAÁA\6ÀƒÂ\30ÀÁÀÖAåA\6B\3Û\1\000\000\23€\000€ÇB\3ß\1\000\1\23\000#€ÇÁB\3Û\1\000\000\23€\000€ÇÁB\3ß\1\000\1\23€!€\31\000\000\1\23\000!€@\1€\000€\1\000\2Á\1\3\000–Á\1\3]\000\1[\1\000\000\23€\
 €GÁÁ\1€\1\000\2Á\1\3\000–Á\1\3]\000\1‡\1Â\2›\1\000\000\23€\000€‡\1Â\2Ÿ\1\000\1\23€\28€€\1€\000À\1\000\2\1B\2\000Ö\1‚\3\000\1›\1\000\000\23À\26€‡ÁÁ\1À\1\000\2\1B\2\000Ö\1‚\3\000\1Ç\1B\3Û\1\000\000\23€\000€Ç\1B\3ß\1\000\1\23\000\24€ÇB\3Û\1\000\000\23€\000€ÇB\3ß\1\000\1\23€\22€ÇÁB\3Û\1\000\000\23€\000€ÇÁB\3ß\1\000\1\23\000\21€\31\000\000\1\23€\20€@\1€\000€\1\000\2ÁA\3\000–Á\1\3]\000\1[\1\000\000\23€\
 €GÁÁ\1€\1\000\2ÁA\3\000–Á\1\3]\000\1‡\1Â\2›\1\000\000\23€\000€‡\1Â\2Ÿ\1\000\1\23\000\16€€\1€\000À\1\000\2\1B\2\000Ö\1‚\3\000\1›\1\000\000\23@\14€‡ÁÁ\1À\1\000\2\1B\2\000Ö\1‚\3\000\1Ç\1B\3Û\1\000\000\23€\000€Ç\1B\3ß\1\000\1\23€\11€ÇB\3Û\1\000\000\23€\000€ÇB\3ß\1\000\1\23\000\
-€ÇÁB\3Û\1\000\000\23€\000€ÇÁB\3ß\1\000\1\23€\8€\31\000\000\1\23\000\8€@\1€\000€\1\000\2ÁA\2\000–Á\1\3]\000\1[\1\000\000\23\000\6€GÁÁ\1€\1\000\2ÁA\2\000–Á\1\3]\000\1‡\1Â\2›\1\000\000\23€\000€‡\1Â\2Ÿ\1\000\1\23€\3€‡Â\2›\1\000\000\23€\000€‡Â\2Ÿ\1\000\1\23\000\2€‡ÁÂ\2›\1\000\000\23€\000€‡ÁÂ\2Ÿ\1\000\1\23€\000€\31\000\000\1\23\000\000€\31\000\000\1\31\000€\000\6\7\21 \9•º0\27{(>©4?\31Yøû\12\9\9\16I\25Ş6i\1É;Á;ù.tq\3Öò$\21ox—Âz,œµ¹IB \24L\2\000\000\000\1\2\000\000\6\7!\25®åì[GÕõ4&¤kpµƒÙ\26öŠM\2%®ş2íõ\4\14\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000×ĞÖ
-Ã¤\4\8\000\000\000ÖÁÕÑÍÖÁ¤\4\3\000\000\000×Ş¤\4\6\000\000\000ÔÈÍ×Ğ¤\4\14\000\000\000ÅÔÔæÑÊÀÈÁôÅĞÌ¤\4\31\000\000\000‹ŞÌûçêŠÈÔÖËÎ‹
-ÂËôÈÍ×ĞŠ×ĞÖ
-Ã×¤\4\5\000\000\000ÖÁÅÀ¤\4\20\000\000\000çâæÑÊÀÈÁàÍ×ÔÈÅİêÅÉÁ¤\4\12\000\000\000‹
-ÂËŠÔÈÍ×Ğ¤\4\r\000\000\000çâæÑÊÀÈÁêÅÉÁ¤\4\19\000\000\000çâæÑÊÀÈÁáÜÁÇÑĞÅÆÈÁ¤\4!\000\000\000‹ŞÌ‰ìÅÊ×ŠÈÔÖËÎ‹
-ÂËôÈÍ×ĞŠ×ĞÖ
-Ã×¤\4!\000\000\000‹ŞÌ‰ìÅÊĞŠÈÔÖËÎ‹
-ÂËôÈÍ×ĞŠ×ĞÖ
-Ã×¤\1\000\000\000\1\9\20 [¯œPÅE°&=#ê\11Á6ee/¯[\
+€ÇÁB\3Û\1\000\000\23€\000€ÇÁB\3ß\1\000\1\23€\8€\31\000\000\1\23\000\8€@\1€\000€\1\000\2ÁA\2\000–Á\1\3]\000\1[\1\000\000\23\000\6€GÁÁ\1€\1\000\2ÁA\2\000–Á\1\3]\000\1‡\1Â\2›\1\000\000\23€\000€‡\1Â\2Ÿ\1\000\1\23€\3€‡Â\2›\1\000\000\23€\000€‡Â\2Ÿ\1\000\1\23\000\2€‡ÁÂ\2›\1\000\000\23€\000€‡ÁÂ\2Ÿ\1\000\1\23€\000€\31\000\000\1\23\000\000€\31\000\000\1\31\000€\000\6\7\21 \9•º0\27{(>©4?\31Yøû\12\9\9\16I\25Ş6i\1É;Á;ù.tq\3Öò$\21ox—Âz,œµ¹IB \24L\2\000\000\000\1\2\000\000\6\7!\25®åì[GÕõ4&¤kpµƒÙ\26öŠM\2%®ş2íõ\4\14\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000×ĞÖÍÊÃ¤\4\8\000\000\000ÖÁÕÑÍÖÁ¤\4\3\000\000\000×Ş¤\4\6\000\000\000ÔÈÍ×Ğ¤\4\14\000\000\000ÅÔÔæÑÊÀÈÁôÅĞÌ¤\4\31\000\000\000‹ŞÌûçêŠÈÔÖËÎ‹íÊÂËôÈÍ×ĞŠ×ĞÖÍÊÃ×¤\4\5\000\000\000ÖÁÅÀ¤\4\20\000\000\000çâæÑÊÀÈÁàÍ×ÔÈÅİêÅÉÁ¤\4\12\000\000\000‹íÊÂËŠÔÈÍ×Ğ¤\4\r\000\000\000çâæÑÊÀÈÁêÅÉÁ¤\4\19\000\000\000çâæÑÊÀÈÁáÜÁÇÑĞÅÆÈÁ¤\4!\000\000\000‹ŞÌ‰ìÅÊ×ŠÈÔÖËÎ‹íÊÂËôÈÍ×ĞŠ×ĞÖÍÊÃ×¤\4!\000\000\000‹ŞÌ‰ìÅÊĞŠÈÔÖËÎ‹íÊÂËôÈÍ×ĞŠ×ĞÖÍÊÃ×¤\1\000\000\000\1\9\20 [¯œPÅE°&=#ê\11Á6ee/¯[\
 ­3¨;ˆ\5kßÎ²+Ë\1\9\20 ë½ÿl•\8€\127ú\5à&0\000€!X¥u|^\8¡i¿|‘k\30\19‚Oq\
 t\0254\8t\25]ñ\3~AÇ\000hŒ: ßªYL&\11v\25\28\9v\25^C«yjÚóCw'<rnY¸%\000#\8\6 X\30_qº„Pn˜\12\3r\29d\15\24÷§:zYChWL\19k\"¤Ûâ5âHéB,â\29N\1\
 \8\8 \5f—o\23 \29;‚}V4\18G \\s\11\31U^t\24\000\6\29/H‘\30¡$\14\000\000\000Ä‚Â‚ÅÂB‚\2‚‚‚C\2\000\000]€€\1XÀÀ\000\23€\000€Œ\000Á\000€\000\1\23@\000€ƒ@\000\000ƒ\000€\000Ÿ\000\000\1\31\000€\000\
@@ -4712,9 +3636,7 @@ t\0251\8t\25qUV\12ª\11v\25\29\9v\25\18·0\22ÍµgBüµÚqA@{]Éà¿w\1 \8\6 vıƒ\0201)$Uo
 ‚€‡K‚\000\000J‚Äˆ•\2\000\3J‚‚‰\
 B\2ˆFBE\1G\2Å\4GBÀ\4€\2\000\3]‚\000\1\
 B\2ŠFBE\1G‚Å\4GÂÅ\4€\2€\2]‚\000\1\
-B\2‹İÁ\000\1ˆ\000\2…ˆÀ„ÆB\1\24\000Æ\3\23€\1€ÆÁE\1ÇAÆ\3\000\2€\2A‚\6\000Ş\1€\1ß\1\000\000\23@\000€Ã\1\000\000ß\1\000\1\31\000€\000\6\7\21 \15q\rWò4ü\20%\3[}…n‘k\11\11\16I\25zr“v]\3r\000ğ øA\20m&A`™»7Ê¶¸!,c2}ç@ôa\"¡ÄY_cz\3\000\000\000\1\2\1\3\000\000\2\7!\25fm|7\15IÆ[Î¨G\8\27\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000÷ğö
-ã„\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\4\7\000\000\000êñéæáö„\3\000\000\000\000\000\000\20@\4\8\000\000\000öáõñíöá„\4\3\000\000\000÷ş„\4\r\000\000\000÷şëçïáğªìğğô„\4\4\000\000\000öá÷„\4\5\000\000\000çëàá„\4\8\000\000\000öáõñá÷ğ„\4\4\000\000\000ñöè„\4\7\000\000\000éáğìëà„\4\5\000\000\000ÔË×Ğ„\4\8\000\000\000ğíéáëñğ„\4\8\000\000\000ìáåàáö÷„\4\r\000\000\000Çëêğáêğ©Ğıôá„\4\"\000\000\000åôôèíçåğíëê«ü©óóó©âëöé©ñöèáêçëàáà„\4\15\000\000\000Çëêğáêğ©Èáêãğì„\4\7\000\000\000÷ëñöçá„\4\6\000\000\000èğêµ¶„\4\5\000\000\000÷
-ï„\4\6\000\000\000ğåæèá„\3\000\000\000\000\000\000i@\4\7\000\000\000çëêçåğ„\4\1\000\000\000„\000\000\000\000\27pi\23E¦½\r‰¢²>Ü…\
+B\2‹İÁ\000\1ˆ\000\2…ˆÀ„ÆB\1\24\000Æ\3\23€\1€ÆÁE\1ÇAÆ\3\000\2€\2A‚\6\000Ş\1€\1ß\1\000\000\23@\000€Ã\1\000\000ß\1\000\1\31\000€\000\6\7\21 \15q\rWò4ü\20%\3[}…n‘k\11\11\16I\25zr“v]\3r\000ğ øA\20m&A`™»7Ê¶¸!,c2}ç@ôa\"¡ÄY_cz\3\000\000\000\1\2\1\3\000\000\2\7!\25fm|7\15IÆ[Î¨G\8\27\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000÷ğöíêã„\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\4\7\000\000\000êñéæáö„\3\000\000\000\000\000\000\20@\4\8\000\000\000öáõñíöá„\4\3\000\000\000÷ş„\4\r\000\000\000÷şëçïáğªìğğô„\4\4\000\000\000öá÷„\4\5\000\000\000çëàá„\4\8\000\000\000öáõñá÷ğ„\4\4\000\000\000ñöè„\4\7\000\000\000éáğìëà„\4\5\000\000\000ÔË×Ğ„\4\8\000\000\000ğíéáëñğ„\4\8\000\000\000ìáåàáö÷„\4\r\000\000\000Çëêğáêğ©Ğıôá„\4\"\000\000\000åôôèíçåğíëê«ü©óóó©âëöé©ñöèáêçëàáà„\4\15\000\000\000Çëêğáêğ©Èáêãğì„\4\7\000\000\000÷ëñöçá„\4\6\000\000\000èğêµ¶„\4\5\000\000\000÷íêï„\4\6\000\000\000ğåæèá„\3\000\000\000\000\000\000i@\4\7\000\000\000çëêçåğ„\4\1\000\000\000„\000\000\000\000\27pi\23E¦½\r‰¢²>Ü…\
 U/ï;\\•C‘\2˜ÿk8‹\0167Úvú^f0ş1\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\3\9\20 •ˆ\5m3ÎÃ?Ñnî\4œ6\27\25â¸’\15~\19@\\¥ä¿3_„hª›xU¤Ùj-×\1\9\20 î±°\20W\rY\27äÖÆNşŸ}BÈCÆ\0203Èò\28^Ör?Tì…{è\
 t\0252\8t\25k/¶&Š‡¹\9Ô\11v\25\28\9v\25`ŠT\12{’¯g\
 im+æ\
@@ -4735,8 +3657,7 @@ t\0259\8t\25?e%%²¥¶\18œŠ»\9ÛK—rÇxÉas`Fzà~T.³”´\18¿\127«-ã\11v\25\29\9v\25Æ˜-A\12
 qCé4ÎV\12\000\000\000\4­\000\000\00047ped(~mz{agf5*9&8*(mfkglafo5*]\\N%0*76\0024)LGK\\QXM(xda{|(X]JDAK(*%''Ixxdm''L\\L(XDA[\\(9&8''MF*(*`||x2''\127\127\127&ixxdm&kge'L\\L{'Xzgxmz|qDa{|%9&8&l|l*6\0024xda{|(~mz{agf5*9&8*6\0024'xda{|6\8\3\000\000\000\000\000\000\000\000\4\3\000\000\000g{\8\4\8\000\000\000mpmk}|m\8\4\15\000\000\000caddidd(%1(d{l\8\0043\000\000\000'xza~i|m'~iz'lj'd{l'kge&ixxdm&d{lalmf|anamz{&xda{|\8\4\5\000\000\000|qxm\8\4\6\000\000\000|ijdm\8\4\7\000\000\000{|zafo\8\4\5\000\000\000dgil\8\4\8\000\000\000zm|}zf(\8\4D\000\000\000di}fk`k|d(dgil(%\127('[q{|me'Dajzizq'Di}fk`Limegf{'kge&ixxdm&d{l&xda{|\8\4\000\000\000\14\9\20 ÇyXPÜu\28\rİ\2ö\14[jª\31CŞ¬+œÜÀ\127]ø\14æ\3\9\20 µ¨Jk‰²Ò\28!q\4^®ou<k+\4™öà21\27„\7ú\18\23$€í,)EØ~\6r\11t\0258\8t\25ĞÏÄ\6¹íö7ùHPdF\25\20:î\17\127q†Ïp(š7??\14G½C\28\
 v\25\29\9v\25l}´\29&\11Ôy3O>>IóĞ*\3\14Ê\8\000-\8\6 ŒÑ}VŸêŠ\8ìFálbOI\000\2\8\8 ¡ï+Xë\1qf¼çÎlO_¡\20V-\1kUŞ¯\31z%\28P@\24\15ÕËÜHÆR¤\"¹\127V4\18\127@›Z\"Y¸|ì´µ\9nR\26L©()%†ìôH|™×\15\27\000\000\000œ¹¹¹ÿ¹ù¹8ù¹¹ä9¹¸>9y¹xy¹¹¾¸ø\1@\1€\1\29\000\1\27\1\000\000\23\000\3€FAA\000€\1\000\2]\000\1[\1\000\000\23\000\1€@\1\000\000€\1\000\2^\1\000\1_\1\000\000\23\000\1€A\1\000_\1\000\1\23@\000€AÁ\1\000_\1\000\1\31\000€\000\6\7\21 òi©f¢¤«\9HMMQ;]z\17\7\5\16I\25×\0066/È.øgE\000\27ÄM\23\28\1\000\000\000\000\000\2\7!\25à\19Ë)e=Ct\21€\7\24\8\000\000\000\4\8\000\000\000”ƒ—“”ƒæ\4\3\000\000\000•œæ\4\6\000\000\000–Š•’æ\0043\000\000\000É–”‡’ƒÉ‡”É‚„ÉŠ•‚É…‰‹È‡––ŠƒÈŠ•‚‚ƒˆ’€ƒ”•È–Š•’æ\4\5\000\000\000”ƒ‡‚æ\4\5\000\000\000ˆƒ’æ\3\000\000\000\000\000\000ğ?\3\000\000\000\000\000\000\000\000\1\000\000\000\15\9\20 şb-|_È~Sp†*}C]¶G;§y\7.¯©Bú\000\9\20 (Kb\29ÛIMñK˜cZ}\4\5šç8:\9°ÂPåéº+È¤~i>W©f\4\11t\0257\8t\25u\"›\27-é\r</\00334b¡¥rÿ m\28i(Œ_k Lu\29\
 v\25\31\9v\25ë@E@Õkµ/‹\
-\r\18-¬‡h(,)\5Šm:\14Œt\6<\000(\8\6 
-ğU\1\11\8\8 ÆaıDå½˜\29´øè/A|V4\18¥D\19I`M,€\27%®ôCd\23\000\000\000$AAAÇA\1AAAAÜÁA@\25\1\1@V\1A€ƒ\000\000\000Ÿ\000\000\1€\000\000Ë\000\000\000ÊÀ@\000\000\1\000\1@\1€\000€\1\000\000À\1€\1\1\2\1\000]\000\2–@\1\2\000\1\000\1AA\1\000–@\1\2Ÿ\000\000\1\31\000€\000\5\7\21 e%š\14íKíJ~>×\31ÚG5*\0265û\6®A\
+\r\18-¬‡h(,)\5Šm:\14Œt\6<\000(\8\6 ÍÊğU\1\11\8\8 ÆaıDå½˜\29´øè/A|V4\18¥D\19I`M,€\27%®ôCd\23\000\000\000$AAAÇA\1AAAAÜÁA@\25\1\1@V\1A€ƒ\000\000\000Ÿ\000\000\1€\000\000Ë\000\000\000ÊÀ@\000\000\1\000\1@\1€\000€\1\000\000À\1€\1\1\2\1\000]\000\2–@\1\2\000\1\000\1AA\1\000–@\1\2Ÿ\000\000\1\31\000€\000\5\7\21 e%š\14íKíJ~>×\31ÚG5*\0265û\6®A\
 T<éÚ\28\9\5\16I\25\23j–3§\9'\18uÔÖL\3«Ûs\1\000\000\000\000\000\9\7!\25\1ßã^0Wc\\¥¡\5G‹L\30m¼Ëi\24>TYIX\23\15C„çé[\6\000\000\000\4\5\000\000\000ƒŠŸú\4\6\000\000\000›˜–Ÿú\4\3\000\000\000ğú\4\11\000\000\000ˆ••Ú›˜–Ÿú\3\000\000\000\000\000\000ğ?\4\2\000\000\000‡ú\1\000\000\000\1\9\20 _<Ñ\26eu£\20Ó‚\31Gò.\23W\9ğ\29@M…œ\16\5?+eC\127\14B¡\
 \9\20 Ù\127–>×¤?\4e–¿\000\26\11t\0252\8t\25•Ë_6‰k;\16\30\
 v\25\26\9v\25”µçIG\127\15u\000*\8\6 ÚOşe“\25hR\19ùeV\3\1\8\8 ¸÷g\11Tõ®V*\3e\8\3Ë¢vEÛ‡^u¸Tn<%\11¤\23YyÚ-ø\2Ç{V4\18ã\29\22C]-Yc›…›5|\000\000\000\6ÇÇÇÁ†‡ÇÀF‡Å†\6ÇÇGÆÇÆÚFGÆÆ†ÇGÆÇÇšÆÆÆĞ\7ÖGA…†Ç\7ÅÇÃZEÇÆß‡‡ÂĞGÇGFEÆÇ\\…ÇÇĞÇÇGFÅÇÇ\7ÅGÆÇÄÇÅ†\4ÆÇGÄÇÂ\1Ä…ÇÇÃÇÃ\26DÇÆÇÃÇÂ†ƒÅÇ\17‡CÂ\1…†ÇÇÄGÃİ‚\000\1\24€Â\5\23\000\7€ÇB‚\000Û\2\000\000\23€\1€\000\3€\1F\3B\000€\3€\4]ƒ\000\1Ã\2\000Ö€\3\6\23@\9€\6\3B\000@\3\000\4\29ƒ\000\1J\000ƒ\4\000\3€\1A\3\3\000Ö@\3\6\000\3€\1E\3€\000€\3€\4À\3€\000\rDC\1]ƒ\000\2Ö@\3\6\000\3€\1@\3\000\2ƒ\3\000Ö€\3\6\23€\4€ÆBA\000\000\3€\4İ‚\000\1\24@À\5\23À\1€À\2€\1\1ƒ\1\000F\3B\000€\3€\4]ƒ\000\1Ã\3\000Ö€ƒ\5\23@\1€À\2€\1\6\3B\000@\3€\4\29ƒ\000\1AÃ\2\000Ö@ƒ\5b\000\000ãAí\127F\1D\000€\1\000\000]\000\1[\1\000\000\23\000\8€€\1€\1ÁÁ\2\000ÖÀ\1\3‡A\000À\1€\1\000\2\000\2AB\4\000Ö@‚\3›\1\000\000\23\000\2€À\1€\1\6\2B\000@\2€\2\29‚\000\1A‚\4\000€\2\000\3ÁÂ\4\000ÖÀ‚\3\23@\3€À\1€\1\1\2\3\000Ö\000‚\3À\1€\1\5\2€\000@\2€\2€\2€\000ÍBC\1\29‚\000\2Ö\000‚\3À\1€\1\000\2\000\2A‚\3\000Ö@‚\3ß\000\000\1\31\000€\000\5\7\21 şmša0³É[\000\29»CÕ\18Úe•I‰\\¿SXkŞ9\28\18\000\16I\25†lş\6\2\000\000\000\000\000\1\1\9\7!\25e4Ôa÷\28,oÚã\31LùM<4\
@@ -4794,9 +3715,7 @@ OæsNSãâ'\28V\24¥\9M\000U2\000(\8\6 ­Ê›\9\000\11\8\8 *Ê¢{ˆ\27´lB¬cZ½\127V4\18\2B–
 €ÆÂB\000\6Ã@\000@\3€\1ƒ\1\000\29ƒ€\1\7CA\6MCA\5GCƒ\2ÊB\3\6ÍBA\5‡Á\2\3ÆÂ@\000\000\3\000\3Aƒ\1\000İ‚€\1€\1€\5ÁB\2\000\21\3\000\3\14CA\6AC\1\000áÂ\4€ÆƒB\000\6ÄB\000FÄ@\000€\4€\1Á„\1\000]„€\1GÄÁ\8\7D\4\8İƒ\000\1\24€ƒ\7\23\000\2€ÆÃB\000\6Ä@\000@\4€\1„\1\000\29„€\1\7ÄA\8MDA\7GD\4\3ÊC\4\8à‚ú\127àAò\127\"€\000\000£€ë\127\31\000€\000\1\7\21 -¯Œm\21œê@¢Šs\15\20\9\16I\25ô|€_…È°]Ò;\26{(w3@©Ì\000réU%Ë\2yU\2¶>\12\1\000\000\000\000\000\2\7!\0259&lR£ÊªY\26\23gt\12\000\000\000\4\6\000\000\000”…–—ä\4\
 \000\000\000ƒ±­·Œ‹“ä\4\r\000\000\000–ˆ…¶—‘ˆä\4\9\000\000\000—–·”ˆä\4\3\000\000\000¤¤ä\3\000\000\000\000\000\000ğ?\4\2\000\000\000Èä\3\000\000\000\000\000\000\000@\4\2\000\000\000Çä\3\000\000\000\000\000\000\000\000\4\9\000\000\000‹Š‘‰†–ä\4\3\000\000\000»£ä\000\000\000\000\19pi\23ÃL9}\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 _@ÿ\" ÛÂ2Ø'Êah×•\27ÿ7Û\16\23’WRÀi\24gRv¡\1‘Ê+.`\
 \9\20 \5àøRÕ[r`îÒÑ\11ı\12t\0253\8t\25òÌui¤c]\23©f\26Œ\rv\25\18\9v\0252\18s\19«FD=)Ù½ fí\17'IÌV\rJ\"NE‡ÌP]Û\30Ü:ÙbíwØ÷\r.\1,\8\6 QÕ¦\01178\rQâ¬m\"*ıpmŸ\15£l\1\
-\8\8 AÈ?`y»S­{V4\0187Í%]YpQØ9í@Ÿ\000\000\000ë­í­-­­­ğ-­¬µím­ºíª-æ­­­çmí,+­ì­m­­­0­¬¬º­­-ç-,¯\15-­­¬RÒçíì-*-m­k-l­x­-¬´--¬º-¬-+mì­l­¯­«,l­¸¬­¯{­,¬¬ì¯­0í-¬+íí­*-ï¬k-l­ª,m­j­,¬­¬-­0í-¬º-³-ë­í­-­­­ğ-­¬µmo­º­½€E\000\000\1À\000\000Á\000\3\000&\1\000\000]€\000\000…\000€\1Á@\2\000\1Á\2\000AA\3\000¦\1\000\000€\000\000Å\000€\1\1\3\000A\1\3\000Á\3\000æ\1\000\000İ€\000\000\5\1€\1A\1\4\000\1\3\000ÁA\4\000&\2\000\000\29\000\000E\1€\1\4\000ÁÁ\2\000\1Â\4\000f\2\000\000]\000\000…\1€\1Á\1\5\000\1Â\2\000AB\5\000¦\2\000\000\000\000ËÁ\1\000ÊAA€ÊA\000‹Ê€‹ÊÁ\000ŒÊ\1ŒÊ\1
-A\24ÀÄ\2\23@\000€Ê\1G
-\1Ç\6‚Á\000\21\2\000\4\25\000\000\4\23€\1€\6ÂA\000A\2\2\000†‚Á\000•\2\000\5V‚‚\4B\2\000\29B€\1\6B@\000\7‚B\4F‚Á\000G\2€\4€\2€\3\29B€\1\23\000\r€F\000@\000€\000\000\000]€\000\1\24\000Ã\000\23À\11€E\000€\1À\000\000ÁÀ\2\000\1A\3\000f\1\000\000]€\000\000…\000€\1Á@\2\000\1\1\3\000AÁ\3\000¦\1\000\000€\000\000Å\000€\1\1\3\000A\1\3\000A\4\000æ\1\000\000İ€\000\000\5\1€\1A\1\4\000Á\2\000ÁÁ\4\000&\2\000\000\29\000\000E\1€\1\4\000ÁÁ\2\000\1B\5\000f\2\000\000]\000\000‹Á\1\000ŠAA€Š\1\000‹ŠA€‹Š\000ŒŠÁ€ŒŠA\1Š\1\24ÀD\2\23@\000€Š\1GŠ\1ÇÆA@\000ÇÂ\3\6‚Á\000\7Â@\4@\2\000\3İA€\1\31\000€\000\5\7\21 L,B]\12ö5d\27Ş{µĞ¥:#Ÿœ~X\3XKçâ\24N\11\8\16I\25Ü\21lNĞ*u\24²7IËşc1Õœ{RóĞ\19\4¥aQ)­”‰\000µ¢¾s\4\000\000\000\000\000\1\1\000\2\000\1\000\7!\25åÌ–Q\29\000\000\000\4\5\000\000\000\20\25\16\5`\4\6\000\000\000\20\1\2\12\5`\4\4\000\000\000\14\21\r`\3\000\000\000\000\000\000ğ?\4\6\000\000\000\16\1\9\18\19`\4\6\000\000\000,\1\2\5\12`\4\6\000\000\000\16\1\7\5\19`\4\6\000\000\000\5\18\18\15\18`\0044\000\000\000ˆÏ×…üÈ†üé†õè‰ÁÕ†õĞ…æå†ïò…åÅL…İó…éí5)†üà…ÄÇ‰ÁÕ†õĞ†øÏ`\3\000\000\000\000\000\000\000@\4\7\000\000\000\9\14\19\5\18\20`\4\7\000\000\000\14\21\r\2\5\18`\4\7\000\000\000\19\20\18\9\14\7`\3\000\000\000\000\000\000.@\3\000\000\000\000\000\000\8@\4\5\000\000\000\12\5\6\20`\3\000\000\000\000\000\000\16@\4\8\000\000\000PLPLRUU`\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000\000\000\4\5\000\000\000\20\5\24\20`\4\5\000\000\000\19\9\26\5`\4\6\000\000\000\1\12\9\7\14`\4\6\000\000\000\3\15\12\15\18`\4\7\000\000\000\14\15\23\18\1\16`\4\6\000\000\000\23\9\4\20\8`\000\000\000\000\000\16pi\23 4i\"„Ü9>\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 ëè¬b»‡\127<[`Á\4†™Ş\31\15}S|•ÄZ\0049GÏ\29tv:¥„={u\
+\8\8 AÈ?`y»S­{V4\0187Í%]YpQØ9í@Ÿ\000\000\000ë­í­-­­­ğ-­¬µím­ºíª-æ­­­çmí,+­ì­m­­­0­¬¬º­­-ç-,¯\15-­­¬RÒçíì-*-m­k-l­x­-¬´--¬º-¬-+mì­l­¯­«,l­¸¬­¯{­,¬¬ì¯­0í-¬+íí­*-ï¬k-l­ª,m­j­,¬­¬-­0í-¬º-³-ë­í­-­­­ğ-­¬µmo­º­½€E\000\000\1À\000\000Á\000\3\000&\1\000\000]€\000\000…\000€\1Á@\2\000\1Á\2\000AA\3\000¦\1\000\000€\000\000Å\000€\1\1\3\000A\1\3\000Á\3\000æ\1\000\000İ€\000\000\5\1€\1A\1\4\000\1\3\000ÁA\4\000&\2\000\000\29\000\000E\1€\1\4\000ÁÁ\2\000\1Â\4\000f\2\000\000]\000\000…\1€\1Á\1\5\000\1Â\2\000AB\5\000¦\2\000\000\000\000ËÁ\1\000ÊAA€ÊA\000‹Ê€‹ÊÁ\000ŒÊ\1ŒÊ\1ÊA\24ÀÄ\2\23@\000€Ê\1GÊ\1Ç\6‚Á\000\21\2\000\4\25\000\000\4\23€\1€\6ÂA\000A\2\2\000†‚Á\000•\2\000\5V‚‚\4B\2\000\29B€\1\6B@\000\7‚B\4F‚Á\000G\2€\4€\2€\3\29B€\1\23\000\r€F\000@\000€\000\000\000]€\000\1\24\000Ã\000\23À\11€E\000€\1À\000\000ÁÀ\2\000\1A\3\000f\1\000\000]€\000\000…\000€\1Á@\2\000\1\1\3\000AÁ\3\000¦\1\000\000€\000\000Å\000€\1\1\3\000A\1\3\000A\4\000æ\1\000\000İ€\000\000\5\1€\1A\1\4\000Á\2\000ÁÁ\4\000&\2\000\000\29\000\000E\1€\1\4\000ÁÁ\2\000\1B\5\000f\2\000\000]\000\000‹Á\1\000ŠAA€Š\1\000‹ŠA€‹Š\000ŒŠÁ€ŒŠA\1Š\1\24ÀD\2\23@\000€Š\1GŠ\1ÇÆA@\000ÇÂ\3\6‚Á\000\7Â@\4@\2\000\3İA€\1\31\000€\000\5\7\21 L,B]\12ö5d\27Ş{µĞ¥:#Ÿœ~X\3XKçâ\24N\11\8\16I\25Ü\21lNĞ*u\24²7IËşc1Õœ{RóĞ\19\4¥aQ)­”‰\000µ¢¾s\4\000\000\000\000\000\1\1\000\2\000\1\000\7!\25åÌ–Q\29\000\000\000\4\5\000\000\000\20\25\16\5`\4\6\000\000\000\20\1\2\12\5`\4\4\000\000\000\14\21\r`\3\000\000\000\000\000\000ğ?\4\6\000\000\000\16\1\9\18\19`\4\6\000\000\000,\1\2\5\12`\4\6\000\000\000\16\1\7\5\19`\4\6\000\000\000\5\18\18\15\18`\0044\000\000\000ˆÏ×…üÈ†üé†õè‰ÁÕ†õĞ…æå†ïò…åÅL…İó…éí5)†üà…ÄÇ‰ÁÕ†õĞ†øÏ`\3\000\000\000\000\000\000\000@\4\7\000\000\000\9\14\19\5\18\20`\4\7\000\000\000\14\21\r\2\5\18`\4\7\000\000\000\19\20\18\9\14\7`\3\000\000\000\000\000\000.@\3\000\000\000\000\000\000\8@\4\5\000\000\000\12\5\6\20`\3\000\000\000\000\000\000\16@\4\8\000\000\000PLPLRUU`\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000\000\000\4\5\000\000\000\20\5\24\20`\4\5\000\000\000\19\9\26\5`\4\6\000\000\000\1\12\9\7\14`\4\6\000\000\000\3\15\12\15\18`\4\7\000\000\000\14\15\23\18\1\16`\4\6\000\000\000\23\9\4\20\8`\000\000\000\000\000\16pi\23 4i\"„Ü9>\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 ëè¬b»‡\127<[`Á\4†™Ş\31\15}S|•ÄZ\0049GÏ\29tv:¥„={u\
 \9\20 6>\23A‹Ko»Gª<'\rt\0255\8t\25sW\14\8ç1¯\8=Öª'o³ëU¾Œ(Ö\rv\25\17\9v\0251\25°5\\\4ö\28¼x’\3ú<ı=€\31 \9ÎÅmyš¥©\21ÔÚğt‡+ËA\1*\8\6 ¿ÃWB³J~¡8Ğo\1\14\8\8 Q0z7ı*t~¤K\21Æ¦\0315Üho¼˜5oÔ~V4\18ı#^£2”Tù F\23q{fŠdC]6÷ğ>Ã\000\000\000’Ô”ÔTÔÔÔ‰TÔÕÌ”\20ÔÃTÜTŸÔÔÔ\20”URÔ•Ô\20ÔÔÔIÔÕÕÃÔÔTTUÖvTÔÔ÷Õ+«”•TST\20Ô\18T\21Ô\1ÔTÕÍTTÕÃTÕTR\20•Ô\21ÔÖÔÒU\21ÔÁÕÔÖ\2ÔUÕÕ•ÖÔI”TÕR””ÔST–Õ\18T\21ÔÓU\20Ô\19ÔUÕÔÕTÔI”TÕR\20–ÔSÔ—Õ\19”\23ÔÓU\23Ô^ÔUÕÃ”òT’Ô”ÔTÔÔÔ‰TÔÕÌ\20\23ÔÃ\20ÇT‘ÔÔÕU\20ÔÔ\21ÔĞÔòÕÔ\000]€\000\000…\000\000\1Á@\2\000\1\1\4\000f\1\000\000€\000\000Å\000€\1\1A\4\000A\1\4\000\4\000æ\1\000\000İ€\000\000\5\1€\1AÁ\4\000Á\3\000Á\1\5\000&\2\000\000\29\000\000E\1€\1A\5\000ÁÁ\3\000\1‚\5\000f\2\000\000]\000\000…\1€\1ÁÁ\5\000\1\2\4\000A\2\6\000¦\2\000\000\000\000Å\1€\1\1B\6\000AÂ\3\000Â\000\000æ\2\000\000İ\000\000\11\2\2\000\
 B€†\
 BA€\
@@ -4949,11 +3868,7 @@ t+ø1\0119R6\\bÌ\3\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\00
 \000\000\000€†‡›”˜Èõ\4\11\000\000\000Ó…”††‚š‡‘Èõ\4\8\000\000\000Óœ˜’œ‘Èõ\4\8\000\000\000‡„€œ‡õ\4\3\000\000\000†õ\4\5\000\000\000Ÿ†š›õ\4\7\000\000\000‘–š‘õ\4\5\000\000\000œ›“šõ\4\12\000\000\000†€––††“€™™õ\4\9\000\000\000š†‡œ›’õ\3\000\000\000\000\000\000\8@\000\000\000\000\16pi\23»\21ÉBˆâš\21\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 Ÿ£óI\11Œ\2MÓIÊt‚#I-â\25Vd\6-Ö\8\14Ë#+ê\1\9\20 \000ül2{l\29r4\9Z~;z._Q˜;.,\20ü#…¯ã\24¤é9\30i\000t\0253\8t\25`I\000 I\4\6@ì$8\6-\1v\25\25\9v\25WZ{v\000(\8\6 £.½\24\000\14\8\8 ‘#p5(…öP2\23I&úıáLsó\3\2Òº<pyV4\18TŞ…\29S\000\000\000‹ÍŠÍÍ\r\rË\rÍ\12MĞ\rŒÖš\rˆ\r\11Ì\
 ÍÌŒM\rŒ\12ŒÌLŒ\16\rÍŒ\11Ì\
 ÏŒM\rŒÌ\16\r\rŒ\22\000\23À\1€†€B\000À\000€\000\1Á\2\000€€\1@\000\000\1‡\000Ã\000Ÿ\000\000\1\23\000\000€_\000\000\1†\000@\000‡@@\1€€\000\000\000\1Y€€†\23\000\000€\23\000÷\127F\000@\000G@À\000]€€\000†€@\000Á€\3\000€\000\1›\000\000\000\23€\5€Æ\000A\000Ç@Á\1\000\1\000\1A\1\000Á\1\000İ€\000\2€\000€\1Æ\000A\000Ç\000Â\1\000\1\000\1AA\2\000İ€€\1Û\000\000\000\23À\1€Æ€B\000\000\1\000\1AÁ\2\000İ€€\1€\000€\1Ç\000C\1ß\000\000\1\23\000\000€Ÿ\000\000\1Æ\000@\000Ç@À\1İ€€\000Î@€\1\25À€‡\23@÷\127Æ\000D\000\1A\4\000A\4\000İ@€\1\23Àë\127\23Àõ\127\23@ë\127\31\000€\000\6\7\21 Mj¤\127b©©HnruX$'î2\7\11\16I\25éŞ’JX0H1\31EZ;wÎx„DDU#Ï(sß`\8\23+î4{„\24)\19(e\14W\1\000\000\000\000\2\9\7!\25V«Zw\127¿‰MÓkÔ úÙ\23\16{J‡\8dDV\"_\14a­aĞ.\19\000\000\000\4\3\000\000\000…™ê\4\5\000\000\000ƒ‡ê\4\8\000\000\000‚š­ê\4 \000\000\000‚šĞÅÅØÄ‚‹…ƒØÙÄ„Å™œ†ƒ™Ä‚‡†ê\4\7\000\000\000™˜ƒ„ê\4\4\000\000\000™Ÿˆê\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\16À\4\5\000\000\000Œƒ„ê\4\5\000\000\000ÏÇÏÇê\4\9\000\000\000™˜¹š†ƒê\4\3\000\000\000ÇÇê\3\000\000\000\000\000\000ğ?\3\000\000\000\000\000\000$@\4 \000\000\000‚šĞÅÅÚÄ‚‹…ƒØÙÄ„Å™œ†ƒ™Ä‚‡†ê\3\000\000\000\000\000Àr@\4\7\000\000\000ƒ‹†…ê\4d\000\000\000\15OW\rb[\12cy\rJk\15bw\15Ma\15f|\15N[\2^O\5Vf\2E]\rKD\15Dp\12vF\15vZ\rW{\rQv\12b|\15OW\rb[\15Dr\12|S\12vg\15`K\2Ut\12dO\12GI\15RR\5Vf\15gY\15Zl\3mg\2E\127ê\3\000\000\000\000\000\000\20@\000\000\000\000\27pi\23•R\18c\127\28\r\31d\23\11=ÜàYÔú’<K»E;)ú„Y6¤<\5º-»\19\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 /éîskƒïih¨Š<\24v¸cú®\8?\26:ã1\15_ÜI\6Ú\30@\1\9\20 Zµ;F[W8\14øv$İÓ6ésĞ\127:oôD1%‹D'ÜdnT\000t\0257\8t\25¡ >T1Â†\22iöèZ\21–¸H†\12¸o\22.¢\12h,CuB\1v\25\29\9v\25£à^:Ò cdğÄ^k\22 Ï*\1ŠRX\000+\8\6 ~ÈYg\26\000\11<\1\r\8\8 ™\2=\25)_ç\5åı03×l¶78š2hØqV4\18Ö’©\12Ü@0\0278¿E\16\2Q\r¶ËtC\20$4lïpG®V\
-ItÖªJ\28\000\000\000™ØØØY˜ØØ\28ØØØŞY˜Øß\25˜ÚÙXØ…ÙXØ\29A\000\000\1\1\1\000@\1\000\000\1\1\000!\1\3€\6‚@\000\7BA\4A‚\1\000\29‚\000\1À\000\000\4\000\2€\000FÂA\000G\2Â\4€\2\000\1À\2€\1\000\3€\1]‚\000\2V@\2\4 Aü\127_\000\000\1\31\000€\000\4\7\21 ÃìÂ\17úâb:ë\19ü.+\25\6\7m%“$ôZi\r\6\16I\25]êñ\15¥\20*\20ÿC¼C¸2@e#İƒ{\25DÇ\127\14*—y\2\000\000\000\000\2\000\3\8\7!\25C£®\5ó'È,“LwL{=ám2Û4&Å\16f\18QĞŠz\15luVáH%X\9\000\000\000\4\1\000\000\000@\4%\000\000\000!\"#$%&'(9*+,-./0123456789:pqrstuvwxy@\4\5\000\000\000-!4(@\4\11\000\000\0002!.$/-3%%$@\3\000\000\000\000\000\000ğ?\4\7\000\000\0002!.$/-@\3\000\000\000\000\000\000B@\4\7\000\000\000342).'@\4\4\000\000\00035\"@\000\000\000\000\22pi\23\28\"AK$]I\12ÍÁ™\19ËxK\20\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 \11VĞ\7ñtXv+'²kü3_;Å)ù\14’­b_$‘¢N&×\14F„\000\9\20 IdÛ/Škt)\26SHğ…ji¦7\7I²\17&cø\19+\30\26\7}¡«g^H\000t\0256\8t\25Y\02433\\BR2\18\22’’\19\8C\16LE¯\23\31p\1v\25\27\9v\25wÛú[rEÕZ…1T+\000.\8\6 }›¥bv¦¬!§éÖLyÏ\4\30;Ğ¥09—9,`§l\000\000\8\8 \28%\23bT\30y'ª\11&§µ‚V}8Ìoš‘ú\15MEº]Æêİ\21Ñ~V4\18g–Et/ŠÛ4ÄïÙ\ršòÕ6¼íJT‚l!/\000\000\000×Ñ‘ÑÖ‘‘ÑÌQQÑ”ÑQÑPQÑÑ\20ÑÑĞĞ\16ÑÑGÑĞĞ\16ÑĞÑÔĞQĞĞÑTĞÑ\2Á\1\000\000\1Ö€\1]€€\1[\000\000\000\23€\4€†ÀA\000‡\000B\1À\000€\000\1A\2\000€€\1›@\000\000\23@\000€\24€Â\000\23À\000€„\000\000\000À\000€\000Ÿ\000€\1\23Àø\127ƒ\000€\000ÆÀB\000\000\1€\000İ\000\000\1Ÿ\000\000\000\23@÷\127†\000@\000‡@@\1€€\000\000\000\1\26€\000†\23Àõ\127ƒ\000\000\000Ÿ\000\000\1\23\000õ\127\31\000€\000\1\7\21 Æk\5j\r¢‹1\25\17á^\8\4\16I\25’Óß\\•Ó\5@¶L€'\8zŒ~=½Ü\12\5\000\000\000\000\2\1\000\1\9\1\3\1\7\9\7!\25CJ2/vT\0229Í|,2¤ñæ%“y-\27\"›¥YNıvL:/°q\r\000\000\000\4\3\000\000\000ë÷„\4\5\000\000\000ğíéá„\4\8\000\000\000ìğğô¾««„\4\15\000\000\000«ÃáğÔë
-ğªå÷ôü„\4\6\000\000\000Ñ÷áö¹„\4\4\000\000\000¢ö¹„\3\000\000\000\000\000\000$@\4\7\000\000\000÷ğö
-ã„\4\5\000\000\000â
-à„\4\2\000\000\000§„\4\1\000\000\000„\4\9\000\000\000ğë÷ğö
-ã„\3\000\000\000\000\000\000\8@\000\000\000\000\16pi\23éq\\‡tjO\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 v”\000\000«\27†r#ë#9ÿ\2õ\7¬ÄÉ\3´%ApU \18lÎ©\4-VR\3'ı\15\9\20 ¹»(1<°¯c.\8)l\31ñÎVb¤‘W]\2˜\000t\0257\8t\25İ/Š(Y•p[*~\25m¶:9\19\000_s\":+í\21vß:\2b\1v\25\27\9v\25üæ\5\16pFK7ò‘ë:\1*\8\6 ¯àM*h&ì:“?\r/\000\9\8\8 g)áBM\127V4\18¼Éó.\r®Û_ÜC¶zøU\12M\4Hì\26•ÿŞ+4\6¼0‘\000\000\000kMMI\22\12MMZMMÍ\12LMMÖ\12MMZMMÍÌ\12MM‹Ì\rMLMM\rOMMÍOÍMOMLMNÍL\rNMN\12ÍN‹L\12ML\15LM\12MLˆLÍMKÏ\12MPÏÍM\12LM[\15OIÌMLKO\15MJ\15\15I\rOÍNPÏMLTMÏÍZÍVÍKÏ\15MJ\15IPÏÍM\9OMMÌONMˆOMLLC\3\000E\3€\1ƒ\3\000\22ƒ\3\6AÃ\3\000…\3\000\2Á\3\4\000\000\4\000\2AD\4\000€\4€\2Á„\4\000\5\5€\2AÅ\4\000…\5\000\3Á\5\5\000…\000\1ÁE\5\000\000\6€\3V\3†\6İ‚€\1@\2€\5[\2\000\000\23€\5€Æ\2B\000Ç‚Å\5\000\3€\4AÃ\5\000İ‚€\1ÛB\000\000\23\000\2€X\000Æ\4\23€\1€Æ\2B\000Ç‚Å\5\000\3€\4AC\6\000İ‚€\1Û\2\000\000\23À\000€Ä\2\000\000\000\3€\4ß\2€\1\23€ô\127I\2€\3\23@\2€\23Àó\127Æ‚B\000ÇÂÂ\5İ‚€\000Î\2‚\5\26À‚\2\23@ò\127Ã\2\000\000ß\2\000\1\23€ñ\127†‚B\000‡ÂB\5‚€\000Å\2\000\1\1C\3\000E\3€\1ƒ\6\000\22ƒ\3\6AÃ\6\000…\3€\3Á\3\7\000\5\4\000\3A\4\5\000\29„\000\1V\3„\6İ‚€\1@\2€\5[\2\000\000\23\000\5€Æ\2B\000Ç‚Å\5\000\3€\4AÃ\5\000İ‚€\1ÛB\000\000\23@\000€\24\000Æ\4\23À\000€Ä\2\000\000\000\3€\4ß\2€\1\23€ø\127ÆBG\000\000\3€\4İ‚\000\1\6CG\000E\3€\3\29\3\000\1ß\2\000\000\23€ö\127Æ‚B\000ÇÂÂ\5İ‚€\000Î‚‚\5\26À‚\2\23\000õ\127Ã\2\000\000ß\2\000\1\23@ô\127\23€\000€\4\2\000\000A‚\7\000\31\2€\1\31\000€\000\11\7\21 ´ğ­\2–ªM\8Á­²\9¡Âê&sÚ×0\26C#eË@\4\20)\21\17D\27¢–\7\25\7\16I\25ŸôKFqş²:\1S÷9\16;—}duév~v\8\000\000\000\000\2\1\5\1\000\1\9\1\3\1\8\1\7\1\4\3\7!\25Ì¶Š0|¶‹%\31\000\000\000\3\000\000\000\000\000\000>@\3\000\000\000\000\000\000ğ?\4\9\000\000\000“œ•’‰ı\4\14\000\000\000’¢”œš˜Ó—šı\4\7\000\000\000®‘˜˜ı\3\000\000\000\000\000@\127@\4\9\000\000\000ˆ˜­œ‰•ı\4\19\000\000\000Ò˜Ò’¢”œš˜Ó—šı\4\7\000\000\000‰”“šı\4\4\000\000\000‘˜“ı\4\3\000\000\000’ı\4\5\000\000\000‰”˜ı\3\000\000\000\000\000\000\000\000\4\8\000\000\000•‰‰ÇÒÒı\4\15\000\000\000Òˆ‘’œ™ÌËÓœ…ı\4\9\000\000\000ˆ˜‰Àı\4\9\000\000\000Ûšœ˜”™Àı\4\
+ItÖªJ\28\000\000\000™ØØØY˜ØØ\28ØØØŞY˜Øß\25˜ÚÙXØ…ÙXØ\29A\000\000\1\1\1\000@\1\000\000\1\1\000!\1\3€\6‚@\000\7BA\4A‚\1\000\29‚\000\1À\000\000\4\000\2€\000FÂA\000G\2Â\4€\2\000\1À\2€\1\000\3€\1]‚\000\2V@\2\4 Aü\127_\000\000\1\31\000€\000\4\7\21 ÃìÂ\17úâb:ë\19ü.+\25\6\7m%“$ôZi\r\6\16I\25]êñ\15¥\20*\20ÿC¼C¸2@e#İƒ{\25DÇ\127\14*—y\2\000\000\000\000\2\000\3\8\7!\25C£®\5ó'È,“LwL{=ám2Û4&Å\16f\18QĞŠz\15luVáH%X\9\000\000\000\4\1\000\000\000@\4%\000\000\000!\"#$%&'(9*+,-./0123456789:pqrstuvwxy@\4\5\000\000\000-!4(@\4\11\000\000\0002!.$/-3%%$@\3\000\000\000\000\000\000ğ?\4\7\000\000\0002!.$/-@\3\000\000\000\000\000\000B@\4\7\000\000\000342).'@\4\4\000\000\00035\"@\000\000\000\000\22pi\23\28\"AK$]I\12ÍÁ™\19ËxK\20\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 \11VĞ\7ñtXv+'²kü3_;Å)ù\14’­b_$‘¢N&×\14F„\000\9\20 IdÛ/Škt)\26SHğ…ji¦7\7I²\17&cø\19+\30\26\7}¡«g^H\000t\0256\8t\25Y\02433\\BR2\18\22’’\19\8C\16LE¯\23\31p\1v\25\27\9v\25wÛú[rEÕZ…1T+\000.\8\6 }›¥bv¦¬!§éÖLyÏ\4\30;Ğ¥09—9,`§l\000\000\8\8 \28%\23bT\30y'ª\11&§µ‚V}8Ìoš‘ú\15MEº]Æêİ\21Ñ~V4\18g–Et/ŠÛ4ÄïÙ\ršòÕ6¼íJT‚l!/\000\000\000×Ñ‘ÑÖ‘‘ÑÌQQÑ”ÑQÑPQÑÑ\20ÑÑĞĞ\16ÑÑGÑĞĞ\16ÑĞÑÔĞQĞĞÑTĞÑ\2Á\1\000\000\1Ö€\1]€€\1[\000\000\000\23€\4€†ÀA\000‡\000B\1À\000€\000\1A\2\000€€\1›@\000\000\23@\000€\24€Â\000\23À\000€„\000\000\000À\000€\000Ÿ\000€\1\23Àø\127ƒ\000€\000ÆÀB\000\000\1€\000İ\000\000\1Ÿ\000\000\000\23@÷\127†\000@\000‡@@\1€€\000\000\000\1\26€\000†\23Àõ\127ƒ\000\000\000Ÿ\000\000\1\23\000õ\127\31\000€\000\1\7\21 Æk\5j\r¢‹1\25\17á^\8\4\16I\25’Óß\\•Ó\5@¶L€'\8zŒ~=½Ü\12\5\000\000\000\000\2\1\000\1\9\1\3\1\7\9\7!\25CJ2/vT\0229Í|,2¤ñæ%“y-\27\"›¥YNıvL:/°q\r\000\000\000\4\3\000\000\000ë÷„\4\5\000\000\000ğíéá„\4\8\000\000\000ìğğô¾««„\4\15\000\000\000«ÃáğÔëíêğªå÷ôü„\4\6\000\000\000Ñ÷áö¹„\4\4\000\000\000¢ö¹„\3\000\000\000\000\000\000$@\4\7\000\000\000÷ğöíêã„\4\5\000\000\000âíêà„\4\2\000\000\000§„\4\1\000\000\000„\4\9\000\000\000ğë÷ğöíêã„\3\000\000\000\000\000\000\8@\000\000\000\000\16pi\23éq\\‡tjO\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 v”\000\000«\27†r#ë#9ÿ\2õ\7¬ÄÉ\3´%ApU \18lÎ©\4-VR\3'ı\15\9\20 ¹»(1<°¯c.\8)l\31ñÎVb¤‘W]\2˜\000t\0257\8t\25İ/Š(Y•p[*~\25m¶:9\19\000_s\":+í\21vß:\2b\1v\25\27\9v\25üæ\5\16pFK7ò‘ë:\1*\8\6 ¯àM*h&ì:“?\r/\000\9\8\8 g)áBM\127V4\18¼Éó.\r®Û_ÜC¶zøU\12M\4Hì\26•ÿŞ+4\6¼0‘\000\000\000kMMI\22\12MMZMMÍ\12LMMÖ\12MMZMMÍÌ\12MM‹Ì\rMLMM\rOMMÍOÍMOMLMNÍL\rNMN\12ÍN‹L\12ML\15LM\12MLˆLÍMKÏ\12MPÏÍM\12LM[\15OIÌMLKO\15MJ\15\15I\rOÍNPÏMLTMÏÍZÍVÍKÏ\15MJ\15IPÏÍM\9OMMÌONMˆOMLLC\3\000E\3€\1ƒ\3\000\22ƒ\3\6AÃ\3\000…\3\000\2Á\3\4\000\000\4\000\2AD\4\000€\4€\2Á„\4\000\5\5€\2AÅ\4\000…\5\000\3Á\5\5\000…\000\1ÁE\5\000\000\6€\3V\3†\6İ‚€\1@\2€\5[\2\000\000\23€\5€Æ\2B\000Ç‚Å\5\000\3€\4AÃ\5\000İ‚€\1ÛB\000\000\23\000\2€X\000Æ\4\23€\1€Æ\2B\000Ç‚Å\5\000\3€\4AC\6\000İ‚€\1Û\2\000\000\23À\000€Ä\2\000\000\000\3€\4ß\2€\1\23€ô\127I\2€\3\23@\2€\23Àó\127Æ‚B\000ÇÂÂ\5İ‚€\000Î\2‚\5\26À‚\2\23@ò\127Ã\2\000\000ß\2\000\1\23€ñ\127†‚B\000‡ÂB\5‚€\000Å\2\000\1\1C\3\000E\3€\1ƒ\6\000\22ƒ\3\6AÃ\6\000…\3€\3Á\3\7\000\5\4\000\3A\4\5\000\29„\000\1V\3„\6İ‚€\1@\2€\5[\2\000\000\23\000\5€Æ\2B\000Ç‚Å\5\000\3€\4AÃ\5\000İ‚€\1ÛB\000\000\23@\000€\24\000Æ\4\23À\000€Ä\2\000\000\000\3€\4ß\2€\1\23€ø\127ÆBG\000\000\3€\4İ‚\000\1\6CG\000E\3€\3\29\3\000\1ß\2\000\000\23€ö\127Æ‚B\000ÇÂÂ\5İ‚€\000Î‚‚\5\26À‚\2\23\000õ\127Ã\2\000\000ß\2\000\1\23@ô\127\23€\000€\4\2\000\000A‚\7\000\31\2€\1\31\000€\000\11\7\21 ´ğ­\2–ªM\8Á­²\9¡Âê&sÚ×0\26C#eË@\4\20)\21\17D\27¢–\7\25\7\16I\25ŸôKFqş²:\1S÷9\16;—}duév~v\8\000\000\000\000\2\1\5\1\000\1\9\1\3\1\8\1\7\1\4\3\7!\25Ì¶Š0|¶‹%\31\000\000\000\3\000\000\000\000\000\000>@\3\000\000\000\000\000\000ğ?\4\9\000\000\000“œ•’‰ı\4\14\000\000\000’¢”œš˜Ó—šı\4\7\000\000\000®‘˜˜ı\3\000\000\000\000\000@\127@\4\9\000\000\000ˆ˜­œ‰•ı\4\19\000\000\000Ò˜Ò’¢”œš˜Ó—šı\4\7\000\000\000‰”“šı\4\4\000\000\000‘˜“ı\4\3\000\000\000’ı\4\5\000\000\000‰”˜ı\3\000\000\000\000\000\000\000\000\4\8\000\000\000•‰‰ÇÒÒı\4\15\000\000\000Òˆ‘’œ™ÌËÓœ…ı\4\9\000\000\000ˆ˜‰Àı\4\9\000\000\000Ûšœ˜”™Àı\4\
 \000\000\000Û‰”˜’ˆ‰Àı\4\9\000\000\000Û¯˜Ÿœ‰˜Àı\4:\000\000\000Û¹œ”±”À•œ’”Û–’ˆÀÍÛŸ˜”‡•ˆÀØ˜ÈØœÈØŸ™Ø˜ÊØÅÅØŸÌÛ‹˜ÀŠ˜ŸÏÛ–˜„Àı\3\000\000\000\000\000\000$@\4\6\000\000\000Û”šÀı\4\5\000\000\000›”“™ı\4\2\000\000\000Şı\4\1\000\000\000ı\4\2\000\000\000Áı\4\16\000\000\000Òº˜‰¼“Š˜Óœ…ı\4\4\000\000\000´¹Àı\4\4\000\000\000ÛÀı\4\9\000\000\000‰’‰”“šı\4\19\000\000\000\24fC\26tz\21Z^\27cm\20id\21RRı\000\000\000\000\22pi\0234àks»ºbX\23Ù\9_ğ©_\"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 WŞ\26ex/ÀB\rÜ´\2\26UÃ\11\29\8\9\20 X}6kç\000t\0259\8t\25¸\"¶+\5¤\3\7¨¢4Ã“\31\26¥sí\
 Võİ\20ÊíÑk—M‚b¶$t<²\1v\25\25\9v\25Ñûõ!\1 \8\6 =Íë\16)‘Š@â \\\12§»Ó!Ìr­i\rcKkÆ\15¹râ­\\RàT\5\000\9\8\8 ?We%€yV4\18M3\26(‹\000\000\000¦€€‚\27À€€—€€\000\1€€€FÀÀ€G\000@€€€ÁA€€]\000\000˜€A—€\000FÀÁ€]\000\000€\1€À€€–À\1E€\000€€€€]\000€†ÁÀ€‡AÁ‚À\000\1€™€\4—À›\000†ÁÂ€‡\1Â‚\1\000€ÁA‚€\5€Aƒ€…‚\000ÁÂƒ€VÁ\2ƒ\2ƒ\000E\2\000\2Â\3\000À\2€\000\1\3\4\000@\3\000\1C\4\000Å\3€\2\1„\4\000E\4\000\3Ä\4\000]„\000\1\4\5\000À\4€\1\22Â\4\4€\1@\1\000\3[\1\000\000\23€\5€†A@\000‡@\3À\1€\2\1B\5\000€\1›A\000\000\23\000\2€XÀÂ\2\23€\1€†A@\000‡@\3À\1€\2\1‚\5\000€\1›\1\000\000\23À\000€„\1\000\000À\1€\2Ÿ\1€\1\23Àô\127I\1€\3\23@\2€\23\000ô\127†AB\000‡B\3€\000\1\1\3\26€\1\1\23€ò\127ƒ\1\000\000Ÿ\1\000\1\23Àñ\127†AB\000‡B\3€\000Å\1\000\1\1\2\3\000E\2€\1Â\5\000\22‚\2\4A\2\6\000…\2€\3ÁB\6\000\5\3\000\3AÃ\4\000\29ƒ\000\1V\2ƒ\4İ€\1@\1€\3[\1\000\000\23\000\5€ÆA@\000ÇÀ\3\000\2€\2AB\5\000İ€\1ÛA\000\000\23@\000€\24ÀÂ\2\23À\000€Ä\1\000\000\000\2€\2ß\1€\1\23€ø\127ÆF\000\000\2€\2İ\000\1\6‚F\000E\2€\3\29\2\000\1ß\1\000\000\23€ö\127ÆAB\000ÇÂ\3İ€\000Î\3\26À\1\1\23\000õ\127Ã\1\000\000ß\1\000\1\23@ô\127\23€\000€\4\1\000\000AÁ\6\000\31\1€\1\31\000€\000\5\7\21  º\5Ù\\À\20ªAiaˆ\5ja‘\127v@¯Ş\re­\12\22\20\11\16I\25TRûoå¢ê*\31\1hFëŸ}R›Ç^gxï#2½›st±¹?\6µ¼\15Cæ,ş4\8\000\000\000\000\2\1\5\1\000\1\9\1\3\1\8\1\7\1\4\3\7!\25\\xãd²Ÿ«\30\28\000\000\000\3\000\000\000\000\000\000>@\4\7\000\000\000niotsz\29\4\5\000\000\000{tsy\29\4\2\000\000\0002\29\000\4\9\000\000\000hnxoM|iu\29\4\6\000\000\0002oxn2\29\4\4\000\000\000qxs\29\3\000\000\000\000\000\000ğ?\4\3\000\000\000rn\29\4\5\000\000\000itpx\29\4\1\000\000\000\29\4\8\000\000\000uiim'22\29\4\15\000\000\0002hmqr|y,+3|nme\29\4\9\000\000\000hnxonio \29\4\9\000\000\000;z|pxty \29\4\
 \000\000\000;itpxrhi \29\4\9\000\000\000;Ox\127|ix \29\4:\000\000\000;Y|tQt u|rt;vrh -;\127xtguh 8x(8|(8\127y8x*8%%8\127,;kxo jx\127/;vxd \29\3\000\000\000\000\000\000$@\4\6\000\000\000;tpz \29\4\2\000\000\000>\29\4\2\000\000\000!\29\4\16\000\000\0002Zxi\\snjxo3|nme\29\4\4\000\000\000TY \29\4\4\000\000\000;o \29\4\9\000\000\000irniotsz\29\4\19\000\000\000ø†£ú”šõº¾ûƒô‰„õ²²\29\000\000\000\000\16pi\23#ˆœW”M\8q\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 (\000[J\14)U\21I\8\9\20 í\31ÀRÜ\000t\0252\8t\25şxZ<@”z>Á\1v\25\31\9v\25öÖ\25$qñ4l.øÜ\0014\18ğ*ä\29¢ôiH\11ClQ\1*\8\6 nQ\30\24äRæX~äof\000\1\8\8 G\30™L.Õ¾'ŸÚí-v~­;Ë®\2µ\8š4]}ş\6\23\
@@ -4980,7 +3895,235 @@ r‰Vsd¹ö3¡\1t\0259\8t\25Ö¥\9× Í~”RjR^tÔ[m\rêeNêGiø±«\3Mê\000a\30“p@\000v\25\31\
 ÌKr}ê|O\12\000\000\8\8 µ\14%<ã»\30v»»\16i\6PÜ]É[æsİ¨¼\30\24\21Ñ%\15Ş%Y%\127V4\18y¢\12s\6ú¡Q5ÎÙ]p•‘\25v÷´c\21²Î@ğ\17f]H\000\000\000\3%%$>e%%2%%¥ %%%,%%%#%å%\"ee%8¥¥%`%%%~%%%2å+¥c¥å%båå% %%$à%¥$ $%'`$%%óe¤$€\000\1Á\000\1\000\1A\1\000]€\000\2…\000€\2Á€\1\000\1Á\1\000E\1\000\3\1\2\000Å\1\000\2\1B\2\000E\2€\3‚\2\000Å\2\000\000\1Ã\2\000@\3€\000\22A\3\2€€\1›\000\000\000\23À\5€Ë\000\000\000\6\1Ã\000AA\3\000\29\000\1GC\2GÁÃ\2€\1\000\1]\000\1À\000€\2G\1Ä\1\24@Ä\2\23@\1€C\1€\000†Ä\000Ç\1Ä\1\1\000\1_\1\000\000\23€ô\127D\1\000\000†Ä\000Ç\1Ä\1\1\000\1_\1\000\000\23\000ó\127Æ\000À\000Ç@À\1İ€€\000Î\000€\1\26À€‰\23€ñ\127Ã\000\000\000ß\000\000\1\23Àğ\127\31\000€\000\000\7\21 ÍF«?W\11|\14\6\16I\25¹NPkÚ7ÍbÆI1\\_y¤.S\127·:«—t4‰&p9\8\000\000\000\1\4\000\2\1\7\1\9\1\2\1\000\1\8\1\
 \2\7!\25–\20Ä@\8ëo6ÕÙNt\20\000\000\000\4\3\000\000\000¤¸Ë\4\5\000\000\000¿¢¦®Ë\4\7\000\000\000¸¿¹¢¥¬Ë\4\4\000\000\000¸¾©Ë\3\000\000\000\000\000\000ğ?\3\000\000\000\000\000\000 @\4,\000\000\000£¿¿»ñääª»¢å¯ª¦ªùå¨¤¦ñüüııäª»»ä¯ù™®»¤¹¿¹¹¤¹Ë\4\7\000\000\000ª»»‚öË\4\7\000\000\000í¾¸®¹öË\4\6\000\000\000í»¼¯öË\4\5\000\000\000í¢¯öË\4\7\000\000\000í¸¢¬¥öË\4\8\000\000\000¹®º¾¢¹®Ë\4\3\000\000\000¸±Ë\4\5\000\000\000¡¸¤¥Ë\4\7\000\000\000¯®¨¤¯®Ë\4\4\000\000\000¹®¿Ë\3\000\000\000\000\000\000\000\000\4\9\000\000\000¿¤¸¿¹¢¥¬Ë\3\000\000\000\000\000\000\8@\000\000\000\000\24pi\23Ã¦€\31Û)+RB,É*¡O=>ó>üwQ\
 ï\3‹¯¡4$”äNÊ¬ûv’©C\6\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\16pi\23:B\16\8¡øi\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\19pi\23*Tóm\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-, '@'..".\\src/TSLib.lua" ) )
+, '@'..".\\TSLib.lua" ) )
+
+do
+local _ENV = _ENV
+package.preload[ "TableLib" ] = function( ... ) local arg = _G.arg;
+-- tableæ–¹æ³•æ·»åŠ 
+local __tmp = (function()
+  table.isArray = table.isArray or function(tab)
+    if (type(tab) ~= "table") then
+      return false
+    end
+    local length = #tab
+    for k, v in pairs(tab) do
+      if ((type(k) ~= "number") or (k > length)) then
+        return false
+      end
+    end
+    return true
+  end
+
+  table.every = table.every or function(tab)
+    for k, v in ipairs(tab) do
+      if (v == false) then
+        return false
+      end
+    end
+    return true
+  end
+
+  table.some = table.some or function(tab)
+    for k, v in ipairs(tab) do
+      if (v == true) then
+        return true
+      end
+    end
+    return false
+  end
+
+  table.push = table.push or function(tab, element)
+    table.insert(tab, element)
+    local length = #tab
+    return length
+  end
+
+  table.pop = table.pop or function(tab)
+    local length = #tab
+    local res = tab[length]
+    table.remove(tab, length)
+    return res
+  end
+
+  table.shift = table.shift or function(tab)
+    local res = tab[1]
+    table.remove(tab, 1)
+    return res
+  end
+
+  table.unshift = table.unshift or function(tab, element)
+    table.insert(tab, 1, element)
+    local length = #tab
+    return length
+  end
+
+  table.first = table.first or function(tab)
+    return tab[1]
+  end
+
+  table.last = table.last or function(tab)
+    return tab[#tab]
+  end
+
+  table.slice = table.slice or function(tab, startIndex, endIndex)
+    local length = #tab
+    if ((type(endIndex) == "nil") or (endIndex == 0)) then
+      endIndex = length
+    end
+    if (endIndex < 0) then
+      endIndex = length + 1 + endIndex
+    end
+    local newTab = {}
+
+    for i = startIndex, endIndex do
+      table.insert(newTab, tab[i])
+    end
+
+    return newTab
+  end
+
+  table.join = table.join or function(tab, exp)
+    if (type(exp) == "nil") then exp = "," end
+    return table.concat(tab, exp)
+  end
+
+  table.merge = table.merge or function(tab, ...)
+    arg = { ... }
+    for k, tabelement in ipairs(arg) do
+      local length = #tabelement
+      for k2, value in ipairs(tabelement) do
+        if ((type(k2) == "number") and (k2 <= length)) then
+          table.insert(tab, value)
+        end
+      end
+      for k2, value in pairs(tabelement) do
+        if ((type(k2) == "number") and (k2 <= length)) then
+        else
+          tab[k2] = value
+        end
+      end
+    end
+    return tab
+  end
+
+  table.values = table.values or function(tab)
+    local values = {}
+    for k, v in pairs(tab) do
+      table.insert(values, v)
+    end
+    return values
+  end
+
+  table.keys = table.keys or function(tab)
+    local keys = {}
+    for k in pairs(tab) do
+      table.insert(keys, k)
+    end
+    return keys
+  end
+
+  -- å°†æ¯ä¸€ç»„é”®å€¼å¯¹å˜æˆæ•°ç»„ï¼Œå†æ”¾å…¥ä¸€ä¸ªå¤§æ•°ç»„ä¸­è¿”å›
+  table.entries = table.entries or function(tab)
+    local ent = {}
+    for k, v in ipairs(tab) do
+      table.insert(ent, { k, v })
+    end
+    return ent
+  end
+
+  -- å¯¹keyæ’åºåæ”¾å…¥æ•°ç»„ä¸­å†è¿”å›ï¼Œç»“æœç±»ä¼¼entries
+  table.sortByKey = table.sortByKey or function(tab, call)
+    local keys = table.keys(tab)
+    if (type(call) == "function") then
+      table.sort(keys, call)
+    else
+      table.sort(keys)
+    end
+    local newTable = {}
+    for _, key in ipairs(keys) do
+      table.insert(newTable, { key, tab[key] })
+    end
+    return newTable
+  end
+
+  table.toString = table.toString or function(tab, space)
+    if ((type(tab) == "function")) then
+      return "[function]"
+    end
+    if ((type(tab) == "number") or (type(tab) == "string")) then
+      return "" .. tab
+    end
+    if (type(tab) == "boolean") then
+      return tab and "true" or "false"
+    end
+    if (type(tab) == "nil") then
+      return "no message"
+    end
+    if (type(tab) ~= "table") then
+      return "[" .. type(tab) .. "]"
+    end
+    if (type(space) ~= "string") then
+      space = ""
+    end
+    local newTab = {}
+    local childSpace = space .. "  "
+    for k, v in pairs(tab) do
+      table.insert(newTab, childSpace .. k .. ": " .. table.toString(v, childSpace))
+    end
+    return "{\n" .. table.concat(newTab, ", \n") .. " \n" .. space .. "}"
+  end
+
+  table.toJsString = table.toJsString or function(tab, other, space)
+    if ((type(tab) == "function")) then
+      return "[function]"
+    end
+    if ((type(tab) == "number") or (type(tab) == "string")) then
+      return "" .. tab
+    end
+    if (type(tab) == "boolean") then
+      return tab and "true" or "false"
+    end
+    if (type(tab) == "nil") then
+      return "no message"
+    end
+    if (type(tab) ~= "table") then
+      return "[" .. type(tab) .. "]"
+    end
+    if (type(space) ~= "string") then
+      space = ""
+    end
+    local isArray = table.isArray(tab)
+    local newTab = {}
+    local childSpace = space .. "  "
+    if (isArray) then
+      for k, v in ipairs(tab) do
+        table.insert(newTab, table.toJsString(v, other, childSpace))
+      end
+      local childStr = table.concat(newTab, ", ")
+
+      if (string.len(childStr) > 50) then
+        newTab = {}
+        for k, v in ipairs(tab) do
+          table.insert(newTab, childSpace .. table.toJsString(v, other, childSpace))
+        end
+        childStr = table.concat(newTab, ", \n")
+        return "[\n" .. childStr .. " \n" .. childSpace .. "]"
+      end
+
+      return space .. "[" .. childStr .. "]"
+    else
+      for k, v in pairs(tab) do
+        if ((other == true) or (type(v) ~= "function")) then
+          table.insert(newTab, childSpace .. k .. ": " .. table.toJsString(v, childSpace))
+        end
+      end
+      return "{\n" .. table.concat(newTab, ", \n") .. " \n" .. space .. "}"
+    end
+  end
+end)()
+end
+end
 
 end
 
@@ -4991,15 +4134,975 @@ local isPause = false
 initLog("shipr1-1", 0)
 
 init(0)
-require "src/KeepScreenHock"
-require "src/TSLib"
-require "src/DeviceOrientHock"
-require "lib/TableLib"
+require "KeepScreenHock"
+require "TSLib"
+require "DeviceOrientHock"
+require "TableLib"
 local sz = require "sz"
 local socket = require "szocket.core"
-local mapMaker = require "src/BaseOperate"
-local gomissionMaker = require "src/GoMission"
-local stepLabel = require "src/StepLabel"
+local mapMaker = require "BaseOperate"
+local gomissionMaker = require "GoMission"
+local stepLabel = require "StepLabel"
 local json = sz.json
 
 local width, height = getScreenSize()
+
+-- å¾ªç¯ç›‘å¬æ–¹æ³•ï¼Œè¿”å›0è¡¨ç¤ºç›‘å¬è¶…æ—¶ï¼Œè¿”å›é0æ•°å­—æˆ–è€…å­—ç¬¦ä¸²è¡¨ç¤ºç›‘å¬å™¨ç›‘å¬æˆåŠŸçš„key
+local setOnceListener = (function()
+  return function(...)
+    local listenerList
+    local timeoutTime
+    local ms
+
+    local needKeepScreenState = false
+    local __keepScreenState = keepScreenState
+    local endTime
+
+    listenerList = select(1, ...)
+    timeoutTime = (select(2, ...) or 1400000000000) / 1000
+    ms = select(3, ...) or 500
+    endTime = socket.gettime() + timeoutTime
+
+    if (type(listenerList) == "function") then
+      listenerList = { listenerList }
+      needKeepScreenState = true
+    end
+
+    if ((type(listenerList) ~= "table")) then
+      return 0
+    end
+
+    local result = 0;
+
+    -- å¾ªç¯æœ¬ä½“
+    local runFlag = true
+    local count = 0
+    while (runFlag) do
+      count = count + 1
+
+      -- æš‚åœåŠŸèƒ½
+      local lastText = stepLabel:getText()
+      repeat
+        local btnval = fwGetPressedButton()
+        if btnval == "stopbtn" then
+          -- æ¸…é™¤æŒ‰é’®ç¼“å­˜æ¬¡æ•°
+          while (fwGetPressedButton() == "stopbtn") do
+          end
+          -- æš‚åœ
+          if (isPause) then
+            isPause = false
+            stepLabel:setStepLabelContent(lastText)
+          else
+            isPause = true
+            stepLabel:setStepLabelContent("æš‚åœ")
+          end
+        end
+        if (isPause) then
+          mSleep(1000)
+        end
+      until (not isPause)
+
+
+      if ((needKeepScreenState) and (not __keepScreenState)) then keepScreen(true) end
+      getDeviceOrient()
+      for i, listener in ipairs(listenerList) do
+        if runFlag == false then break end
+        if (type(listener) == "function") then
+          local res = listener()
+          if (res) then
+            runFlag = false
+            result = i
+            break
+          end
+        elseif (type(listener) == "table") then
+          if ((#listener > 0) and (type(listener[2]) == "function")) then
+            local res = listener[2]()
+            if (res) then
+              runFlag = false
+              result = i[1]
+              break
+            end
+          else
+            for i, lsn in pairs(listener) do
+              local res = lsn()
+              if (res) then
+                runFlag = false
+                result = i
+                break
+              end
+            end
+          end
+        end
+      end
+      if ((needKeepScreenState) and (not __keepScreenState)) then keepScreen(false) end
+      mSleep(ms)
+      if (endTime < socket.gettime()) then
+        runFlag = false
+        result = 0
+        break
+      end
+    end
+
+    return result
+  end
+end)()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+stepLabel:setStepLabelContent("å¼€å§‹")
+
+function closeStepLabel()
+  fwCloseView("steplabel", "text1")
+end
+
+stepLabel:setStepLabelContent("ç­‰å¾…éŸ³é‡é¢æ¿æ”¶èµ·")
+mSleep(500)
+
+
+local gomission = gomissionMaker(mapMaker(), stepLabel, setOnceListener)
+
+
+
+
+-- è®¾ç½®
+local settingTable = {
+  ["style"] = "default",
+  ["width"] = height,
+  ["height"] = height,
+  ["config"] = "save_shipr1-1.dat",
+  ["timer"] = 15,
+  ["orient"] = 1,
+  ["pagetype"] = "multi",
+  ["title"] = "é€‰é¡¹",
+  ["cancelname"] = "å–æ¶ˆ",
+  ["okname"] = "å¼€å§‹",
+  ["rettype"] = "table",
+  ["pages"] = {
+    {
+      {
+        ["type"] = "Label",
+        ["text"] = "ç¬¬ä¸€æ¬¡è®¾ç½®å»ºè®®åœ¨ç«–å±ä¸‹è®¾ç½®ï¼Œè®¾ç½®å¥½åå†åˆ‡æ¢åˆ°æ¸¸æˆç•Œé¢",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "å‘å·¦æ»‘åŠ¨æŸ¥çœ‹å…¶ä»–é€‰é¡¹",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "ä»»åŠ¡",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "missionEnable",
+        ["width"] = width / 2,
+        ["type"] = "RadioGroup",
+        ["list"] = "å¼€å¯,å…³é—­",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "è¿œå¾",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "expeditionEnable",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "å¼€å¯,å…³é—­",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "å‡ºå¾",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "battleEnable",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "å¼€å¯,å…³é—­",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "ä¿®ç†",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "repairEnable",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "å¼€å¯,å…³é—­",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "æ¼”ä¹ ",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "exerciseEnable",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "å¼€å¯,å…³é—­",
+        ["select"] = "1",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = " \n \n \n \n \n \n \n \n \n \n",
+        ["size"] = 50,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+    },
+    {
+      {
+        ["type"] = "Label",
+        ["text"] = "ä»»åŠ¡è®¾ç½®",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "é—´éš”æ—¶é—´(ç§’)",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "missionInterval",
+        ["type"] = "Edit",
+        ["width"] = width / 2,
+        ["prompt"] = "æœ€çŸ­é—´éš”æ—¶é—´(ç§’)",
+        ["text"] = "15",
+        ["kbtype"] = "number",
+      },
+    },
+    {
+      {
+        ["type"] = "Label",
+        ["text"] = "è¿œå¾è®¾ç½®",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "é—´éš”æ—¶é—´(ç§’)",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "expeditionInterval",
+        ["type"] = "Edit",
+        ["width"] = width / 2,
+        ["prompt"] = "æœ€çŸ­é—´éš”æ—¶é—´(ç§’)",
+        ["text"] = "30",
+        ["kbtype"] = "number",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "æ”¶è·å’Œæ´¾é£æ˜¯å¦è¿ç€",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "expeditionTogether",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "æ˜¯,å¦",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "ç°åœ¨å¯ä»¥å‚åŠ çš„è¿œå¾ç« èŠ‚",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "expeditionEnableChapter",
+        ["type"] = "CheckBoxGroup",
+        ["list"] = "ç¬¬ä¸€ç« ,ç¬¬äºŒç« ,ç¬¬ä¸‰ç« ,ç¬¬å››ç« ,ç¬¬äº”ç« ,ç¬¬å…­ç« ,ç¬¬ä¸ƒç« ",
+        ["select"] = "0@1@2@3",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "è¿œå¾ä½¿ç”¨å¿«é€Ÿä¿®ç†",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "expeditionQuickRepair",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "æ˜¯,å¦",
+        ["select"] = "1",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "è‡ªåŠ¨å‚åŠ çš„è¿œå¾ç« èŠ‚",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "1é˜Ÿ",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "expeditionFleet1",
+        ["type"] = "RadioGroup",
+        ["list"] = "ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "2é˜Ÿ",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "expeditionFleet2",
+        ["type"] = "RadioGroup",
+        ["list"] = "ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4",
+        ["select"] = "2",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "3é˜Ÿ",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "expeditionFleet3",
+        ["type"] = "RadioGroup",
+        ["list"] = "ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4",
+        ["select"] = "7",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "4é˜Ÿ",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "expeditionFleet4",
+        ["type"] = "RadioGroup",
+        ["list"] = "ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4",
+        ["select"] = "13",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = " \n \n \n \n \n \n \n \n \n \n",
+        ["size"] = 50,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+    },
+    {
+      {
+        ["type"] = "Label",
+        ["text"] = "å‡ºå¾è®¾ç½®",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "é—´éš”æ—¶é—´(ç§’)",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "battleInterval",
+        ["type"] = "Edit",
+        ["width"] = width / 2,
+        ["prompt"] = "æœ€çŸ­é—´éš”æ—¶é—´(ç§’)",
+        ["text"] = "30",
+        ["kbtype"] = "number",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "ç« èŠ‚",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "battleChapter",
+        ["type"] = "CheckBoxGroup",
+        ["list"] = "1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "èˆ°é˜Ÿ",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "battleFleet",
+        ["type"] = "RadioGroup",
+        ["list"] = "1é˜Ÿ,2é˜Ÿ,3é˜Ÿ,4é˜Ÿ",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "è¿½å‡»",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "battlePursue",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "æ˜¯,å¦",
+        ["select"] = "1",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "è¿½å‡»Boss",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "battlePursueBoss",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "æ˜¯,å¦",
+        ["select"] = "1",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "ä½¿ç”¨å¿«é€Ÿä¿®ç†",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "battleQuickRepair",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "æ˜¯,å¦",
+        ["select"] = "1",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "ä¸èƒ½å‡ºå¾åˆ™éœ‡åŠ¨æç¤º",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "battleAlertWhenNoHp",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "æ˜¯,å¦",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "æœ€å¤šå‡ æˆ˜",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "battleMaxBattleNum",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "1,2,3,4,5",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = " \n \n \n \n \n \n \n \n \n \n",
+        ["size"] = 50,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+    },
+
+    {
+      {
+        ["type"] = "Label",
+        ["text"] = "æŒ‘æˆ˜è®¾ç½®",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "é—´éš”æ—¶é—´(ç§’)",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "exerciseInterval",
+        ["type"] = "Edit",
+        ["width"] = width / 2,
+        ["prompt"] = "æœ€çŸ­é—´éš”æ—¶é—´(ç§’)",
+        ["text"] = "30",
+        ["kbtype"] = "number",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = "èˆ°é˜Ÿ",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["id"] = "exerciseFleet",
+        ["type"] = "RadioGroup",
+        ["list"] = "1é˜Ÿ,2é˜Ÿ,3é˜Ÿ,4é˜Ÿ",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "è¿½å‡»",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "exercisePursue",
+        ["type"] = "RadioGroup",
+        ["width"] = width / 2,
+        ["list"] = "æ˜¯,å¦",
+        ["select"] = "0",
+      },
+      {
+        ["type"] = "Label",
+        ["text"] = " \n \n \n \n \n \n \n \n \n \n",
+        ["size"] = 50,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+    },
+
+    {
+      {
+        ["type"] = "Label",
+        ["text"] = "ä¿®ç†è®¾ç½®",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+      },
+      {
+        ["type"] = "Label",
+        ["width"] = width / 4,
+        ["text"] = "é—´éš”æ—¶é—´(ç§’)",
+        ["size"] = 15,
+        ["align"] = "left",
+        ["color"] = "0,0,0",
+        ["nowrap"] = 1,
+      },
+      {
+        ["id"] = "repairInterval",
+        ["type"] = "Edit",
+        ["width"] = width / 2,
+        ["prompt"] = "æœ€çŸ­é—´éš”æ—¶é—´(ç§’)",
+        ["text"] = "30",
+        ["kbtype"] = "number",
+      },
+    },
+  }
+}
+local settingTableStr = json.encode(settingTable);
+closeStepLabel()
+local ret, settings = showUI(settingTableStr);
+if (ret ~= 1) then
+  stepLabel:setStepLabelContent("å–æ¶ˆè¿è¡Œ")
+  mSleep(100000)
+  lua_exit()
+end
+stepLabel:setStepLabelContent("æ­£åœ¨è½½å…¥...")
+-- --è½¬æ¢settingsç»“æœ
+local __tmp = (function(settings)
+  function transStrToTable(str)
+    local list = {}
+    local strArr = {}
+    if (type(str) == "string") then
+      strArr = strSplit(str, ",")
+    elseif (type(str) == "table") then
+      strArr = str
+    end
+    for i, v in ipairs(strArr) do
+      list["" .. (i - 1)] = v
+    end
+    return list
+  end
+
+  -- å‡ºå¾
+  settings.battleEnable = (function(battleEnable)
+    local list = transStrToTable({ true, false, })
+    return list[battleEnable] or false
+  end)(settings.battleEnable)
+  -- ä¿®ç†
+  settings.repairEnable = (function(repairEnable)
+    local list = transStrToTable({ true, false, })
+    return list[repairEnable] or false
+  end)(settings.repairEnable)
+  -- ä»»åŠ¡
+  settings.missionEnable = (function(missionEnable)
+    local list = transStrToTable({ true, false, })
+    return list[missionEnable] or false
+  end)(settings.missionEnable)
+  -- è¿œå¾
+  settings.expeditionEnable = (function(expeditionEnable)
+    local list = transStrToTable({ true, false, })
+    return list[expeditionEnable] or false
+  end)(settings.expeditionEnable)
+  -- æ¼”ä¹ 
+  settings.exerciseEnable = (function(exerciseEnable)
+    local list = transStrToTable({ true, false, })
+    return list[exerciseEnable] or false
+  end)(settings.exerciseEnable)
+  -- ä»»åŠ¡é—´éš”æ—¶é—´
+  settings.missionInterval = tonumber(settings.missionInterval) or 0
+  -- è¿œå¾é—´éš”æ—¶é—´
+  settings.expeditionInterval = tonumber(settings.expeditionInterval) or 0
+  -- è¿œå¾æ”¶è·å’Œæ´¾é£æ˜¯å¦è¿ç»­ï¼ˆå¦åˆ™å…ˆæ”¶è·ï¼Œå†å‡ºå¾ï¼Œå†æ´¾é£ï¼‰ï¼Œä¸ºäº†å¯ä»¥åœ¨è¿œå¾çš„é—´éš™å‡ºå¾ä¸€æ¬¡
+  settings.expeditionTogether = (function(expeditionTogether)
+    local list = transStrToTable({ true, false, })
+    return list[expeditionTogether] or false
+  end)(settings.expeditionTogether)
+  -- é€‰æ‹©è¿œå¾å¯ç”¨å…³å¡
+  settings.expeditionEnableChapter = (function(expeditionEnableChapter)
+    local tempArr = strSplit(expeditionEnableChapter, "@")
+    local list = transStrToTable({ 1, 2, 3, 4, 5, 6, 7, })
+    local result = {}
+    for _, v in ipairs(tempArr) do
+      if (type(list[v]) == "number") then
+        table.insert(result, list[v])
+      end
+    end
+    return result
+  end)(settings.expeditionEnableChapter)
+  -- é€‰æ‹©è¿œå¾è¦å‚åŠ çš„ç« èŠ‚
+  settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 = (function(fleet1, fleet2, fleet3, fleet4)
+    local list = transStrToTable({
+      false, "1-1", "1-2", "1-3", "1-4",
+      "2-1", "2-2", "2-3", "2-4",
+      "3-1", "3-2", "3-3", "3-4",
+      "4-1", "4-2", "4-3", "4-4",
+      "5-1", "5-2", "5-3", "5-4",
+      "6-1", "6-2", "6-3", "6-4",
+      "7-1", "7-2", "7-3", "7-4",
+    })
+    return (list[fleet1] or false), (list[fleet2] or false), (list[fleet3] or false), (list[fleet4] or false)
+  end)(settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4)
+  settings.expeditionFleetToChapter = { settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 }
+  -- è¿œå¾æ˜¯å¦ä½¿ç”¨å¿«é€Ÿä¿®ç†
+  settings.expeditionQuickRepair = (function(expeditionQuickRepair)
+    local list = transStrToTable({ true, false, })
+    return list[expeditionQuickRepair] or false
+  end)(settings.expeditionQuickRepair)
+  -- å‡ºå¾é—´éš”æ—¶é—´
+  settings.battleInterval = tonumber(settings.battleInterval) or 0
+  -- é€‰æ‹©å…³å¡
+  settings.battleChapter = (function(battleChapter)
+    local tempArr = strSplit(battleChapter, "@")
+    local list = transStrToTable({
+      "1-1", "1-2", "1-3", "1-4", "1-5",
+      "2-1", "2-2", "2-3", "2-4", "2-5", "2-6",
+      "3-1", "3-2", "3-3", "3-4",
+      "4-1", "4-2", "4-3", "4-4",
+      "5-1", "5-2", "5-3", "5-4",
+      "6-1", "6-2", "6-3", "6-4",
+      "7-1", "7-2", "7-3", "7-4",
+    })
+    local result = {}
+    for _, v in ipairs(tempArr) do
+      if (type(list[v]) == "string") then
+        table.insert(result, list[v])
+      end
+    end
+    return result
+  end)(settings.battleChapter)
+  -- é€‰æ‹©èˆ°é˜Ÿ
+  settings.battleFleet = (function(battleFleet)
+    local list = transStrToTable({ 1, 2, 3, 4, })
+    return list[battleFleet] or 1
+  end)(settings.battleFleet)
+  -- æ˜¯å¦è¿½å‡»
+  settings.battlePursue = (function(battlePursue)
+    local list = transStrToTable({ true, false, })
+    return list[battlePursue] or false
+  end)(settings.battlePursue)
+  -- æ˜¯å¦è¿½å‡»Boss
+  settings.battlePursueBoss = (function(battlePursueBoss)
+    local list = transStrToTable({ true, false, })
+    return list[battlePursueBoss] or false
+  end)(settings.battlePursueBoss)
+  -- æ˜¯å¦ä½¿ç”¨å¿«é€Ÿä¿®ç†
+  settings.battleQuickRepair = (function(battleQuickRepair)
+    local list = transStrToTable({ true, false, })
+    return list[battleQuickRepair] or false
+  end)(settings.battleQuickRepair)
+  -- å½“æ— æ³•å‡ºå¾æ—¶æ˜¯å¦è·³è¿‡å‡ºå¾
+  settings.battleAlertWhenNoHp = (function(battleAlertWhenNoHp)
+    local list = transStrToTable({ true, false, })
+    return list[battleAlertWhenNoHp] or false
+  end)(settings.battleAlertWhenNoHp)
+  -- å‡ºå¾æœ€å¤§æˆ˜æ–—æ¬¡æ•°
+  settings.battleMaxBattleNum = (function(battleMaxBattleNum)
+    local list = transStrToTable({ 1, 2, 3, 4, 5 })
+    return list[battleMaxBattleNum] or 1
+  end)(settings.battleMaxBattleNum)
+
+
+  -- æŒ‘æˆ˜é—´éš”æ—¶é—´
+  settings.exerciseInterval = tonumber(settings.exerciseInterval) or 0
+  -- é€‰æ‹©èˆ°é˜Ÿ
+  settings.exerciseFleet = (function(exerciseFleet)
+    local list = transStrToTable({ 1, 2, 3, 4, })
+    return list[exerciseFleet] or 1
+  end)(settings.exerciseFleet)
+  -- æ˜¯å¦è¿½å‡»
+  settings.exercisePursue = (function(exercisePursue)
+    local list = transStrToTable({ true, false, })
+    return list[exercisePursue] or false
+  end)(settings.exercisePursue)
+  -- æ˜¯å¦ä½¿ç”¨å¿«é€Ÿä¿®ç†
+  settings.exerciseQuickRepair = (function(exerciseQuickRepair)
+    local list = transStrToTable({ true, false, })
+    return list[exerciseQuickRepair] or false
+  end)(settings.exerciseQuickRepair)
+
+
+
+  -- ä¿®ç†é—´éš”
+  settings.repairInterval = tonumber(settings.repairInterval) or 0
+end)(settings)
+if (debug) then
+  stepLabel:setStepLabelContent("debugé€€å‡º")
+  mSleep(10000000)
+  lua_exit()
+end
+-- --è½¬æ¢settingsç»“æœ
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local beginTime = {
+  mission = os.time(),
+  expedition = os.time(),
+  battle = os.time(),
+  repair = os.time(),
+  exercise = os.time(),
+}
+
+local param = {
+  needRepair = true
+}
+
+
+-- å¼€å§‹æµç¨‹
+if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable) then
+  local battleChapterArr = (function(battleChapter)
+    local newC = {}
+    for _, v in ipairs(battleChapter) do
+      table.insert(newC, v)
+    end
+    return newC
+  end)(settings.battleChapter)
+
+
+  stepLabel:setStepLabelContent("æ­£åœ¨æ‰§è¡Œ...")
+  while (true) do
+    local count = 0
+    if (settings.missionEnable and (beginTime.mission <= os.time())) then
+      count = count + 1
+      local res = gomission.mission()
+      if (not res) then
+        break
+      end
+      beginTime.mission = os.time() + settings.missionInterval
+      mSleep(500)
+    end
+    if (settings.expeditionEnable and (beginTime.expedition <= os.time())) then
+      count = count + 1
+      local res = gomission.expeditionReward(settings.expeditionEnableChapter, settings.expeditionTogether)
+      if (not res) then
+        break
+      end
+      mSleep(500)
+    end
+    if (settings.expeditionTogether and settings.expeditionEnable and (beginTime.expedition <= os.time())) then
+      count = count + 1
+      local res = gomission.expeditionOnce(settings.expeditionFleetToChapter, settings.expeditionQuickRepair)
+      if (not res) then
+        break
+      end
+      beginTime.expedition = os.time() + settings.expeditionInterval
+      mSleep(500)
+    end
+    if (settings.battleEnable and (beginTime.battle <= os.time())) then
+      count = count + 1
+      if (#battleChapterArr > 0) then
+        local battleChapter = battleChapterArr[1]
+        table.remove(battleChapterArr, 1)
+        table.insert(battleChapterArr, battleChapter)
+        local res, HPIsSafe = gomission.battleOnce(battleChapter, settings.battlePursue, settings.battlePursueBoss, settings.battleQuickRepair, settings.battleFleet, settings.battleAlertWhenNoHp, settings.battleMaxBattleNum)
+        if (not res) then
+          break
+        end
+        if (not HPIsSafe) then
+          param.needRepair = true
+        end
+        beginTime.battle = os.time() + settings.battleInterval
+        mSleep(500)
+      else
+        stepLabel:setStepLabelContent("æ²¡æœ‰é€‰ä¸­ç« èŠ‚")
+      end
+    end
+    if ((not settings.expeditionTogether) and settings.expeditionEnable and (beginTime.expedition <= os.time())) then
+      count = count + 1
+      local res = gomission.expeditionOnce(settings.expeditionFleetToChapter, settings.expeditionQuickRepair)
+      if (not res) then
+        break
+      end
+      beginTime.expedition = os.time() + settings.expeditionInterval
+      mSleep(500)
+    end
+    if (settings.exerciseEnable and (beginTime.exercise <= os.time())) then
+      count = count + 1
+      local res, HPIsSafe = gomission.exerciseOnce(settings.exerciseChapter, settings.exercisePursue, settings.exerciseQuickRepair, settings.exerciseFleet, settings.exerciseMaxBattleNum)
+      if (not res) then
+        break
+      end
+      if (not HPIsSafe) then
+        param.needRepair = true
+      end
+      beginTime.exercise = os.time() + settings.exerciseInterval
+      mSleep(500)
+    end
+    if (settings.repairEnable and (beginTime.repair <= os.time()) and param.needRepair) then
+      count = count + 1
+      local res, needRepair = gomission.repairOnce()
+      if (not res) then
+        break
+      end
+      if (not needRepair) then
+        param.needRepair = false
+      end
+      beginTime.repair = os.time() + settings.repairInterval
+      mSleep(500)
+    end
+
+    if (count > 0) then
+      runCount = runCount + 1
+    end
+
+    stepLabel:setStepLabelContent(os.date("%X"), true)
+    mSleep(1000)
+  end
+else
+  stepLabel:setStepLabelContent("æ²¡æœ‰éœ€è¦æ‰§è¡Œçš„ä»»åŠ¡ï¼")
+end
+
+for i = 1, 2 do
+  vibrator();
+  mSleep(1000);
+end
+
+closeLog("shipr1-1")
+mSleep(100000000)
