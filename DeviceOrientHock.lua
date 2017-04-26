@@ -24,16 +24,13 @@ function calOrient(_orient)
   -- 寻找白色边界
 
   local checkOrder = { 0, 1, 2 }
-  local sideLength = h
+  local sideLength = w
   if (_orient == 0) then
     checkOrder = { 1, 2 }
-    sideLength = h
   elseif (_orient == 1) then
     checkOrder = { 0, 2 }
-    sideLength = w
   elseif (_orient == 2) then
     checkOrder = { 0, 1 }
-    sideLength = w
   end
 
   local checkPointList = {
