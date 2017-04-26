@@ -2498,180 +2498,92 @@ local _ENV = _ENV
 package.preload[ "src/DeviceOrientHock" ] = function( ... ) local arg = _G.arg;
 require "TSLib"
 
-local _tmp = (function()
-  local __init = init
-  init = nil
+local __init = init
 
-  -- 0=竖屏，1=右旋（home键在右边），2=左旋（home键在左边），3=倒立
+-- 0=竖屏，1=右旋（home键在右边），2=左旋（home键在左边），3=倒立
+__init(0)
+local w, h = getScreenSize()
+local m = math.max(w, h)
+local orient = 0;
+local nextUpdateTime = os.time()
+
+-- 计算方向辅助界面，一像素宽度的白色边界，一像素宽的黑色边界，用于检测方向
+fwShowWnd("orientwid1", 0, 0, 2, m, 0)
+fwShowTextView("orientwid1", "text1", "", "center", "000000", "FEFEFE", 15, 0, 0, 0, 1, m, 1)
+fwShowTextView("orientwid1", "text2", "", "center", "000000", "010101", 15, 0, 1, 0, 2, m, 1)
+
+mSleep(100)
+
+
+-- 计算当前方向
+function calOrient(_orient)
   __init(0)
-  local w, h = getScreenSize()
-  local m = math.max(w, h)
-  local orient = 0;
-  local nextUpdateTime = os.time()
+  local result = _orient
+  -- 寻找白色边界
 
-  -- 计算方向辅助界面，一像素宽度的白色边界，一像素宽的黑色边界，用于检测方向
-  fwShowWnd("orientwid1", 0, 0, 2, m, 0)
-  fwShowTextView("orientwid1", "text1", "", "center", "000000", "FEFEFE", 15, 0, 0, 0, 1, m, 1)
-  fwShowTextView("orientwid1", "text2", "", "center", "000000", "010101", 15, 0, 1, 0, 2, m, 1)
-
-  mSleep(100)
-
-
-  -- 计算当前方向
-  local function calOrient(_orient)
-    __init(0)
-    local result = _orient
-    -- 寻找白色边界
-    nLog("-----------")
-    nLog(_orient)
-
-    local orientTo0 = {}
-    local orientTo1 = {}
-    local orientTo2 = {}
-
-    if (_orient == 0) then
-      orientTo0 = {
-        { 0, math.floor(0.333 * h), 0xfefefe },
-        { 0, math.floor(0.5 * h), 0xfefefe },
-        { 0, math.floor(0.667 * h), 0xfefefe },
-        { 0, math.floor(0.833 * h), 0xfefefe },
-        { 1, math.floor(0.333 * h), 0x010101 },
-        { 1, math.floor(0.5 * h), 0x010101 },
-        { 1, math.floor(0.667 * h), 0x010101 },
-        { 1, math.floor(0.833 * h), 0x010101 },
-      }
-      orientTo1 = {
-        { math.floor(0.333 * w), 0, 0xfefefe },
-        { math.floor(0.5 * w), 0, 0xfefefe },
-        { math.floor(0.667 * w), 0, 0xfefefe },
-        { math.floor(0.833 * w), 0, 0xfefefe },
-        { math.floor(0.333 * w), 1, 0x010101 },
-        { math.floor(0.5 * w), 1, 0x010101 },
-        { math.floor(0.667 * w), 1, 0x010101 },
-        { math.floor(0.833 * w), 1, 0x010101 },
-      }
-      orientTo2 = {
-        { h, math.floor(0.333 * w), 0xfefefe },
-        { h, math.floor(0.5 * w), 0xfefefe },
-        { h, math.floor(0.667 * w), 0xfefefe },
-        { h, math.floor(0.833 * w), 0xfefefe },
-        { h - 1, math.floor(0.333 * w), 0x010101 },
-        { h - 1, math.floor(0.5 * w), 0x010101 },
-        { h - 1, math.floor(0.667 * w), 0x010101 },
-        { h - 1, math.floor(0.833 * w), 0x010101 },
-      }
-
-    elseif (_orient == 1) then
-      orientTo0 = {
-        { math.floor(0.333 * h), w, 0xfefefe },
-        { math.floor(0.5 * h), w, 0xfefefe },
-        { math.floor(0.667 * h), w, 0xfefefe },
-        { math.floor(0.833 * h), w, 0xfefefe },
-        { math.floor(0.333 * h), w - 1, 0x010101 },
-        { math.floor(0.5 * h), w - 1, 0x010101 },
-        { math.floor(0.667 * h), w - 1, 0x010101 },
-        { math.floor(0.833 * h), w - 1, 0x010101 },
-      }
-      orientTo1 = {
-        { 0, math.floor(0.333 * w), 0xfefefe },
-        { 0, math.floor(0.5 * w), 0xfefefe },
-        { 0, math.floor(0.667 * w), 0xfefefe },
-        { 0, math.floor(0.833 * w), 0xfefefe },
-        { 1, math.floor(0.333 * w), 0x010101 },
-        { 1, math.floor(0.5 * w), 0x010101 },
-        { 1, math.floor(0.667 * w), 0x010101 },
-        { 1, math.floor(0.833 * w), 0x010101 },
-      }
-      orientTo2 = {
-        { h, math.floor(0.333 * w), 0xfefefe },
-        { h, math.floor(0.5 * w), 0xfefefe },
-        { h, math.floor(0.667 * w), 0xfefefe },
-        { h, math.floor(0.833 * w), 0xfefefe },
-        { h - 1, math.floor(0.333 * w), 0x010101 },
-        { h - 1, math.floor(0.5 * w), 0x010101 },
-        { h - 1, math.floor(0.667 * w), 0x010101 },
-        { h - 1, math.floor(0.833 * w), 0x010101 },
-      }
-    elseif (_orient == 2) then
-      orientTo0 = {
-        { math.floor(0.333 * h), 0, 0xfefefe },
-        { math.floor(0.5 * h), 0, 0xfefefe },
-        { math.floor(0.667 * h), 0, 0xfefefe },
-        { math.floor(0.833 * h), 0, 0xfefefe },
-        { math.floor(0.333 * h), 1, 0x010101 },
-        { math.floor(0.5 * h), 1, 0x010101 },
-        { math.floor(0.667 * h), 1, 0x010101 },
-        { math.floor(0.833 * h), 1, 0x010101 },
-      }
-      orientTo1 = {
-        { h, math.floor(0.333 * w), 0xfefefe },
-        { h, math.floor(0.5 * w), 0xfefefe },
-        { h, math.floor(0.667 * w), 0xfefefe },
-        { h, math.floor(0.833 * w), 0xfefefe },
-        { h - 1, math.floor(0.333 * w), 0x010101 },
-        { h - 1, math.floor(0.5 * w), 0x010101 },
-        { h - 1, math.floor(0.667 * w), 0x010101 },
-        { h - 1, math.floor(0.833 * w), 0x010101 },
-      }
-      orientTo2 = {
-        { 0, math.floor(0.333 * w), 0xfefefe },
-        { 0, math.floor(0.5 * w), 0xfefefe },
-        { 0, math.floor(0.667 * w), 0xfefefe },
-        { 0, math.floor(0.833 * w), 0xfefefe },
-        { 1, math.floor(0.333 * w), 0x010101 },
-        { 1, math.floor(0.5 * w), 0x010101 },
-        { 1, math.floor(0.667 * w), 0x010101 },
-        { 1, math.floor(0.833 * w), 0x010101 },
-      }
-    end
-
-    if (multiColor(orientTo0)) then
-      if (_orient ~= 0) then
-        __init(0)
-      end
-      return 0
-    elseif (multiColor(orientTo1)) then
-      if (_orient ~= 1) then
-        __init(1)
-      end
-      return 1
-    elseif (multiColor(orientTo2)) then
-      if (_orient ~= 2) then
-        __init(2)
-      end
-      return 2
-    end
+  local checkOrder = { 0, 1, 2 }
+  local sideLength = h
+  if (_orient == 0) then
+    checkOrder = { 1, 2 }
+    sideLength = h
+  elseif (_orient == 1) then
+    checkOrder = { 0, 2 }
+    sideLength = w
+  elseif (_orient == 2) then
+    checkOrder = { 0, 1 }
+    sideLength = w
   end
 
-  local _orient = calOrient(orient)
-  orient = _orient
+  local checkPointList = {
+    { 0, math.floor(0.333 * sideLength), 0xfefefe },
+    { 0, math.floor(0.5 * sideLength), 0xfefefe },
+    { 0, math.floor(0.667 * sideLength), 0xfefefe },
+    { 0, math.floor(0.833 * sideLength), 0xfefefe },
+    { 1, math.floor(0.333 * sideLength), 0x010101 },
+    { 1, math.floor(0.5 * sideLength), 0x010101 },
+    { 1, math.floor(0.667 * sideLength), 0x010101 },
+    { 1, math.floor(0.833 * sideLength), 0x010101 },
+  }
 
-  -- 获取当前方向
-  getDeviceOrient = function(useKeep)
-    local newOrient = orient
-    if (os.time() > nextUpdateTime) then
-      if (useKeep == true) then keepScreen(true) end
-      newOrient = calOrient(orient)
-      nLog(newOrient)
-      nextUpdateTime = os.time() + 1
-      __init(newOrient)
-      if (useKeep == true) then keepScreen(false) end
-    end
-    return newOrient
+  -- 如果方向没变则不旋转
+  if (multiColor(checkPointList)) then
+    return _orient
   end
+  -- 如果方向变了则旋转
+  for k, v in ipairs(checkOrder) do
+    __init(v)
+    if (multiColor(checkPointList)) then
+      return v
+    end
+  end
+  __init(_orient)
+  return _orient
+end
 
+local _orient = calOrient(orient)
+orient = _orient
 
-  -- 设置当前方向，当然只能设置init的方向
-  setDeviceOrient = function(n)
-    orient = n
-    __init(n)
+-- 获取当前方向
+getDeviceOrient = function(useKeep)
+  local newOrient = orient
+  if (os.time() > nextUpdateTime) then
+    local _keepScreenState = keepScreenState
+    if (not _keepScreenState) then keepScreen(true) end
+    newOrient = calOrient(orient)
     nextUpdateTime = os.time() + 1
+    if (not _keepScreenState) then keepScreen(false) end
   end
-  init = setDeviceOrient
+  return newOrient
+end
 
-  mSleep(200)
-  getDeviceOrient()
-end)()
+
+-- 设置当前方向，当然只能设置init的方向
+setDeviceOrient = function(n)
+  orient = n
+  __init(n)
+  nextUpdateTime = os.time() + 1
+end
+init = setDeviceOrient
 end
 end
 
@@ -4557,7 +4469,7 @@ end
 end
 
 package.preload[ "src/TSLib" ] = assert( (loadstring or load)(
-"\27TS1R\000\1\4\4\4\8\000\25�\r\
+"\27TS1R\000\1\4\4\4\8\000\25�\
 \26\
 \000\9\20 �@L{\000�z\r���jr\rW\4��]\16�7Xh_\4�j��Tn�Z/Z�\r\9\20 SE� #��P���5�0�20\8t\0256\8t\25\6(:.X�p>]��5\8�-\14��Mq�B�D\24\9v\25\16\9v\0252&z\000�-�t���N��;|\"�\11<V�\9iȹ�y�!�o\1,\8\6 �o<\7�\26WZ`\24�h[l�\23vR�B\000\14\8\8 �\
 �\5V��\28{�\18;B\\oD��=���\11\8qV4\18�t�\9�R�(��\21/A\23O?\1)�6��c =Z\22\4��`T��� e\000\000\000-\8\8\8H\8\8\8U��\8�\8�\8�H�\8-I\8\8\000\8\9�-�\8\8\000\8��-�\8\8\000\8\9�-\9\9\8\000\8��-I\9\8\000\8\9�-�\9\8\000\8��-�\9\8\000\8\9�-\9\

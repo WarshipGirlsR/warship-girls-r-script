@@ -24,25 +24,34 @@ function calOrient(_orient)
   -- 寻找白色边界
 
   local checkOrder = { 0, 1, 2 }
+  local sideLength = h
   if (_orient == 0) then
-    checkOrder = { 0, 1, 2 }
+    checkOrder = { 1, 2 }
+    sideLength = h
   elseif (_orient == 1) then
-    checkOrder = { 1, 0, 2 }
+    checkOrder = { 0, 2 }
+    sideLength = w
   elseif (_orient == 2) then
-    checkOrder = { 2, 0, 1 }
+    checkOrder = { 0, 1 }
+    sideLength = w
   end
 
   local checkPointList = {
-    { 0, math.floor(0.333 * w), 0xfefefe },
-    { 0, math.floor(0.5 * w), 0xfefefe },
-    { 0, math.floor(0.667 * w), 0xfefefe },
-    { 0, math.floor(0.833 * w), 0xfefefe },
-    { 1, math.floor(0.333 * w), 0x010101 },
-    { 1, math.floor(0.5 * w), 0x010101 },
-    { 1, math.floor(0.667 * w), 0x010101 },
-    { 1, math.floor(0.833 * w), 0x010101 },
+    { 0, math.floor(0.333 * sideLength), 0xfefefe },
+    { 0, math.floor(0.5 * sideLength), 0xfefefe },
+    { 0, math.floor(0.667 * sideLength), 0xfefefe },
+    { 0, math.floor(0.833 * sideLength), 0xfefefe },
+    { 1, math.floor(0.333 * sideLength), 0x010101 },
+    { 1, math.floor(0.5 * sideLength), 0x010101 },
+    { 1, math.floor(0.667 * sideLength), 0x010101 },
+    { 1, math.floor(0.833 * sideLength), 0x010101 },
   }
 
+  -- 如果方向没变则不旋转
+  if (multiColor(checkPointList)) then
+    return _orient
+  end
+  -- 如果方向变了则旋转
   for k, v in ipairs(checkOrder) do
     __init(v)
     if (multiColor(checkPointList)) then
