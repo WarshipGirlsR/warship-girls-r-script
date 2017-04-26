@@ -5,15 +5,15 @@ local isPause = false
 initLog("shipr1-1", 0)
 
 init(0)
-require "src/KeepScreenHock"
-require "src/TSLib"
-require "src/DeviceOrientHock"
-require "lib/TableLib"
+require "KeepScreenHock"
+require "TSLib"
+require "DeviceOrientHock"
+require "TableLib"
 local sz = require "sz"
 local socket = require "szocket.core"
-local mapMaker = require "src/BaseOperate"
-local gomissionMaker = require "src/GoMission"
-local stepLabel = require "src/StepLabel"
+local mapMaker = require "BaseOperate"
+local gomissionMaker = require "GoMission"
+local stepLabel = require "StepLabel"
 local json = sz.json
 
 local width, height = getScreenSize()

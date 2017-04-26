@@ -1,6 +1,7 @@
 [res]
 [lib]
 [file]
+warship-girls-r-script.lua
 TableLib.lua
 StepLabel.lua
 KeepScreenHock.lua
