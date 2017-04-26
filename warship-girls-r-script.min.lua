@@ -1551,25 +1551,34 @@ function calOrient(_orient)
   -- å¯»æ‰¾ç™½è‰²è¾¹ç•Œ
 
   local checkOrder = { 0, 1, 2 }
+  local sideLength = h
   if (_orient == 0) then
-    checkOrder = { 0, 1, 2 }
+    checkOrder = { 1, 2 }
+    sideLength = h
   elseif (_orient == 1) then
-    checkOrder = { 1, 0, 2 }
+    checkOrder = { 0, 2 }
+    sideLength = w
   elseif (_orient == 2) then
-    checkOrder = { 2, 0, 1 }
+    checkOrder = { 0, 1 }
+    sideLength = w
   end
 
   local checkPointList = {
-    { 0, math.floor(0.333 * w), 0xfefefe },
-    { 0, math.floor(0.5 * w), 0xfefefe },
-    { 0, math.floor(0.667 * w), 0xfefefe },
-    { 0, math.floor(0.833 * w), 0xfefefe },
-    { 1, math.floor(0.333 * w), 0x010101 },
-    { 1, math.floor(0.5 * w), 0x010101 },
-    { 1, math.floor(0.667 * w), 0x010101 },
-    { 1, math.floor(0.833 * w), 0x010101 },
+    { 0, math.floor(0.333 * sideLength), 0xfefefe },
+    { 0, math.floor(0.5 * sideLength), 0xfefefe },
+    { 0, math.floor(0.667 * sideLength), 0xfefefe },
+    { 0, math.floor(0.833 * sideLength), 0xfefefe },
+    { 1, math.floor(0.333 * sideLength), 0x010101 },
+    { 1, math.floor(0.5 * sideLength), 0x010101 },
+    { 1, math.floor(0.667 * sideLength), 0x010101 },
+    { 1, math.floor(0.833 * sideLength), 0x010101 },
   }
 
+  -- å¦‚æžœæ–¹å‘æ²¡å˜åˆ™ä¸æ—‹è½¬
+  if (multiColor(checkPointList)) then
+    return _orient
+  end
+  -- å¦‚æžœæ–¹å‘å˜äº†åˆ™æ—‹è½¬
   for k, v in ipairs(checkOrder) do
     __init(v)
     if (multiColor(checkPointList)) then
@@ -3489,7 +3498,7 @@ end
 end
 
 package.preload[ "TSLib" ] = assert( (loadstring or load)(
-"\27TS1R\000\1\4\4\4\8\000\25“\r\
+"\27TS1R\000\1\4\4\4\8\000\25“\
 \26\
 \000\9\20 —@L{\000¶z\rïø–jr\rW\4’ü]\16ð7Xh_\4Øj™žTnàZ/Z€\r\9\20 SEÔ #–ÂP°Îÿ5ò0ò20\8t\0256\8t\25\6(:.X©p>]¢…5\8Ö-\14£ïMqüBÇD\24\9v\25\16\9v\0252&z\000-ìtƒµÕN™Ô;|\"Ð\11<VÊ\9iÈ¹Áy—!Ào\1,\8\6 Éo<\7†\26WZ`\24­h[lš\23vR¯B\000\14\8\8 õ\
 ï\5V­Þ\28{ë\18;B\\oDªò²=žÕ\11\8qV4\18ãtÉ\9ùR©(ôÌ\21/A\23O?\1)×6—¼c =Z\22\4ð€`TÊâÝ e\000\000\000-\8\8\8H\8\8\8Uˆˆ\8\8È\8ÏHÈ\8-I\8\8\000\8\9‰-‰\8\8\000\8‰‰-É\8\8\000\8\9Š-\9\9\8\000\8‰Š-I\9\8\000\8\9‹-‰\9\8\000\8‰‹-É\9\8\000\8\9Œ-\9\
