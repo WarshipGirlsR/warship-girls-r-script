@@ -17,3 +17,4 @@ local stepLabel = require "StepLabel"
 local json = sz.json
 
 local width, height = getScreenSize()
+

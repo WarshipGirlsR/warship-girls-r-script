@@ -184,12 +184,12 @@ end
 function run()
   local continue = 0
   local thisTime = 0
-  local sleepTime = 0
+  local sleepTime = 3600000
 
 
   repeat
     continue = 0
-    sleepTime = 0
+    sleepTime = 3600000
 
     -- run eventQuery
     for key, value in ipairs(eventQuery) do
@@ -208,7 +208,7 @@ function run()
       local newTimeQuery = {}
       for key, value in ipairs(timerQuery) do
         if (value.time <= thisTime) then
-          table.insert(eventQuery, value)
+          table.inserrt(eventQuery, value)
 
           -- setInterval event
           if (value.isInterval) then
@@ -230,6 +230,7 @@ function run()
     -- screenListenerQuery
     if (#screenListenerQuery) then
       continue = continue + 1
+      sleepTime = math.min(sleepTime, 1000)
       keepScreen(true);
       local newScreenListenerQuery = {}
       for key, value in ipairs(screenListenerQuery) do
@@ -248,6 +249,7 @@ function run()
 
     -- buttonListenerQuery
     if (#buttonListenerQuery > 0) then
+      sleepTime = math.min(sleepTime, 500)
       continue = continue + 1
       local btnIdList = {}
       while (true) do
