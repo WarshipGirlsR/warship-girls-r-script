@@ -33,7 +33,17 @@ local _ = (function()
 end)()
 
 
--- 封装了xpcall方法
+-- fwGetPressedButton
+-- keepScreen(true);
+
+
+
+
+
+
+
+
+
 function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
@@ -54,12 +64,13 @@ local getEventId = (function()
   end
 end)()
 
--- 主队列
+-- main query
 local eventQuery = {}
--- 各个小队列
+-- sub query
 local screenListenerQuery = {}
 local buttonListenerQuery = {}
 local timerQuery = {}
+
 
 function getEventObj(func, time, isInterval, ms)
   return {
@@ -70,6 +81,25 @@ function getEventObj(func, time, isInterval, ms)
     ms = ms or 0
   }
 end
+
+function getScreenEventObj(checker, func)
+  return {
+    id = getEventId() or 0,
+    checker = checker,
+    func = func,
+  }
+end
+
+function getButtonEventObj(btnId, func)
+  return {
+    id = getEventId() or 0,
+    btnId = btnId,
+    func = func,
+  }
+end
+
+
+
 
 function setimmediate(func)
   if (type(func) ~= 'function') then return 0 end
@@ -87,6 +117,16 @@ function setTimeout(func, ms)
   return eventObj.id
 end
 
+function clearTimeout(id)
+  local newQuery = {}
+  for key, value in ipairs(timerQuery) do
+    if (value.id ~= id) then
+      table.insert(newQuery, value)
+    end
+  end
+  timerQuery = newQuery
+end
+
 function setInterval(func, ms)
   if (type(func) ~= 'function') then return 0 end
   if ((type(ms) ~= 'number') or (ms < 4)) then ms = 4 end
@@ -96,10 +136,56 @@ function setInterval(func, ms)
   return eventObj.id
 end
 
+function setScreenListener(checker, func)
+  if (type(checker) ~= 'function') then return 0 end
+  if (type(func) ~= 'function') then return 0 end
+  local screenEventObj = getScreenEventObj(checker, func)
+  table.insert(screenListenerQuery, screenEventObj)
+  return screenEventObj.id
+end
+
+function clearScreenListener(id)
+  local newQuery = {}
+  for key, value in ipairs(screenListenerQuery) do
+    if (value.id ~= id) then
+      table.insert(newQuery, value)
+    end
+  end
+  screenListenerQuery = newQuery
+end
+
+function setButotnListener(btnid, func)
+  if (type(func) ~= 'function') then return 0 end
+  local btnEventObj = getButtonEventObj(func)
+  table.insert(buttonListenerQuery, btnEventObj)
+  return btnEventObj.id
+end
+
+function clearButotnListener(id)
+  local newQuery = {}
+  for key, value in ipairs(buttonListenerQuery) do
+    if (value.id ~= id) then
+      table.insert(newQuery, value)
+    end
+  end
+  buttonListenerQuery = newQuery
+end
+
+function clearListenersOnButton(btnId)
+  local newQuery = {}
+  for key, value in ipairs(buttonListenerQuery) do
+    if (value.btnId ~= btnId) then
+      table.insert(newQuery, value)
+    end
+  end
+  buttonListenerQuery = newQuery
+end
+
 function run()
   local continue = 0
   local thisTime = 0
   local sleepTime = 0
+
 
   repeat
     continue = 0
@@ -107,7 +193,6 @@ function run()
 
     -- run eventQuery
     for key, value in ipairs(eventQuery) do
-      continue = continue + 1
       value.func()
       -- setInterval event
     end
@@ -118,55 +203,65 @@ function run()
     thisTime = gettimeFunc()
 
     -- timeQuery
-    local newTimeQuery = {}
-    for key, value in ipairs(timerQuery) do
+    if (#timerQuery > 0) then
       continue = continue + 1
-      if (value.time <= thisTime) then
-        table.insert(eventQuery, value)
+      local newTimeQuery = {}
+      for key, value in ipairs(timerQuery) do
+        if (value.time <= thisTime) then
+          table.insert(eventQuery, value)
 
-        -- setInterval event
-        if (value.isInterval) then
-          repeat
-            value.time = value.time + value.ms
-          until (value.time > thisTime)
+          -- setInterval event
+          if (value.isInterval) then
+            repeat
+              value.time = value.time + value.ms
+            until (value.time > thisTime)
+            sleepTime = math.min(sleepTime, value.time)
+            table.insert(newTimeQuery, value)
+          end
+        else
           sleepTime = math.min(sleepTime, value.time)
           table.insert(newTimeQuery, value)
         end
-
-        console.log(value)
-      else
-        sleepTime = math.min(sleepTime, value.time)
-        table.insert(newTimeQuery, value)
       end
+      timerQuery = newTimeQuery
+      newTimeQuery = nil
     end
-    timerQuery = newTimeQuery
-    newTimeQuery = nil
 
     -- screenListenerQuery
-    local newScreenListenerQuery = {}
-    for key, value in ipairs(screenListenerQuery) do
+    if (#screenListenerQuery) then
       continue = continue + 1
-      if (value.time < thisTime) then
-        table.insert(eventQuery, value)
-      else
-        table.insert(newScreenListenerQuery, value)
+      keepScreen(true);
+      local newScreenListenerQuery = {}
+      for key, value in ipairs(screenListenerQuery) do
+        if (value.checker()) then
+          table.insert(eventQuery, value)
+          if (not value.isOnce) then
+            table.insert(newScreenListenerQuery, value)
+          end
+        else
+          table.insert(newScreenListenerQuery, value)
+        end
       end
+      screenListenerQuery = newScreenListenerQuery
+      keepScreen(false);
     end
-    screenListenerQuery = newScreenListenerQuery
-    newScreenListenerQuery = nil
 
     -- buttonListenerQuery
-    local newButtonListenerQuery = {}
-    for key, value in ipairs(buttonListenerQuery) do
+    if (#buttonListenerQuery > 0) then
       continue = continue + 1
-      if (value.time < thisTime) then
-        table.insert(eventQuery, value)
-      else
-        table.insert(newButtonListenerQuery, value)
+      local btnIdList = {}
+      while (true) do
+        local btnId = fwGetPressedButton()
+        if (type(btnId) == 'nil') then break end
+        btnIdList[btnId] = btnId
+      end
+      for key, value in ipairs(buttonListenerQuery) do
+        if (btnIdList[value.btnId] == value.btnId) then
+          table.insert(eventQuery, value)
+        end
       end
     end
-    buttonListenerQuery = newButtonListenerQuery
-    newButtonListenerQuery = nil
+
 
     if (#eventQuery <= 0) then
       mSleep(sleepTime)
@@ -177,6 +272,13 @@ end
 return {
   setimmediate = setimmediate,
   setTimeout = setTimeout,
+  clearTimeout = clearTimeout,
   setInterval = setInterval,
+  clearInterval = clearTimeout,
+  setScreenListener = setScreenListener,
+  clearScreenListener = clearScreenListener,
+  setButotnListener = setButotnListener,
+  clearListenersOnButton = clearListenersOnButton,
+  clearButotnListener = clearButotnListener,
   run = run,
 };

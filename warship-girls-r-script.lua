@@ -2,7 +2,7 @@
 local debug = false
 runCount = 1
 local isPause = false
-initLog("shipr1-1", 0)
+initLog("warship-girls-r-script", 0)
 
 init(0)
 require "KeepScreenHock"
