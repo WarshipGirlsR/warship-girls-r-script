@@ -1,3 +1,4 @@
+local nLog = nLog or function() end
 local isArray = table.isArray or function(tab)
   if (type(tab) ~= "table") then
     return false
@@ -61,6 +62,7 @@ end
 __console.log = __console.log or function(obj)
   local js = runTable(obj)
   print(js)
+  nLog(js)
   return js
 end
 

@@ -20,5 +20,4 @@ local eq = require 'EventQuery'
 
 local width, height = getScreenSize()
 
-
 eq.run()
