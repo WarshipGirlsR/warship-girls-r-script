@@ -2,18 +2,23 @@
 local debug = false
 runCount = 1
 local isPause = false
-initLog("warship-girls-r-script", 0)
+initLog('warship-girls-r-script', 0)
 
 init(0)
-require "KeepScreenHock"
-require "TSLib"
-require "DeviceOrientHock"
-require "TableLib"
-local sz = require "sz"
-local socket = require "szocket.core"
-local mapMaker = require "BaseOperate"
-local gomissionMaker = require "GoMission"
-local stepLabel = require "StepLabel"
+require 'KeepScreenHock'
+require 'TSLib'
+require 'DeviceOrientHock'
+
+
+local sz = require 'sz'
+local socket = require 'szocket.core'
+local mapMaker = require 'BaseOperate'
+local gomissionMaker = require 'GoMission'
+local stepLabel = require 'StepLabel'
 local json = sz.json
+local eq = require 'EventQuery'
 
 local width, height = getScreenSize()
+
+
+eq.run()
