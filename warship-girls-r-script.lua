@@ -1,9 +1,10 @@
 local debug = false
 runCount = 1
 local isPause = false
-initLog("warship-girls-r-script", 0)
+initLog('warship-girls-r-script', 0)
 
 init(0)
+<<<<<<< HEAD
 require "KeepScreenHock"
 require "TSLib"
 require "DeviceOrientHock"
@@ -15,10 +16,24 @@ local socket = require "szocket.core"
 local mapMaker = (require "BaseOperate")()
 local gomission = require "GoMission"
 local stepLabel = require "StepLabel"
+=======
+require 'KeepScreenHock'
+require 'TSLib'
+require 'DeviceOrientHock'
+
+
+local sz = require 'sz'
+local socket = require 'szocket.core'
+local mapMaker = require 'BaseOperate'
+local gomissionMaker = require 'GoMission'
+local stepLabel = require 'StepLabel'
+>>>>>>> 7942e7aab251e378a2550f6e8e0ec02b1a25c1ce
 local json = sz.json
+local eq = require 'EventQuery'
 
 local width, height = getScreenSize()
 
+<<<<<<< HEAD
 
 
 stepLabel.setStepLabelContent("开始")
@@ -742,3 +757,6 @@ co(coroutine.create(function()
 end)).catch(nLog)
 
 eq.run()
+=======
+eq.run()
+>>>>>>> 7942e7aab251e378a2550f6e8e0ec02b1a25c1ce
