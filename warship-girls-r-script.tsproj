@@ -2,12 +2,10 @@
 [lib]
 [file]
 TSLib.lua
-TryCall.lua
 Co.lua
 Promise.lua
 EventQuery.lua
 warship-girls-r-script.lua
-TableLib.lua
 StepLabel.lua
 KeepScreenHock.lua
 GoMission.lua
@@ -16,5 +14,4 @@ console.lua
 BaseOperate.lua
 main.lua
 warship-girls-r-script.min.lua
-test_min.lua
 test.lua

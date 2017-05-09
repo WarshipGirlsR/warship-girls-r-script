@@ -36,6 +36,12 @@ end)()
 -- fwGetPressedButton
 -- keepScreen(true);
 
+local function isEmpty(tab)
+  for _, v in pairs(tab) do
+    return false
+  end
+  return true
+end
 
 
 
@@ -43,16 +49,15 @@ end)()
 
 
 
-
-function tryCatch(cb)
+local function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-        (e .. '\n' .. debug.traceback())
-        or (e)
+      (e .. '\n' .. debug.traceback())
+      or (e)
   end)
 end
 
-function bindSelf(func, self)
+local function bindSelf(func, self)
   return function(...) return func(self, ...) end
 end
 
@@ -68,8 +73,12 @@ end)()
 local eventQuery = {}
 -- sub query
 local screenListenerQuery = {}
+local screenListenerQueryIndex = {}
+local screenListenerQueryGroup = {}
 local buttonListenerQuery = {}
+local buttonListenerQueryIndex = {}
 local timerQuery = {}
+local timerQueryIndex = {}
 
 
 function getEventObj(func, time, isInterval, ms)
@@ -78,15 +87,18 @@ function getEventObj(func, time, isInterval, ms)
     time = time or 0,
     func = func,
     isInterval = isInterval or false,
-    ms = ms or 0
+    ms = ms or 0,
+    drop = false,
   }
 end
 
-function getScreenEventObj(checker, func)
+function getScreenEventObj(tags, checker, func)
   return {
     id = getEventId() or 0,
+    tags = tags,
     checker = checker,
     func = func,
+    drop = false,
   }
 end
 
@@ -95,6 +107,7 @@ function getButtonEventObj(btnId, func)
     id = getEventId() or 0,
     btnId = btnId,
     func = func,
+    drop = false,
   }
 end
 
@@ -114,17 +127,16 @@ function setTimeout(func, ms)
   local time = gettimeFunc() + ms
   local eventObj = getEventObj(func, time)
   table.insert(timerQuery, eventObj)
+  timerQueryIndex[eventObj.id] = eventObj
   return eventObj.id
 end
 
 function clearTimeout(id)
-  local newQuery = {}
-  for key, value in ipairs(timerQuery) do
-    if (value.id ~= id) then
-      table.insert(newQuery, value)
-    end
+  local theEventObj = timerQueryIndex[id]
+  if (theEventObj) then
+    theEventObj.drop = true
+    timerQueryIndex[id] = nil
   end
-  timerQuery = newQuery
 end
 
 function setInterval(func, ms)
@@ -133,52 +145,90 @@ function setInterval(func, ms)
   local time = gettimeFunc() + ms
   local eventObj = getEventObj(func, time, true, ms)
   table.insert(timerQuery, eventObj)
+  timerQueryIndex[eventObj.id] = eventObj
   return eventObj.id
 end
 
-function setScreenListener(checker, func)
+-- param: tags, checker, func
+function setScreenListener(...)
+  local args = { ... }
+  local tags = {}
+  if (type(args[1]) == 'table') then
+    tags = table.remove(args, 1)
+  elseif (type(args[1]) == 'string') then
+    tags = { table.remove(args, 1) }
+  end
+  local checker = table.remove(args, 1)
+  local func = table.remove(args, 1)
+
+
   if (type(checker) ~= 'function') then return 0 end
   if (type(func) ~= 'function') then return 0 end
-  local screenEventObj = getScreenEventObj(checker, func)
+  local screenEventObj = getScreenEventObj(tags, checker, func)
   table.insert(screenListenerQuery, screenEventObj)
+  screenListenerQueryIndex[screenEventObj.id] = screenEventObj
+  for _, tag in ipairs(tags) do
+    screenListenerQueryGroup[tag] = screenListenerQueryGroup[tag] or {}
+    screenListenerQueryGroup[tag][screenEventObj.id] = screenEventObj
+  end
   return screenEventObj.id
 end
 
 function clearScreenListener(id)
-  local newQuery = {}
-  for key, value in ipairs(screenListenerQuery) do
-    if (value.id ~= id) then
-      table.insert(newQuery, value)
+  local theEventObj = screenListenerQueryIndex[id]
+  if (theEventObj) then
+    theEventObj.drop = true
+    screenListenerQueryIndex[id] = nil
+    for _, tag in ipairs(theEventObj.tags) do
+      if (type(screenListenerQueryGroup[tag]) == 'table') then
+        screenListenerQueryGroup[tag][theEventObj.id] = nil
+        if (isEmpty(screenListenerQueryGroup[tag])) then
+          screenListenerQueryGroup[tag] = nil
+        end
+      end
     end
   end
-  screenListenerQuery = newQuery
+end
+
+function clearScreenListenerByTags(tags)
+  if (type(tags) ~= 'table') then
+    tags = { tags }
+  end
+  for _, tag in pairs(tags) do
+    local tagsEventObj = screenListenerQueryGroup[tag]
+    if (type(tagsEventObj) == 'table') then
+      for _, eventObj in pairs(tagsEventObj) do
+        eventObj.drop = true
+        screenListenerQueryIndex[eventObj.id] = nil
+      end
+    end
+    screenListenerQueryGroup[tag] = nil
+  end
 end
 
 function setButotnListener(btnid, func)
   if (type(func) ~= 'function') then return 0 end
   local btnEventObj = getButtonEventObj(func)
   table.insert(buttonListenerQuery, btnEventObj)
+  buttonListenerQueryIndex[btnEventObj.id] = btnEventObj
   return btnEventObj.id
 end
 
 function clearButotnListener(id)
-  local newQuery = {}
-  for key, value in ipairs(buttonListenerQuery) do
-    if (value.id ~= id) then
-      table.insert(newQuery, value)
-    end
+  local theEventObj = buttonListenerQueryIndex[id]
+  if (not theEventObj) then
+    theEventObj.drop = true
+    buttonListenerQueryIndex[id] = nil
   end
-  buttonListenerQuery = newQuery
 end
 
 function clearListenersOnButton(btnId)
-  local newQuery = {}
   for key, value in ipairs(buttonListenerQuery) do
     if (value.btnId ~= btnId) then
-      table.insert(newQuery, value)
+      value.drop = true
+      buttonListenerQueryIndex[value.id] = nil
     end
   end
-  buttonListenerQuery = newQuery
 end
 
 function run()
@@ -207,20 +257,22 @@ function run()
       continue = continue + 1
       local newTimeQuery = {}
       for key, value in ipairs(timerQuery) do
-        if (value.time <= thisTime) then
-          table.inserrt(eventQuery, value)
+        if (not value.drop) then
+          if (value.time <= thisTime) then
+            table.insert(eventQuery, value)
 
-          -- setInterval event
-          if (value.isInterval) then
-            repeat
-              value.time = value.time + value.ms
-            until (value.time > thisTime)
+            -- setInterval event
+            if (value.isInterval) then
+              repeat
+                value.time = value.time + value.ms
+              until (value.time > thisTime)
+              sleepTime = math.min(sleepTime, value.time)
+              table.insert(newTimeQuery, value)
+            end
+          else
             sleepTime = math.min(sleepTime, value.time)
             table.insert(newTimeQuery, value)
           end
-        else
-          sleepTime = math.min(sleepTime, value.time)
-          table.insert(newTimeQuery, value)
         end
       end
       timerQuery = newTimeQuery
@@ -234,13 +286,15 @@ function run()
       keepScreen(true);
       local newScreenListenerQuery = {}
       for key, value in ipairs(screenListenerQuery) do
-        if (value.checker()) then
-          table.insert(eventQuery, value)
-          if (not value.isOnce) then
+        if (not value.drop) then
+          if (value.checker()) then
+            table.insert(eventQuery, value)
+            if (not value.isOnce) then
+              table.insert(newScreenListenerQuery, value)
+            end
+          else
             table.insert(newScreenListenerQuery, value)
           end
-        else
-          table.insert(newScreenListenerQuery, value)
         end
       end
       screenListenerQuery = newScreenListenerQuery
@@ -252,16 +306,20 @@ function run()
       sleepTime = math.min(sleepTime, 500)
       continue = continue + 1
       local btnIdList = {}
+      local newButtonListenerQuery = {}
       while (true) do
         local btnId = fwGetPressedButton()
         if (type(btnId) == 'nil') then break end
         btnIdList[btnId] = btnId
       end
       for key, value in ipairs(buttonListenerQuery) do
-        if (btnIdList[value.btnId] == value.btnId) then
-          table.insert(eventQuery, value)
+        if (not value.drop) then
+          if (btnIdList[value.btnId] == value.btnId) then
+            table.insert(eventQuery, value)
+          end
         end
       end
+      buttonListenerQuery = newButtonListenerQuery
     end
 
 
@@ -279,6 +337,7 @@ return {
   clearInterval = clearTimeout,
   setScreenListener = setScreenListener,
   clearScreenListener = clearScreenListener,
+  clearScreenListenerByTags = clearScreenListenerByTags,
   setButotnListener = setButotnListener,
   clearListenersOnButton = clearListenersOnButton,
   clearButotnListener = clearButotnListener,
