@@ -66,4 +66,8 @@ __console.log = __console.log or function(obj)
   return js
 end
 
+__console.getJsStr = function(obj)
+  return runTable(obj)
+end
+
 console = __console

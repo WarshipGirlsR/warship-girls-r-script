@@ -1,6 +1,7 @@
 [res]
 [lib]
 [file]
+GetColor.lua
 TSLib.lua
 Co.lua
 Promise.lua

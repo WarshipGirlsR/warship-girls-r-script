@@ -6,34 +6,28 @@ local __init = init
 __init(0)
 local w, h = getScreenSize()
 local m = math.max(w, h)
+local sideLength = math.min(w, h)
 local orient = 0;
-local nextUpdateTime = os.time()
+local nextUpdateTime = 0
 
 -- 计算方向辅助界面，一像素宽度的白色边界，一像素宽的黑色边界，用于检测方向
 fwShowWnd("orientwid1", 0, 0, 2, m, 0)
 fwShowTextView("orientwid1", "text1", "", "center", "000000", "FEFEFE", 15, 0, 0, 0, 1, m, 1)
 fwShowTextView("orientwid1", "text2", "", "center", "000000", "010101", 15, 0, 1, 0, 2, m, 1)
 
-mSleep(100)
-
-
 -- 计算当前方向
 function calOrient(_orient)
-  __init(0)
   local result = _orient
   -- 寻找白色边界
+  __init(_orient)
 
   local checkOrder = { 0, 1, 2 }
-  local sideLength = h
   if (_orient == 0) then
     checkOrder = { 1, 2 }
-    sideLength = h
   elseif (_orient == 1) then
     checkOrder = { 0, 2 }
-    sideLength = w
   elseif (_orient == 2) then
     checkOrder = { 0, 1 }
-    sideLength = w
   end
 
   local checkPointList = {
@@ -66,7 +60,7 @@ local _orient = calOrient(orient)
 orient = _orient
 
 -- 获取当前方向
-getDeviceOrient = function(useKeep)
+getDeviceOrient = function()
   local newOrient = orient
   if (os.time() > nextUpdateTime) then
     local _keepScreenState = keepScreenState

@@ -3,12 +3,10 @@ runCount = 1
 local isPause = false
 initLog('warship-girls-r-script', 0)
 
-init(0)
-<<<<<<< HEAD
+require "console"
 require "KeepScreenHock"
 require "TSLib"
 require "DeviceOrientHock"
-require "console"
 local eq = require 'EventQuery'
 local co = require 'Co'
 local sz = require "sz"
@@ -16,7 +14,6 @@ local socket = require "szocket.core"
 local mapMaker = (require "BaseOperate")()
 local gomission = require "GoMission"
 local stepLabel = require "StepLabel"
-=======
 require 'KeepScreenHock'
 require 'TSLib'
 require 'DeviceOrientHock'
@@ -27,13 +24,12 @@ local socket = require 'szocket.core'
 local mapMaker = require 'BaseOperate'
 local gomissionMaker = require 'GoMission'
 local stepLabel = require 'StepLabel'
->>>>>>> 7942e7aab251e378a2550f6e8e0ec02b1a25c1ce
 local json = sz.json
 local eq = require 'EventQuery'
 
 local width, height = getScreenSize()
 
-<<<<<<< HEAD
+local c = coroutine
 
 
 stepLabel.setStepLabelContent("开始")
@@ -733,30 +729,26 @@ if (debug) then
 end
 -- --转换settings结果
 
-gomission.init(mapMaker, stepLabel, settings)
+
+gomission.init(mapMaker(), stepLabel, settings)
 
 local action = {
-  type = 'EXPEDITION_REWARD_START',
+  type = 'MISSION_IS_UNRECEIVED_MISSION',
 }
 
-co(coroutine.create(function()
+co(c.create(function()
   if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable) then
-    local i = 9
-    while (i > 0) do
-      stepLabel.setStepLabelContent("测试开始")
-      action = coroutine.yield(gomission.next(action))
-      nLog('========================')
-      nLog(console.log(action))
+    local i = 0
+    while (i < 4) do
+      stepLabel.setStepLabelContent("第" .. i .. '回合')
+      action = c.yield(gomission.next(action))
       if (not action) then
         action = { type = 'HOME_HOME' }
       end
-      stepLabel.setStepLabelContent("结束开始")
-      i = i - 1
+      stepLabel.setStepLabelContent("第" .. i .. '回合结束')
+      i = i + 1
     end
   end
 end)).catch(nLog)
 
 eq.run()
-=======
-eq.run()
->>>>>>> 7942e7aab251e378a2550f6e8e0ec02b1a25c1ce

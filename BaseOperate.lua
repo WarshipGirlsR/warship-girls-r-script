@@ -684,12 +684,18 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 888, 970, 0xc51800 },
-      { 924, 978, 0xc50800 },
-      { 905, 961, 0xdec242 },
-      { 675, 989, 0x4acef7 },
-      { 760, 987, 0x42ceef },
-      { 760, 1050, 0x008ebd },
+      { 888, 970, 0xc51c08 },
+      { 924, 978, 0xc50808 },
+      { 905, 961, 0xd6c242 },
+      { 784, 1002, 0xffffff },
+      { 784, 1039, 0xffffff },
+      { 808, 1039, 0xffffff },
+      { 808, 1000, 0xffffff },
+      { 844, 999, 0xffffff },
+      { 873, 999, 0xffffff },
+      { 856, 1012, 0xffffff },
+      { 847, 1027, 0xffffff },
+      { 878, 1027, 0xffffff },
     }
     local result = multiColor(list)
     if (not __keepScreenState) then keepScreen(false) end
