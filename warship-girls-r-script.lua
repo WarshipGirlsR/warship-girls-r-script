@@ -738,14 +738,14 @@ local action = {
 co(c.create(function()
   if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable) then
     local i = 0
-    while (i < 10) do
+    while (true) do
       stepLabel.setStepLabelContent('第' .. i .. '回合')
       action = c.yield(gomission.next(action))
-      if (not action) then
-        action = { type = 'HOME_HOME' }
-      end
       stepLabel.setStepLabelContent('第' .. i .. '回合结束')
       i = i + 1
+      if (not action) then
+        break
+      end
     end
   end
 end)).catch(nLog)

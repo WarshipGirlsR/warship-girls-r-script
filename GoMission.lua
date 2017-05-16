@@ -98,7 +98,7 @@ return {
     missions.home = function(action, state)
       return co(c.create(function()
         if (action.type == 'HOME_HOME') then
-          return { type = 'HOME_HOME' }, state
+          return nil, state
         end
 
         return nil
@@ -341,6 +341,8 @@ return {
     missions.expeditionOnce = function(action, state)
       return co(c.create(function()
         if (action.type == 'EXPEDITION_ONCE_START') then
+          stepLabel.setStepLabelContent('3-15.准备远征派遣舰队')
+          -- 准备开始远征派遣舰队任务
           if (type(settings.expeditionFleetToChapter) ~= 'table') then
             stateTree.expedition.expeditionFleetToChapter = { false, false, false, false }
           end
@@ -349,7 +351,7 @@ return {
               and (not settings.expeditionFleetToChapter[2])
               and (not settings.expeditionFleetToChapter[3])
               and (not settings.expeditionFleetToChapter[4])) then
-            stepLabel.setStepLabelContent('3-19.没有远征任务！')
+            stepLabel.setStepLabelContent('3-16.没有远征任务！')
             return nil
           end
           -- 转换数组
@@ -363,19 +365,18 @@ return {
             stateTree.expedition.expeditionFleetToChapter = newC
           end)()
 
-          stepLabel.setStepLabelContent('3-20.等待home')
 
           -- 此任务使用的变量恢复默认值
           stateTree.expedition.lastChapter = nil
           stateTree.expedition.fleet = nil
           stateTree.expedition.chapters = nil
-          stateTree.expedition.quickSupplyDone = nil
-          stateTree.expedition.quickRepairDone = nil
+          stateTree.expedition.quickSupplyChecked = nil
+          stateTree.expedition.quickRepairChecked = nil
 
 
-          stepLabel.setStepLabelContent('3-21.点击出征')
+          stepLabel.setStepLabelContent('3-17.点击出征')
           map.expedition.clickBattle()
-          stepLabel.setStepLabelContent('3-22.等待出征界面')
+          stepLabel.setStepLabelContent('3-18.等待出征界面')
 
           local newstateTypes = c.yield(setScreenListenerListPromise({
             { 'EXPEDITION_ONCE_START', 'expeditionGroup', map.home.isHome, 2000 },
@@ -385,23 +386,10 @@ return {
           return { type = newstateTypes }, state
 
         elseif (action.type == 'EXPEDITION_IS_BATTLE_PAGE') then
-
-          stepLabel.setStepLabelContent('3-23.点击远征')
+          -- 进入出征大页面
+          stepLabel.setStepLabelContent('3-19.点击远征')
           map.expedition.clickExpedition()
-          stepLabel.setStepLabelContent('3-24.等待远征界面')
-
-          local newstateTypes = c.yield(setScreenListenerListPromise({
-            { 'EXPEDITION_ONCE_START', 'expeditionGroup', map.home.isHome, 2000 },
-            { 'EXPEDITION_IS_BATTLE_PAGE', 'expeditionGroup', map.expedition.isBattle, 2000 },
-            { 'EXPEDITION_IS_EXPEDITION_PAGE', 'expeditionGroup', map.expedition.isBattleExpedition },
-          }))
-          return { type = newstateTypes }, state
-
-        elseif (action.type == 'EXPEDITION_IS_BATTLE_PAGE') then
-
-          stepLabel.setStepLabelContent('3-23.点击远征')
-          map.expedition.clickExpedition()
-          stepLabel.setStepLabelContent('3-24.等待远征界面')
+          stepLabel.setStepLabelContent('3-20.等待远征界面')
 
           local newstateTypes = c.yield(setScreenListenerListPromise({
             { 'EXPEDITION_ONCE_START', 'expeditionGroup', map.home.isHome, 2000 },
@@ -411,24 +399,27 @@ return {
           return { type = newstateTypes }, state
 
         elseif (action.type == 'EXPEDITION_IS_EXPEDITION_PAGE') then
-
+          -- 进入远征准备页面
           if (#stateTree.expedition.expeditionFleetToChapter > 0) then
+            stateTree.expedition.quickSupplyChecked = nil
+            stateTree.expedition.quickRepairChecked = nil
+
             stateTree.expedition.fleet, stateTree.expedition.chapters = table.unpack(stateTree.expedition.expeditionFleetToChapter[1])
 
             local chapter, section = table.unpack(strSplit(stateTree.expedition.chapters, '-'))
             if (stateTree.expedition.lastChapter ~= chapter) then
-              stepLabel.setStepLabelContent('3-25.移动到第' .. chapter .. '章')
+              stepLabel.setStepLabelContent('3-21.移动到第' .. chapter .. '章')
               map.expedition.moveToChapter(chapter, lastChapter)
               stateTree.expedition.lastChapter = chapter
               c.yield(sleepPromise(300))
             end
-            stepLabel.setStepLabelContent('3-26.检测第' .. section .. '节能否远征')
+            stepLabel.setStepLabelContent('3-22.检测第' .. section .. '节能否远征')
             c.yield(sleepPromise(200))
             local res = map.expedition.isChapterCanExpedition(section)
             if (res) then
-              stepLabel.setStepLabelContent('3-27.点击按钮' .. section)
+              stepLabel.setStepLabelContent('3-23.点击按钮' .. section)
               map.expedition.clickExpeditionBtn(section)
-              stepLabel.setStepLabelContent('3-28.等待远征准备界面')
+              stepLabel.setStepLabelContent('3-24.等待远征准备界面')
 
               local newstateTypes = c.yield(setScreenListenerListPromise({
                 { 'EXPEDITION_IS_EXPEDITION_PAGE', 'expeditionGroup', map.expedition.isBattleExpedition, 2000 },
@@ -436,42 +427,138 @@ return {
               }))
               return { type = newstateTypes }, state
             else
-              stepLabel.setStepLabelContent('3-29.本章不能远征')
+              stepLabel.setStepLabelContent('3-25.本章不能远征')
               -- 执行下一个章节
               table.remove(stateTree.expedition.expeditionFleetToChapter, 1)
               return { type = 'EXPEDITION_IS_EXPEDITION_PAGE' }, state
             end
           else
-            stepLabel.setStepLabelContent('3-30.没有远征')
-            state = 'returnToHome'
+            stepLabel.setStepLabelContent('3-26.没有远征')
+            return { type = 'EXPEDITION_RETURN_TO_HOME' }, state
           end
 
         elseif (action.type == 'EXPEDITION_BATTLE_PREPARE_PAGE') then
-
-          stepLabel.setStepLabelContent('3-31.选择舰队' .. stateTree.expedition.fleet)
+          -- 远征准备界面，进行状态是否最佳的检测，然后进行补给和维修
+          stepLabel.setStepLabelContent('3-27.选择舰队' .. stateTree.expedition.fleet)
           map.expedition.clickSelectFleet(stateTree.expedition.fleet)
-          stepLabel.setStepLabelContent('3-32.检测所有状态正常')
+          stepLabel.setStepLabelContent('3-28.检测所有状态正常')
           c.yield(sleepPromise(300))
+          -- 检测舰队是否在最佳状态
           local res = map.expedition.isReadyExpeditionShipStatus()
           if (not res) then
-            stepLabel.setStepLabelContent('3-33.状态不正常')
+            -- 舰队不是最佳状态
+            stepLabel.setStepLabelContent('3-29.状态不正常')
 
-            if (not stateTree.expedition.quickSupplyDone) then
+            if (not stateTree.expedition.quickSupplyChecked) then
+              -- 快速补给
               map.expedition.clickQuickSupply()
-              stepLabel.setStepLabelContent('3-34.等待快速补给界面')
+              stepLabel.setStepLabelContent('3-30.等待快速补给界面')
 
               local newstateTypes = c.yield(setScreenListenerListPromise({
-                { 'EXPEDITION_BATTLE_EXPENDITION_PREPARE_PAGE', 'expeditionGroup', map.expedition.isExpeditionPrepare, 2000 },
                 { 'EXPEDITION_QUICK_SUPPLY_PAGE', 'expeditionGroup', map.expedition.isQuickSupply },
+                { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'expeditionGroup', map.expedition.isExpeditionPrepare, 2000 },
               }))
+
               return { type = newstateTypes }, state
 
-            elseif (not stateTree.expedition.quickRepairDone) then
+            elseif (not stateTree.expedition.quickRepairChecked) then
+              -- 快速修理
+              if (settings.expeditionQuickRepair) then
+                map.expedition.clickQuickRepair()
+                stepLabel.setStepLabelContent('3-31.等待快速修理界面')
+
+                local newstateTypes = c.yield(setScreenListenerListPromise({
+                  { 'EXPEDITION_QUICK_REPAIR_PAGE', 'expeditionGroup', map.expedition.isQuickRepair },
+                  { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'expeditionGroup', map.expedition.isExpeditionPrepare, 2000 },
+                }))
+
+                return { type = newstateTypes }, state
+              end
             end
 
-          else
-            return { type = 'EXPEDITION_BATTLE_PREPARE_PAGE' }, state
+            -- 快速补给和修理都完成了，还不是最佳状态，则跳转到能否出征检测
+            return { type = 'EXPEDITION_BATTLE_PREPARE_PAGE_CAN_GO' }, state
           end
+
+          -- 舰队是最佳状态，跳转到能否出征检测
+          return { type = 'EXPEDITION_BATTLE_PREPARE_PAGE_CAN_GO' }, state
+
+        elseif (action.type == 'EXPEDITION_QUICK_SUPPLY_PAGE') then
+          -- 快速补给界面
+          map.expedition.clickQuickSupplyDo()
+          stepLabel.setStepLabelContent('3-32.等待远征准备界面')
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'EXPEDITION_QUICK_SUPPLY_PAGE', 'expeditionGroup', map.expedition.isQuickSupply, 2000 },
+            { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'expeditionGroup', map.expedition.isExpeditionPrepare },
+          }))
+
+          -- 页面没有停留在本页说明快速补给完成
+          if (newstateTypes ~= 'EXPEDITION_QUICK_SUPPLY_PAGE') then
+            stateTree.expedition.quickSupplyChecked = true
+          end
+
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'EXPEDITION_QUICK_REPAIR_PAGE') then
+          -- 快速修理界面
+          map.expedition.clickQuickRepairDo()
+          stepLabel.setStepLabelContent('3-33.等待远征准备界面')
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'EXPEDITION_QUICK_REPAIR_PAGE', 'expeditionGroup', map.expedition.isQuickRepair, 2000 },
+            { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'expeditionGroup', map.expedition.isExpeditionPrepare },
+          }))
+
+          -- 页面没有停留在本页说明快速修理完成
+          if (newstateTypes ~= 'EXPEDITION_QUICK_REPAIR_PAGE') then
+            stateTree.expedition.quickRepairChecked = true
+          end
+
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'EXPEDITION_BATTLE_PREPARE_PAGE_CAN_GO') then
+          -- 检测舰队是否可以远征
+          stepLabel.setStepLabelContent('3-34.检测舰队可以远征')
+          c.yield(sleepPromise(500))
+          local fleetCanExpedition = map.expedition.isCanExpedition()
+          if (not fleetCanExpedition) then
+            return { type = 'EXPEDITION_BATTLE_PREPARE_PAGE_CANT_GO' }, state
+          else
+            stepLabel.setStepLabelContent('3-35.点击远征开始')
+            map.expedition.clickBattleStart()
+          end
+          stepLabel.setStepLabelContent('3-36.等待远征界面')
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'EXPEDITION_BATTLE_PREPARE_PAGE_CAN_GO', 'expeditionGroup', map.expedition.isExpeditionPrepare, 2000 },
+            { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'expeditionGroup', map.expedition.isExpeditionPrepare },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'EXPEDITION_BATTLE_PREPARE_PAGE_CANT_GO') then
+          -- 舰队不能远征，准备返回远征页
+          stepLabel.setStepLabelContent('3-37.点击返回远征界面')
+          map.expedition.clickBackToExpedition()
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'EXPEDITION_BATTLE_PREPARE_PAGE_CANT_GO', 'expeditionGroup', map.expedition.isExpeditionPrepare, 2000 },
+            { 'EXPEDITION_IS_EXPEDITION_PAGE', 'expeditionGroup', map.expedition.isBattleExpedition },
+          }))
+
+          -- 如果离开这一页，则从远征队列里退出一个队伍
+          if (newstateTypes ~= 'EXPEDITION_BATTLE_PREPARE_PAGE_CANT_GO') then
+            table.remove(stateTree.expedition.expeditionFleetToChapter, 1)
+          end
+
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'EXPEDITION_RETURN_TO_HOME') then
+
+          stepLabel.setStepLabelContent('3-38.返回港口')
+          map.expedition.clickBackToHome()
+
+          return { type = 'HOME_HOME' }, state
         end
       end))
     end

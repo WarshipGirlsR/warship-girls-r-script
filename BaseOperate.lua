@@ -1123,7 +1123,7 @@ return function()
   end
 
   -- 点击返回远征界面
-  map.expedition.clickBackToExpeditionPrepare = function()
+  map.expedition.clickBackToExpedition = function()
     tap(1812, 974, 100)
     return true
   end
