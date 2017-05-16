@@ -731,21 +731,39 @@ end
 
 gomission.init(mapMaker(), stepLabel, settings)
 
-local action = {
-  type = 'EXPEDITION_ONCE_START',
-}
+local theMissionsQuery = {}
 
 co(c.create(function()
   if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable) then
-    local i = 0
+
+    if (settings.missionEnable) then
+      table.insert(theMissionsQuery, { isStart = true, type = 'MISSION_IS_UNRECEIVED_MISSION' })
+    end
+    if (settings.expeditionEnable) then
+      table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_REWARD_START' })
+      table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_ONCE_START' })
+    end
+    if (settings.repairEnable) then
+      table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_ONCE_START' })
+    end
+
+
+    runCount = 0
     while (true) do
-      stepLabel.setStepLabelContent('第' .. i .. '回合')
-      action = c.yield(gomission.next(action))
-      stepLabel.setStepLabelContent('第' .. i .. '回合结束')
-      i = i + 1
+      local action = theMissionsQuery[1]
       if (not action) then
         break
       end
+      if (action.isStart) then
+        table.insert(theMissionsQuery, action)
+      end
+      local newAction = c.yield(gomission.next(action))
+      if (newAction) then
+        theMissionsQuery[1] = newAction
+      else
+        table.remove(theMissionsQuery, 1)
+      end
+      runCount = runCount + 1
     end
   end
 end)).catch(nLog)

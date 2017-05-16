@@ -91,6 +91,9 @@ local stateTree = {
   expedition = {
     expeditionFleetToChapter = {},
   },
+  repair = {
+    slot = nil,
+  },
 }
 
 return {
@@ -99,6 +102,16 @@ return {
       return co(c.create(function()
         if (action.type == 'HOME_HOME') then
           return nil, state
+        elseif (action.type == 'HOME_MEDAL_MODAL') then
+          stepLabel.setStepLabelContent("4-15.勋章取消")
+          map.home.clickMedalModalCancelBtn()
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'HOME_MEDAL_MODAL', 'homeGroup', map.home.isMedalModal, 2000 },
+            { 'HOME_HOME', 'homeGroup', map.home.isHome },
+          }))
+
+          return { type = newstateTypes }, state
         end
 
         return nil
@@ -562,6 +575,127 @@ return {
         end
       end))
     end
+    -- 远征派遣
+
+    -- 修理
+    missions.repairOnce = function(action, state)
+      return co(c.create(function()
+        if (action.type == 'REPAIR_ONCE_START') then
+          stateTree.repair.slot = nil
+
+          stepLabel.setStepLabelContent('4-2.点击出征')
+          c.yield(sleepPromise(100))
+          map.repair.clickDockBtn()
+          stepLabel.setStepLabelContent('4-3.等待船坞界面')
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'REPAIR_REPAIR_PAGE', 'repairGroup', map.repair.isRepairPage },
+            { 'REPAIR_DOCK_PAGE', 'repairGroup', map.repair.isDockPage },
+            { 'HOME_MEDAL_MODAL', 'repairGroup', map.home.isMedalModal },
+            { 'HOME_HOME', 'repairGroup', map.home.isHome },
+          }))
+
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'REPAIR_DOCK_PAGE') then
+
+          stepLabel.setStepLabelContent('4-4.点击修理按钮')
+          c.yield(sleepPromise(100))
+          map.repair.clickRepairBtn()
+          stepLabel.setStepLabelContent('4-5.等待修理界面')
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'REPAIR_REPAIR_PAGE', 'repairGroup', map.repair.isRepairPage },
+            { 'REPAIR_DOCK_PAGE', 'repairGroup', map.repair.isDockPage },
+            { 'HOME_MEDAL_MODAL', 'repairGroup', map.home.isMedalModal },
+            { 'HOME_HOME', 'repairGroup', map.home.isHome },
+          }))
+
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'REPAIR_REPAIR_PAGE') then
+
+          stepLabel.setStepLabelContent('4-6.检测空闲槽位')
+          c.yield(sleepPromise(500))
+          local res, hasList = map.repair.hasEmptyRepairSlot()
+          if (res) then
+            stateTree.repair.slot = hasList[1]
+            stepLabel.setStepLabelContent('4-7.有空闲槽位')
+            stepLabel.setStepLabelContent('4-8.点击第' .. stateTree.repair.slot .. '个空闲槽位')
+            c.yield(sleepPromise(100))
+            map.repair.clickRepairSlotBtn(stateTree.repair.slot)
+            c.yield(sleepPromise(100))
+            stepLabel.setStepLabelContent('4-9.检测修理界面，选船界面')
+
+            -- 如果一没进入修船选船页面说明没有需要维修的船
+            local newstateTypes = c.yield(setScreenListenerListPromise({
+              { 'REPAIR_SELECT_SHIP_PAGE', 'repairGroup', map.repair.isSelectShipPage },
+              { 'REPAIR_REPAIR_FINISH', 'repairGroup', map.repair.isRepairPage, 3000 },
+              { 'HOME_MEDAL_MODAL', 'repairGroup', map.home.isMedalModal },
+              { 'HOME_HOME', 'repairGroup', map.home.isHome },
+            }))
+
+            if (newstateTypes == 'REPAIR_REPAIR_FINISH') then
+              stepLabel.setStepLabelContent('4-9.没有船需要维修')
+            end
+
+            return { type = newstateTypes }, state
+          else
+            stepLabel.setStepLabelContent('4-10.没有空位')
+
+            local newstateTypes = c.yield(setScreenListenerListPromise({
+              { 'REPAIR_REPAIR_FINISH', 'repairGroup', map.repair.isRepairPage },
+              { 'HOME_MEDAL_MODAL', 'repairGroup', map.home.isMedalModal },
+              { 'HOME_HOME', 'repairGroup', map.home.isHome },
+            }))
+            return { type = newstateTypes }, state
+          end
+
+        elseif (action.type == 'REPAIR_SELECT_SHIP_PAGE') then
+
+          stepLabel.setStepLabelContent('4-11.选择第一个船')
+          c.yield(sleepPromise(200))
+          map.repair.clickFirstShip()
+          stepLabel.setStepLabelContent('4-12.等待返回修理界面')
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'repairGroup', map.repair.isRepairPage },
+            { 'REPAIR_SELECT_SHIP_PAGE', 'repairGroup', map.repair.isSelectShipPage, 2000 },
+            { 'HOME_MEDAL_MODAL', 'repairGroup', map.home.isMedalModal },
+            { 'HOME_HOME', 'repairGroup', map.home.isHome },
+          }))
+
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'REPAIR_RETURN_TO_REPAIR_PAGE') then
+
+          stepLabel.setStepLabelContent('4-13.等待第' .. stateTree.repair.slot .. '个槽位变成修理状态')
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'REPAIR_REPAIR_PAGE', 'repairGroup', map.repair.isSlotNotEmpty(stateTree.repair.slot) },
+            { 'REPAIR_REPAIR_FINISH', 'repairGroup', map.repair.isRepairPage, 3000 },
+            { 'HOME_MEDAL_MODAL', 'repairGroup', map.home.isMedalModal },
+            { 'HOME_HOME', 'repairGroup', map.home.isHome },
+          }))
+
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'REPAIR_REPAIR_FINISH') then
+
+          stepLabel.setStepLabelContent('4-14.完成维修')
+          map.repair.clickBackToHomeBtn()
+
+          local newstateTypes = c.yield(setScreenListenerListPromise({
+            { 'HOME_MEDAL_MODAL', 'repairGroup', map.home.isMedalModal },
+            { 'HOME_HOME', 'repairGroup', map.home.isHome },
+          }))
+
+          return { type = newstateTypes }, state
+        end
+      end))
+    end
+    -- 修理
+
     return missions
   end,
   next = function(action, state)
