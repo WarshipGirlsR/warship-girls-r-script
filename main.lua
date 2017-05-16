@@ -1,2 +1,2 @@
 -- #!/usr/bin/env lua
-require "warship-girls-r-script.lua"
+require "warship-girls-r-script"

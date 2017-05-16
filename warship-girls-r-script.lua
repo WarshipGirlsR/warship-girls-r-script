@@ -9,9 +9,11 @@ require 'TSLib'
 require 'DeviceOrientHock'
 local eq = require 'EventQuery'
 local co = require 'Co'
+local Promise = require 'Promise'
 local sz = require 'sz'
+local json = sz.json
 local socket = require 'szocket.core'
-local mapMaker = (require 'BaseOperate')()
+local mapMaker = require 'BaseOperate'
 local gomission = require 'GoMission'
 local stepLabel = require 'StepLabel'
 require 'KeepScreenHock'
@@ -19,17 +21,17 @@ require 'TSLib'
 require 'DeviceOrientHock'
 
 
-local sz = require 'sz'
-local socket = require 'szocket.core'
-local mapMaker = require 'BaseOperate'
-local stepLabel = require 'StepLabel'
-local json = sz.json
-local eq = require 'EventQuery'
 
 local width, height = getScreenSize()
 
 local c = coroutine
 
+
+local sleepPromise = function(ms)
+  return Promise.new(function(resolve)
+    eq.setTimeout(resolve, ms)
+  end)
+end
 
 stepLabel.setStepLabelContent('开始')
 
@@ -42,14 +44,13 @@ mSleep(500)
 
 
 
-
 -- 设置
 local settingTable = {
   ['style'] = 'default',
   ['width'] = height,
   ['height'] = height,
   ['config'] = 'save_shipr1-1.dat',
-  ['timer'] = 1,
+  ['timer'] = 5,
   ['orient'] = 1,
   ['pagetype'] = 'multi',
   ['title'] = '选项',
@@ -154,6 +155,23 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['width'] = width / 4,
+        ['text'] = '每一轮的间隔时间(秒)',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+        ['nowrap'] = 1,
+      },
+      {
+        ['id'] = 'missionsInterval',
+        ['type'] = 'Edit',
+        ['width'] = width / 2,
+        ['prompt'] = '最短间隔时间(秒)',
+        ['text'] = '15',
+        ['kbtype'] = 'number',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
         ['size'] = 50,
         ['align'] = 'left',
@@ -168,23 +186,6 @@ local settingTable = {
         ['align'] = 'left',
         ['color'] = '0,0,0',
       },
-      {
-        ['type'] = 'Label',
-        ['width'] = width / 4,
-        ['text'] = '间隔时间(秒)',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-        ['nowrap'] = 1,
-      },
-      {
-        ['id'] = 'missionInterval',
-        ['type'] = 'Edit',
-        ['width'] = width / 2,
-        ['prompt'] = '最短间隔时间(秒)',
-        ['text'] = '15',
-        ['kbtype'] = 'number',
-      },
     },
     {
       {
@@ -193,23 +194,6 @@ local settingTable = {
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-      },
-      {
-        ['type'] = 'Label',
-        ['width'] = width / 4,
-        ['text'] = '间隔时间(秒)',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-        ['nowrap'] = 1,
-      },
-      {
-        ['id'] = 'expeditionInterval',
-        ['type'] = 'Edit',
-        ['width'] = width / 2,
-        ['prompt'] = '最短间隔时间(秒)',
-        ['text'] = '30',
-        ['kbtype'] = 'number',
       },
       {
         ['type'] = 'Label',
@@ -287,7 +271,7 @@ local settingTable = {
         ['id'] = 'expeditionFleet2',
         ['type'] = 'RadioGroup',
         ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '2',
+        ['select'] = '0',
       },
       {
         ['type'] = 'Label',
@@ -300,7 +284,7 @@ local settingTable = {
         ['id'] = 'expeditionFleet3',
         ['type'] = 'RadioGroup',
         ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '7',
+        ['select'] = '0',
       },
       {
         ['type'] = 'Label',
@@ -313,7 +297,7 @@ local settingTable = {
         ['id'] = 'expeditionFleet4',
         ['type'] = 'RadioGroup',
         ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '13',
+        ['select'] = '0',
       },
       {
         ['type'] = 'Label',
@@ -333,23 +317,6 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
-        ['text'] = '间隔时间(秒)',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-        ['nowrap'] = 1,
-      },
-      {
-        ['id'] = 'battleInterval',
-        ['type'] = 'Edit',
-        ['width'] = width / 2,
-        ['prompt'] = '最短间隔时间(秒)',
-        ['text'] = '30',
-        ['kbtype'] = 'number',
-      },
-      {
-        ['type'] = 'Label',
         ['text'] = '章节',
         ['size'] = 15,
         ['align'] = 'left',
@@ -358,7 +325,7 @@ local settingTable = {
       {
         ['id'] = 'battleChapter',
         ['type'] = 'CheckBoxGroup',
-        ['list'] = '1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
+        ['list'] = '1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,5-5,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
         ['select'] = '0',
       },
       {
@@ -473,23 +440,6 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
-        ['text'] = '间隔时间(秒)',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-        ['nowrap'] = 1,
-      },
-      {
-        ['id'] = 'exerciseInterval',
-        ['type'] = 'Edit',
-        ['width'] = width / 2,
-        ['prompt'] = '最短间隔时间(秒)',
-        ['text'] = '30',
-        ['kbtype'] = 'number',
-      },
-      {
-        ['type'] = 'Label',
         ['text'] = '舰队',
         ['size'] = 15,
         ['align'] = 'left',
@@ -533,23 +483,6 @@ local settingTable = {
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-      },
-      {
-        ['type'] = 'Label',
-        ['width'] = width / 4,
-        ['text'] = '间隔时间(秒)',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-        ['nowrap'] = 1,
-      },
-      {
-        ['id'] = 'repairInterval',
-        ['type'] = 'Edit',
-        ['width'] = width / 2,
-        ['prompt'] = '最短间隔时间(秒)',
-        ['text'] = '30',
-        ['kbtype'] = 'number',
       },
     },
   }
@@ -604,10 +537,8 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[exerciseEnable] or false
   end)(settings.exerciseEnable)
-  -- 任务间隔时间
-  settings.missionInterval = tonumber(settings.missionInterval) or 0
-  -- 远征间隔时间
-  settings.expeditionInterval = tonumber(settings.expeditionInterval) or 0
+  -- 总循环间隔时间
+  settings.missionsInterval = tonumber(settings.missionsInterval) or 0
   -- 远征收获和派遣是否连续（否则先收获，再出征，再派遣），为了可以在远征的间隙出征一次
   settings.expeditionTogether = (function(expeditionTogether)
     local list = transStrToTable({ true, false, })
@@ -644,8 +575,6 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[expeditionQuickRepair] or false
   end)(settings.expeditionQuickRepair)
-  -- 出征间隔时间
-  settings.battleInterval = tonumber(settings.battleInterval) or 0
   -- 选择关卡
   settings.battleChapter = (function(battleChapter)
     local tempArr = strSplit(battleChapter, '@')
@@ -654,7 +583,7 @@ local __tmp = (function(settings)
       '2-1', '2-2', '2-3', '2-4', '2-5', '2-6',
       '3-1', '3-2', '3-3', '3-4',
       '4-1', '4-2', '4-3', '4-4',
-      '5-1', '5-2', '5-3', '5-4',
+      '5-1', '5-2', '5-3', '5-4', '5-5',
       '6-1', '6-2', '6-3', '6-4',
       '7-1', '7-2', '7-3', '7-4',
     })
@@ -698,8 +627,6 @@ local __tmp = (function(settings)
   end)(settings.battleMaxBattleNum)
 
 
-  -- 挑战间隔时间
-  settings.exerciseInterval = tonumber(settings.exerciseInterval) or 0
   -- 选择舰队
   settings.exerciseFleet = (function(exerciseFleet)
     local list = transStrToTable({ 1, 2, 3, 4, })
@@ -715,17 +642,8 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[exerciseQuickRepair] or false
   end)(settings.exerciseQuickRepair)
-
-
-
-  -- 修理间隔
-  settings.repairInterval = tonumber(settings.repairInterval) or 0
 end)(settings)
-if (debug) then
-  stepLabel.setStepLabelContent('debug退出')
-  mSleep(10000000)
-  lua_exit()
-end
+
 -- --转换settings结果
 
 
@@ -736,34 +654,62 @@ local theMissionsQuery = {}
 co(c.create(function()
   if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable) then
 
+    -- 是否运行任务
     if (settings.missionEnable) then
       table.insert(theMissionsQuery, { isStart = true, type = 'MISSION_IS_UNRECEIVED_MISSION' })
     end
+    -- 是否运行远征
     if (settings.expeditionEnable) then
       table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_REWARD_START' })
       table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_ONCE_START' })
     end
+    -- 是否运行修理
     if (settings.repairEnable) then
       table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_ONCE_START' })
     end
+    -- 插入一个特殊任务表示这是队列的结尾
+    table.insert(theMissionsQuery, { isStart = true, isEnd = true })
 
 
-    runCount = 0
+
+    runCount = 1
+    local runStartTime = socket.gettime() * 1000
     while (true) do
+      -- 任务队列里没有任务则停止运行
       local action = theMissionsQuery[1]
       if (not action) then
         break
       end
+
+      -- 如果是任务开头则将其加入队列末尾，以保证能一直循环
       if (action.isStart) then
         table.insert(theMissionsQuery, action)
       end
-      local newAction = c.yield(gomission.next(action))
-      if (newAction) then
-        theMissionsQuery[1] = newAction
-      else
+
+      if (action.isEnd) then
+        runStartTime = socket.gettime() * 1000
+        runCount = runCount + 1
         table.remove(theMissionsQuery, 1)
+      else
+        local newAction = c.yield(gomission.next(action))
+        if (newAction) then
+          theMissionsQuery[1] = newAction
+        else
+          table.remove(theMissionsQuery, 1)
+        end
+
+        local diffTime = (socket.gettime() * 1000) - runStartTime
+        if (diffTime < (settings.missionsInterval * 1000)) then
+          local remainTime = (settings.missionsInterval * 1000) - diffTime
+          while (remainTime > 0) do
+            stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒')
+            c.yield(sleepPromise(1000))
+            remainTime = remainTime - 1000
+          end
+        end
       end
-      runCount = runCount + 1
+
+      -- 如果是任务队列结尾标志，则count+1
     end
   end
 end)).catch(nLog)
