@@ -14,6 +14,7 @@ local nextUpdateTime = 0
 fwShowWnd("orientwid1", 0, 0, 2, m, 0)
 fwShowTextView("orientwid1", "text1", "", "center", "000000", "FEFEFE", 15, 0, 0, 0, 1, m, 1)
 fwShowTextView("orientwid1", "text2", "", "center", "000000", "010101", 15, 0, 1, 0, 2, m, 1)
+mSleep(100)
 
 -- 计算当前方向
 function calOrient(_orient)

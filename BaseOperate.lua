@@ -797,6 +797,53 @@ return function()
     tap(955, 717, 100)
   end
 
+  -- 等待新船
+  map.mission.isNewShipPage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 110, 865, 0xadaaad },
+      { 114, 984, 0xcecace },
+      { 582, 1013, 0x00558c },
+      { 1386, 1012, 0x085994 },
+      { 1768, 964, 0x085994 },
+      { 1803, 951, 0xcecece },
+      { 1844, 949, 0x5a5d5a },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击新船
+  map.mission.clickNewShip = function()
+    tap(972, 399, 100)
+  end
+
+  -- 等待新船锁定对话框
+  map.mission.isNewShipPageLockModal = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 839, 293, 0x1065a4 },
+      { 1412, 296, 0xd6cac5 },
+      { 503, 337, 0xd6cec5 },
+      { 521, 772, 0xc5b69c },
+      { 1396, 771, 0xbdb69c },
+      { 743, 747, 0x0092c5 },
+      { 1172, 745, 0xa41400 },
+      { 959, 519, 0xd6cec5 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 船锁定对话框点击确认
+  map.mission.clickNewShipPageLockModalOkBtn = function()
+    tap(741, 713, 100)
+  end
+
   -- 点击任务面板的返回港口
   map.mission.clickBackToHome = function()
     tap(136, 986, 100)
@@ -1046,7 +1093,7 @@ return function()
   map.expedition.clickQuickSupply = map.battle.battle.clickReadyBattlePageQuickSupplyBtn
 
   -- 检测快速补给界面
-  map.expeditionIsQuickSupply = map.battle.battle.isQuickSupplyModal
+  map.expedition.isQuickSupply = map.battle.battle.isQuickSupplyModal
 
   -- 点击快速补给确定
   map.expedition.clickQuickSupplyDo = map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn
