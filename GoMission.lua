@@ -49,29 +49,17 @@ local setScreenListenerPromise = function(actionType, tags, checker)
   end)
 end
 
-local listenerQuery = {
-  query = {},
-}
-listenerQuery.addScreenListener = function(theArr, needClearListener)
-  local self = listenerQuery
+local setScreenListeners = function(theArr, needClearListener)
   needClearListener = needClearListener or true
   if (type(theArr) ~= 'table') then
     return Promise.resolve({})
-  end
-
-  local allArr = {};
-  if (needClearListener) then
-    allArr = mergeArr({}, self.query, theArr)
-  else
-    allArr = mergeArr({}, self.query, theArr)
-    self.query = allArr
   end
 
   return co(c.create(function()
     local newArr = {}
     local tags = {}
     local done = false
-    for key, value in ipairs(allArr) do
+    for key, value in ipairs(theArr) do
       if (type(value[2]) == 'table') then
         for _, tag in ipairs(value[2]) do
           table.insert(tags, tag)
@@ -97,20 +85,10 @@ listenerQuery.addScreenListener = function(theArr, needClearListener)
       end
     end
     local res = c.yield(Promise.race(newArr))
-    if (needClearListener) then
-      eq.clearScreenListenerByTags(tags)
-    end
+    eq.clearScreenListenerByTags(tags)
     return res
   end))
 end
-
-listenerQuery.removeScreenListener = function(tags)
-  local self = listenerQuery
-
-  for key, value in ipairs(self.query) do
-  end
-end
-
 
 local missions = {--  home = function() end,
   --  battleOnce = function() end,
@@ -122,6 +100,7 @@ local missions = {--  home = function() end,
 }
 
 local stateTree = {
+  battle = {},
   expeditionReward = {
     enableChapter = {},
   },
@@ -140,10 +119,10 @@ return {
         if (action.type == 'HOME_HOME') then
           return nil, state
         elseif (action.type == 'HOME_MEDAL_MODAL') then
-          stepLabel.setStepLabelContent("4-15.勋章取消")
+          stepLabel.setStepLabelContent('4-15.勋章取消')
           map.home.clickMedalModalCancelBtn()
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'HOME_MEDAL_MODAL', 'homeGroup', map.home.isMedalModal, 2000 },
             { 'HOME_HOME', 'homeGroup', map.home.isHome },
           }))
@@ -152,7 +131,7 @@ return {
 
         elseif (action.type == 'HOME_RETURN_TO_HOME') then
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'HOME_MEDAL_MODAL', 'homeGroup', map.home.isMedalModal, 2000 },
             { 'HOME_HOME', 'homeGroup', map.home.isHome },
           }))
@@ -164,27 +143,149 @@ return {
       end))
     end
 
+    mission.battleOnce = function(action, state)
+      return co(c.create(function()
+        if (action.type == 'BATTLE_START') then
+          state.battle.quickSupplyCount = 0
+          state.battle.quickRepairCount = 0
+          state.battle.HPIsSafe = true
+          state.battle.battleNum = 1
+          state.battle.cantBattle = true
+
+          stepLabel.setStepLabelContent('2-0.等待HOME')
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'BATTLE_INIT', 'missionsGroup', map.home.isHome },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'BATTLE_HOME_CLICK_BATTLE') then
+
+          stepLabel.setStepLabelContent('1-2.点击出征')
+          map.home.clickBattleBtn()
+          stepLabel.setStepLabelContent('1-3.等待出征页面')
+
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'BATTLE_INIT', 'missionsGroup', map.home.isHome, 2000 },
+            { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isBattlePage },
+            { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'BATTLE_BATTLE_PAGE') then
+
+          stepLabel.setStepLabelContent('1-4.出征页面')
+          stepLabel.setStepLabelContent('1-5.点击出征的出征按钮')
+          c.yield(sleepPromise(500))
+          map.battle.battle.clickBattleBtn()
+          stepLabel.setStepLabelContent('1-6.等待出征的出征界面')
+
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'BATTLE_INIT', 'missionsGroup', map.home.isHome, 2000 },
+            { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isBattlePage },
+            { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE') then
+
+          stepLabel.setStepLabelContent('1-7.出征的出征页面')
+          stepLabel.setStepLabelContent('1-8.移动到章节' .. settings.battleChapter)
+          c.yield(sleepPromise(300))
+          map.battle.battle.moveToChapter(settings.battleChapter)
+          stepLabel.setStepLabelContent('1-9.进入章节')
+          c.yield(sleepPromise(300))
+          map.battle.battle.clickReadyBattleBtn()
+          c.yield(sleepPromise(100))
+          stepLabel.setStepLabelContent('1-10.等待出征准备界面')
+
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'BATTLE_INIT', 'missionsGroup', map.home.isHome, 2000 },
+            { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isBattlePage, 2000 },
+            { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage, 2000 },
+            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'BATTLE_READY_BATTLE_PAGE') then
+
+          stepLabel.setStepLabelContent('1-11.选择舰队:' .. settings.battleFleet)
+          map.battle.battle.selectFleet(settings.battleFleet)
+          stepLabel.setStepLabelContent('1-12.检测所有状态正常')
+          c.yield(sleepPromise(500))
+          local res = map.battle.battle.isReadyBattlePageShipStatusAllRignt()
+          if (res) then
+            return { type = 'BATTLE_READY_BATTLE_PAGE_CAN_GO' }, state
+          else
+            local newstateTypes = c.yield(setScreenListeners({
+              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage, 2000 },
+              { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.battle.isQuickSupplyModal },
+            }))
+            return { type = newstateTypes }, state
+          end
+
+        elseif (action.type == 'BATTLE_QUICK_SUPPLY_MODAL') then
+
+          stepLabel.setStepLabelContent("1-14.快速补给界面")
+          stepLabel.setStepLabelContent("1-15.快速补给界面点击确定")
+          map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn()
+          stepLabel.setStepLabelContent("1-16.等待出征准备界面")
+          state.battle.quickSupplyCount = state.battle.quickSupplyCount + 1
+          if (state.battle.quickSupplyCount < 3) then
+            local newstateTypes = c.yield(setScreenListeners({
+              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage },
+              { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.battle.isQuickSupplyModal, 2000 },
+            }))
+            return { type = newstateTypes }, state
+          else
+            stepLabel.setStepLabelContent("1-17.资源数量不足")
+            return { type = 'BATTLE_QUICK_SUPPLY_MODAL_FAIL' }, state
+          end
+
+        elseif (action.type == 'BATTLE_QUICK_SUPPLY_MODAL_FAIL') then
+
+          stepLabel.setStepLabelContent("1-18.点击快速补给关闭")
+          c.yield(sleepPromise(100))
+          map.battle.battle.clickQuickSupplyModalCloseBtn()
+          c.yield(sleepPromise(300))
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'BATTLE_QUICK_SUPPLY_MODAL_FAIL', 'missionsGroup', map.battle.battle.isQuickSupplyModal },
+            { 'BATTLE_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.battle.battle.isReadyBattlePage, 2000 },
+          }))
+          return { type = newstateTypes }, state
+        end
+      end))
+    end
+
+
     -- 领取任务奖励
     missions.mission = function(action, state)
-
       return co(c.create(function()
-        if (action.type == 'MISSION_IS_UNRECEIVED_MISSION') then
+        if (action.type == 'MISSION_START') then
+
+          stepLabel.setStepLabelContent('2-0.等待HOME')
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'MISSION_IS_UNRECEIVED_MISSION', 'missionsGroup', map.home.isHome },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'MISSION_IS_UNRECEIVED_MISSION') then
+
           stepLabel.setStepLabelContent('2-1.检测是否有任务奖励')
           c.yield(sleepPromise(100))
           local res = map.mission.isUnreceivedMission()
           if (res) then
-            return { type = 'MISSION_START_MISSION' }, state
+            return { type = 'MISSION_INIT' }, state
           end
           stepLabel.setStepLabelContent('2-2.没有任务奖励')
           return { type = 'HOME_HOME' }, state
 
-        elseif (action.type == 'MISSION_START_MISSION') then
+        elseif (action.type == 'MISSION_INIT') then
 
           stepLabel.setStepLabelContent('2-3.点击任务按钮')
           map.mission.clickMission()
           stepLabel.setStepLabelContent('2-4.等待任务界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'HOME_HOME', 'missionsGroup', map.home.isHome, 2000 },
             { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
             { 'MISSION_PAGE', 'missionsGroup', map.mission.isMission },
@@ -198,7 +299,7 @@ return {
           map.missionClickAllMission()
           stepLabel.setStepLabelContent('2-6.等待任务全部任务界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'HOME_HOME', 'missionsGroup', map.home.isHome, 2000 },
             { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
             { 'MISSION_PAGE', 'missionsGroup', map.mission.isMission, 2000 },
@@ -218,7 +319,7 @@ return {
             map.mission.clickGetFirstReward()
             stepLabel.setStepLabelContent('2-9.等待获得面板')
 
-            local newstateTypes = c.yield(listenerQuery.addScreenListener({
+            local newstateTypes = c.yield(setScreenListeners({
               { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 2000 },
               { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel },
             }))
@@ -232,7 +333,7 @@ return {
           map.mission.clickRewardPannelOk()
           stepLabel.setStepLabelContent('2-11.等待新船，任务全部任务')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
             { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
             { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
@@ -248,7 +349,7 @@ return {
           map.mission.clickNewShip()
           stepLabel.setStepLabelContent('2-13.等待新船锁定，任务全部任务')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
             { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
             { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 2000 },
@@ -264,7 +365,7 @@ return {
           map.mission.clickNewShipPageLockModalOkBtn()
           stepLabel.setStepLabelContent('2-15.等待任务全部任务')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
             { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
             { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
@@ -279,7 +380,7 @@ return {
           stepLabel.setStepLabelContent('2-16.等待返回home')
           map.mission.clickBackToHome()
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'MISSION_PAGE_NO_REWAR', 'missionsGroup', map.mission.isMission, 2000 },
             { 'HOME_HOME', 'missionsGroup', map.home.isHome },
           }))
@@ -295,6 +396,14 @@ return {
     missions.expeditionReward = function(action, state)
       return co(c.create(function()
         if (action.type == 'EXPEDITION_REWARD_START') then
+
+          stepLabel.setStepLabelContent('3-0.等待HOME')
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'EXPEDITION_REWARD_INIT', 'missionsGroup', map.home.isHome },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'EXPEDITION_REWARD_INIT') then
           if (type(settings.enableChapter) ~= 'table') then
             settings.enableChapter = { 1, 2, 3, 4, 5, 6, 7 }
           elseif (#settings.enableChapter < 1) then
@@ -326,7 +435,7 @@ return {
           map.expedition.clickBattle()
           stepLabel.setStepLabelContent('3-6.等待出征界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', 'missionsGroup', map.expedition.isBattleExpedition },
             { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 2000 },
             { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattle, 2000 },
@@ -339,7 +448,7 @@ return {
           map.expedition.clickExpedition()
           stepLabel.setStepLabelContent('3-8.等待远征界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', 'missionsGroup', map.expedition.isBattleExpedition },
             { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 2000 },
             { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattle, 2000 },
@@ -368,7 +477,7 @@ return {
             map.expedition.clickExpeditionBtn(v)
             stepLabel.setStepLabelContent('3-12.等待远征完成页面')
 
-            local newstateTypes = c.yield(listenerQuery.addScreenListener({
+            local newstateTypes = c.yield(setScreenListeners({
               { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
               { 'EXPEDITION_REWARD_COMPLETED_PAGE', 'missionsGroup', map.expedition.isExpeditionCompletedPage },
             }))
@@ -384,7 +493,7 @@ return {
           map.expedition.clickRewardPannelOk()
           stepLabel.setStepLabelContent('3-14.等待远征界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_REWARD_COMPLETED_PAGE', 'missionsGroup', map.expedition.isExpeditionCompletedPage, 2000 },
             { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', 'missionsGroup', map.expedition.isBattleExpedition },
           }))
@@ -402,6 +511,14 @@ return {
     missions.expeditionOnce = function(action, state)
       return co(c.create(function()
         if (action.type == 'EXPEDITION_ONCE_START') then
+
+          stepLabel.setStepLabelContent('3-0.等待HOME')
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'EXPEDITION_INIT', 'missionsGroup', map.home.isHome },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'EXPEDITION_INIT') then
           stepLabel.setStepLabelContent('3-15.准备远征派遣舰队')
           -- 准备开始远征派遣舰队任务
           if (type(settings.expeditionFleetToChapter) ~= 'table') then
@@ -409,9 +526,9 @@ return {
           end
 
           if ((not settings.expeditionFleetToChapter[1])
-              and (not settings.expeditionFleetToChapter[2])
-              and (not settings.expeditionFleetToChapter[3])
-              and (not settings.expeditionFleetToChapter[4])) then
+            and (not settings.expeditionFleetToChapter[2])
+            and (not settings.expeditionFleetToChapter[3])
+            and (not settings.expeditionFleetToChapter[4])) then
             stepLabel.setStepLabelContent('3-16.没有远征任务！')
             return nil
           end
@@ -439,7 +556,7 @@ return {
           map.expedition.clickBattle()
           stepLabel.setStepLabelContent('3-18.等待出征界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
             { 'EXPEDITION_IS_BATTLE_PAGE', 'missionsGroup', map.expedition.isBattle },
             { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
@@ -452,7 +569,7 @@ return {
           map.expedition.clickExpedition()
           stepLabel.setStepLabelContent('3-20.等待远征界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
             { 'EXPEDITION_IS_BATTLE_PAGE', 'missionsGroup', map.expedition.isBattle, 2000 },
             { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
@@ -482,7 +599,7 @@ return {
               map.expedition.clickExpeditionBtn(section)
               stepLabel.setStepLabelContent('3-24.等待远征准备界面')
 
-              local newstateTypes = c.yield(listenerQuery.addScreenListener({
+              local newstateTypes = c.yield(setScreenListeners({
                 { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
                 { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'missionsGroup', map.expedition.isExpeditionPrepare },
               }))
@@ -515,7 +632,7 @@ return {
               map.expedition.clickQuickSupply()
               stepLabel.setStepLabelContent('3-30.等待快速补给界面')
 
-              local newstateTypes = c.yield(listenerQuery.addScreenListener({
+              local newstateTypes = c.yield(setScreenListeners({
                 { 'EXPEDITION_QUICK_SUPPLY_PAGE', 'missionsGroup', map.expedition.isQuickSupply },
                 { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'missionsGroup', map.expedition.isExpeditionPrepare, 2000 },
               }))
@@ -528,7 +645,7 @@ return {
                 map.expedition.clickQuickRepair()
                 stepLabel.setStepLabelContent('3-31.等待快速修理界面')
 
-                local newstateTypes = c.yield(listenerQuery.addScreenListener({
+                local newstateTypes = c.yield(setScreenListeners({
                   { 'EXPEDITION_QUICK_REPAIR_PAGE', 'missionsGroup', map.expedition.isQuickRepair },
                   { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'missionsGroup', map.expedition.isExpeditionPrepare, 2000 },
                 }))
@@ -549,7 +666,7 @@ return {
           map.expedition.clickQuickSupplyDo()
           stepLabel.setStepLabelContent('3-32.等待远征准备界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_QUICK_SUPPLY_PAGE', 'missionsGroup', map.expedition.isQuickSupply, 2000 },
             { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'missionsGroup', map.expedition.isExpeditionPrepare },
           }))
@@ -566,7 +683,7 @@ return {
           map.expedition.clickQuickRepairDo()
           stepLabel.setStepLabelContent('3-33.等待远征准备界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_QUICK_REPAIR_PAGE', 'missionsGroup', map.expedition.isQuickRepair, 2000 },
             { 'EXPEDITION_BATTLE_PREPARE_PAGE', 'missionsGroup', map.expedition.isExpeditionPrepare },
           }))
@@ -591,7 +708,7 @@ return {
           end
           stepLabel.setStepLabelContent('3-36.等待远征界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_BATTLE_PREPARE_PAGE_CAN_GO', 'missionsGroup', map.expedition.isExpeditionPrepare, 2000 },
             { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
           }))
@@ -602,7 +719,7 @@ return {
           stepLabel.setStepLabelContent('3-37.点击返回远征界面')
           map.expedition.clickBackToExpedition()
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'EXPEDITION_BATTLE_PREPARE_PAGE_CANT_GO', 'missionsGroup', map.expedition.isExpeditionPrepare, 2000 },
             { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
           }))
@@ -629,6 +746,14 @@ return {
     missions.repairOnce = function(action, state)
       return co(c.create(function()
         if (action.type == 'REPAIR_ONCE_START') then
+
+          stepLabel.setStepLabelContent('4-1.等待HOME')
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'REPAIR_INIT', 'missionsGroup', map.home.isHome },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'REPAIR_INIT') then
           state.repair.slot = nil
 
           stepLabel.setStepLabelContent('4-2.点击出征')
@@ -636,7 +761,7 @@ return {
           map.repair.clickDockBtn()
           stepLabel.setStepLabelContent('4-3.等待船坞界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
             { 'REPAIR_DOCK_PAGE', 'missionsGroup', map.repair.isDockPage },
             { 'HOME_MEDAL_MODAL', 'missionsGroup', map.home.isMedalModal },
@@ -652,7 +777,7 @@ return {
           map.repair.clickRepairBtn()
           stepLabel.setStepLabelContent('4-5.等待修理界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
             { 'REPAIR_DOCK_PAGE', 'missionsGroup', map.repair.isDockPage },
             { 'HOME_MEDAL_MODAL', 'missionsGroup', map.home.isMedalModal },
@@ -676,7 +801,7 @@ return {
             stepLabel.setStepLabelContent('4-9.检测修理界面，选船界面')
 
             -- 如果一没进入修船选船页面说明没有需要维修的船
-            local newstateTypes = c.yield(listenerQuery.addScreenListener({
+            local newstateTypes = c.yield(setScreenListeners({
               { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage },
               { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 3000 },
               { 'HOME_MEDAL_MODAL', 'missionsGroup', map.home.isMedalModal },
@@ -691,7 +816,7 @@ return {
           else
             stepLabel.setStepLabelContent('4-10.没有空位')
 
-            local newstateTypes = c.yield(listenerQuery.addScreenListener({
+            local newstateTypes = c.yield(setScreenListeners({
               { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
               { 'HOME_MEDAL_MODAL', 'missionsGroup', map.home.isMedalModal },
               { 'HOME_HOME', 'missionsGroup', map.home.isHome },
@@ -706,7 +831,7 @@ return {
           map.repair.clickFirstShip()
           stepLabel.setStepLabelContent('4-12.等待返回修理界面')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
             { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
             { 'HOME_MEDAL_MODAL', 'missionsGroup', map.home.isMedalModal },
@@ -719,7 +844,7 @@ return {
 
           stepLabel.setStepLabelContent('4-13.等待第' .. state.repair.slot .. '个槽位变成修理状态')
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isSlotNotEmpty(state.repair.slot) },
             { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 3000 },
             { 'HOME_MEDAL_MODAL', 'missionsGroup', map.home.isMedalModal },
@@ -733,7 +858,7 @@ return {
           stepLabel.setStepLabelContent('4-14.完成维修')
           map.repair.clickBackToHomeBtn()
 
-          local newstateTypes = c.yield(listenerQuery.addScreenListener({
+          local newstateTypes = c.yield(setScreenListeners({
             { 'HOME_MEDAL_MODAL', 'missionsGroup', map.home.isMedalModal },
             { 'HOME_HOME', 'missionsGroup', map.home.isHome },
           }))

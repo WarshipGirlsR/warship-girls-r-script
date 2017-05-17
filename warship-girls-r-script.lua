@@ -1,4 +1,3 @@
-local debug = false
 runCount = 1
 local isPause = false
 initLog('warship-girls-r-script', 0)
@@ -654,21 +653,23 @@ local theMissionsQuery = {}
 co(c.create(function()
   if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable) then
 
+    -- 插入一个特殊的任务表示这是队列的开头
+    table.insert(theMissionsQuery, { isBase = true, isStart = true })
     -- 是否运行任务
     if (settings.missionEnable) then
-      table.insert(theMissionsQuery, { isStart = true, type = 'MISSION_IS_UNRECEIVED_MISSION' })
+      table.insert(theMissionsQuery, { isBase = true, type = 'MISSION_START' })
     end
     -- 是否运行远征
     if (settings.expeditionEnable) then
-      table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_REWARD_START' })
-      table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_ONCE_START' })
+      table.insert(theMissionsQuery, { isBase = true, type = 'EXPEDITION_REWARD_START' })
+      table.insert(theMissionsQuery, { isBase = true, type = 'EXPEDITION_ONCE_START' })
     end
     -- 是否运行修理
     if (settings.repairEnable) then
-      table.insert(theMissionsQuery, { isStart = true, type = 'EXPEDITION_ONCE_START' })
+      table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
     end
     -- 插入一个特殊任务表示这是队列的结尾
-    table.insert(theMissionsQuery, { isStart = true, isEnd = true })
+    table.insert(theMissionsQuery, { isBase = true, isEnd = true })
 
 
 
@@ -681,35 +682,40 @@ co(c.create(function()
         break
       end
 
-      -- 如果是任务开头则将其加入队列末尾，以保证能一直循环
       if (action.isStart) then
+        runStartTime = socket.gettime() * 1000
+      end
+
+      -- 如果是队列原有任务则将其加入队列末尾，以保证能一直循环
+      -- 如果是从原有任务衍生的下一步任务，则不加入队列末尾，会被新的下一步任务替换或者删除
+      if (action.isBase) then
         table.insert(theMissionsQuery, action)
       end
 
-      if (not action.type) then
-        table.remove(theMissionsQuery, 1)
-      end
-
-      if (action.isEnd) then
-        runStartTime = socket.gettime() * 1000
-        runCount = runCount + 1
-      else
+      if (action.type) then
         local newAction = c.yield(gomission.next(action))
         if (newAction) then
           theMissionsQuery[1] = newAction
         else
           table.remove(theMissionsQuery, 1)
         end
+      else
+        table.remove(theMissionsQuery, 1)
+      end
 
+      if (action.isEnd) then
         local diffTime = (socket.gettime() * 1000) - runStartTime
         if (diffTime < (settings.missionsInterval * 1000)) then
           local remainTime = (settings.missionsInterval * 1000) - diffTime
+          stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒')
           while (remainTime > 0) do
-            stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒')
+            stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒', true)
             c.yield(sleepPromise(1000))
             remainTime = remainTime - 1000
           end
         end
+
+        runCount = runCount + 1
       end
 
       -- 如果是任务队列结尾标志，则count+1
