@@ -686,10 +686,13 @@ co(c.create(function()
         table.insert(theMissionsQuery, action)
       end
 
+      if (not action.type) then
+        table.remove(theMissionsQuery, 1)
+      end
+
       if (action.isEnd) then
         runStartTime = socket.gettime() * 1000
         runCount = runCount + 1
-        table.remove(theMissionsQuery, 1)
       else
         local newAction = c.yield(gomission.next(action))
         if (newAction) then
