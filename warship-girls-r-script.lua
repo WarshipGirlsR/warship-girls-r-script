@@ -2,6 +2,7 @@ runCount = 1
 local isPause = false
 initLog('warship-girls-r-script', 0)
 
+require 'TableLib'
 require 'console'
 require 'KeepScreenHock'
 require 'TSLib'
@@ -671,6 +672,10 @@ co(c.create(function()
     -- 是否运行修理
     if (settings.repairEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
+    end
+    -- 是否运行演习
+    if (settings.exerciseEnable) then
+      table.insert(theMissionsQuery, { isBase = true, type = 'EXERCISE_START' })
     end
     -- 插入一个特殊任务表示这是队列的结尾
     table.insert(theMissionsQuery, { isBase = true, isEnd = true })
