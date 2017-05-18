@@ -664,14 +664,16 @@ co(c.create(function()
       table.insert(theMissionsQuery, { isBase = true, type = 'EXPEDITION_REWARD_START' })
       table.insert(theMissionsQuery, { isBase = true, type = 'EXPEDITION_ONCE_START' })
     end
+    -- 是否运行出征
+    if (settings.battleEnable) then
+      table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_START' })
+    end
     -- 是否运行修理
     if (settings.repairEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
     end
     -- 插入一个特殊任务表示这是队列的结尾
     table.insert(theMissionsQuery, { isBase = true, isEnd = true })
-
-
 
     runCount = 1
     local runStartTime = socket.gettime() * 1000

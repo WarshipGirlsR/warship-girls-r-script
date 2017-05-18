@@ -52,8 +52,8 @@ end
 local function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-      (e .. '\n' .. debug.traceback())
-      or (e)
+        (e .. '\n' .. debug.traceback())
+        or (e)
   end)
 end
 
@@ -281,6 +281,8 @@ function run()
 
     -- screenListenerQuery
     if (#screenListenerQuery) then
+      if (type(getDeviceOrient) == 'function') then getDeviceOrient() end
+
       continue = continue + 1
       sleepTime = math.min(sleepTime, 1000)
       keepScreen(true);
