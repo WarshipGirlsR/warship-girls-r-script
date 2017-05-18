@@ -1,6 +1,7 @@
 [res]
 [lib]
 [file]
+TableLib.lua
 GetColor.lua
 TSLib.lua
 Co.lua
