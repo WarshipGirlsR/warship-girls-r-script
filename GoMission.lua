@@ -147,7 +147,9 @@ return {
       return co(c.create(function()
         if (action.type == 'BATTLE_START') then
           state.battle.quickSupplyCount = 0
+          state.battle.quickSupplyFinish = false
           state.battle.quickRepairCount = 0
+          state.battle.quickRepairFinish = false
           state.battle.HPIsSafe = true
           state.battle.battleNum = 1
           state.battle.cantBattle = true
@@ -208,28 +210,62 @@ return {
 
         elseif (action.type == 'BATTLE_READY_BATTLE_PAGE') then
 
-          stepLabel.setStepLabelContent('1-11.选择舰队:' .. settings.battleFleet)
-          map.battle.battle.selectFleet(settings.battleFleet)
-          stepLabel.setStepLabelContent('1-12.检测所有状态正常')
-          c.yield(sleepPromise(500))
-          local res = map.battle.battle.isReadyBattlePageShipStatusAllRignt()
-          if (res) then
-            return { type = 'BATTLE_READY_BATTLE_PAGE_CAN_GO' }, state
+          if ((not state.battle.quickSupplyFinish) and (not state.battle.quickRepairFinish)) then
+            -- 还没快速补给，还没维修
+            stepLabel.setStepLabelContent('1-11.选择舰队:' .. settings.battleFleet)
+            map.battle.battle.selectFleet(settings.battleFleet)
+            stepLabel.setStepLabelContent('1-12.检测所有状态正常')
+            c.yield(sleepPromise(500))
+            local res = map.battle.battle.isReadyBattlePageShipStatusAllRignt()
+            if (res) then
+              state.battle.quickSupplyFinish = true
+              state.battle.quickRepairFinish = true
+              return { type = 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
+            else
+              local newstateTypes = c.yield(setScreenListeners({
+                { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage, 2000 },
+                { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.battle.isQuickSupplyModal },
+              }))
+              return { type = newstateTypes }, state
+            end
+          elseif (not state.battle.quickRepairFinish) then
+            -- 已经快速补给，还没维修
+            stepLabel.setStepLabelContent('1-19.检测血量是否安全')
+            c.yield(sleepPromise(500))
+            local res = map.battle.battle.isReadyBattlePageShipHPSafe()
+            if (res) then
+              return { type = 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
+            else
+              if (settings.battleQuickRepair) then
+                return { type = 'BATTLE_QUICK_REPAIR_MODAL' }, state
+              else
+                state.battle.quickRepairFinish = true
+                return { type = 'BATTLE_READY_BATTLE_PAGE' }, state
+              end
+            end
           else
-            local newstateTypes = c.yield(setScreenListeners({
-              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage, 2000 },
-              { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.battle.isQuickSupplyModal },
-            }))
-            return { type = newstateTypes }, state
+            -- 已经快速补给，已经维修
+            stepLabel.setStepLabelContent('1-27.再次检测血量是否安全')
+            c.yield(sleepPromise(500))
+            local res = map.battle.battle.isReadyBattlePageShipHPSafe()
+            if (res) then
+              stepLabel.setStepLabelContent('1-28.血量不安全，返回')
+              return { type = 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
+            else
+              stepLabel.setStepLabelContent('1-29.血量安全，继续')
+              return { type = 'BATTLE_READY_BATTLE_PAGE_CANT_GO' }, state
+            end
           end
+
 
         elseif (action.type == 'BATTLE_QUICK_SUPPLY_MODAL') then
 
-          stepLabel.setStepLabelContent("1-14.快速补给界面")
-          stepLabel.setStepLabelContent("1-15.快速补给界面点击确定")
+          stepLabel.setStepLabelContent('1-14.快速补给界面')
+          stepLabel.setStepLabelContent('1-15.快速补给界面点击确定')
           map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn()
-          stepLabel.setStepLabelContent("1-16.等待出征准备界面")
+          stepLabel.setStepLabelContent('1-16.等待出征准备界面')
           state.battle.quickSupplyCount = state.battle.quickSupplyCount + 1
+          state.battle.quickSupplyFinish = true
           if (state.battle.quickSupplyCount < 3) then
             local newstateTypes = c.yield(setScreenListeners({
               { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage },
@@ -237,21 +273,76 @@ return {
             }))
             return { type = newstateTypes }, state
           else
-            stepLabel.setStepLabelContent("1-17.资源数量不足")
+            stepLabel.setStepLabelContent('1-17.资源数量不足')
             return { type = 'BATTLE_QUICK_SUPPLY_MODAL_FAIL' }, state
           end
 
         elseif (action.type == 'BATTLE_QUICK_SUPPLY_MODAL_FAIL') then
 
-          stepLabel.setStepLabelContent("1-18.点击快速补给关闭")
+          stepLabel.setStepLabelContent('1-18.点击快速补给关闭')
           c.yield(sleepPromise(100))
           map.battle.battle.clickQuickSupplyModalCloseBtn()
           c.yield(sleepPromise(300))
           local newstateTypes = c.yield(setScreenListeners({
-            { 'BATTLE_QUICK_SUPPLY_MODAL_FAIL', 'missionsGroup', map.battle.battle.isQuickSupplyModal },
-            { 'BATTLE_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.battle.battle.isReadyBattlePage, 2000 },
+            { 'BATTLE_QUICK_SUPPLY_MODAL_FAIL', 'missionsGroup', map.battle.battle.isQuickSupplyModal, 2000 },
+            { 'BATTLE_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.battle.battle.isReadyBattlePage },
           }))
           return { type = newstateTypes }, state
+
+        elseif (action.type == 'BATTLE_QUICK_REPAIR_MODAL') then
+
+          stepLabel.setStepLabelContent('1-23.点击快速修理确定')
+          map.battle.battle.clickQuickRepairModalOkBtn()
+          state.battle.quickRepairCount = state.battle.quickRepairCount + 1
+          state.battle.quickRepairFinish = true
+          stepLabel.setStepLabelContent('1-24.等待出征准备界面')
+          if (state.battle.quickRepairCount < 3) then
+            local newstateTypes = c.yield(setScreenListeners({
+              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage },
+              { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.battle.isQuickRepairModal, 2000 },
+            }))
+            return { type = newstateTypes }, state
+          else
+            stepLabel.setStepLabelContent('1-25.快修数量不足')
+            return { type = 'BATTLE_QUICK_REPAIR_MODAL_FAIL' }, state
+          end
+
+        elseif (action.type == 'BATTLE_QUICK_REPAIR_MODAL') then
+
+          stepLabel.setStepLabelContent('1-26.点击快速修理关闭')
+          c.yield(sleepPromise(100))
+          map.battle.battle.clickQuickRepairModalCloseBtn()
+          c.yield(sleepPromise(300))
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'BATTLE_QUICK_REPAIR_MODAL_FAIL', 'missionsGroup', map.battle.battle.isQuickRepairModal, 2000 },
+            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.battle.isReadyBattlePage },
+          }))
+          return { type = newstateTypes }, state
+
+        elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO') then
+
+          stepLabel.setStepLabelContent('1-30.检测舰队可以出征')
+          c.yield(sleepPromise(500))
+          local fleetCanBattle = map.battle.battle.isFleetsCanBattle()
+          if (fleetCanBattle) then
+            local newstateTypes = c.yield(setScreenListeners({
+              { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.battle.battle.isReadyBattlePage },
+            }))
+            return { type = newstateTypes }, state
+          else
+            local newstateTypes = c.yield(setScreenListeners({
+              { 'BATTLE_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.battle.battle.isReadyBattlePage },
+            }))
+            return { type = newstateTypes }, state
+          end
+
+        elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CAN_GO') then
+
+          stepLabel.setStepLabelContent('1-31.出征准备界面')
+          stepLabel.setStepLabelContent('1-32.点击出征开始')
+          c.yield(sleepPromise(100))
+          map.battle.battle.clickBattleStartBtn()
+          return { type = 'BATTLE_START' }, state
         end
       end))
     end
@@ -526,9 +617,9 @@ return {
           end
 
           if ((not settings.expeditionFleetToChapter[1])
-            and (not settings.expeditionFleetToChapter[2])
-            and (not settings.expeditionFleetToChapter[3])
-            and (not settings.expeditionFleetToChapter[4])) then
+              and (not settings.expeditionFleetToChapter[2])
+              and (not settings.expeditionFleetToChapter[3])
+              and (not settings.expeditionFleetToChapter[4])) then
             stepLabel.setStepLabelContent('3-16.没有远征任务！')
             return nil
           end
