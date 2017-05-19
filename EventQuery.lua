@@ -52,8 +52,8 @@ end
 local function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-        (e .. '\n' .. debug.traceback())
-        or (e)
+      (e .. '\n' .. debug.traceback())
+      or (e)
   end)
 end
 
@@ -114,7 +114,7 @@ end
 
 
 
-function setimmediate(func)
+function setImmediate(func)
   if (type(func) ~= 'function') then return 0 end
   local eventObj = getEventObj(func)
   table.insert(eventQuery, eventObj)
@@ -206,9 +206,9 @@ function clearScreenListenerByTags(tags)
   end
 end
 
-function setButotnListener(btnid, func)
+function setButotnListener(btnId, func)
   if (type(func) ~= 'function') then return 0 end
-  local btnEventObj = getButtonEventObj(func)
+  local btnEventObj = getButtonEventObj(btnId, func)
   table.insert(buttonListenerQuery, btnEventObj)
   buttonListenerQueryIndex[btnEventObj.id] = btnEventObj
   return btnEventObj.id
@@ -283,45 +283,70 @@ function run()
     if (#screenListenerQuery) then
       if (type(getDeviceOrient) == 'function') then getDeviceOrient() end
 
+      local hasDropEvent = false
       continue = continue + 1
       sleepTime = math.min(sleepTime, 1000)
       keepScreen(true);
-      local newScreenListenerQuery = {}
       for key, value in ipairs(screenListenerQuery) do
         if (not value.drop) then
           if (value.checker()) then
             table.insert(eventQuery, value)
-            if (not value.isOnce) then
-              table.insert(newScreenListenerQuery, value)
+            if (value.isOnce) then
+              value.drop = true
+              hasDropEvent = true
             end
-          else
+          end
+        else
+          hasDropEvent = true
+        end
+      end
+
+      if (hasDropEvent) then
+        local newScreenListenerQuery = {}
+        for key, value in ipairs(screenListenerQuery) do
+          if (not value.drop) then
             table.insert(newScreenListenerQuery, value)
           end
         end
+        screenListenerQuery = newScreenListenerQuery
       end
-      screenListenerQuery = newScreenListenerQuery
       keepScreen(false);
     end
 
     -- buttonListenerQuery
     if (#buttonListenerQuery > 0) then
-      sleepTime = math.min(sleepTime, 500)
+      sleepTime = math.min(sleepTime, 200)
       continue = continue + 1
       local btnIdList = {}
-      local newButtonListenerQuery = {}
+      local hasBtnClick = false
+      local hasDropEvent = false
       while (true) do
         local btnId = fwGetPressedButton()
-        if (type(btnId) == 'nil') then break end
+        if (type(btnId) ~= 'string') then break end
         btnIdList[btnId] = btnId
+        hasBtnClick = true
       end
-      for key, value in ipairs(buttonListenerQuery) do
-        if (not value.drop) then
-          if (btnIdList[value.btnId] == value.btnId) then
-            table.insert(eventQuery, value)
+      if (hasBtnClick) then
+        for key, value in ipairs(buttonListenerQuery) do
+          if (not value.drop) then
+            if (btnIdList[value.btnId] == value.btnId) then
+              table.insert(eventQuery, value)
+            end
+          else
+            hasDropEvent = true
           end
         end
+
+        if (hasDropEvent) then
+          local newButtonListenerQuery = {}
+          for key, value in ipairs(buttonListenerQuery) do
+            if (not value.drop) then
+              table.insert(newButtonListenerQuery, value)
+            end
+          end
+          buttonListenerQuery = newButtonListenerQuery
+        end
       end
-      buttonListenerQuery = newButtonListenerQuery
     end
 
 
@@ -332,7 +357,7 @@ function run()
 end
 
 return {
-  setimmediate = setimmediate,
+  setimmediate = setImmediate,
   setTimeout = setTimeout,
   clearTimeout = clearTimeout,
   setInterval = setInterval,

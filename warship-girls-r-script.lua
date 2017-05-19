@@ -16,7 +16,7 @@ local json = sz.json
 local socket = require 'szocket.core'
 local mapMaker = require 'BaseOperate'
 local gomission = require 'GoMission'
-local stepLabel = require 'StepLabel'
+local stepLabel = (require 'StepLabel').init('stopbtn')
 require 'KeepScreenHock'
 require 'TSLib'
 require 'DeviceOrientHock'
@@ -649,6 +649,16 @@ end)(settings)
 
 -- --转换settings结果
 
+-- 注册按钮事件，目前只有暂停按钮
+eq.setButotnListener('stopbtn', function()
+  if (isPause) then
+    stepLabel.setPrefix('')
+    isPause = false
+  else
+    stepLabel.setPrefix('即将暂停 ')
+    isPause = true
+  end
+end)
 
 gomission.init(mapMaker(), stepLabel, settings)
 
@@ -713,6 +723,22 @@ co(c.create(function()
         table.remove(theMissionsQuery, 1)
       end
 
+      -- 如果点了暂停按钮
+      if (isPause) then
+        stepLabel.setPrefix('')
+        stepLabel.setStepLabelContent('暂停')
+        c.yield(Promise.new(function(resolve)
+          local theEid
+          theEid = eq.setButotnListener('stopbtn', function()
+            if (not isPause) then
+              eq.clearButotnListener(theEid)
+              resolve()
+            end
+          end)
+        end))
+        stepLabel.setStepLabelContent('开始')
+      end
+
       if (action.isEnd) then
         local diffTime = (socket.gettime() * 1000) - runStartTime
         if (diffTime < (settings.missionsInterval * 1000)) then
@@ -731,9 +757,9 @@ co(c.create(function()
       -- 如果是任务队列结尾标志，则count+1
     end
   end
-end)).catch(function(...)
-  nLog(...)
-  error(...)
+end)).catch(function(err)
+  wLog("warship-girls-r-script", "[DATE] " .. err);
+  eq.setImmediate(function() error(err) end)
 end)
 
 eq.run()

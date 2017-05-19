@@ -60,6 +60,7 @@ function case3()
   end
 
   co(coroutine.create(function()
+    error(1231241225)
     local i = 0
     fwShowWnd("steplabel", 300, 50, 300, 100, 0)
     while (i < 10000) do
@@ -73,8 +74,22 @@ function case3()
       nLog(" " .. text)
     end
   end)).catch(function(err)
-    eq.setTimeout(function(err) error(err) end, ms)
+    eq.setImmediate(function() error(err) end)
   end)
+
+  eq.run()
+end
+
+function case4()
+  local co = require 'Co'
+  local Promise = require 'Promise'
+  Promise.setStackTraceback(false)
+  local eq = require 'EventQuery'
+
+  eq.setTimeout(function()
+    error(12345)
+  end, 0)
+
 
   eq.run()
 end
