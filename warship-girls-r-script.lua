@@ -1,6 +1,6 @@
 runCount = 1
 local isPause = false
-initLog('warship-girls-r-script', 0)
+initLog('warship-girls-r-script', 1)
 
 require 'TableLib'
 require 'console'
@@ -10,6 +10,7 @@ require 'DeviceOrientHock'
 local eq = require 'EventQuery'
 local co = require 'Co'
 local Promise = require 'Promise'
+Promise.setStackTraceback(false)
 local sz = require 'sz'
 local json = sz.json
 local socket = require 'szocket.core'
@@ -19,6 +20,8 @@ local stepLabel = require 'StepLabel'
 require 'KeepScreenHock'
 require 'TSLib'
 require 'DeviceOrientHock'
+
+
 
 
 
@@ -49,7 +52,7 @@ local settingTable = {
   ['style'] = 'default',
   ['width'] = height,
   ['height'] = height,
-  ['config'] = 'save_shipr1-1.dat',
+  ['config'] = 'save_warship-girls-r-script.dat',
   ['timer'] = 5,
   ['orient'] = 1,
   ['pagetype'] = 'multi',
@@ -728,6 +731,9 @@ co(c.create(function()
       -- 如果是任务队列结尾标志，则count+1
     end
   end
-end)).catch(nLog)
+end)).catch(function(...)
+  nLog(...)
+  error(...)
+end)
 
 eq.run()

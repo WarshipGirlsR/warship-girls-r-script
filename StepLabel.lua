@@ -13,7 +13,7 @@ StepLable.setStepLabelContent = function(text, noNLog)
   fwShowButton("steplabel", "stopbtn", text, "90333333", "90FFFFFF", "", 7, 0, 0, 300, 100)
   if (not noNLog) then
     local dateStr = os.date("%Y-%m-%d %X")
-    wLog("shipr1-1", "[DATE] " .. text);
+    wLog("warship-girls-r-script", "[DATE] " .. text);
     nLog(dateStr .. " " .. text)
   end
 end
