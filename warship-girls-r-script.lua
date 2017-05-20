@@ -1,4 +1,9 @@
 runCount = 1
+luaExisted = false
+function beforeUserExit()
+  luaExisted = true
+end
+
 local isPause = false
 initLog('warship-girls-r-script', 1)
 
@@ -225,7 +230,7 @@ local settingTable = {
         ['id'] = 'expeditionEnableChapter',
         ['type'] = 'CheckBoxGroup',
         ['list'] = '第一章,第二章,第三章,第四章,第五章,第六章,第七章',
-        ['select'] = '0@1@2@3',
+        ['select'] = '0@1@2@3@4@5',
       },
       {
         ['type'] = 'Label',
@@ -426,6 +431,22 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['width'] = width / 4,
+        ['text'] = '阵型',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+        ['nowrap'] = 1,
+      },
+      {
+        ['id'] = 'battleFormation',
+        ['type'] = 'RadioGroup',
+        ['width'] = width / 2,
+        ['list'] = '单纵,复纵,轮型,梯形,单横',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
         ['size'] = 50,
         ['align'] = 'left',
@@ -469,6 +490,22 @@ local settingTable = {
         ['width'] = width / 2,
         ['list'] = '是,否',
         ['select'] = '0',
+      },
+      {
+        ['type'] = 'Label',
+        ['width'] = width / 4,
+        ['text'] = '阵型',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+        ['nowrap'] = 1,
+      },
+      {
+        ['id'] = 'exerciseFormation',
+        ['type'] = 'RadioGroup',
+        ['width'] = width / 2,
+        ['list'] = '单纵,复纵,轮型,梯形,单横',
+        ['select'] = '1',
       },
       {
         ['type'] = 'Label',
@@ -628,6 +665,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })
     return list[battleMaxBattleNum] or 1
   end)(settings.battleMaxBattleNum)
+  -- 阵型
+  settings.battleFormation = (function(battleFormation)
+    local list = transStrToTable({ 1, 2, 3, 4, 5 })
+    return list[battleFormation] or 2
+  end)(settings.battleFormation)
 
 
   -- 选择舰队
@@ -645,6 +687,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[exerciseQuickRepair] or false
   end)(settings.exerciseQuickRepair)
+  -- 阵型
+  settings.exerciseFormation = (function(exerciseFormation)
+    local list = transStrToTable({ 1, 2, 3, 4, 5 })
+    return list[exerciseFormation] or 2
+  end)(settings.exerciseFormation)
 end)(settings)
 
 -- --转换settings结果
@@ -749,6 +796,10 @@ co(c.create(function()
             c.yield(sleepPromise(1000))
             remainTime = remainTime - 1000
           end
+        end
+
+        if (luaExisted) then
+          break
         end
 
         runCount = runCount + 1

@@ -408,8 +408,27 @@ return function()
   end
 
   -- 点击阵型
-  map.battle.battle.clickFormationPageStartBtn = function()
-    tap(1685, 344, 100)
+  map.battle.battle.clickFormationPageStartBtn = function(formation)
+    formation = formation or 0
+    if (formation == 1) then
+      -- 单纵
+      tap(1553, 140, 100)
+    elseif (formation == 2) then
+      -- 复纵
+      tap(1685, 344, 100)
+    elseif (formation == 3) then
+      -- 轮型
+      tap(1760, 541, 100)
+    elseif (formation == 4) then
+      -- 梯形
+      tap(1684, 734, 100)
+    elseif (formation == 5) then
+      -- 单横
+      tap(1553, 931, 100)
+    else
+      -- 复纵
+      tap(1685, 344, 100)
+    end
   end
 
   -- 等待追击页面

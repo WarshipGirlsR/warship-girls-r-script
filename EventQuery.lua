@@ -280,12 +280,11 @@ function run()
     end
 
     -- screenListenerQuery
-    if (#screenListenerQuery) then
+    if (#screenListenerQuery > 0) then
       if (type(getDeviceOrient) == 'function') then getDeviceOrient() end
-
       local hasDropEvent = false
       continue = continue + 1
-      sleepTime = math.min(sleepTime, 1000)
+      sleepTime = math.min(sleepTime, 200)
       keepScreen(true);
       for key, value in ipairs(screenListenerQuery) do
         if (not value.drop) then
@@ -349,11 +348,14 @@ function run()
       end
     end
 
+    if (luaExisted) then
+      break
+    end
 
     if (#eventQuery <= 0) then
       mSleep(sleepTime)
     end
-  until (continue <= 0)
+  until (false)
 end
 
 return {
