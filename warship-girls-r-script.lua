@@ -164,6 +164,22 @@ local settingTable = {
       {
         ['type'] = 'Label',
         ['width'] = width / 4,
+        ['text'] = '战役',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+        ['nowrap'] = 1,
+      },
+      {
+        ['id'] = 'campaignEnable',
+        ['type'] = 'RadioGroup',
+        ['width'] = width / 2,
+        ['list'] = '开启,关闭',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
+        ['width'] = width / 4,
         ['text'] = '每一轮的间隔时间(秒)',
         ['size'] = 15,
         ['align'] = 'left',
@@ -457,7 +473,7 @@ local settingTable = {
     {
       {
         ['type'] = 'Label',
-        ['text'] = '挑战设置',
+        ['text'] = '演习设置',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
@@ -502,6 +518,81 @@ local settingTable = {
       },
       {
         ['id'] = 'exerciseFormation',
+        ['type'] = 'RadioGroup',
+        ['width'] = width / 2,
+        ['list'] = '单纵,复纵,轮型,梯形,单横',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
+        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+        ['size'] = 50,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+    },
+
+    {
+      {
+        ['type'] = 'Label',
+        ['text'] = '战役设置',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['type'] = 'Label',
+        ['text'] = '关卡',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'campaignChapter',
+        ['type'] = 'RadioGroup',
+        ['list'] = '驱逐,巡洋,战列,航母,潜艇',
+        ['select'] = '0',
+      },
+      {
+        ['type'] = 'Label',
+        ['text'] = '难度',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'campaignDifficulty',
+        ['type'] = 'RadioGroup',
+        ['list'] = '普通,困难',
+        ['select'] = '0',
+      },
+      {
+        ['type'] = 'Label',
+        ['width'] = width / 4,
+        ['text'] = '追击',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+        ['nowrap'] = 1,
+      },
+      {
+        ['id'] = 'campaignPursue',
+        ['type'] = 'RadioGroup',
+        ['width'] = width / 2,
+        ['list'] = '是,否',
+        ['select'] = '0',
+      },
+      {
+        ['type'] = 'Label',
+        ['width'] = width / 4,
+        ['text'] = '阵型',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+        ['nowrap'] = 1,
+      },
+      {
+        ['id'] = 'campaignFormation',
         ['type'] = 'RadioGroup',
         ['width'] = width / 2,
         ['list'] = '单纵,复纵,轮型,梯形,单横',
@@ -577,6 +668,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[exerciseEnable] or false
   end)(settings.exerciseEnable)
+  -- 战役
+  settings.campaignEnable = (function(campaignEnable)
+    local list = transStrToTable({ true, false, })
+    return list[campaignEnable] or false
+  end)(settings.campaignEnable)
   -- 总循环间隔时间
   settings.missionsInterval = tonumber(settings.missionsInterval) or 0
   -- 远征收获和派遣是否连续（否则先收获，再出征，再派遣），为了可以在远征的间隙出征一次
@@ -671,7 +767,7 @@ local __tmp = (function(settings)
     return list[battleFormation] or 2
   end)(settings.battleFormation)
 
-
+  -- 演习
   -- 选择舰队
   settings.exerciseFleet = (function(exerciseFleet)
     local list = transStrToTable({ 1, 2, 3, 4, })
@@ -692,6 +788,33 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })
     return list[exerciseFormation] or 2
   end)(settings.exerciseFormation)
+
+  -- 战役
+  -- 选择关卡
+  settings.campaignChapter = (function(campaignChapter)
+    local list = transStrToTable({ 1, 2, 3, 4, 5 })
+    return list[campaignChapter] or 1
+  end)(settings.campaignChapter)
+  -- 选择难度
+  settings.campaignDifficulty = (function(campaignDifficulty)
+    local list = transStrToTable({ 'default', 'hard' })
+    return list[campaignDifficulty] or 'default'
+  end)(settings.campaignDifficulty)
+  -- 是否追击
+  settings.campaignPursue = (function(campaignPursue)
+    local list = transStrToTable({ true, false, })
+    return list[campaignPursue] or false
+  end)(settings.campaignPursue)
+  -- 是否使用快速修理
+  settings.campaignQuickRepair = (function(campaignQuickRepair)
+    local list = transStrToTable({ true, false, })
+    return list[campaignQuickRepair] or false
+  end)(settings.campaignQuickRepair)
+  -- 阵型
+  settings.campaignFormation = (function(campaignFormation)
+    local list = transStrToTable({ 1, 2, 3, 4, 5 })
+    return list[campaignFormation] or 2
+  end)(settings.campaignFormation)
 end)(settings)
 
 -- --转换settings结果
@@ -712,7 +835,7 @@ gomission.init(mapMaker(), stepLabel, settings)
 local theMissionsQuery = {}
 
 co(c.create(function()
-  if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable) then
+  if (settings.missionEnable or settings.expeditionEnable or settings.battleEnable or settings.repairEnable or settings.exerciseEnable or settings.campaignEnable) then
 
     -- 插入一个特殊的任务表示这是队列的开头
     table.insert(theMissionsQuery, { isBase = true, isStart = true })
@@ -729,13 +852,17 @@ co(c.create(function()
     if (settings.battleEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_START' })
     end
-    -- 是否运行修理
-    if (settings.repairEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
-    end
     -- 是否运行演习
     if (settings.exerciseEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'EXERCISE_START' })
+    end
+    -- 是否运行战役
+    if (settings.campaignEnable) then
+      table.insert(theMissionsQuery, { isBase = true, type = 'CAMPAIGN_START' })
+    end
+    -- 是否运行修理
+    if (settings.repairEnable) then
+      table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
     end
     -- 插入一个特殊任务表示这是队列的结尾
     table.insert(theMissionsQuery, { isBase = true, isEnd = true })

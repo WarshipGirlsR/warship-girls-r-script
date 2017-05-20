@@ -17,6 +17,9 @@ return function()
 
     -- 演习
     exercise = {},
+
+    -- 战役
+    campaign = {},
   }
 
   -- 检测主页
@@ -1695,5 +1698,320 @@ return function()
   map.exercise.clickBackToHomeBtn = map.battle.clickBackToHomeBtn
 
   -- 演习流程
+
+  -- 战役流程
+
+  -- 是否在出征界面
+  map.campaign.isBattlePage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 178, 622, 0x10597b },
+      { 278, 1007, 0x635d52 },
+      { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
+      { 110, 148, 0x008ebd },
+      { 111, 290, 0x008ebd },
+      { 107, 429, 0x0092c5 },
+      { 111, 572, 0xad4900 },
+    }
+    local result = multiColor(list)
+    local result2 = multiColor(list2)
+    if (not __keepScreenState) then keepScreen(false) end
+    return (result and (not result2))
+  end
+
+  -- 点击战役按钮
+  map.campaign.clickCampaignBtn = function()
+    tap(102, 530, 100)
+    return true
+  end
+
+  -- 是否在战役界面
+  map.campaign.isCampaignPage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 178, 622, 0x10597b },
+      { 278, 1007, 0x635d52 },
+      { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
+      { 110, 148, 0x008ebd },
+      { 111, 290, 0x008ebd },
+      { 107, 429, 0x0092c5 },
+      { 111, 572, 0xad4900 },
+    }
+    local result = multiColor(list)
+    local result2 = multiColor(list2)
+    if (not __keepScreenState) then keepScreen(false) end
+    return (result and result2)
+  end
+
+  -- 移动到战役
+  map.campaign.moveToCampaignMission = function(m)
+    m = tonumber(m) or 1
+    -- 先移动到第1章
+    for i = 1, 5 do
+      tap(358, 962, 100)
+      mSleep(200)
+    end
+    -- 再移到第m章
+    for i = 2, m do
+      tap(1836, 960, 100)
+      mSleep(200)
+    end
+    return true
+  end
+
+  -- 点击准备开始战斗
+  map.campaign.clickCampainReadyBtn = function(difficulty)
+    if (difficulty == 'default') then
+      tap(651, 317, 100)
+    else
+      tap(1504, 309, 100)
+    end
+    return true
+  end
+
+  -- 等待出征准备界面
+  map.campaign.isReadyBattlePage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 660, 197, 0xcecabd },
+      { 1636, 197, 0xcecabd },
+      { 1627, 336, 0xcecabd },
+      { 1799, 423, 0xd6aa31 },
+      { 1803, 680, 0xcea229 },
+      { 454, 1040, 0xd6cabd },
+      { 1753, 1041, 0xd6cec5 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 检测所有状态正常
+  map.campaign.isReadyBattlePageShipStatusAllRignt = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local result = true
+    local list = {
+      -- 弹药不足
+      {
+        { 347, 218, 0xb53129 },
+        { 383, 274, 0x9c2021 },
+        { 349, 325, 0x941419 },
+      }, {
+        { 348, 357, 0xad2d29 },
+        { 383, 414, 0x941819 },
+        { 349, 464, 0x8c1410 },
+      }, {
+        { 347, 495, 0xb53131 },
+        { 383, 552, 0x942021 },
+        { 349, 603, 0x8c1419 },
+      }, {
+        { 347, 634, 0xad3131 },
+        { 383, 691, 0x941c21 },
+        { 349, 742, 0x8c1410 },
+      }, {
+        { 347, 773, 0xb53131 },
+        { 383, 830, 0x941c21 },
+        { 349, 880, 0x8c1410 },
+      }, {
+        { 347, 912, 0xad3129 },
+        { 383, 969, 0x8c1419 },
+        { 349, 1019, 0x941810 },
+      },
+      -- 远征中
+      {
+        { 348, 229, 0xc5ba21 },
+        { 382, 262, 0xb58e08 },
+        { 364, 320, 0xb59210 },
+      }, {
+        { 348, 368, 0xcebe31 },
+        { 382, 410, 0xbd9a19 },
+        { 364, 459, 0xb59210 },
+      }, {
+        { 348, 507, 0xcebe21 },
+        { 381, 549, 0xb59210 },
+        { 364, 598, 0xb58e08 },
+      }, {
+        { 348, 646, 0xcebe29 },
+        { 382, 688, 0xbd9a10 },
+        { 364, 737, 0xb58e08 },
+      }, {
+        { 348, 784, 0xceba29 },
+        { 382, 826, 0xbd9a19 },
+        { 364, 875, 0xb58e08 },
+      }, {
+        { 348, 923, 0xc5ba21 },
+        { 382, 966, 0xb59208 },
+        { 364, 1014, 0xb58a08 },
+      },
+    }
+    for key, value in ipairs(list) do
+      if (multiColor(value)) then
+        result = false
+        break
+      end
+    end
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 检测hp是否安全
+  map.campaign.isReadyBattlePageShipHPSafe = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local result = true
+    local list = {
+      { 469, 407, 0x3adf31 },
+      { 469, 648, 0x52f34a },
+      { 469, 550, 0x31d729 },
+      { 469, 689, 0x31db31 },
+      { 469, 828, 0x31d729 },
+      { 469, 967, 0x31db31 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 不满血，返回出征
+  map.campaign.clickReadyBattlePageBackBtn = map.battle.battle.clickReadyBattlePageBackBtn
+
+  -- 点击快速补给
+  map.campaign.clickReadyBattlePageQuickSupplyBtn = map.battle.battle.clickReadyBattlePageQuickSupplyBtn
+
+  -- 等待快速补给界面
+  map.campaign.isQuickSupplyModal = map.battle.battle.isQuickSupplyModal
+
+  -- 点击快速补给
+  map.campaign.clickReadyBattlePageQuickSupplyModalOkBtn = map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn
+
+  -- 点击快速修理
+  map.campaign.clickQuickRepairBtn = map.battle.battle.clickQuickRepairBtn
+
+  -- 等待快速修理界面
+  map.campaign.isQuickRepairModal = map.battle.battle.isQuickRepairModal
+
+  -- 点击快速修理
+  map.campaign.clickQuickRepairModalOkBtn = map.battle.battle.clickQuickRepairModalOkBtn
+
+  -- 点击快速补给关闭
+  map.campaign.clickQuickSupplyModalCloseBtn = map.battle.battle.clickQuickSupplyModalCloseBtn
+
+  -- 点击快速修理关闭
+  map.campaign.clickQuickSupplyModalCloseBtn = map.battle.battle.clickQuickSupplyModalCloseBtn
+
+  -- 检测舰队可以出征
+  map.campaign.isFleetsCanBattle = map.battle.battle.isFleetsCanBattle
+
+  -- 点击出征开始
+  map.campaign.clickBattleStartBtn = map.battle.battle.clickBattleStartBtn
+
+  -- 等待额外获得资源面板
+  map.campaign.isExtraReceiveModal = map.battle.battle.isExtraReceiveModal
+
+  -- 点击额外获得确定
+  map.campaign.clickExtraReceiveModalOk = map.battle.battle.clickExtraReceiveModalOk
+
+  -- 等待快开始战斗界面
+  map.campaign.isBattleStartPage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 81, 146, 0xcecabd },
+      { 1836, 147, 0xcec6bd },
+      { 1837, 928, 0xd6cabd },
+      { 74, 931, 0xcecabd },
+      { 1327, 891, 0xad4d08 },
+      { 1116, 481, 0xcec6bd },
+      { 153, 577, 0xd6cec5 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+
+  -- 点击开始战斗
+  map.campaign.clickBattleStartModalStartBtn = function()
+    tap(1326, 862, 100)
+    return true
+  end
+
+  -- 等待阵型界面
+  map.campaign.isFormationPage = map.battle.battle.isFormationPage
+
+  -- 点击阵型
+  map.campaign.clickFormationPageStartBtn = map.battle.battle.clickFormationPageStartBtn
+
+  -- 等待追击页面
+  map.campaign.isPursueModal = map.battle.battle.isPursueModal
+
+  -- 点击追击
+  map.campaign.clickPursueModalOk = map.battle.battle.clickPursueModalOk
+
+  -- 点击放弃
+  map.campaign.clickPursuePageCancel = map.battle.battle.clickPursuePageCancel
+
+  -- 等待胜利界面
+  map.campaign.isVictoryPage = map.battle.battle.isVictoryPage
+
+  -- 胜利界面检测船是否受损
+  map.campaign.isVictoryPageShipDamaged = map.battle.battle.isVictoryPageShipDamaged
+
+  -- 胜利界面检测船HP是否安全
+  map.campaign.isVictoryPageShipHPSafe = map.battle.battle.isVictoryPageShipHPSafe
+
+  -- 点击胜利继续
+  map.campaign.clickVictoryPageContinueBtn = map.battle.battle.clickVictoryPageContinueBtn
+
+  -- 等待胜利继续面板
+  map.campaign.isVictoryPage2 = map.battle.battle.isVictoryPage2
+
+  -- 点击胜利继续2
+  map.campaign.clickVictoryPageContinueBtn2 = map.battle.battle.clickVictoryPageContinueBtn2
+
+  -- 检测胜利对手详情页面
+  map.campaign.isVictoryOpponentDetailPage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 185, 218, 0x0881bd },
+      { 137, 863, 0xcecac5 },
+      { 1772, 867, 0xc5c6b5 },
+      { 1741, 243, 0xd6cec5 },
+      { 1495, 837, 0xb54d08 },
+      { 298, 204, 0xffffff },
+      { 372, 204, 0xefefef },
+      { 441, 208, 0xffffff },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击关闭挑战
+  map.campaign.clickVictoryOpponentDetailPageClose = function()
+    tap(1803, 217, 100)
+    return true
+  end
+
+  -- 返回home
+  map.campaign.clickBackToHomeBtn = map.battle.clickBackToHomeBtn
+  -- 战役流程
   return map
 end

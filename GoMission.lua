@@ -105,10 +105,9 @@ local stateTree = {
   expedition = {
     expeditionFleetToChapter = {},
   },
-  repair = {
-    slot = nil,
-  },
+  repair = {},
   exercise = {},
+  campaign = {},
 }
 
 
@@ -1257,6 +1256,8 @@ return {
       end))
     end
     -- 修理
+
+    -- 演习
     missions.exerciseOnce = function(action, state)
       return co(c.create(function()
         if (action.type == 'EXERCISE_START') then
@@ -1560,6 +1561,297 @@ return {
         return nil, state
       end))
     end
+    -- 演习
+
+    -- 战役
+    missions.campaignOnce = function(action, state)
+      return co(c.create(function()
+        if (action.type == 'CAMPAIGN_START') then
+          stepLabel.setStepLabelContent('6-1.等待home')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_INIT') then
+
+          state.campaign.quickSupplyCount = 0
+          state.campaign.quickRepairCount = 0
+          state.campaign.battleNum = 1
+          state.campaign.HPIsSafe = true
+
+          stepLabel.setStepLabelContent('6-2.点击出征')
+          map.home.clickBattleBtn()
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome, 2000 },
+            { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage },
+            { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_BATTLE_PAGE') then
+
+          stepLabel.setStepLabelContent('6-3.点击战役')
+          map.campaign.clickCampaignBtn()
+          stepLabel.setStepLabelContent('6-4.等待战役页面')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome },
+            { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage, 2000 },
+            { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_CAMPAIGN_PAGE') then
+
+          c.yield(sleepPromise(100))
+          stepLabel.setStepLabelContent('6-5.移动到战役' .. settings.campaignChapter)
+          map.campaign.moveToCampaignMission(settings.campaignChapter)
+          stepLabel.setStepLabelContent('6-6.点击战役')
+          map.campaign.clickCampainReadyBtn(settings.campaignDifficulty)
+          stepLabel.setStepLabelContent('6-7.等待战役准备界面')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage, 2000 },
+            { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage, 2000 },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE') then
+
+          if ((state.campaign.quickSupplyCount <= 0) and (state.campaign.quickRepairCount <= 0)) then
+            stepLabel.setStepLabelContent('6-10.检测所有状态')
+            c.yield(sleepPromise(500))
+            local res = map.campaign.isReadyBattlePageShipStatusAllRignt()
+            if (not res) then
+              stepLabel.setStepLabelContent('6-11.状态不正常')
+              map.campaign.clickReadyBattlePageQuickSupplyBtn()
+              stepLabel.setStepLabelContent('6-12.等待快速补给界面')
+              local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+                { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
+                { 'CAMPAIGN_QUICK_SUPPLY_MODAL', 'missionsGroup', map.campaign.isQuickSupplyModal },
+              })))
+              return makeAction(newstateTypes), state
+            else
+              stepLabel.setStepLabelContent('6-11.状态正常')
+              state.campaign.quickSupplyCount = 1
+              state.campaign.quickRepairCount = 1
+              return { type = 'CAMPAIGN_READY_BATTLE_PAGE' }, state
+            end
+          elseif (state.campaign.quickRepairCount <= 0) then
+            stepLabel.setStepLabelContent('6-13.检测血量是否安全')
+            c.yield(sleepPromise(500))
+            local res = map.campaign.isReadyBattlePageShipHPSafe()
+            if (res) then
+              stepLabel.setStepLabelContent('6-14.血量安全，继续')
+              return { type = 'CAMPAIGN_READY_BATTLE_PAGE_CAN_GO' }, state
+            else
+              if (settings.exerciseQuickRepair) then
+                stepLabel.setStepLabelContent('6-15.血量不安全，点击快修')
+                map.campaign.clickQuickRepairBtn()
+                stepLabel.setStepLabelContent('6-16.等待快修界面')
+                local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+                  { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
+                  { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal },
+                })))
+                return makeAction(newstateTypes), state
+              else
+                stepLabel.setStepLabelContent('6-17.血量不安全，返回')
+                return { type = 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+              end
+            end
+          else
+            stepLabel.setStepLabelContent('6-18.再次检测血量是否安全')
+            c.yield(sleepPromise(500))
+            local res = map.campaign.isReadyBattlePageShipHPSafe()
+            if (res) then
+              stepLabel.setStepLabelContent('6-19.血量安全，继续')
+              return { type = 'CAMPAIGN_READY_BATTLE_PAGE_CAN_GO' }, state
+            else
+              stepLabel.setStepLabelContent('6-20.血量不安全，返回')
+              return { type = 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+            end
+          end
+
+        elseif (action.type == 'CAMPAIGN_QUICK_SUPPLY_MODAL') then
+
+          stepLabel.setStepLabelContent('6-22.快速补给界面点击确定')
+          map.campaign.clickReadyBattlePageQuickSupplyModalOkBtn()
+          stepLabel.setStepLabelContent('6-23.等待出征准备界面')
+          state.campaign.quickSupplyCount = state.campaign.quickSupplyCount + 1
+          if (state.campaign.quickSupplyCount < 3) then
+            local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_SUPPLY_MODAL', 'missionsGroup', map.campaign.isQuickSupplyModal, 2000 },
+            })))
+            return makeAction(newstateTypes), state
+          else
+            stepLabel.setStepLabelContent('6-24.资源数量不足')
+            return { type = 'CAMPAIGN_QUICK_SUPPLY_MODAL_FAIL' }, state
+          end
+
+        elseif (action.type == 'CAMPAIGN_QUICK_SUPPLY_MODAL_FAIL') then
+
+          stepLabel.setStepLabelContent('6-25.点击快速补给关闭')
+          c.yield(sleepPromise(100))
+          map.campaign.clickQuickSupplyModalCloseBtn()
+          stepLabel.setStepLabelContent('6-26.等待出征准备界面')
+          c.yield(sleepPromise(300))
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_SUPPLY_MODAL_FAIL', 'missionsGroup', map.campaign.isQuickSupplyModal, 2000 },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_QUICK_REPAIR_MODAL') then
+
+          stepLabel.setStepLabelContent('6-27.点击快速修理确定')
+          map.campaign.clickQuickRepairModalOkBtn()
+          state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
+          stepLabel.setStepLabelContent('6-28.等待出征准备界面')
+          if (state.campaign.quickRepairCount < 3) then
+            local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal, 2000 },
+            })))
+            return makeAction(newstateTypes), state
+          else
+            stepLabel.setStepLabelContent('6-29.快速修理数量不足')
+            return { type = 'CAMPAIGN_QUICK_REPAIR_MODAL_FAIL' }, state
+          end
+
+        elseif (action.type == 'CAMPAIGN_QUICK_REPAIR_MODAL_FAIL') then
+
+          stepLabel.setStepLabelContent('6-30.点击快速修理关闭')
+          c.yield(sleepPromise(100))
+          map.campaign.clickQuickRepairModalCloseBtn()
+          c.yield(sleepPromise(300))
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL_FAIL', 'missionsGroup', map.campaign.isQuickRepairModal, 2000 },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE_CAN_GO') then
+
+          stepLabel.setStepLabelContent('6-33.出征准备界面出征开始')
+          c.yield(sleepPromise(100))
+          map.campaign.clickBattleStartBtn()
+          -- 如果没有开始说明无法远征
+          return { type = 'CAMPAIGN_GO_A_EXERCISE' }, state
+
+        elseif (action.type == 'CAMPAIGN_GO_A_EXERCISE') then
+
+          stepLabel.setStepLabelContent('6-34.等待出征准备界面，...')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage, 3000 },
+            { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage },
+            { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
+            { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
+            { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+            { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_START_PAGE') then
+
+          stepLabel.setStepLabelContent('6-35.开始面板，点击开始')
+          c.yield(sleepPromise(100))
+          map.campaign.clickBattleStartModalStartBtn()
+          stepLabel.setStepLabelContent('6-36.等待阵型面板，追击面板，胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_GO_A_EXERCISE', 'missionsGroup', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage, 2000 },
+            { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
+            { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
+            { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_FORMATION_PAGE') then
+
+          stepLabel.setStepLabelContent('6-37.阵型面板')
+          c.yield(sleepPromise(100))
+          map.campaign.clickFormationPageStartBtn(settings.exerciseFormation)
+          stepLabel.setStepLabelContent('6-38.等待追击面板，胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage },
+            { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage, 2000 },
+            { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
+            { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_PURSUE_MODAL') then
+
+          stepLabel.setStepLabelContent('6-39.追击面板')
+          c.yield(sleepPromise(100))
+          if (settings.exercisePursue) then
+            stepLabel.setStepLabelContent('6-40.追击')
+            map.campaign.clickPursueModalOk()
+          else
+            stepLabel.setStepLabelContent('6-41.放弃追击')
+            map.campaign.clickPursuePageCancel()
+          end
+          stepLabel.setStepLabelContent('6-42.等待胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
+            { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal, 2000 },
+            { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+            { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_VICTORY_PAGE') then
+
+          stepLabel.setStepLabelContent('6-43.点击胜利继续')
+          map.campaign.clickVictoryPageContinueBtn()
+          stepLabel.setStepLabelContent('6-44.等待胜利继续界面')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
+            { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
+            { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage, 2000 },
+            { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_VICTORY_NEXT_PAGE') then
+
+          stepLabel.setStepLabelContent('6-45.点击胜利继续')
+          map.campaign.clickVictoryPageContinueBtn2()
+          stepLabel.setStepLabelContent('6-46.等待演习界面')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+            { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2, 2000 },
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME') then
+
+          map.campaign.clickReadyBattlePageBackBtn()
+          stepLabel.setStepLabelContent("6-47.等待出征界面")
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+          })))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_BATTLE_PAGE2') then
+
+          stepLabel.setStepLabelContent('6-48.点击回港')
+          map.campaign.clickBackToHomeBtn()
+          stepLabel.setStepLabelContent('6-49.等待home')
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getCom(), {
+            { 'HOME_HOME', 'missionsGroup', map.home.isHome },
+          })))
+          return makeAction(newstateTypes), state
+        end
+        return nil, state
+      end))
+    end
+    -- 战役
 
     return missions
   end,
