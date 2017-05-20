@@ -72,23 +72,79 @@ return function()
     return true
   end
 
+  -- 等待网络连接不通对话框
+  map.home.isNetworkFailureModal = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 505, 275, 0xcecece },
+      { 636, 260, 0xffffff },
+      { 658, 260, 0xffffff },
+      { 682, 262, 0xffffff },
+      { 717, 258, 0xffffff },
+      { 755, 266, 0xffffff },
+      { 1035, 271, 0x105d94 },
+      { 524, 349, 0xcecabd },
+      { 1390, 356, 0xd6cabd },
+      { 1390, 608, 0xd6cabd },
+      { 522, 671, 0xbdb69c },
+      { 1398, 772, 0xc5b69c },
+      { 668, 731, 0x0096c5 },
+      { 1094, 730, 0xad1400 },
+      { 573, 435, 0xffffff },
+      { 636, 446, 0xffffff },
+      { 825, 459, 0xffffff },
+      { 1053, 435, 0xffffff },
+      { 1254, 440, 0xffffff },
+      { 1331, 443, 0xffffff },
+      { 836, 513, 0xffffff },
+      { 923, 509, 0xffffff },
+      { 1091, 503, 0xffffff },
+      { 555, 444, 0xcecabd },
+      { 1292, 445, 0xcecabd },
+      { 1117, 516, 0xd6cabd },
+      { 781, 509, 0xd6cec5 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击网络不通 确认
+  map.home.clickNetworkFailureModalOk = function()
+    tap(741, 717, 100)
+    return true
+  end
+
+  -- 点击网络不通 取消
+  map.home.clickNetworkFailureModalCancel = function()
+    tap(1174, 718, 100)
+    return true
+  end
+
   --  是否在出征界面
   map.battle.isBattlePage = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 174, 629, 0x105573 },
-      { 185, 726, 0x10597b },
-      { 134, 995, 0xffffff },
-      { 94, 961, 0xad7d42 },
-      { 246, 285, 0x6b6963 },
-      { 259, 570, 0x736963 },
-      { 260, 798, 0x6b6963 },
-      { 270, 995, 0x6b615a },
+      { 178, 622, 0x10597b },
+      { 278, 1007, 0x635d52 },
+      { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
+      { 110, 148, 0xad4908 },
+      { 111, 290, 0x008ebd },
+      { 107, 429, 0x0092c5 },
+      { 111, 572, 0x008ebd },
     }
     local result = multiColor(list)
+    local result2 = multiColor(list2)
     if (not __keepScreenState) then keepScreen(false) end
-    return result
+    return (result and (not result2))
   end
 
   -- 点击回港
@@ -105,23 +161,24 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 174, 629, 0x105573 },
-      { 185, 726, 0x10597b },
-      { 134, 995, 0xffffff },
-      { 94, 961, 0xad7d42 },
-      { 246, 285, 0x6b6963 },
-      { 259, 570, 0x736963 },
-      { 260, 798, 0x6b6963 },
-      { 270, 995, 0x6b615a },
-      { 114, 149, 0xad4900 },
-      { 110, 285, 0x008ebd },
-      { 108, 431, 0x008ebd },
-      { 105, 576, 0x008abd },
-      { 1021, 120, 0x10598c },
+      { 178, 622, 0x10597b },
+      { 278, 1007, 0x635d52 },
+      { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
+      { 110, 148, 0xad4908 },
+      { 111, 290, 0x008ebd },
+      { 107, 429, 0x0092c5 },
+      { 111, 572, 0x008ebd },
     }
     local result = multiColor(list)
+    local result2 = multiColor(list2)
     if (not __keepScreenState) then keepScreen(false) end
-    return result
+    return (result and result2)
   end
 
   -- 点击出征
@@ -893,7 +950,29 @@ return function()
   map.expedition.clickBattle = map.home.clickBattleBtn
 
   -- 检测在出征界面
-  map.expedition.isBattle = map.battle.isBattlePage
+  map.expedition.isBattlePage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 178, 622, 0x10597b },
+      { 278, 1007, 0x635d52 },
+      { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
+      { 110, 148, 0x008ebd },
+      { 111, 290, 0x008ebd },
+      { 107, 429, 0xb54d08 },
+      { 111, 572, 0x008ebd },
+    }
+    local result = multiColor(list)
+    local result2 = multiColor(list2)
+    if (not __keepScreenState) then keepScreen(false) end
+    return (result and (not result2))
+  end
 
   -- 点击远征
   map.expedition.clickExpedition = function()
@@ -907,16 +986,23 @@ return function()
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
       { 178, 622, 0x10597b },
-      { 265, 424, 0x6b6963 },
+      { 278, 1007, 0x635d52 },
       { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
       { 110, 148, 0x008ebd },
       { 111, 290, 0x008ebd },
       { 107, 429, 0xb54d08 },
       { 111, 572, 0x008ebd },
     }
     local result = multiColor(list)
+    local result2 = multiColor(list2)
     if (not __keepScreenState) then keepScreen(false) end
-    return result
+    return (result and result2)
   end
 
   -- 从第m章移动到第n章
@@ -1378,8 +1464,29 @@ return function()
   -- 演习流程
 
   -- 是否在出征页面
-  map.exercise.isBattlePage = map.battle.isBattlePage
-
+  map.exercise.isBattlePage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 178, 622, 0x10597b },
+      { 278, 1007, 0x635d52 },
+      { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
+      { 110, 148, 0x008ebd },
+      { 111, 290, 0xad4900 },
+      { 107, 429, 0x0092c5 },
+      { 111, 572, 0x008ebd },
+    }
+    local result = multiColor(list)
+    local result2 = multiColor(list2)
+    if (not __keepScreenState) then keepScreen(false) end
+    return (result and (not result2))
+  end
   -- 点击演习
   map.exercise.clickExerciseBtn = function()
     tap(103, 252, 100)
@@ -1391,18 +1498,24 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 29, 625, 0x10496b },
-      { 177, 665, 0x195984 },
-      { 114, 964, 0xad8152 },
-      { 223, 512, 0xcecace },
-      { 111, 153, 0x008ec5 },
-      { 109, 289, 0xb54d08 },
-      { 107, 433, 0x008ec5 },
-      { 107, 569, 0x0092c5 },
+      { 178, 622, 0x10597b },
+      { 278, 1007, 0x635d52 },
+      { 224, 613, 0xc5cac5 },
+      { 92, 969, 0xa47d42 },
+      { 169, 1014, 0xffffff },
+      { 195, 1033, 0xb58a5a },
+    }
+    -- 四个按钮的颜色
+    local list2 = {
+      { 110, 148, 0x008ebd },
+      { 111, 290, 0xad4900 },
+      { 107, 429, 0x0092c5 },
+      { 111, 572, 0x008ebd },
     }
     local result = multiColor(list)
+    local result2 = multiColor(list2)
     if (not __keepScreenState) then keepScreen(false) end
-    return result
+    return (result and result2)
   end
 
   --  检测是否有演习

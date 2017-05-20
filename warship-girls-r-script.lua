@@ -745,7 +745,7 @@ co(c.create(function()
     while (true) do
       -- 任务队列里没有任务则停止运行
       local action = theMissionsQuery[1]
-      if (not action) then
+      if ((#theMissionsQuery == 0) or (not action)) then
         break
       end
 
@@ -759,10 +759,15 @@ co(c.create(function()
         table.insert(theMissionsQuery, action)
       end
 
+      -- 执行一个action
       if (action.type) then
         local newAction = c.yield(gomission.next(action))
-        if (newAction) then
-          theMissionsQuery[1] = newAction
+        if (type(newAction) == 'table') then
+          if (newAction.addToStart) then
+            table.insert(theMissionsQuery, 1, newAction)
+          else
+            theMissionsQuery[1] = newAction
+          end
         else
           table.remove(theMissionsQuery, 1)
         end
@@ -773,6 +778,7 @@ co(c.create(function()
       -- 如果点了暂停按钮
       if (isPause) then
         stepLabel.setPrefix('')
+        local lasttext = stepLabel.getText()
         stepLabel.setStepLabelContent('暂停')
         c.yield(Promise.new(function(resolve)
           local theEid
@@ -783,7 +789,7 @@ co(c.create(function()
             end
           end)
         end))
-        stepLabel.setStepLabelContent('开始')
+        stepLabel.setStepLabelContent(lasttext)
       end
 
       if (action.isEnd) then

@@ -1,20 +1,15 @@
-init(2)
+init(1)
 require 'console'
-require "DeviceOrientHock"
 mSleep(1000)
 
 keepScreen(false)
 keepScreen(true)
 local sideLength = 1080
 local list = {
-  { 0, math.floor(0.333 * sideLength), 0xfefefe },
-  { 0, math.floor(0.5 * sideLength), 0xfefefe },
-  { 0, math.floor(0.667 * sideLength), 0xfefefe },
-  { 0, math.floor(0.833 * sideLength), 0xfefefe },
-  { 1, math.floor(0.333 * sideLength), 0x010101 },
-  { 1, math.floor(0.5 * sideLength), 0x010101 },
-  { 1, math.floor(0.667 * sideLength), 0x010101 },
-  { 1, math.floor(0.833 * sideLength), 0x010101 },
+  { 110, 148, 0x008ebd },
+  { 111, 290, 0x008ebd },
+  { 107, 429, 0xb54d08 },
+  { 111, 572, 0x008ebd },
 }
 
 local resultStr = ''
@@ -22,8 +17,8 @@ local resultStr = ''
 for key, value in ipairs(list) do
   local color = getColor(value[1], value[2])
   local oldColor = value[3]
-  local colorStr = '0x' .. string.format('%x', color)
-  local oldColorStr = '0x' .. string.format('%x', oldColor)
+  local colorStr = string.format('0x%06x', color)
+  local oldColorStr = string.format('0x%06x', oldColor)
   value[3] = oldColorStr
   if (color == oldColor) then
     resultStr = resultStr .. '\n' .. console.getJsStr(value)
