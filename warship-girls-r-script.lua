@@ -2,6 +2,9 @@ runCount = 1
 luaExisted = false
 function beforeUserExit()
   luaExisted = true
+  vibrator(500)
+  mSleep(500)
+  vibrator(500)
 end
 
 local isPause = false
@@ -83,113 +86,92 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '任务',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'missionEnable',
-        ['width'] = width / 2,
         ['type'] = 'RadioGroup',
         ['list'] = '开启,关闭',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '远征',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'expeditionEnable',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '开启,关闭',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '出征',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'battleEnable',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '开启,关闭',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '修理',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'repairEnable',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '开启,关闭',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '演习',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'exerciseEnable',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '开启,关闭',
         ['select'] = '1',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '战役',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'campaignEnable',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '开启,关闭',
         ['select'] = '1',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '每一轮的间隔时间(秒)',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'missionsInterval',
         ['type'] = 'Edit',
-        ['width'] = width / 2,
         ['prompt'] = '最短间隔时间(秒)',
         ['text'] = '15',
         ['kbtype'] = 'number',
@@ -221,17 +203,14 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '收获和派遣是否连着',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'expeditionTogether',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '是,否',
         ['select'] = '0',
       },
@@ -250,18 +229,15 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
-        ['text'] = '远征使用快速修理',
+        ['text'] = '使用快修',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'expeditionQuickRepair',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
-        ['list'] = '是,否',
+        ['list'] = '不满血,中破,大破,不使用',
         ['select'] = '1',
       },
       {
@@ -367,97 +343,79 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '追击',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'battlePursue',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '是,否',
         ['select'] = '1',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '追击Boss',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'battlePursueBoss',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '是,否',
         ['select'] = '1',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
-        ['text'] = '使用快速修理',
+        ['text'] = '使用快修',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'battleQuickRepair',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
-        ['list'] = '是,否',
+        ['list'] = '不满血,中破,大破,不使用',
         ['select'] = '1',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '不能出征则震动提示',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'battleAlertWhenNoHp',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '是,否',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '最多几战',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'battleMaxBattleNum',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '1,2,3,4,5',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '阵型',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'battleFormation',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '单纵,复纵,轮型,梯形,单横',
         ['select'] = '1',
       },
@@ -493,33 +451,40 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '追击',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'exercisePursue',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '是,否',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
+        ['text'] = '快修',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'exerciseQuickRepair',
+        ['type'] = 'RadioGroup',
+        ['list'] = '不满血,中破,大破,不使用',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = '阵型',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'exerciseFormation',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '单纵,复纵,轮型,梯形,单横',
         ['select'] = '1',
       },
@@ -568,33 +533,40 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
         ['text'] = '追击',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'campaignPursue',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '是,否',
         ['select'] = '0',
       },
       {
         ['type'] = 'Label',
-        ['width'] = width / 4,
+        ['text'] = '快修',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'campaignQuickRepair',
+        ['type'] = 'RadioGroup',
+        ['list'] = '不满血,中破,大破,不使用',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = '阵型',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
-        ['nowrap'] = 1,
       },
       {
         ['id'] = 'campaignFormation',
         ['type'] = 'RadioGroup',
-        ['width'] = width / 2,
         ['list'] = '单纵,复纵,轮型,梯形,单横',
         ['select'] = '1',
       },
@@ -708,8 +680,9 @@ local __tmp = (function(settings)
   settings.expeditionFleetToChapter = { settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 }
   -- 远征是否使用快速修理
   settings.expeditionQuickRepair = (function(expeditionQuickRepair)
-    local list = transStrToTable({ true, false, })
-    return list[expeditionQuickRepair] or false
+    -- '不满血,中破,大破,不使用'
+    local list = transStrToTable({ 3, 2, 1, 0 })
+    return list[expeditionQuickRepair] or 2
   end)(settings.expeditionQuickRepair)
   -- 选择关卡
   settings.battleChapter = (function(battleChapter)
@@ -748,8 +721,9 @@ local __tmp = (function(settings)
   end)(settings.battlePursueBoss)
   -- 是否使用快速修理
   settings.battleQuickRepair = (function(battleQuickRepair)
-    local list = transStrToTable({ true, false, })
-    return list[battleQuickRepair] or false
+    -- '不满血,中破,大破,不使用'
+    local list = transStrToTable({ 3, 2, 1, 0 })
+    return list[battleQuickRepair] or 2
   end)(settings.battleQuickRepair)
   -- 当无法出征时是否跳过出征
   settings.battleAlertWhenNoHp = (function(battleAlertWhenNoHp)
@@ -780,8 +754,9 @@ local __tmp = (function(settings)
   end)(settings.exercisePursue)
   -- 是否使用快速修理
   settings.exerciseQuickRepair = (function(exerciseQuickRepair)
-    local list = transStrToTable({ true, false, })
-    return list[exerciseQuickRepair] or false
+    -- '不满血,中破,大破,不使用'
+    local list = transStrToTable({ 3, 2, 1, 0 })
+    return list[exerciseQuickRepair] or 2
   end)(settings.exerciseQuickRepair)
   -- 阵型
   settings.exerciseFormation = (function(exerciseFormation)
@@ -807,8 +782,9 @@ local __tmp = (function(settings)
   end)(settings.campaignPursue)
   -- 是否使用快速修理
   settings.campaignQuickRepair = (function(campaignQuickRepair)
-    local list = transStrToTable({ true, false, })
-    return list[campaignQuickRepair] or false
+    -- '不满血,中破,大破,不使用'
+    local list = transStrToTable({ 3, 2, 1, 0 })
+    return list[campaignQuickRepair] or 2
   end)(settings.campaignQuickRepair)
   -- 阵型
   settings.campaignFormation = (function(campaignFormation)

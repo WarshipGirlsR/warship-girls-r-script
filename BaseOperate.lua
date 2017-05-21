@@ -260,10 +260,9 @@ return function()
   end
 
   -- 出征页面
-  map.battle.battle = {}
 
   --  是否在出征的出征界面
-  map.battle.battle.isBattlePage = function()
+  map.battle.isBattleBattlePage = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -288,13 +287,13 @@ return function()
   end
 
   -- 点击出征
-  map.battle.battle.clickBattleBtn = function()
+  map.battle.clickBattleBtn = function()
     tap(101, 110, 100)
     return true
   end
 
   -- 移动到m-n章节
-  map.battle.battle.moveToChapter = function(chapter)
+  map.battle.moveToChapter = function(chapter)
     local chapterArr = strSplit(chapter, "-")
     local m = tonumber(chapterArr[1]) or 1
     local n = tonumber(chapterArr[2]) or 1
@@ -322,12 +321,12 @@ return function()
   end
 
   -- 点击准备出征
-  map.battle.battle.clickReadyBattleBtn = function()
+  map.battle.clickReadyBattleBtn = function()
     tap(1061, 523, 100)
   end
 
   -- 等待出征准备界面
-  map.battle.battle.isReadyBattlePage = function()
+  map.battle.isReadyBattlePage = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -348,7 +347,7 @@ return function()
   end
 
   -- 点击选择舰队
-  map.battle.battle.selectFleet = function(fleet)
+  map.battle.selectFleet = function(fleet)
     if (fleet == 1) then
       tap(707, 711, 100)
     elseif (fleet == 2) then
@@ -362,7 +361,7 @@ return function()
   end
 
   -- 检测所有状态正常
-  map.battle.battle.isReadyBattlePageShipStatusAllRignt = function()
+  map.battle.isReadyBattlePageShipStatusAllRignt = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -383,9 +382,15 @@ return function()
   end
 
   -- 检测hp是否安全
-  map.battle.battle.isReadyBattlePageShipHPSafe = function()
+  map.battle.isReadyBattlePageShipHPSafe = function(checkLevel)
+    checkLevel = checkLevel or 1
+    -- checklevel = 不满血 or 中破 or 大破 or 不使用
+    -- { 3, 2, 1, 0 }
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
+
+    local result = true
+
     local list = {
       { 634, 631, 0x085994 },
       { 829, 631, 0x105d94 },
@@ -394,94 +399,222 @@ return function()
       { 1419, 631, 0x105d94 },
       { 1619, 631, 0x105d94 },
     }
-    local list2 = {
-      { 565, 600, 0x31db31 },
-      { 762, 600, 0x31db31 },
-      { 959, 600, 0x31db31 },
-      { 1156, 600, 0x3adb31 },
-      { 1353, 600, 0x31db31 },
-      { 1549, 600, 0x31db31 },
+
+    -- 满血
+    local list23 = {
+      { 640, 600, 0x9cfb8c },
+      { 837, 600, 0x9cfb8c },
+      { 1034, 600, 0x9cfb8c },
+      { 1231, 600, 0x9cfb8c },
+      { 1428, 600, 0x9cfb8c },
+      { 1625, 600, 0x9cfb8c },
     }
-    local result = true
-    for i = 1, #list do
-      local theList = table.merge({}, list[i], { 80 })
-      local theList2 = table.merge({}, list2[i], { 80 })
-      if (isColor(table.unpack(theList)) and (not isColor(table.unpack(theList2)))) then
-        result = false
-        break
+    -- 黄血 中破
+    local list22 = {
+      { 1459, 599, 0xefdb21 },
+      { 1262, 599, 0xe6d719 },
+      { 1065, 599, 0xefdb21 },
+      { 868, 599, 0xe6d719 },
+      { 671, 599, 0xefdb21 },
+      { 474, 599, 0xe6d719 },
+    }
+    -- 红血 大破
+    local list21 = {
+      { 474, 600, 0xef1010 },
+      { 671, 600, 0xe61010 },
+      { 868, 600, 0xef1010 },
+      { 1065, 600, 0xe61010 },
+      { 1262, 600, 0xef1010 },
+      { 1459, 600, 0xe61010 },
+    }
+    if (checkLevel == 3) then
+      -- 有不满血
+      for i = 1, #list do
+        if (multiColor({ list[i] }, 80) and (not multiColor({ list23[i] }, 80))) then
+          result = false
+          break
+        end
+      end
+    elseif (checkLevel == 2) then
+      -- 有中破或大破
+      for i = 1, #list do
+        if (multiColor({ list[i] }, 80) and (multiColor({ list22[i] }, 80) or multiColor({ list21[i] }, 80))) then
+          result = false
+          break
+        end
+      end
+    elseif (checkLevel == 1) then
+      -- 有大破
+      for i = 1, #list do
+        if (multiColor({ list[i] }, 80) and multiColor({ list21[i] }, 80)) then
+          result = false
+          break
+        end
+      end
+    end
+
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 不满血，返回出征
+  map.battle.clickReadyBattlePageBackBtn = function()
+    tap(1814, 974, 100)
+  end
+
+  -- 点击快速补给
+  map.battle.clickReadyBattlePageQuickSupplyBtn = function()
+    tap(1812, 109, 100)
+  end
+
+  -- 等待快速补给界面
+  map.battle.isQuickSupplyModal = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 1817, 483, 0x423510 },
+      { 1292, 224, 0xd6cac5 },
+      { 315, 835, 0xd6cec5 },
+      { 842, 189, 0x004d84 },
+      { 1785, 541, 0x423510 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击快速补给
+  map.battle.clickReadyBattlePageQuickSupplyModalOkBtn = function()
+    tap(1269, 785, 100)
+  end
+
+  -- 点击快速修理
+  map.battle.clickQuickRepairBtn = function()
+    tap(1813, 252, 100)
+  end
+
+  -- 等待快速修理界面
+  map.battle.isQuickRepairModal = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 1817, 483, 0x423510 },
+      { 1292, 224, 0xd6cac5 },
+      { 315, 835, 0xd6cec5 },
+      { 842, 189, 0x004d84 },
+      { 1785, 541, 0x423510 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击快速修理
+  map.battle.clickQuickRepairModalOkBtn = function()
+    tap(1269, 785, 100)
+  end
+
+  -- 检测快速修理界面HP是否安全，有几艘船需要快速修理
+  map.battle.isQuickRepairModalShipNeedRepair = function(checkLevel)
+    checkLevel = checkLevel or 1
+    -- checklevel = 不满血 or 中破 or 大破 or 不使用
+    -- { 3, 2, 1, 0 }
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 444, 643, 0x0069a4 },
+      { 641, 643, 0x086dad },
+      { 838, 643, 0x0869a4 },
+      { 1035, 643, 0x086dad },
+      { 1232, 643, 0x0069a4 },
+      { 1428, 643, 0x0069a4 },
+    }
+    -- 满血
+    local list23 = {
+      { 443, 621, 0x9cff8c },
+      { 640, 621, 0x94fb84 },
+      { 837, 621, 0x9cff8c },
+      { 1034, 621, 0x94fb84 },
+      { 1231, 621, 0x9cff8c },
+      { 1428, 621, 0x94fb84 },
+    }
+    -- 中破
+    local list22 = {
+      { 277, 621, 0xefe310 },
+      { 474, 621, 0xe6df08 },
+      { 671, 621, 0xefe310 },
+      { 868, 621, 0xe6df08 },
+      { 1065, 621, 0xefe310 },
+      { 1262, 621, 0xe6df08 },
+    }
+    -- 大破
+    local list21 = {
+      { 277, 621, 0xef0c10 },
+      { 474, 621, 0xe60808 },
+      { 671, 621, 0xef0c10 },
+      { 868, 621, 0xe60c08 },
+      { 1065, 621, 0xef0c10 },
+      { 1262, 621, 0xe60808 },
+    }
+    local result = {}
+    if (checkLevel == 3) then
+      -- 不满血
+      for i = 1, #list do
+        if (multiColor({ list[i] }, 80) and (not multiColor({ list23[i] }, 80))) then
+          table.insert(result, i)
+        end
+      end
+    elseif (checkLevel == 2) then
+      -- 有中破或大破
+      for i = 1, #list do
+        if (multiColor({ list[i] }, 80) and (multiColor({ list22[i] }, 80) or multiColor({ list21[i] }, 80))) then
+          table.insert(result, i)
+        end
+      end
+    elseif (checkLevel == 1) then
+      -- 有大破
+      for i = 1, #list do
+        if (multiColor({ list[i] }, 80) and multiColor({ list21[i] }, 80)) then
+          table.insert(result, i)
+        end
       end
     end
     if (not __keepScreenState) then keepScreen(false) end
     return result
   end
 
-  -- 不满血，返回出征
-  map.battle.battle.clickReadyBattlePageBackBtn = function()
-    tap(1814, 974, 100)
-  end
-
-  -- 点击快速补给
-  map.battle.battle.clickReadyBattlePageQuickSupplyBtn = function()
-    tap(1812, 109, 100)
-  end
-
-  -- 等待快速补给界面
-  map.battle.battle.isQuickSupplyModal = function()
-    local __keepScreenState = keepScreenState
-    if (not __keepScreenState) then keepScreen(true) end
-    local list = {
-      { 1817, 483, 0x423510 },
-      { 1292, 224, 0xd6cac5 },
-      { 315, 835, 0xd6cec5 },
-      { 842, 189, 0x004d84 },
-      { 1785, 541, 0x423510 },
-    }
-    local result = multiColor(list)
-    if (not __keepScreenState) then keepScreen(false) end
-    return result
-  end
-
-  -- 点击快速补给
-  map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn = function()
-    tap(1269, 785, 100)
-  end
-
-  -- 点击快速修理
-  map.battle.battle.clickQuickRepairBtn = function()
-    tap(1813, 252, 100)
-  end
-
-  -- 等待快速修理界面
-  map.battle.battle.isQuickRepairModal = function()
-    local __keepScreenState = keepScreenState
-    if (not __keepScreenState) then keepScreen(true) end
-    local list = {
-      { 1817, 483, 0x423510 },
-      { 1292, 224, 0xd6cac5 },
-      { 315, 835, 0xd6cec5 },
-      { 842, 189, 0x004d84 },
-      { 1785, 541, 0x423510 },
-    }
-    local result = multiColor(list)
-    if (not __keepScreenState) then keepScreen(false) end
-    return result
-  end
-
-  -- 点击快速修理
-  map.battle.battle.clickQuickRepairModalOkBtn = function()
-    tap(1269, 785, 100)
+  -- 点击快速修理单个船
+  map.battle.clickQuickRepairModalSingleShip = function(shipList)
+    if (type(shipList) ~= 'table') then
+      shipList = { shipList }
+    end
+    for key, value in ipairs(shipList) do
+      if (value == 1) then
+        tap(360, 397, 100)
+      elseif (value == 2) then
+        tap(557, 397, 100)
+      elseif (value == 3) then
+        tap(754, 397, 100)
+      elseif (value == 4) then
+        tap(951, 397, 100)
+      elseif (value == 5) then
+        tap(1148, 397, 100)
+      elseif (value == 6) then
+        tap(1345, 397, 100)
+      end
+    end
   end
 
   -- 点击快速补给关闭
-  map.battle.battle.clickQuickSupplyModalCloseBtn = function()
+  map.battle.clickQuickSupplyModalCloseBtn = function()
     tap(1473, 195, 100)
   end
 
   -- 点击快速修理关闭
-  map.battle.battle.clickQuickRepairModalCloseBtn = map.battle.battle.clickQuickSupplyModalCloseBtn
+  map.battle.clickQuickRepairModalCloseBtn = map.battle.clickQuickSupplyModalCloseBtn
 
   -- 检测舰队可以出征
-  map.battle.battle.isFleetsCanBattle = function()
+  map.battle.isFleetsCanBattle = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -496,12 +629,12 @@ return function()
   end
 
   -- 点击出征开始
-  map.battle.battle.clickBattleStartBtn = function()
+  map.battle.clickBattleStartBtn = function()
     tap(956, 987, 100)
   end
 
   -- 等待额外获得资源面板
-  map.battle.battle.isExtraReceiveModal = function()
+  map.battle.isExtraReceiveModal = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -519,12 +652,12 @@ return function()
   end
 
   -- 点击额外获得确定
-  map.battle.battle.clickExtraReceiveModalOk = function()
+  map.battle.clickExtraReceiveModalOk = function()
     tap(957, 715, 100)
   end
 
   -- 等待快开始战斗界面
-  map.battle.battle.isBattleStartPage = function()
+  map.battle.isBattleStartPage = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -545,12 +678,12 @@ return function()
 
 
   -- 点击开始战斗
-  map.battle.battle.clickBattleStartModalStartBtn = function()
+  map.battle.clickBattleStartModalStartBtn = function()
     tap(1327, 919, 100)
   end
 
   -- 等待阵型界面
-  map.battle.battle.isFormationPage = function()
+  map.battle.isFormationPage = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -571,7 +704,7 @@ return function()
   end
 
   -- 点击阵型
-  map.battle.battle.clickFormationPageStartBtn = function(formation)
+  map.battle.clickFormationPageStartBtn = function(formation)
     formation = formation or 0
     if (formation == 1) then
       -- 单纵
@@ -595,7 +728,7 @@ return function()
   end
 
   -- 等待追击页面
-  map.battle.battle.isPursueModal = function()
+  map.battle.isPursueModal = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -613,17 +746,17 @@ return function()
   end
 
   -- 点击追击
-  map.battle.battle.clickPursueModalOk = function()
+  map.battle.clickPursueModalOk = function()
     tap(726, 746, 100)
   end
 
   -- 点击放弃
-  map.battle.battle.clickPursuePageCancel = function()
+  map.battle.clickPursuePageCancel = function()
     tap(1178, 754, 100)
   end
 
   -- 等待胜利界面
-  map.battle.battle.isVictoryPage = function()
+  map.battle.isVictoryPage = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -642,7 +775,7 @@ return function()
   end
 
   -- 胜利界面检测船是否受损
-  map.battle.battle.isVictoryPageShipDamaged = function()
+  map.battle.isVictoryPageShipDamaged = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -673,7 +806,10 @@ return function()
   end
 
   -- 胜利界面检测船HP是否安全
-  map.battle.battle.isVictoryPageShipHPSafe = function()
+  map.battle.isVictoryPageShipHPSafe = function(checkLevel)
+    checkLevel = checkLevel or 1
+    -- '有中破,有大破'
+    -- checkLevel == 2 or 1
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -684,19 +820,43 @@ return function()
       { 682, 810, 0xc5b6a4 },
       { 682, 950, 0xc5b6a4 },
     }
-    local list2 = {
-      { 621, 325, 0x31db31 },
-      { 621, 465, 0x31db31 },
-      { 621, 606, 0x31d729 },
-      { 621, 747, 0x31db31 },
-      { 621, 887, 0x31db31 },
-      { 621, 1028, 0x31d729 },
+    -- 中破
+    local list22 = {
+      { { 474, 289, 0xf7ca6b }, { 481, 283, 0xe6be63 }, { 471, 329, 0xcea242 }, },
+      { { 474, 430, 0xf7ca6b }, { 481, 424, 0xe6be63 }, { 471, 470, 0xcea242 }, },
+      { { 474, 570, 0xf7ca6b }, { 481, 564, 0xe6be63 }, { 471, 610, 0xcea242 }, },
+      { { 474, 711, 0xf7ca6b }, { 481, 705, 0xe6be63 }, { 471, 751, 0xcea242 }, },
+      { { 474, 852, 0xf7ca6b }, { 481, 846, 0xe6be63 }, { 471, 892, 0xcea242 }, },
+      { { 474, 992, 0xf7ca6b }, { 481, 986, 0xe6be63 }, { 471, 1032, 0xcea242 }, },
+    }
+    -- 大破
+    local list21 = {
+      { { 474, 289, 0xffb6b5 }, { 481, 283, 0xffbabd }, { 471, 329, 0xff7d7b }, },
+      { { 474, 430, 0xffb6b5 }, { 481, 424, 0xffbabd }, { 471, 470, 0xff7d7b }, },
+      { { 474, 570, 0xffb6b5 }, { 481, 564, 0xffbabd }, { 471, 610, 0xff7d7b }, },
+      { { 474, 711, 0xffb6b5 }, { 481, 705, 0xffbabd }, { 471, 751, 0xff7d7b }, },
+      { { 474, 852, 0xffb6b5 }, { 481, 846, 0xffbabd }, { 471, 892, 0xff7d7b }, },
+      { { 474, 992, 0xffb6b5 }, { 481, 986, 0xffbabd }, { 471, 1032, 0xff7d7b }, },
     }
     local result = true
-    for i = 1, #list do
-      if ((isColor(table.unpack(list[i]))) and (not isColor(table.unpack(list2[i])))) then
-        result = false
-        break
+    if (checkLevel == 2) then
+      -- 有中破或者大破
+      for i = 1, #list do
+        local theList = table.merge(list[i], { 80 })
+        if (isColor(table.unpack(theList)) and (multiColor(list22[i], 80) or multiColor(list21[i], 80))) then
+          result = false
+          break
+        end
+      end
+
+    elseif (checkLevel == 1) then
+      -- 有大破
+      for i = 1, #list do
+        local theList = table.merge(list[i], { 80 })
+        if (isColor(table.unpack(theList)) and multiColor(list21[i], 80)) then
+          result = false
+          break
+        end
       end
     end
     if (not __keepScreenState) then keepScreen(false) end
@@ -704,12 +864,12 @@ return function()
   end
 
   -- 点击胜利继续
-  map.battle.battle.clickVictoryPageContinueBtn = function()
+  map.battle.clickVictoryPageContinueBtn = function()
     tap(1650, 1020, 100)
   end
 
   -- 等待胜利继续面板
-  map.battle.battle.isVictoryPage2 = function()
+  map.battle.isVictoryPage2 = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -727,12 +887,12 @@ return function()
 
 
   -- 点击胜利继续2
-  map.battle.battle.clickVictoryPageContinueBtn2 = function()
+  map.battle.clickVictoryPageContinueBtn2 = function()
     tap(1730, 993, 100)
   end
 
   -- 等待大破警告
-  map.battle.battle.isShipSevereDamageModal = function()
+  map.battle.isShipSevereDamageModal = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -752,12 +912,12 @@ return function()
   end
 
   -- 大破警告框点击回港
-  map.battle.battle.clickShipSevereDamageModalBack = function()
+  map.battle.clickShipSevereDamageModalBack = function()
     tap(1182, 753, 100)
   end
 
   -- 等待无法前进警告框
-  map.battle.battle.isShipCantGoOnModal = function()
+  map.battle.isShipCantGoOnModal = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -777,12 +937,12 @@ return function()
   end
 
   -- 受损过重警告框点击回港
-  map.battle.battle.clickShipCantGoOnModalBackBtn = function()
+  map.battle.clickShipCantGoOnModalBackBtn = function()
     tap(1449, 825, 100)
   end
 
   -- 等待新船
-  map.battle.battle.isNewShipPage = function()
+  map.battle.isNewShipPage = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -800,12 +960,12 @@ return function()
   end
 
   -- 点击新船
-  map.battle.battle.clickNewShip = function()
+  map.battle.clickNewShip = function()
     tap(972, 399, 100)
   end
 
   -- 等待新船锁定对话框
-  map.battle.battle.isNewShipPageLockModal = function()
+  map.battle.isNewShipPageLockModal = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -824,12 +984,12 @@ return function()
   end
 
   -- 船锁定对话框点击确认
-  map.battle.battle.clickNewShipPageLockModalOkBtn = function()
+  map.battle.clickNewShipPageLockModalOkBtn = function()
     tap(741, 713, 100)
   end
 
   -- 等待前进对话框
-  map.battle.battle.isNextLevelStepModal = function()
+  map.battle.isNextLevelStepModal = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -848,12 +1008,12 @@ return function()
   end
 
   -- 等待前进点击前进
-  map.battle.battle.clickLevelStepModalContinueBtn = function()
+  map.battle.clickLevelStepModalContinueBtn = function()
     tap(727, 751, 100)
   end
 
   -- 等待前进点击回港
-  map.battle.battle.clickLevelStepModalBackBtn = function()
+  map.battle.clickLevelStepModalBackBtn = function()
     tap(1181, 748, 100)
   end
 
@@ -1278,7 +1438,7 @@ return function()
   end
 
   -- 选择舰队
-  map.expedition.clickSelectFleet = map.battle.battle.selectFleet
+  map.expedition.clickSelectFleet = map.battle.selectFleet
 
   -- 检测所有状态正常
   map.expedition.isReadyExpeditionShipStatus = function()
@@ -1301,22 +1461,28 @@ return function()
   end
 
   -- 点击快速补给
-  map.expedition.clickQuickSupply = map.battle.battle.clickReadyBattlePageQuickSupplyBtn
+  map.expedition.clickQuickSupply = map.battle.clickReadyBattlePageQuickSupplyBtn
 
   -- 检测快速补给界面
-  map.expedition.isQuickSupply = map.battle.battle.isQuickSupplyModal
+  map.expedition.isQuickSupply = map.battle.isQuickSupplyModal
 
   -- 点击快速补给确定
-  map.expedition.clickQuickSupplyDo = map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn
+  map.expedition.clickQuickSupplyDo = map.battle.clickReadyBattlePageQuickSupplyModalOkBtn
 
   -- 点击快速维修
-  map.expedition.clickQuickRepair = map.battle.battle.clickQuickRepairBtn
+  map.expedition.clickQuickRepair = map.battle.clickQuickRepairBtn
 
   -- 等待快速维修界面
-  map.expedition.isQuickRepair = map.battle.battle.isQuickRepairModal
+  map.expedition.isQuickRepair = map.battle.isQuickRepairModal
 
   -- 点击快速维修确定
-  map.expedition.clickQuickRepairDo = map.battle.battle.clickQuickRepairModalOkBtn
+  map.expedition.clickQuickRepairDo = map.battle.clickQuickRepairModalOkBtn
+
+  -- 检测快速修理界面HP是否安全，有几艘船需要快速修理
+  map.expedition.isQuickRepairModalShipNeedRepair = map.battle.isQuickRepairModalShipNeedRepair
+
+  -- 点击快速修理单个船
+  map.expedition.clickQuickRepairModalSingleShip = map.battle.clickQuickRepairModalSingleShip
 
   -- 检测舰队可以远征
   map.expedition.isCanExpedition = function()
@@ -1340,7 +1506,7 @@ return function()
   end
 
   -- 点击远征开始
-  map.expedition.clickBattleStart = map.battle.battle.clickBattleStartBtn
+  map.expedition.clickBattleStart = map.battle.clickBattleStartBtn
 
   -- 点击返回港口
   map.expedition.clickBackToHome = function()
@@ -1664,55 +1830,61 @@ return function()
   end
 
   -- 等待出征准备界面
-  map.exercise.isReadyBattlePage = map.battle.battle.isReadyBattlePage
+  map.exercise.isReadyBattlePage = map.battle.isReadyBattlePage
 
   -- 点击选择舰队
-  map.exercise.selectFleet = map.battle.battle.selectFleet
+  map.exercise.selectFleet = map.battle.selectFleet
 
   -- 检测所有状态正常
-  map.exercise.isReadyBattlePageShipStatusAllRignt = map.battle.battle.isReadyBattlePageShipStatusAllRignt
+  map.exercise.isReadyBattlePageShipStatusAllRignt = map.battle.isReadyBattlePageShipStatusAllRignt
 
   -- 检测hp是否安全
-  map.exercise.isReadyBattlePageShipHPSafe = map.battle.battle.isReadyBattlePageShipHPSafe
+  map.exercise.isReadyBattlePageShipHPSafe = map.battle.isReadyBattlePageShipHPSafe
 
   -- 不满血，返回出征
-  map.exercise.clickReadyBattlePageBackBtn = map.battle.battle.clickReadyBattlePageBackBtn
+  map.exercise.clickReadyBattlePageBackBtn = map.battle.clickReadyBattlePageBackBtn
 
   -- 点击快速补给
-  map.exercise.clickReadyBattlePageQuickSupplyBtn = map.battle.battle.clickReadyBattlePageQuickSupplyBtn
+  map.exercise.clickReadyBattlePageQuickSupplyBtn = map.battle.clickReadyBattlePageQuickSupplyBtn
 
   -- 等待快速补给界面
-  map.exercise.isQuickSupplyModal = map.battle.battle.isQuickSupplyModal
+  map.exercise.isQuickSupplyModal = map.battle.isQuickSupplyModal
 
   -- 点击快速补给
-  map.exercise.clickReadyBattlePageQuickSupplyModalOkBtn = map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn
+  map.exercise.clickReadyBattlePageQuickSupplyModalOkBtn = map.battle.clickReadyBattlePageQuickSupplyModalOkBtn
 
   -- 点击快速修理
-  map.exercise.clickQuickRepairBtn = map.battle.battle.clickQuickRepairBtn
+  map.exercise.clickQuickRepairBtn = map.battle.clickQuickRepairBtn
 
   -- 等待快速修理界面
-  map.exercise.isQuickRepairModal = map.battle.battle.isQuickRepairModal
+  map.exercise.isQuickRepairModal = map.battle.isQuickRepairModal
 
   -- 点击快速修理
-  map.exercise.clickQuickRepairModalOkBtn = map.battle.battle.clickQuickRepairModalOkBtn
+  map.exercise.clickQuickRepairModalOkBtn = map.battle.clickQuickRepairModalOkBtn
+
+  -- 检测快速修理界面HP是否安全，有几艘船需要快速修理
+  map.exercise.isQuickRepairModalShipNeedRepair = map.battle.isQuickRepairModalShipNeedRepair
+
+  -- 点击快速修理单个船
+  map.exercise.clickQuickRepairModalSingleShip = map.battle.clickQuickRepairModalSingleShip
 
   -- 点击快速补给关闭
-  map.exercise.clickQuickSupplyModalCloseBtn = map.battle.battle.clickQuickSupplyModalCloseBtn
+  map.exercise.clickQuickSupplyModalCloseBtn = map.battle.clickQuickSupplyModalCloseBtn
 
   -- 点击快速修理关闭
-  map.exercise.clickQuickSupplyModalCloseBtn = map.battle.battle.clickQuickSupplyModalCloseBtn
+  map.exercise.clickQuickRepairModalCloseBtn = map.battle.clickQuickRepairModalCloseBtn
 
   -- 检测舰队可以出征
-  map.exercise.isFleetsCanBattle = map.battle.battle.isFleetsCanBattle
+  map.exercise.isFleetsCanBattle = map.battle.isFleetsCanBattle
 
   -- 点击出征开始
-  map.exercise.clickBattleStartBtn = map.battle.battle.clickBattleStartBtn
+  map.exercise.clickBattleStartBtn = map.battle.clickBattleStartBtn
 
   -- 等待额外获得资源面板
-  map.exercise.isExtraReceiveModal = map.battle.battle.isExtraReceiveModal
+  map.exercise.isExtraReceiveModal = map.battle.isExtraReceiveModal
 
   -- 点击额外获得确定
-  map.exercise.clickExtraReceiveModalOk = map.battle.battle.clickExtraReceiveModalOk
+  map.exercise.clickExtraReceiveModalOk = map.battle.clickExtraReceiveModalOk
 
   -- 等待快开始战斗界面
   map.exercise.isBattleStartPage = function()
@@ -1740,37 +1912,37 @@ return function()
   end
 
   -- 等待阵型界面
-  map.exercise.isFormationPage = map.battle.battle.isFormationPage
+  map.exercise.isFormationPage = map.battle.isFormationPage
 
   -- 点击阵型
-  map.exercise.clickFormationPageStartBtn = map.battle.battle.clickFormationPageStartBtn
+  map.exercise.clickFormationPageStartBtn = map.battle.clickFormationPageStartBtn
 
   -- 等待追击页面
-  map.exercise.isPursueModal = map.battle.battle.isPursueModal
+  map.exercise.isPursueModal = map.battle.isPursueModal
 
   -- 点击追击
-  map.exercise.clickPursueModalOk = map.battle.battle.clickPursueModalOk
+  map.exercise.clickPursueModalOk = map.battle.clickPursueModalOk
 
   -- 点击放弃
-  map.exercise.clickPursuePageCancel = map.battle.battle.clickPursuePageCancel
+  map.exercise.clickPursuePageCancel = map.battle.clickPursuePageCancel
 
   -- 等待胜利界面
-  map.exercise.isVictoryPage = map.battle.battle.isVictoryPage
+  map.exercise.isVictoryPage = map.battle.isVictoryPage
 
   -- 胜利界面检测船是否受损
-  map.exercise.isVictoryPageShipDamaged = map.battle.battle.isVictoryPageShipDamaged
+  map.exercise.isVictoryPageShipDamaged = map.battle.isVictoryPageShipDamaged
 
   -- 胜利界面检测船HP是否安全
-  map.exercise.isVictoryPageShipHPSafe = map.battle.battle.isVictoryPageShipHPSafe
+  map.exercise.isVictoryPageShipHPSafe = map.battle.isVictoryPageShipHPSafe
 
   -- 点击胜利继续
-  map.exercise.clickVictoryPageContinueBtn = map.battle.battle.clickVictoryPageContinueBtn
+  map.exercise.clickVictoryPageContinueBtn = map.battle.clickVictoryPageContinueBtn
 
   -- 等待胜利继续面板
-  map.exercise.isVictoryPage2 = map.battle.battle.isVictoryPage2
+  map.exercise.isVictoryPage2 = map.battle.isVictoryPage2
 
   -- 点击胜利继续2
-  map.exercise.clickVictoryPageContinueBtn2 = map.battle.battle.clickVictoryPageContinueBtn2
+  map.exercise.clickVictoryPageContinueBtn2 = map.battle.clickVictoryPageContinueBtn2
 
   -- 检测胜利对手详情页面
   map.exercise.isVictoryOpponentDetailPage = function()
@@ -1964,7 +2136,7 @@ return function()
       },
     }
     for key, value in ipairs(list) do
-      if (multiColor(value)) then
+      if (multiColor(value, 80)) then
         result = false
         break
       end
@@ -1974,61 +2146,120 @@ return function()
   end
 
   -- 检测hp是否安全
-  map.campaign.isReadyBattlePageShipHPSafe = function()
+  map.campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local result = true
+    -- 槽位上没有船
     local list = {
-      { 469, 407, 0x3adf31 },
-      { 469, 648, 0x52f34a },
-      { 469, 550, 0x31d729 },
-      { 469, 689, 0x31db31 },
-      { 469, 828, 0x31d729 },
-      { 469, 967, 0x31db31 },
+      { 118, 274, 0x94c242 },
+      { 118, 413, 0x8cbe42 },
+      { 118, 551, 0x8cbe42 },
+      { 118, 690, 0x94c242 },
+      { 118, 829, 0x8cbe42 },
+      { 118, 967, 0x8cbe42 },
     }
-    local result = multiColor(list)
+    -- 满血
+    local list23 = {
+      { 469, 214, 0x9cfb8c },
+      { 469, 353, 0x9cff8c },
+      { 469, 491, 0x9cff8c },
+      { 469, 630, 0x9cfb8c },
+      { 469, 769, 0x9cff8c },
+      { 469, 908, 0x94fb84 },
+    }
+    -- 有中破
+    local list22 = {
+      { 469, 333, 0xefe310 },
+      { 469, 472, 0xefe308 },
+      { 469, 610, 0xefe308 },
+      { 469, 749, 0xefe310 },
+      { 469, 888, 0xefe308 },
+      { 469, 1027, 0xefe310 },
+    }
+    -- 有大破
+    local list21 = {
+      { 469, 333, 0xef0c10 },
+      { 469, 472, 0xef0c08 },
+      { 469, 610, 0xef0c08 },
+      { 469, 749, 0xef0c10 },
+      { 469, 888, 0xef0c08 },
+      { 469, 1027, 0xef0c10 },
+    }
+    if (checkLevel == 3) then
+      -- 有不满血
+      for i = 1, #list do
+        if ((not multiColor({ list[i] }, 80)) and (not multiColor({ list23[i] }, 80))) then
+          result = false
+          break
+        end
+      end
+    elseif (checkLevel == 2) then
+      -- 有中破或者大破
+      for i = 1, #list do
+        if ((not multiColor({ list[i] }, 80)) and (multiColor({ list22[i] }, 80) or multiColor({ list21[i] }, 80))) then
+          result = false
+          break
+        end
+      end
+
+    elseif (checkLevel == 1) then
+      -- 有大破
+      for i = 1, #list do
+        if ((not multiColor({ list[i] }, 80)) and multiColor({ list21[i] }, 80)) then
+          result = false
+          break
+        end
+      end
+    end
     if (not __keepScreenState) then keepScreen(false) end
     return result
   end
 
   -- 不满血，返回出征
-  map.campaign.clickReadyBattlePageBackBtn = map.battle.battle.clickReadyBattlePageBackBtn
+  map.campaign.clickReadyBattlePageBackBtn = map.battle.clickReadyBattlePageBackBtn
 
   -- 点击快速补给
-  map.campaign.clickReadyBattlePageQuickSupplyBtn = map.battle.battle.clickReadyBattlePageQuickSupplyBtn
+  map.campaign.clickReadyBattlePageQuickSupplyBtn = map.battle.clickReadyBattlePageQuickSupplyBtn
 
   -- 等待快速补给界面
-  map.campaign.isQuickSupplyModal = map.battle.battle.isQuickSupplyModal
+  map.campaign.isQuickSupplyModal = map.battle.isQuickSupplyModal
 
   -- 点击快速补给
-  map.campaign.clickReadyBattlePageQuickSupplyModalOkBtn = map.battle.battle.clickReadyBattlePageQuickSupplyModalOkBtn
+  map.campaign.clickReadyBattlePageQuickSupplyModalOkBtn = map.battle.clickReadyBattlePageQuickSupplyModalOkBtn
 
   -- 点击快速修理
-  map.campaign.clickQuickRepairBtn = map.battle.battle.clickQuickRepairBtn
+  map.campaign.clickQuickRepairBtn = map.battle.clickQuickRepairBtn
 
   -- 等待快速修理界面
-  map.campaign.isQuickRepairModal = map.battle.battle.isQuickRepairModal
+  map.campaign.isQuickRepairModal = map.battle.isQuickRepairModal
 
   -- 点击快速修理
-  map.campaign.clickQuickRepairModalOkBtn = map.battle.battle.clickQuickRepairModalOkBtn
+  map.campaign.clickQuickRepairModalOkBtn = map.battle.clickQuickRepairModalOkBtn
+
+  -- 检测快速修理界面HP是否安全，有几艘船需要快速修理
+  map.campaign.isQuickRepairModalShipNeedRepair = map.battle.isQuickRepairModalShipNeedRepair
+
+  -- 点击快速修理单个船
+  map.campaign.clickQuickRepairModalSingleShip = map.battle.clickQuickRepairModalSingleShip
 
   -- 点击快速补给关闭
-  map.campaign.clickQuickSupplyModalCloseBtn = map.battle.battle.clickQuickSupplyModalCloseBtn
+  map.campaign.clickQuickSupplyModalCloseBtn = map.battle.clickQuickSupplyModalCloseBtn
 
   -- 点击快速修理关闭
-  map.campaign.clickQuickSupplyModalCloseBtn = map.battle.battle.clickQuickSupplyModalCloseBtn
+  map.campaign.clickQuickRepairModalCloseBtn = map.battle.clickQuickRepairModalCloseBtn
 
   -- 检测舰队可以出征
-  map.campaign.isFleetsCanBattle = map.battle.battle.isFleetsCanBattle
+  map.campaign.isFleetsCanBattle = map.battle.isFleetsCanBattle
 
   -- 点击出征开始
-  map.campaign.clickBattleStartBtn = map.battle.battle.clickBattleStartBtn
+  map.campaign.clickBattleStartBtn = map.battle.clickBattleStartBtn
 
   -- 等待额外获得资源面板
-  map.campaign.isExtraReceiveModal = map.battle.battle.isExtraReceiveModal
+  map.campaign.isExtraReceiveModal = map.battle.isExtraReceiveModal
 
   -- 点击额外获得确定
-  map.campaign.clickExtraReceiveModalOk = map.battle.battle.clickExtraReceiveModalOk
+  map.campaign.clickExtraReceiveModalOk = map.battle.clickExtraReceiveModalOk
 
   -- 等待快开始战斗界面
   map.campaign.isBattleStartPage = function()
@@ -2056,37 +2287,37 @@ return function()
   end
 
   -- 等待阵型界面
-  map.campaign.isFormationPage = map.battle.battle.isFormationPage
+  map.campaign.isFormationPage = map.battle.isFormationPage
 
   -- 点击阵型
-  map.campaign.clickFormationPageStartBtn = map.battle.battle.clickFormationPageStartBtn
+  map.campaign.clickFormationPageStartBtn = map.battle.clickFormationPageStartBtn
 
   -- 等待追击页面
-  map.campaign.isPursueModal = map.battle.battle.isPursueModal
+  map.campaign.isPursueModal = map.battle.isPursueModal
 
   -- 点击追击
-  map.campaign.clickPursueModalOk = map.battle.battle.clickPursueModalOk
+  map.campaign.clickPursueModalOk = map.battle.clickPursueModalOk
 
   -- 点击放弃
-  map.campaign.clickPursuePageCancel = map.battle.battle.clickPursuePageCancel
+  map.campaign.clickPursuePageCancel = map.battle.clickPursuePageCancel
 
   -- 等待胜利界面
-  map.campaign.isVictoryPage = map.battle.battle.isVictoryPage
+  map.campaign.isVictoryPage = map.battle.isVictoryPage
 
   -- 胜利界面检测船是否受损
-  map.campaign.isVictoryPageShipDamaged = map.battle.battle.isVictoryPageShipDamaged
+  map.campaign.isVictoryPageShipDamaged = map.battle.isVictoryPageShipDamaged
 
   -- 胜利界面检测船HP是否安全
-  map.campaign.isVictoryPageShipHPSafe = map.battle.battle.isVictoryPageShipHPSafe
+  map.campaign.isVictoryPageShipHPSafe = map.battle.isVictoryPageShipHPSafe
 
   -- 点击胜利继续
-  map.campaign.clickVictoryPageContinueBtn = map.battle.battle.clickVictoryPageContinueBtn
+  map.campaign.clickVictoryPageContinueBtn = map.battle.clickVictoryPageContinueBtn
 
   -- 等待胜利继续面板
-  map.campaign.isVictoryPage2 = map.battle.battle.isVictoryPage2
+  map.campaign.isVictoryPage2 = map.battle.isVictoryPage2
 
   -- 点击胜利继续2
-  map.campaign.clickVictoryPageContinueBtn2 = map.battle.battle.clickVictoryPageContinueBtn2
+  map.campaign.clickVictoryPageContinueBtn2 = map.battle.clickVictoryPageContinueBtn2
 
   -- 检测胜利对手详情页面
   map.campaign.isVictoryOpponentDetailPage = function()
