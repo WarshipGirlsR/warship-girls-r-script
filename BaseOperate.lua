@@ -1,6 +1,9 @@
 -- 原子操作列表
 return function()
   local map = {
+    -- 网络检查
+    network = {},
+
     -- 主页
     home = {},
     -- 出征
@@ -122,6 +125,106 @@ return function()
   -- 点击网络不通 取消
   map.home.clickNetworkFailureModalCancel = function()
     tap(1174, 718, 100)
+    return true
+  end
+
+  map.home.isNewsModal = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 75, 28, 0x007dbd },
+      { 1140, 69, 0x085d9c },
+      { 1809, 85, 0xd6cec5 },
+      { 1872, 78, 0x9c0c08 },
+      { 75, 521, 0xd1cabf },
+      { 59, 1000, 0xcecabd },
+      { 943, 1002, 0xc5b69c },
+      { 1863, 957, 0xd6cec5 },
+      { 1864, 460, 0xd6cac5 },
+      { 956, 103, 0xcecabd },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击新闻 取消
+  map.home.clickMewsModalClose = function()
+    tap(1876, 50, 100)
+    return true
+  end
+
+  -- 签到窗口
+  map.home.isSignModal = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 1142, 118, 0x0865a4 },
+      { 1567, 120, 0x940c08 },
+      { 368, 154, 0xd6cabd },
+      { 426, 207, 0xbdb69c },
+      { 731, 206, 0xc5b69c },
+      { 992, 233, 0xbdb69c },
+      { 1500, 211, 0xbdb69c },
+      { 621, 512, 0xc5b69c },
+      { 1492, 506, 0xc5b29c },
+      { 515, 879, 0xd6cec5 },
+      { 1407, 857, 0xc5bab5 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  map.home.isSignModalHasReward = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 832, 887, 0xb54d00 },
+      { 943, 879, 0xffffff },
+      { 978, 878, 0xffffff },
+      { 1045, 876, 0xb54d00 },
+      { 883, 894, 0xb54900 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击领取签到奖励
+  map.home.clickSignModalGetReward = function()
+    tap(953, 872, 100)
+    return true
+  end
+
+  -- 签到确认窗口
+  map.home.isSignConfirmModal = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 452, 274, 0x0086c5 },
+      { 1095, 322, 0x0875b5 },
+      { 1480, 326, 0xd6cabd },
+      { 445, 360, 0xd6cabd },
+      { 480, 682, 0xc5b69c },
+      { 1410, 718, 0xc5b6a4 },
+      { 875, 722, 0x009ac5 },
+      { 1043, 713, 0x42c2ef },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击签到确认窗口关闭
+  map.home.clickSignConfirmModalGetReward = function()
+    tap(961, 716, 100)
+    return true
+  end
+
+  -- 点击领取签到关闭
+  map.home.clickSignModalClose = function()
+    tap(1567, 98, 100)
     return true
   end
 
