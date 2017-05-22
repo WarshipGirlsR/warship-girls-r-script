@@ -569,8 +569,12 @@ return {
         elseif (action.type == 'BATTLE_BATTLE_START_PAGE') then
 
           stepLabel.setStepLabelContent('2-46.开始面板，点击开始')
-          c.yield(sleepPromise(100))
-          map.battle.clickBattleStartModalStartBtn()
+          c.yield(sleepPromise(200))
+          if (settings.battleRoundabout and map.battle.isBattleStartPageCanRoundabout()) then
+            map.battle.clickBattleStartModalRoundaboutBtn()
+          else
+            map.battle.clickBattleStartModalStartBtn()
+          end
           stepLabel.setStepLabelContent('2-47.等待阵型面板，追击面板，胜利界面')
           local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
             { 'BATTLE_BATTLE_START_PAGE', 'missionsGroup', map.battle.isBattleStartPage, 2000 },
@@ -606,7 +610,7 @@ return {
 
           stepLabel.setStepLabelContent('2-50.追击面板')
           if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-              or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+            or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
             stepLabel.setStepLabelContent('2-51.追击')
             map.battle.clickPursueModalOk()
           else
@@ -1052,9 +1056,9 @@ return {
           end
 
           if ((not settings.expeditionFleetToChapter[1])
-              and (not settings.expeditionFleetToChapter[2])
-              and (not settings.expeditionFleetToChapter[3])
-              and (not settings.expeditionFleetToChapter[4])) then
+            and (not settings.expeditionFleetToChapter[2])
+            and (not settings.expeditionFleetToChapter[3])
+            and (not settings.expeditionFleetToChapter[4])) then
             stepLabel.setStepLabelContent('4-18.没有远征任务！')
             return nil
           end

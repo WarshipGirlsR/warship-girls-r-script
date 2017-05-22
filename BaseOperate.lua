@@ -743,6 +743,28 @@ return function()
     return result
   end
 
+  -- 快开始页面能否迂回
+  map.battle.isBattleStartPageCanRoundabout = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 1525, 897, 0x4acef7 },
+      { 1753, 892, 0x42cef7 },
+      { 1749, 946, 0x008ebd },
+      { 1525, 944, 0x0092bd },
+      { 1613, 916, 0xffffff },
+      { 1677, 920, 0xffffff },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+
+  -- 点击战术迂回
+  map.battle.clickBattleStartModalRoundaboutBtn = function()
+    tap(1643, 920, 100)
+  end
 
   -- 点击开始战斗
   map.battle.clickBattleStartModalStartBtn = function()
@@ -810,26 +832,26 @@ return function()
       { 1196, 702, 0x42cef7 },
       -- 追击
       { 659, 723, 0xe68131 },
-      { 671, 725, 0x5a3d29 },
+      { 671, 725, 0xffffff },
       { 714, 750, 0xffffff },
-      { 698, 765, 0x4a2410 },
-      { 677, 765, 0x633d29 },
+      { 698, 765, 0x5a4129 },
+      { 677, 765, 0xf7f3f7 },
       { 740, 733, 0xde7521 },
-      { 779, 726, 0x633110 },
-      { 780, 739, 0x4a2408 },
+      { 779, 726, 0x4a2408 },
+      { 780, 739, 0x422008 },
       { 787, 748, 0xf7fbff },
-      { 798, 760, 0xbd5100 },
+      { 798, 760, 0xa44500 },
       -- 放弃
-      { 1109, 729, 0x4acaf7 },
-      { 1122, 729, 0xf7f7f7 },
-      { 1143, 732, 0x000c21 },
-      { 1144, 747, 0x08313a },
-      { 1163, 749, 0xffffff },
+      { 1109, 729, 0x42c2e6 },
+      { 1122, 729, 0x636d73 },
+      { 1143, 732, 0x6b868c },
+      { 1144, 747, 0xe6efef },
+      { 1163, 749, 0x3a5563 },
       { 1188, 748, 0x29b6de },
-      { 1213, 729, 0xffffff },
-      { 1240, 725, 0x31414a },
-      { 1225, 755, 0x082031 },
-      { 1236, 771, 0xffffff },
+      { 1213, 729, 0xfffbff },
+      { 1240, 725, 0x002d3a },
+      { 1225, 755, 0xa4a6ad },
+      { 1236, 771, 0x000408 },
     }
     local result = multiColor(list)
     if (not __keepScreenState) then keepScreen(false) end

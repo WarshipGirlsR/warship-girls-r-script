@@ -382,6 +382,19 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['text'] = '迂回',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'battleRoundabout',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '0',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = '不能出征则震动提示',
         ['size'] = 15,
         ['align'] = 'left',
@@ -725,6 +738,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 3, 2, 1, 0 })
     return list[battleQuickRepair] or 2
   end)(settings.battleQuickRepair)
+  -- 迂回战术
+  settings.battleRoundabout = (function(battleRoundabout)
+    local list = transStrToTable({ true, false, })
+    return list[battleRoundabout] or false
+  end)(settings.battleRoundabout)
   -- 当无法出征时是否跳过出征
   settings.battleAlertWhenNoHp = (function(battleAlertWhenNoHp)
     local list = transStrToTable({ true, false, })

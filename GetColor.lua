@@ -1,6 +1,6 @@
 init(1)
 require 'console'
-mSleep(1000)
+mSleep(6000)
 
 keepScreen(false)
 keepScreen(true)
@@ -38,8 +38,9 @@ for key, value in ipairs(list) do
   local colorStr = string.format('0x%06x', color)
   local oldColorStr = string.format('0x%06x', oldColor)
   value[3] = oldColorStr
-  resultStr = resultStr .. '\n' .. '{ ' .. value[1] .. ', ' .. value[2] .. ', ' .. value[3] .. ' },'
+  resultStr = resultStr .. '\n' .. '{ ' .. value[1] .. ', ' .. value[2] .. ', ' .. colorStr .. ' },'
 end
 resultStr = resultStr .. '\n'
 console.log(resultStr)
+mSleep(6000)
 keepScreen(false)
