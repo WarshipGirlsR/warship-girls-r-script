@@ -6,6 +6,10 @@ return function()
 
     -- 主页
     home = {},
+
+    -- 登录
+    login = {},
+
     -- 出征
     battle = {},
 
@@ -225,6 +229,55 @@ return function()
   -- 点击领取签到关闭
   map.home.clickSignModalClose = function()
     tap(1567, 98, 100)
+    return true
+  end
+
+  map.login.runApp = function()
+    close("com.huanmeng.zhanjian2")
+    return runApp("com.huanmeng.zhanjian2")
+  end
+
+  -- 是否在选择服务器界面
+  map.login.isSelectServerPage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 443, 759, 0x0896d6 },
+      { 480, 829, 0xc5cac5 },
+      { 538, 842, 0x109ad6 },
+      { 833, 847, 0x1075b5 },
+      { 865, 758, 0x0871ad },
+      { 1130, 846, 0x1071b5 },
+      { 1232, 758, 0x086dad },
+      { 1387, 761, 0x086db5 },
+      { 1470, 847, 0x0879bd },
+      { 1442, 781, 0xc5cac5 },
+      { 668, 907, 0xadeff7 },
+      { 757, 910, 0xbdf3f7 },
+      { 843, 907, 0xcef7ff },
+      { 1104, 912, 0x8cd7de },
+      { 1158, 906, 0x9cd7e6 },
+      { 1248, 906, 0x9cd7de },
+      { 1172, 970, 0x8cbed6 },
+      { 1129, 1022, 0x6b96c5 },
+      { 800, 1023, 0xa4c6e6 },
+      { 769, 1001, 0xadceef },
+      { 831, 942, 0xfffbff },
+      { 869, 966, 0xf7fbff },
+      { 925, 957, 0xffffff },
+      { 1017, 973, 0xffffff },
+      { 1076, 953, 0xf7fbff },
+      { 991, 946, 0xfffbff },
+      { 1093, 990, 0xf7fbff },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击登录
+  map.login.clickLoginBtn = function()
+    tap(953, 965, 100)
     return true
   end
 
@@ -746,13 +799,37 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 802, 338, 0x081c21 },
-      { 629, 716, 0xe6813a },
-      { 1274, 714, 0x42caf7 },
-      { 1346, 759, 0xc5cac5 },
-      { 570, 756, 0xcecace },
-      { 615, 578, 0xadb652 },
-      { 632, 520, 0xf7d2ad },
+      { 554, 285, 0xc5cac5 },
+      { 765, 443, 0x10595a },
+      { 1320, 313, 0x42ceef },
+      { 1338, 336, 0xffffff },
+      { 572, 757, 0xc5cac5 },
+      { 951, 716, 0x08353a },
+      { 1353, 751, 0xcecece },
+      { 734, 705, 0xe6863a },
+      { 1196, 702, 0x42cef7 },
+      -- 追击
+      { 659, 723, 0xe68131 },
+      { 671, 725, 0x5a3d29 },
+      { 714, 750, 0xffffff },
+      { 698, 765, 0x4a2410 },
+      { 677, 765, 0x633d29 },
+      { 740, 733, 0xde7521 },
+      { 779, 726, 0x633110 },
+      { 780, 739, 0x4a2408 },
+      { 787, 748, 0xf7fbff },
+      { 798, 760, 0xbd5100 },
+      -- 放弃
+      { 1109, 729, 0x4acaf7 },
+      { 1122, 729, 0xf7f7f7 },
+      { 1143, 732, 0x000c21 },
+      { 1144, 747, 0x08313a },
+      { 1163, 749, 0xffffff },
+      { 1188, 748, 0x29b6de },
+      { 1213, 729, 0xffffff },
+      { 1240, 725, 0x31414a },
+      { 1225, 755, 0x082031 },
+      { 1236, 771, 0xffffff },
     }
     local result = multiColor(list)
     if (not __keepScreenState) then keepScreen(false) end
@@ -774,14 +851,24 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 158, 37, 0x085184 },
-      { 66, 451, 0x31456b },
-      { 53, 848, 0x314563 },
-      { 1074, 890, 0x103552 },
-      { 1073, 541, 0x193d5a },
-      { 1446, 26, 0x3a5173 },
-      { 1812, 532, 0x082d4a },
-      { 1436, 1000, 0x1986b5 },
+      { 88, 234, 0x29415a },
+      { 87, 649, 0x31415a },
+      { 73, 1011, 0x29415a },
+      { 876, 991, 0x42597b },
+      { 1071, 87, 0x42557b },
+      { 1071, 313, 0x19395a },
+      { 1122, 870, 0x0875a4 },
+      { 1271, 994, 0x0875a4 },
+      { 1714, 970, 0x085184 },
+      { 1767, 801, 0x298ead },
+      { 1774, 799, 0x218aa4 },
+      { 1761, 892, 0x00558c },
+      { 1405, 990, 0x107dad },
+      { 1111, 1022, 0x0081ad },
+      { 1565, 1016, 0xffffff },
+      { 1620, 1020, 0xffffff },
+      { 1675, 1016, 0xffffff },
+      { 1726, 1014, 0xffffff },
     }
     local result = multiColor(list)
     if (not __keepScreenState) then keepScreen(false) end
@@ -890,12 +977,24 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 1645, 955, 0x4ad2f7 },
-      { 1824, 953, 0x42ceef },
-      { 1820, 1029, 0x008abd },
-      { 1640, 1028, 0x008ebd },
-      { 956, 155, 0x085994 },
-      { 839, 228, 0x085994 },
+      { 21, 202, 0x3a517b },
+      { 10, 944, 0x3a557b },
+      { 345, 1056, 0x314963 },
+      { 603, 225, 0xc5baa4 },
+      { 941, 180, 0x085994 },
+      { 957, 113, 0x085994 },
+      { 1101, 133, 0x4a5d84 },
+      { 1038, 235, 0x52698c },
+      { 1029, 1003, 0x4a597b },
+      { 1644, 956, 0x42cef7 },
+      { 1820, 956, 0x42cef7 },
+      { 1672, 988, 0xffffff },
+      { 1703, 987, 0xffffff },
+      { 1762, 976, 0xffffff },
+      { 1764, 998, 0xffffff },
+      { 1794, 1006, 0xffffff },
+      { 1816, 1029, 0x008abd },
+      { 1734, 1006, 0x009ac5 },
     }
     local result = multiColor(list)
     if (not __keepScreenState) then keepScreen(false) end
@@ -938,15 +1037,34 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 1072, 281, 0x0081c5 },
-      { 1636, 286, 0x0069ad },
-      { 1815, 337, 0xd6cec5 },
-      { 1811, 615, 0xd6cec5 },
-      { 1069, 612, 0xd6cabd },
-      { 1434, 507, 0xcecabd },
-      { 1302, 790, 0x42cef7 },
-      { 1544, 861, 0x008abd },
-      { 1490, 824, 0xffffff },
+      { 1064, 280, 0x088ece },
+      { 1638, 283, 0x006db5 },
+      { 1059, 369, 0xd6cec5 },
+      { 1060, 627, 0xcecabd },
+      { 1824, 630, 0xd6cabd },
+      { 1824, 335, 0xcecabd },
+      { 1203, 449, 0xd6cec5 },
+      { 1646, 451, 0xcecabd },
+      { 1702, 452, 0xd6cabd },
+      { 1191, 570, 0xc5b69c },
+      { 1694, 570, 0xc5b6a4 },
+      { 1433, 562, 0xbdb69c },
+      { 1458, 576, 0xc5b69c },
+      { 1490, 576, 0xc5b69c },
+      { 1667, 577, 0xc5baa4 },
+      { 1232, 568, 0xfffbf7 },
+      { 1302, 566, 0xffffff },
+      { 1405, 569, 0xffffff },
+      { 1564, 567, 0xffffff },
+      -- 返回母港按钮
+      { 1319, 821, 0x3ac2ef },
+      { 1567, 817, 0x42c2ef },
+      { 1352, 818, 0xffffff },
+      { 1394, 818, 0xffffff },
+      { 1435, 821, 0xffffff },
+      { 1458, 823, 0xffffff },
+      { 1489, 823, 0xffffff },
+      { 1531, 818, 0xffffff },
     }
     local result = multiColor(list)
     if (not __keepScreenState) then keepScreen(false) end
@@ -1010,14 +1128,37 @@ return function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
-      { 578, 279, 0xc5cac5 },
-      { 1081, 313, 0x081c21 },
-      { 758, 341, 0x001819 },
-      { 1176, 440, 0x10595a },
-      { 953, 709, 0x103942 },
-      { 827, 779, 0xb54d08 },
-      { 1087, 785, 0x0092c5 },
-      { 616, 576, 0xa4ae52 },
+      { 554, 285, 0xc5cac5 },
+      { 765, 443, 0x10595a },
+      { 1320, 313, 0x42ceef },
+      { 1338, 336, 0xffffff },
+      { 572, 757, 0xc5cac5 },
+      { 951, 716, 0x08353a },
+      { 1353, 751, 0xcecece },
+      { 734, 705, 0xe6863a },
+      { 1196, 702, 0x42cef7 },
+      -- 前进
+      { 659, 723, 0xe68131 },
+      { 671, 725, 0x5a3d29 },
+      { 714, 750, 0xffffff },
+      { 698, 765, 0x4a2410 },
+      { 677, 765, 0x633d29 },
+      { 740, 733, 0xde7521 },
+      { 779, 726, 0x633110 },
+      { 780, 739, 0x4a2408 },
+      { 787, 748, 0xf7fbff },
+      { 798, 760, 0xbd5100 },
+      -- 回港
+      { 1109, 729, 0x4acaf7 },
+      { 1122, 729, 0xf7f7f7 },
+      { 1143, 732, 0x000c21 },
+      { 1144, 747, 0x08313a },
+      { 1163, 749, 0xffffff },
+      { 1188, 748, 0x29b6de },
+      { 1213, 729, 0xffffff },
+      { 1240, 725, 0x31414a },
+      { 1225, 755, 0x082031 },
+      { 1236, 771, 0xffffff },
     }
     local result = multiColor(list)
     if (not __keepScreenState) then keepScreen(false) end

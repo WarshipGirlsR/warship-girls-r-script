@@ -1,7 +1,7 @@
 local eq = require 'EventQuery'
 local co = require 'Co'
 local Promise = require 'Promise'
-
+w, h = getScreenSize();
 local c = coroutine
 
 local isArray = table.isArray or function(tab)
@@ -100,6 +100,7 @@ local missions = {--  home = function() end,
 local stateTree = {
   home = {},
   network = {},
+  login = {},
   battle = {},
   expeditionReward = {
     enableChapter = {},
@@ -125,9 +126,14 @@ return {
     local getHomeListener = function()
       return {
         -- { 'HOME_MEDAL_MODAL', 'homeGroup', map.home.isMedalModal, 2000 },
-        { 'HOME_HOME', 'homeGroup', map.home.isHome },
+        { 'HOME_HOME', 'homeGroup', map.home.isHome, 3000 },
         { { type = 'HOME_NEWS_MODAL', addToStart = true }, 'homeGroup', map.home.isNewsModal, 2000 },
         { { type = 'HOME_SIGN_MODAL', addToStart = true }, 'homeGroup', map.home.isSignModal, 2000 },
+      }
+    end
+    local getLoginListener = function()
+      return {
+        { { type = 'LOGIN_SELECT_SERVER', addToStart = true }, 'loginGroup', map.login.isSelectServerPage, 2000 },
       }
     end
     local makeAction = function(action)
@@ -209,7 +215,7 @@ return {
       return co(c.create(function()
         if (action.type == 'NETWORK_NETWORK_FAILURE_MODAL') then
 
-          stepLabel.setStepLabelContent('1-3.网络不通，点击确认')
+          stepLabel.setStepLabelContent('1-10.网络不通，点击确认')
           map.home.clickNetworkFailureModalOk()
           c.yield(sleepPromise(2000))
           local res = map.home.isNetworkFailureModal()
@@ -219,7 +225,34 @@ return {
           return nil, state
         end
 
-        return nil
+        return nil, state
+      end))
+    end
+
+    missions.login = function(action, state)
+      return co(c.create(function()
+        if (action.type == 'LOGIN_START_APP') then
+
+          stepLabel.setStepLabelContent('1-11.启动游戏')
+          map.login.clickLoginBtn()
+          local newstateTypes = c.yield(setScreenListeners({
+            { 'LOGIN_SELECT_SERVER', 'missionsGroup', map.login.isSelectServerPage, 2000 },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'LOGIN_SELECT_SERVER') then
+
+          stepLabel.setStepLabelContent('1-12.登录界面')
+          map.login.clickLoginBtn()
+          c.yield(sleepPromise(2000))
+          local res = map.login.isSelectServerPage()
+          if (res) then
+            return makeAction('LOGIN_SELECT_SERVER'), state
+          end
+          return nil, state
+        end
+
+        return nil, state
       end))
     end
 
@@ -233,7 +266,7 @@ return {
           state.battle.cantBattle = true
 
           stepLabel.setStepLabelContent('2-1.等待HOME')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), getLoginListener(), {
             { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome },
           })))
           return makeAction(newstateTypes), state
@@ -406,7 +439,7 @@ return {
           elseif (settings.battleQuickRepair == 2) then
             -- 中破或大破快修
             stepLabel.setStepLabelContent('2-29.寻找中破或大破的船')
-            c.yield(sleepPromise(500))
+            c.yield(sleepPromise(1000))
             local res = map.battle.isQuickRepairModalShipNeedRepair(settings.battleQuickRepair)
             if (#res > 0) then
               stepLabel.setStepLabelContent('2-30.中破或大破:' .. table.concat(res, ','))
@@ -429,8 +462,7 @@ return {
           elseif (settings.battleQuickRepair == 1) then
             -- 大破快修
             stepLabel.setStepLabelContent('2-32.寻找大破的船')
-
-            c.yield(sleepPromise(500))
+            c.yield(sleepPromise(1000))
             local res = map.battle.isQuickRepairModalShipNeedRepair(settings.battleQuickRepair)
             if (#res > 0) then
               stepLabel.setStepLabelContent('2-33.大破:' .. table.concat(res, ','))
@@ -607,7 +639,6 @@ return {
           end
           c.yield(sleepPromise(200))
           stepLabel.setStepLabelContent('2-57.点击胜利继续')
-          c.yield(sleepPromise(200))
           map.battle.clickVictoryPageContinueBtn()
           stepLabel.setStepLabelContent('2-58.等待胜利继续界面')
           local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), {
@@ -671,7 +702,7 @@ return {
           c.yield(sleepPromise(500))
           map.battle.clickNewShip()
           stepLabel.setStepLabelContent('2-66.等待新船锁定窗口，下回合窗口，勋章对话框，home')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), {
             { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal, 2000 },
             { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal, 2000 },
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage, 2000 },
@@ -713,7 +744,7 @@ return {
 
         elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CHECK_CANT_GO') then
 
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), {
             { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
           })))
           return makeAction(newstateTypes), state
@@ -752,7 +783,7 @@ return {
         if (action.type == 'MISSION_START') then
 
           stepLabel.setStepLabelContent('3-1.等待HOME')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), getLoginListener(), {
             { 'MISSION_IS_UNRECEIVED_MISSION', 'missionsGroup', map.home.isHome },
           })))
           return makeAction(newstateTypes), state
@@ -881,7 +912,7 @@ return {
         if (action.type == 'EXPEDITION_REWARD_START') then
 
           stepLabel.setStepLabelContent('4-1.等待HOME')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), getLoginListener(), {
             { 'EXPEDITION_REWARD_INIT', 'missionsGroup', map.home.isHome },
           })))
           return makeAction(newstateTypes), state
@@ -1244,7 +1275,7 @@ return {
         if (action.type == 'REPAIR_ONCE_START') then
 
           stepLabel.setStepLabelContent('5-1.等待HOME')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), getLoginListener(), {
             { 'REPAIR_INIT', 'missionsGroup', map.home.isHome },
           })))
           return makeAction(newstateTypes), state
@@ -1342,7 +1373,9 @@ return {
           stepLabel.setStepLabelContent('5-14.完成维修')
           map.repair.clickBackToHomeBtn()
 
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener())))
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), {
+            { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 2000 },
+          })))
           return makeAction(newstateTypes), state
         end
 
@@ -1356,7 +1389,7 @@ return {
       return co(c.create(function()
         if (action.type == 'EXERCISE_START') then
           stepLabel.setStepLabelContent('6-1.等待home')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), getLoginListener(), {
             { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome },
           })))
           return makeAction(newstateTypes), state
@@ -1517,8 +1550,7 @@ return {
           elseif (settings.exerciseQuickRepair == 2) then
             -- 中破或大破快修
             stepLabel.setStepLabelContent('6-30.寻找中破或大破的船')
-
-            c.yield(sleepPromise(500))
+            c.yield(sleepPromise(1000))
             local res = map.exercise.isQuickRepairModalShipNeedRepair(settings.exerciseQuickRepair)
             if (#res > 0) then
               stepLabel.setStepLabelContent('6-31.中破或大破:' .. table.concat(res, ','))
@@ -1541,8 +1573,7 @@ return {
           elseif (settings.exerciseQuickRepair == 1) then
             -- 大破快修
             stepLabel.setStepLabelContent('6-33.寻找大破的船')
-
-            c.yield(sleepPromise(500))
+            c.yield(sleepPromise(1000))
             local res = map.exercise.isQuickRepairModalShipNeedRepair(settings.exerciseQuickRepair)
             if (#res > 0) then
               stepLabel.setStepLabelContent('6-34.大破:' .. table.concat(res, ','))
@@ -1718,7 +1749,7 @@ return {
       return co(c.create(function()
         if (action.type == 'CAMPAIGN_START') then
           stepLabel.setStepLabelContent('7-1.等待home')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), getLoginListener(), {
             { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome },
           })))
           return makeAction(newstateTypes), state
@@ -1873,8 +1904,7 @@ return {
           elseif (settings.campaignQuickRepair == 2) then
             -- 中破或大破快修
             stepLabel.setStepLabelContent('7-30.寻找中破或大破的船')
-
-            c.yield(sleepPromise(500))
+            c.yield(sleepPromise(1000))
             local res = map.campaign.isQuickRepairModalShipNeedRepair(settings.campaignQuickRepair)
             if (#res > 0) then
               stepLabel.setStepLabelContent('7-31.中破或大破:' .. table.concat(res, ','))

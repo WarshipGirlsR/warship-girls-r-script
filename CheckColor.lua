@@ -6,7 +6,16 @@ keepScreen(false)
 keepScreen(true)
 local sideLength = 1080
 local list = {
-  -- 前进
+  { 554, 285, 0xc5cac5 },
+  { 765, 443, 0x10595a },
+  { 1320, 313, 0x42ceef },
+  { 1338, 336, 0xffffff },
+  { 572, 757, 0xc5cac5 },
+  { 951, 716, 0x08353a },
+  { 1353, 751, 0xcecece },
+  { 734, 705, 0xe6863a },
+  { 1196, 702, 0x42cef7 },
+  -- 追击
   { 659, 723, 0xe68131 },
   { 671, 725, 0x5a3d29 },
   { 714, 750, 0xffffff },
@@ -17,7 +26,7 @@ local list = {
   { 780, 739, 0x4a2408 },
   { 787, 748, 0xf7fbff },
   { 798, 760, 0xbd5100 },
-  -- 回港
+  -- 放弃
   { 1109, 729, 0x4acaf7 },
   { 1122, 729, 0xf7f7f7 },
   { 1143, 732, 0x000c21 },
@@ -38,8 +47,13 @@ for key, value in ipairs(list) do
   local colorStr = string.format('0x%06x', color)
   local oldColorStr = string.format('0x%06x', oldColor)
   value[3] = oldColorStr
-  resultStr = resultStr .. '\n' .. '{ ' .. value[1] .. ', ' .. value[2] .. ', ' .. value[3] .. ' },'
+  if (color == oldColor) then
+    resultStr = resultStr .. '\n' .. console.getJsStr(value)
+  else
+    value[3] = colorStr
+    resultStr = resultStr .. '\n' .. console.getJsStr(value) .. '  old Color: ' .. oldColorStr
+  end
 end
-resultStr = resultStr .. '\n'
+
 console.log(resultStr)
 keepScreen(false)
