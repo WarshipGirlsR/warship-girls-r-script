@@ -926,7 +926,7 @@ return function()
     }
     local result = false
     for i = 1, #list do
-      if ((isColor(table.unpack(list[i]))) and (not isColor(table.unpack(list2[i])))) then
+      if ((multiColor({ list[i] })) and (not multiColor({ list2[i] }))) then
         result = true
         break
       end
@@ -1986,7 +1986,7 @@ return function()
     local result = false
     local resList = {}
     for i, item in ipairs(list) do
-      if (isColor(table.unpack(item))) then
+      if (multiColor({ item })) then
         table.insert(resList, i)
         result = true
       end
@@ -2372,7 +2372,7 @@ return function()
       -- 有不满血
       for i = 1, #list do
         local theList = multiColor({ list[i] }, 80)
-        local theList23 = multiColor(list23[i], 80)
+        local theList23 = multiColor({ list23[i] }, 80)
         if ((not theList) and (not theList23)) then
           result = false
           break
@@ -2382,8 +2382,8 @@ return function()
       -- 有中破或者大破
       for i = 1, #list do
         local theList = multiColor({ list[i] }, 80)
-        local theList22 = multiColor(list22[i], 80)
-        local theList21 = multiColor(list21[i], 80)
+        local theList22 = multiColor({ list22[i] }, 80)
+        local theList21 = multiColor({ list21[i] }, 80)
         if ((not theList) and (theList22 or theList21)) then
           result = false
           break
@@ -2394,7 +2394,7 @@ return function()
       -- 有大破
       for i = 1, #list do
         local theList = multiColor({ list[i] }, 80)
-        local theList21 = multiColor(list21[i], 80)
+        local theList21 = multiColor({ list21[i] }, 80)
         if ((not theList) and theList21) then
           result = false
           break

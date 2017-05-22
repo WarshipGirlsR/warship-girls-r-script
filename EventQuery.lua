@@ -359,7 +359,7 @@ function run()
 end
 
 return {
-  setimmediate = setImmediate,
+  setImmediate = setImmediate,
   setTimeout = setTimeout,
   clearTimeout = clearTimeout,
   setInterval = setInterval,

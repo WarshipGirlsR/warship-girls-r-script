@@ -14,8 +14,8 @@ local stackTraceback = true
 function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-        (e .. '\n' .. debug.traceback())
-        or (e)
+      (e .. '\n' .. debug.traceback())
+      or (e)
   end)
 end
 
@@ -223,10 +223,14 @@ end
 
 -- 移动到链表的下一个promise
 function finale(self)
+  local theDef = self.deferreds
   for k, v in ipairs(self.deferreds) do
     handle(self, v);
   end
   self.deferreds = {};
+  if ((self.PromiseStatus == REJECTED) and (#theDef == 0)) then
+    error('Uncatch error in Promise \n' .. tostring(self.PromiseValue))
+  end
 end
 
 -- promise的主要方法

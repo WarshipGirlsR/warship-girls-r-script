@@ -40,8 +40,8 @@ end
 function tryCatch(cb)
   return xpcall(cb, function(e)
     return setStackTraceback and
-        (e .. '\n' .. debug.traceback())
-        or (e)
+      (e .. '\n' .. debug.traceback())
+      or (e)
   end)
 end
 
@@ -73,7 +73,7 @@ function new(gen, ...)
       local done, ret
       local coStatus = true
       local xpcallRes, xpcallErr = tryCatch(function()
-        coStatus, ret = coroutine.resume(gen, error(err))
+        coStatus, ret = coroutine.resume(gen, error(tostring(err)))
       end)
       if (not xpcallRes) then
         return reject(xpcallErr)
