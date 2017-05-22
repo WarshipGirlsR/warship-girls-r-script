@@ -125,8 +125,8 @@ return {
     end
     local getHomeListener = function()
       return {
-        -- { 'HOME_MEDAL_MODAL', 'homeGroup', map.home.isMedalModal, 2000 },
         { 'HOME_HOME', 'homeGroup', map.home.isHome, 3000 },
+        { { type = 'HOME_MEDAL_MODAL', addToStart = true }, 'homeGroup', map.home.isMedalModal, 2000 },
         { { type = 'HOME_NEWS_MODAL', addToStart = true }, 'homeGroup', map.home.isNewsModal, 2000 },
         { { type = 'HOME_SIGN_MODAL', addToStart = true }, 'homeGroup', map.home.isSignModal, 2000 },
       }
@@ -1266,7 +1266,10 @@ return {
 
           stepLabel.setStepLabelContent('4-38.返回港口')
           map.expedition.clickBackToHome()
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener())))
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), {
+            { 'EXPEDITION_RETURN_TO_HOME', 'missionsGroup', map.expedition.isExpeditionPrepare, 2000 },
+            { 'EXPEDITION_RETURN_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+          })))
           return makeAction(newstateTypes), state
         end
       end))
@@ -2080,7 +2083,10 @@ return {
           stepLabel.setStepLabelContent('7-50.点击回港')
           map.campaign.clickBackToHomeBtn()
           stepLabel.setStepLabelContent('7-51.等待home')
-          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener())))
+          local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), getHomeListener(), {
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+          })))
           return makeAction(newstateTypes), state
         end
         return nil, state
