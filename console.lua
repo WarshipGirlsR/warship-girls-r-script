@@ -70,4 +70,20 @@ __console.getJsStr = function(obj)
   return runTable(obj)
 end
 
+__console.color = function(value)
+  local resultStr = ''
+  local color = getColor(value[1], value[2])
+  local oldColor = value[3]
+  local colorStr = string.format('0x%06x', color)
+  local oldColorStr = string.format('0x%06x', oldColor)
+  value[3] = oldColorStr
+  if (color == oldColor) then
+    resultStr = resultStr .. '\n' .. runTable(value)
+  else
+    value[3] = colorStr
+    resultStr = resultStr .. '\n' .. runTable(value) .. '  old Color: ' .. oldColorStr
+  end
+  __console.log(resultStr)
+end
+
 console = __console

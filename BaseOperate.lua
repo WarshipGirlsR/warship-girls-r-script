@@ -430,7 +430,9 @@ return function()
     if (checkLevel == 3) then
       -- 有不满血
       for i = 1, #list do
-        if (multiColor({ list[i] }, 80) and (not multiColor({ list23[i] }, 80))) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList23 = multiColor({ list23[i] }, 80)
+        if (theList and (not theList23)) then
           result = false
           break
         end
@@ -438,7 +440,10 @@ return function()
     elseif (checkLevel == 2) then
       -- 有中破或大破
       for i = 1, #list do
-        if (multiColor({ list[i] }, 80) and (multiColor({ list22[i] }, 80) or multiColor({ list21[i] }, 80))) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList22 = multiColor({ list22[i] }, 80)
+        local theList21 = multiColor({ list21[i] }, 80)
+        if (theList and (theList22 or theList21)) then
           result = false
           break
         end
@@ -446,7 +451,9 @@ return function()
     elseif (checkLevel == 1) then
       -- 有大破
       for i = 1, #list do
-        if (multiColor({ list[i] }, 80) and multiColor({ list21[i] }, 80)) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList21 = multiColor({ list21[i] }, 80)
+        if (theList and theList21) then
           result = false
           break
         end
@@ -560,21 +567,28 @@ return function()
     if (checkLevel == 3) then
       -- 不满血
       for i = 1, #list do
-        if (multiColor({ list[i] }, 80) and (not multiColor({ list23[i] }, 80))) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList23 = multiColor({ list23[i] }, 80)
+        if (theList and (not theList23)) then
           table.insert(result, i)
         end
       end
     elseif (checkLevel == 2) then
       -- 有中破或大破
       for i = 1, #list do
-        if (multiColor({ list[i] }, 80) and (multiColor({ list22[i] }, 80) or multiColor({ list21[i] }, 80))) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList22 = multiColor({ list22[i] }, 80)
+        local theList21 = multiColor({ list21[i] }, 80)
+        if (theList and (theList22 or theList21)) then
           table.insert(result, i)
         end
       end
     elseif (checkLevel == 1) then
       -- 有大破
       for i = 1, #list do
-        if (multiColor({ list[i] }, 80) and multiColor({ list21[i] }, 80)) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList21 = multiColor({ list21[i] }, 80)
+        if (theList and theList21) then
           table.insert(result, i)
         end
       end
@@ -842,8 +856,10 @@ return function()
     if (checkLevel == 2) then
       -- 有中破或者大破
       for i = 1, #list do
-        local theList = table.merge(list[i], { 80 })
-        if (isColor(table.unpack(theList)) and (multiColor(list22[i], 80) or multiColor(list21[i], 80))) then
+        local theList = multiColor({ list[i] }, 85)
+        local theList22 = multiColor(list22[i], 85)
+        local theList21 = multiColor(list21[i], 85)
+        if (theList and (theList22 or theList21)) then
           result = false
           break
         end
@@ -852,8 +868,9 @@ return function()
     elseif (checkLevel == 1) then
       -- 有大破
       for i = 1, #list do
-        local theList = table.merge(list[i], { 80 })
-        if (isColor(table.unpack(theList)) and multiColor(list21[i], 80)) then
+        local theList = multiColor({ list[i] }, 85)
+        local theList21 = multiColor(list21[i], 85)
+        if (theList and theList21) then
           result = false
           break
         end
@@ -2189,7 +2206,9 @@ return function()
     if (checkLevel == 3) then
       -- 有不满血
       for i = 1, #list do
-        if ((not multiColor({ list[i] }, 80)) and (not multiColor({ list23[i] }, 80))) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList23 = multiColor(list23[i], 80)
+        if ((not theList) and (not theList23)) then
           result = false
           break
         end
@@ -2197,7 +2216,10 @@ return function()
     elseif (checkLevel == 2) then
       -- 有中破或者大破
       for i = 1, #list do
-        if ((not multiColor({ list[i] }, 80)) and (multiColor({ list22[i] }, 80) or multiColor({ list21[i] }, 80))) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList22 = multiColor(list22[i], 80)
+        local theList21 = multiColor(list21[i], 80)
+        if ((not theList) and (theList22 or theList21)) then
           result = false
           break
         end
@@ -2206,7 +2228,9 @@ return function()
     elseif (checkLevel == 1) then
       -- 有大破
       for i = 1, #list do
-        if ((not multiColor({ list[i] }, 80)) and multiColor({ list21[i] }, 80)) then
+        local theList = multiColor({ list[i] }, 80)
+        local theList21 = multiColor(list21[i], 80)
+        if ((not theList) and theList21) then
           result = false
           break
         end
