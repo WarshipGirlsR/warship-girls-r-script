@@ -6,12 +6,12 @@ keepScreen(false)
 keepScreen(true)
 local sideLength = 1080
 local list = {
-  { 277, 621, 0xefe310 },
-  { 474, 621, 0xe6df08 },
-  { 671, 621, 0xefe310 },
-  { 868, 621, 0xe6df08 },
-  { 1065, 621, 0xefe310 },
-  { 1262, 621, 0xe6df08 },
+  { 444, 643, 0x0069a4 },
+  { 641, 643, 0x086dad },
+  { 838, 643, 0x0869a4 },
+  { 1035, 643, 0x086dad },
+  { 1232, 643, 0x0069a4 },
+  { 1428, 643, 0x0069a4 },
 }
 
 local resultStr = ''

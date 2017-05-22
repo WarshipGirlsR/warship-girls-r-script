@@ -328,7 +328,11 @@ return {
               if (settings.battleQuickRepair > 0) then
                 stepLabel.setStepLabelContent('2-17.血量不安全，快修')
                 map.battle.clickQuickRepairBtn()
-                return { type = 'BATTLE_QUICK_REPAIR_MODAL' }, state
+                local newstateTypes = c.yield(setScreenListeners(mergeArr(getComListener(), {
+                  { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage, 2000 },
+                  { 'BATTLE_QUICK_REPAIR_MODAL', 'missionsGroup', map.battle.isQuickRepairModal },
+                })))
+                return makeAction(newstateTypes), state
               else
                 stepLabel.setStepLabelContent('2-18.血量不安全')
                 state.battle.quickRepairCount = 1
@@ -338,7 +342,7 @@ return {
           else
             -- 已经快速补给，已经维修
             stepLabel.setStepLabelContent('2-19.再次检测血量是否安全')
-            c.yield(sleepPromise(1000))
+            c.yield(sleepPromise(500))
             -- 不允许大破出征
             local res = map.battle.isReadyBattlePageShipHPSafe(math.max(1, settings.battleQuickRepair))
             if (res) then
@@ -384,6 +388,7 @@ return {
           if (settings.battleQuickRepair == 3) then
             -- 不满血则快修
             stepLabel.setStepLabelContent('2-26.点击快速修理确定')
+            c.yield(sleepPromise(500))
             map.battle.clickQuickRepairModalOkBtn()
             state.battle.quickRepairCount = state.battle.quickRepairCount + 1
             stepLabel.setStepLabelContent('2-27.等待出征准备界面')
@@ -401,7 +406,7 @@ return {
           elseif (settings.battleQuickRepair == 2) then
             -- 中破或大破快修
             stepLabel.setStepLabelContent('2-29.寻找中破或大破的船')
-            c.yield(sleepPromise(1000))
+            c.yield(sleepPromise(500))
             local res = map.battle.isQuickRepairModalShipNeedRepair(settings.battleQuickRepair)
             if (#res > 0) then
               stepLabel.setStepLabelContent('2-30.中破或大破:' .. table.concat(res, ','))
@@ -424,7 +429,7 @@ return {
           elseif (settings.battleQuickRepair == 1) then
             -- 大破快修
             stepLabel.setStepLabelContent('2-32.寻找大破的船')
-            
+
             c.yield(sleepPromise(500))
             local res = map.battle.isQuickRepairModalShipNeedRepair(settings.battleQuickRepair)
             if (#res > 0) then
@@ -569,7 +574,7 @@ return {
 
           stepLabel.setStepLabelContent('2-50.追击面板')
           if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-            or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+              or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
             stepLabel.setStepLabelContent('2-51.追击')
             map.battle.clickPursueModalOk()
           else
@@ -1016,9 +1021,9 @@ return {
           end
 
           if ((not settings.expeditionFleetToChapter[1])
-            and (not settings.expeditionFleetToChapter[2])
-            and (not settings.expeditionFleetToChapter[3])
-            and (not settings.expeditionFleetToChapter[4])) then
+              and (not settings.expeditionFleetToChapter[2])
+              and (not settings.expeditionFleetToChapter[3])
+              and (not settings.expeditionFleetToChapter[4])) then
             stepLabel.setStepLabelContent('4-18.没有远征任务！')
             return nil
           end
@@ -1512,7 +1517,7 @@ return {
           elseif (settings.exerciseQuickRepair == 2) then
             -- 中破或大破快修
             stepLabel.setStepLabelContent('6-30.寻找中破或大破的船')
-            
+
             c.yield(sleepPromise(500))
             local res = map.exercise.isQuickRepairModalShipNeedRepair(settings.exerciseQuickRepair)
             if (#res > 0) then
@@ -1536,7 +1541,7 @@ return {
           elseif (settings.exerciseQuickRepair == 1) then
             -- 大破快修
             stepLabel.setStepLabelContent('6-33.寻找大破的船')
-            
+
             c.yield(sleepPromise(500))
             local res = map.exercise.isQuickRepairModalShipNeedRepair(settings.exerciseQuickRepair)
             if (#res > 0) then
@@ -1868,7 +1873,7 @@ return {
           elseif (settings.campaignQuickRepair == 2) then
             -- 中破或大破快修
             stepLabel.setStepLabelContent('7-30.寻找中破或大破的船')
-            
+
             c.yield(sleepPromise(500))
             local res = map.campaign.isQuickRepairModalShipNeedRepair(settings.campaignQuickRepair)
             if (#res > 0) then
@@ -1892,7 +1897,7 @@ return {
           elseif (settings.campaignQuickRepair == 1) then
             -- 大破快修
             stepLabel.setStepLabelContent('7-33.寻找大破的船')
-            
+
             c.yield(sleepPromise(500))
             local res = map.campaign.isQuickRepairModalShipNeedRepair(settings.campaignQuickRepair)
             if (#res > 0) then
