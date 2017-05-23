@@ -23,30 +23,22 @@ end
 
 local __console = console or {}
 
-local function runTable(tab, thisKey, space)
-  local prefix = thisKey
-  local suffix = ","
-  if (type(thisKey) ~= "nil") then
-    prefix = thisKey .. ": "
-    suffix = ","
-  else
-    prefix = ""
-  end
+local function runTable(tab, space)
   if (type(tab) == "number") then
-    return { prefix .. "" .. tab .. suffix }
+    return { "" .. tab }
   end
   if (type(tab) == "string") then
-    return { prefix .. '"' .. tab .. '"' .. suffix }
+    return { '"' .. tab .. '"' }
   end
   if (type(tab) == "boolean") then
     if (tab) then
-      return { prefix .. "true" .. suffix }
+      return { "true" }
     else
-      return { prefix .. "false" .. suffix }
+      return { "false" }
     end
   end
   if (type(tab) ~= "table") then
-    return prefix .. "(" .. type(tab) .. ")" .. suffix
+    return { "(" .. type(tab) .. ")" }
   end
   if (type(space) ~= "string") then
     space = "  "
@@ -61,7 +53,7 @@ local function runTable(tab, thisKey, space)
 
   for k, v in ipairs(tab) do
     tabLength = k
-    table.insert(newTabPairs, { k, runTable(v, k, space) })
+    table.insert(newTabPairs, { k, runTable(v, space) })
     if (type(v) == 'table') then
       hasSubTab = true
     end
@@ -70,7 +62,7 @@ local function runTable(tab, thisKey, space)
   for k, v in pairs(tab) do
     if ((type(k) ~= 'number') or k > tabLength) then
       tabIsArray = false
-      table.insert(newTabPairs, { k, runTable(v, k, space) })
+      table.insert(newTabPairs, { k, runTable(v, space) })
       if (type(v) == 'table') then
         hasSubTab = true
       end
@@ -78,37 +70,39 @@ local function runTable(tab, thisKey, space)
   end
 
   if (tabIsArray) then
-    local newTabArr = {}
-    for k, v in ipairs(newTabPairs) do
-      table.insert(newTabArr, v[2])
-    end
+    local newTabArr = newTabPairs
 
     if (hasSubTab) then
-      table.insert(resultStrList, prefix .. "[")
+      table.insert(resultStrList, "[")
       for k, v in ipairs(newTabArr) do
-        for k2, v2 in ipairs(v) do
-          table.insert(resultStrList, space .. v2)
+        local v2Length = getLength(v[2])
+        v[2][v2Length] = v[2][v2Length] .. ","
+        for k2, v2 in ipairs(v[2]) do
+          table.insert(resultStrList, space .. v2 .. "")
         end
       end
-      table.insert(resultStrList, "]" .. suffix)
+      table.insert(resultStrList, "]")
     else
       local theStr = {}
       for k, v in ipairs(newTabPairs) do
-        table.insert(theStr, v[1])
+        table.insert(theStr, v[2][1])
       end
       local childStr = table.concat(theStr, ", ")
-      table.insert(resultStrList, prefix .. "[" .. childStr .. "]" .. suffix)
+      table.insert(resultStrList, "[" .. childStr .. "]")
     end
   else
     local newTabArr = newTabPairs
 
-    table.insert(resultStrList, prefix .. "{")
+    table.insert(resultStrList, "{")
     for k, v in ipairs(newTabArr) do
+      v[2][1] = v[1] .. ": " .. v[2][1]
+      local v2Length = getLength(v[2])
+      v[2][v2Length] = v[2][v2Length] .. ","
       for k2, v2 in ipairs(v[2]) do
         table.insert(resultStrList, space .. v2 .. "")
       end
     end
-    table.insert(resultStrList, "}" .. suffix)
+    table.insert(resultStrList, "}")
   end
   return resultStrList
 end

@@ -125,7 +125,7 @@ function case5()
       },
       {
         {
-          { 1, 2, 3 },
+          [5] = { 1, 2, 3 },
           { 4, 5, 6 },
           { 7, 8, 9 },
         },
@@ -139,6 +139,18 @@ function case5()
   }
 
   console.log(result)
+  local result2 = {
+    [1] = 1,
+    [2] = 2,
+    [3] = 3,
+    [6] = { 1, 2, 3, 4, 5 },
+    [7] = {
+      [1] = function() end,
+      [4] = 4,
+      [7] = 7,
+    },
+  }
+  console.log(result2)
 end
 
 case5()
