@@ -1,10 +1,18 @@
 -- table方法添加
 local __tmp = (function()
+  table.length = table.length or function(target)
+    local length = 0
+    for k, v in ipairs(target) do
+      length = k
+    end
+    return length
+  end
+
   table.isArray = table.isArray or function(tab)
     if (type(tab) ~= "table") then
       return false
     end
-    local length = #tab
+    local length = table.length(tab)
     for k, v in pairs(tab) do
       if ((type(k) ~= "number") or (k > length)) then
         return false
@@ -13,7 +21,7 @@ local __tmp = (function()
     return true
   end
 
-   table.slice = table.slice or function(tab, startIndex, endIndex)
+  table.slice = table.slice or function(tab, startIndex, endIndex)
     local length = #tab
     if ((type(endIndex) == "nil") or (endIndex == 0)) then
       endIndex = length
@@ -36,8 +44,8 @@ local __tmp = (function()
   end
 
   table.merge = table.merge or function(tab, ...)
-    arg = { ... }
-    for k, tabelement in ipairs(arg) do
+    local args = { ... }
+    for k, tabelement in ipairs(args) do
       local length = #tabelement
       for k2, value in ipairs(tabelement) do
         if ((type(k2) == "number") and (k2 <= length)) then
@@ -52,6 +60,46 @@ local __tmp = (function()
       end
     end
     return tab
+  end
+
+  table.assign = table.assign or function(target, ...)
+    local sources = { ... }
+    if (type(target) ~= 'table') then target = {} end
+    for _, source in ipairs(sources) do
+      for key, value in pairs(source) do
+        target[key] = value
+      end
+    end
+    return target
+  end
+
+  table.reverse = table.reverse or function(target)
+    local result = {}
+    for i = #target, 1, -1 do
+      table.insert(result, target[i])
+    end
+    return result
+  end
+
+  table.uniqueOf = table.uniqueOf or function(target, path)
+    local theMap = {}
+    local result = {}
+    if (type(path) == 'nil') then
+      for key, value in ipairs(target) do
+        if (type(theMap[value]) == 'nil') then
+          theMap[value] = value
+          table.insert(result, value)
+        end
+      end
+    elseif ((type(path) == 'number') or type(path) == 'string') then
+      for key, value in ipairs(target) do
+        if (type(theMap[value[path]]) == 'nil') then
+          theMap[value[path]] = value
+          table.insert(result, value)
+        end
+      end
+    end
+    return result
   end
 
   table.values = table.values or function(tab)

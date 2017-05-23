@@ -421,7 +421,7 @@ return function()
   end
 
   -- 检测所有状态正常
-  map.battle.isReadyBattlePageShipStatusAllRignt = function()
+  map.battle.isReadyBattlePageShipStatusAllRight = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local list = {
@@ -2018,7 +2018,7 @@ return function()
   map.exercise.selectFleet = map.battle.selectFleet
 
   -- 检测所有状态正常
-  map.exercise.isReadyBattlePageShipStatusAllRignt = map.battle.isReadyBattlePageShipStatusAllRignt
+  map.exercise.isReadyBattlePageShipStatusAllRight = map.battle.isReadyBattlePageShipStatusAllRight
 
   -- 检测hp是否安全
   map.exercise.isReadyBattlePageShipHPSafe = map.battle.isReadyBattlePageShipHPSafe
@@ -2259,7 +2259,7 @@ return function()
   end
 
   -- 检测所有状态正常
-  map.campaign.isReadyBattlePageShipStatusAllRignt = function()
+  map.campaign.isReadyBattlePageShipStatusAllRight = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
     local result = true
