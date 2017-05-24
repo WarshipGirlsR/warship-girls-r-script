@@ -153,4 +153,10 @@ function case5()
   console.log(result2)
 end
 
-case5()
+function case6()
+  require 'TableLib'
+  require 'console'
+  console.log(isFrontApp("com.huanmeng.zhanjian2"))
+end
+
+case6()

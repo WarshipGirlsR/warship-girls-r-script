@@ -239,9 +239,33 @@ return function()
     return true
   end
 
-  map.login.runApp = function()
-    close("com.huanmeng.zhanjian2")
+  -- 启动游戏
+  map.login.startApp = function()
+    if (isFrontApp("com.huanmeng.zhanjian2") ~= 1) then
+      runApp("com.huanmeng.zhanjian2")
+    end
+  end
+
+  -- 重启游戏
+  map.login.restartApp = function()
+    closeApp("com.huanmeng.zhanjian2")
     return runApp("com.huanmeng.zhanjian2")
+  end
+
+  -- 游戏正在运行
+  map.login.isAppRunning = function()
+    if (isFrontApp("com.huanmeng.zhanjian2") == 1) then
+      return true
+    end
+    return false
+  end
+
+  -- 游戏不在运行
+  map.login.isAppNotRun = function()
+    if (isFrontApp("com.huanmeng.zhanjian2") == 1) then
+      return false
+    end
+    return true
   end
 
   -- 是否在选择服务器界面

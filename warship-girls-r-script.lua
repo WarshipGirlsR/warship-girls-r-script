@@ -7,6 +7,10 @@ function beforeUserExit()
   vibrator(500)
 end
 
+if (deviceIsLock() ~= 0) then
+  unlockDevice()
+end
+
 local isPause = false
 initLog('warship-girls-r-script', 1)
 
@@ -603,6 +607,7 @@ local settingTable = {
     },
   }
 }
+
 local settingTableStr = json.encode(settingTable);
 closeStepLabel()
 local ret, settings = showUI(settingTableStr);

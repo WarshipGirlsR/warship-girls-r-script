@@ -125,6 +125,7 @@ return {
     local getComListener = function()
       return {
         { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.home.isNetworkFailureModal, 2000 },
+        { { type = 'LOGIN_START_APP', addToStart = true }, 'homeGroup', map.login.isAppNotRun, 2000 },
       }
     end
     local getHomeListener = function()
@@ -238,7 +239,7 @@ return {
         if (action.type == 'LOGIN_START_APP') then
 
           stepLabel.setStepLabelContent('1-11.启动游戏')
-          map.login.clickLoginBtn()
+          map.login.restartApp()
           local newstateTypes = c.yield(setScreenListeners({
             { 'LOGIN_SELECT_SERVER', 'missionsGroup', map.login.isSelectServerPage, 2000 },
           }))
@@ -615,7 +616,7 @@ return {
 
           stepLabel.setStepLabelContent('2-50.追击面板')
           if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-              or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+            or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
             stepLabel.setStepLabelContent('2-51.追击')
             map.battle.clickPursueModalOk()
           else
@@ -1062,9 +1063,9 @@ return {
           end
 
           if ((not settings.expeditionFleetToChapter[1])
-              and (not settings.expeditionFleetToChapter[2])
-              and (not settings.expeditionFleetToChapter[3])
-              and (not settings.expeditionFleetToChapter[4])) then
+            and (not settings.expeditionFleetToChapter[2])
+            and (not settings.expeditionFleetToChapter[3])
+            and (not settings.expeditionFleetToChapter[4])) then
             stepLabel.setStepLabelContent('4-18.没有远征任务！')
             return nil
           end
