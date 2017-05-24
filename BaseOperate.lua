@@ -2741,6 +2741,15 @@ return function()
   -- 等待前进点击回港
   map.activity.clickLevelStepModalBackBtn = map.battle.clickLevelStepModalBackBtn
 
+  -- 返回活动
+  map.activity.clickActivityInfoPageBackBtn = function()
+    tap(1832, 127, 100)
+  end
+
+  -- 返回桌面
+  map.activity.clickActivityPageBackBtn = function()
+    tap(1694, 974, 100)
+  end
 
   -- 决战无畏之海
   return map

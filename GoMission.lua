@@ -2663,8 +2663,8 @@ return {
             { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
             { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
             { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage },
           }))
           return makeAction(newstateTypes), state
 
@@ -2680,8 +2680,8 @@ return {
             { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
             { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
             { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage },
           }))
           return makeAction(newstateTypes), state
 
@@ -2698,8 +2698,8 @@ return {
             { 'ACTIVITY_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.activity.isNewShipPageLockModal },
             { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
             { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage },
           }))
           return makeAction(newstateTypes), state
 
@@ -2715,8 +2715,8 @@ return {
             { 'ACTIVITY_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.activity.isNewShipPageLockModal, 2000 },
             { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
             { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage },
           }))
           return makeAction(newstateTypes), state
 
@@ -2734,8 +2734,8 @@ return {
             local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
               { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal, 2000 },
               { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
-              { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
-              { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+              { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage },
+              { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage },
             }))
             return makeAction(newstateTypes), state
           end
@@ -2744,8 +2744,8 @@ return {
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
             { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage },
           }))
           return makeAction(newstateTypes), state
 
@@ -2755,19 +2755,30 @@ return {
           stepLabel.setStepLabelContent('20-72.等待出征界面')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
             { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage, 2000 },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage },
           }))
           return makeAction(newstateTypes), state
 
-        elseif (action.type == 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME') then
+        elseif (action.type == 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME') then
 
-          map.activity.clickBackToHomeBtn()
+          map.activity.clickActivityInfoPageBackBtn()
           stepLabel.setStepLabelContent('20-73.等待主界面')
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage, 2000 },
-            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage, 2000 },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage, 2000 },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage, 2000 },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME') then
+
+          map.activity.clickActivityPageBackBtn()
+          stepLabel.setStepLabelContent('20-73.等待主界面')
+
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityInfoPage, 2000 },
+            { 'ACTIVITY_ACTIVITY_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isActivityPage, 2000 },
           }))
           return makeAction(newstateTypes), state
         end
