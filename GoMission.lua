@@ -58,7 +58,9 @@ local setScreenListeners = function(theArr, ...)
   theArr = table.merge(theArr, ...)
 
   local theArrUnique = table.uniqueLast(theArr, 3)
-
+  for key, value in ipairs(theArrUnique) do
+    value.isOnce = true
+  end
   return co(c.create(function()
     local newArr = {}
     local tags = {}
@@ -115,6 +117,7 @@ local stateTree = {
   repair = {},
   exercise = {},
   campaign = {},
+  activity = {},
 }
 
 
@@ -125,7 +128,9 @@ return {
     local getComListener = function()
       return {
         { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.home.isNetworkFailureModal, 2000 },
-        { { type = 'LOGIN_START_APP', addToStart = true }, 'homeGroup', map.login.isAppNotRun, 2000 },
+        { 'LOGIN_START_APP', 'homeGroup', map.login.isAppNotRun, 20000 },
+        -- 5分钟界面不变化则重启游戏
+        { 'LOGIN_START_APP', 'homeGroup', function() return true end, 300000 },
       }
     end
     local getHomeListener = function()
@@ -1237,7 +1242,7 @@ return {
             return makeAction(newstateTypes), state
           else
             stepLabel.setStepLabelContent('4-43.资源数量不足')
-            return { type = 'BATTLE_QUICK_SUPPLY_MODAL_CLOSE' }, state
+            return { type = 'EXPEDITION_QUICK_SUPPLY_MODAL_CLOSE' }, state
           end
 
         elseif (action.type == 'EXPEDITION_QUICK_SUPPLY_MODAL_CLOSE') then
@@ -2238,6 +2243,538 @@ return {
       end))
     end
     -- 战役
+
+    missions.activityOnce = function(action, state)
+      return co(c.create(function()
+        if (action.type == 'ACTIVITY_START') then
+
+          stepLabel.setStepLabelContent('20-1.等待home')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+            { 'ACTIVITY_INIT', 'missionsGroup', map.home.isHome },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_INIT') then
+
+          state.activity.quickSupplyCount = 0
+          state.activity.quickRepairCount = 0
+          state.activity.HPIsSafe = true
+          state.activity.battleNum = 1
+          state.activity.HPIsSafe = true
+
+          stepLabel.setStepLabelContent('20-2.是否有活动按钮')
+          local res = map.activity.haveHomeActivityBtn()
+          if (res) then
+            stepLabel.setStepLabelContent('20-3.点击出征')
+            map.activity.clickHomeActivityBtn()
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+              { 'ACTIVITY_INIT', 'missionsGroup', map.home.isHome, 2000 },
+              { 'ACTIVITY_ACTIVITY_PAGE', 'missionsGroup', map.activity.isActivityPage },
+              { 'ACTIVITY_ACTIVITY_INFO_PAGE', 'missionsGroup', map.activity.isActivityInfoPage },
+            }))
+            return makeAction(newstateTypes), state
+          else
+            stepLabel.setStepLabelContent('20-4.没有活动按钮')
+            return nil, state
+          end
+
+        elseif (action.type == 'ACTIVITY_ACTIVITY_PAGE') then
+
+          stepLabel.setStepLabelContent('20-5.点击章节 ' .. settings.activityChapter)
+          map.activity.clickChapter(settings.activityChapter)
+          stepLabel.setStepLabelContent('20-6.等待战役页面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_INIT', 'missionsGroup', map.home.isHome },
+            { 'ACTIVITY_ACTIVITY_PAGE', 'missionsGroup', map.activity.isActivityPage, 2000 },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE', 'missionsGroup', map.activity.isActivityInfoPage },
+            { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_ACTIVITY_INFO_PAGE') then
+
+          map.activity.clickActivityReadyBattleBtn()
+          stepLabel.setStepLabelContent('20-6.等待战役页面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_INIT', 'missionsGroup', map.home.isHome },
+            { 'ACTIVITY_ACTIVITY_PAGE', 'missionsGroup', map.activity.isActivityPage },
+            { 'ACTIVITY_ACTIVITY_INFO_PAGE', 'missionsGroup', map.activity.isActivityInfoPage, 2000 },
+            { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_READY_BATTLE_PAGE') then
+
+          if ((state.activity.quickSupplyCount <= 0) and (state.activity.quickRepairCount <= 0)) then
+            -- 还没快速补给，还没维修
+            stepLabel.setStepLabelContent('20-11.选择舰队:' .. settings.battleFleet)
+            map.activity.selectFleet(settings.activityFleet)
+            stepLabel.setStepLabelContent('20-12.检测所有状态正常')
+            c.yield(sleepPromise(1000))
+            local res = map.activity.isReadyBattlePageShipStatusAllRight()
+            if (res) then
+              stepLabel.setStepLabelContent('20-13.状态正常')
+              state.activity.quickSupplyCount = 1
+              state.activity.quickRepairCount = 1
+              return { type = 'ACTIVITY_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
+            else
+              stepLabel.setStepLabelContent('20-14.状态不正常')
+              map.activity.clickReadyBattlePageQuickSupplyBtn()
+              stepLabel.setStepLabelContent('20-12.等待快速补给界面')
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage, 2000 },
+                { 'ACTIVITY_QUICK_SUPPLY_MODAL', 'missionsGroup', map.activity.isQuickSupplyModal },
+              }))
+              return makeAction(newstateTypes), state
+            end
+          elseif (state.activity.quickRepairCount <= 0) then
+            -- 已经快速补给，还没维修
+            stepLabel.setStepLabelContent('20-15.检测血量是否安全')
+            c.yield(sleepPromise(1000))
+            local res = map.activity.isReadyBattlePageShipHPSafe(settings.activityQuickRepair)
+            if (res) then
+              stepLabel.setStepLabelContent('20-16.血量安全')
+              state.activity.quickRepairCount = 1
+              return { type = 'ACTIVITY_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
+            else
+              if (settings.activityQuickRepair > 0) then
+                stepLabel.setStepLabelContent('20-17.血量不安全，快修')
+                map.activity.clickQuickRepairBtn()
+                local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                  { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage, 2000 },
+                  { 'ACTIVITY_QUICK_REPAIR_MODAL', 'missionsGroup', map.activity.isQuickRepairModal },
+                }))
+                return makeAction(newstateTypes), state
+              else
+                stepLabel.setStepLabelContent('20-18.血量不安全')
+                state.activity.quickRepairCount = 1
+                return { type = 'ACTIVITY_READY_BATTLE_PAGE' }, state
+              end
+            end
+          else
+            -- 已经快速补给，已经维修
+            stepLabel.setStepLabelContent('20-19.再次检测血量是否安全')
+            c.yield(sleepPromise(500))
+            -- 不允许大破出征
+            local res = map.activity.isReadyBattlePageShipHPSafe(math.max(1, settings.activityQuickRepair))
+            if (res) then
+              stepLabel.setStepLabelContent('20-20.血量安全，继续')
+              return { type = 'ACTIVITY_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
+            else
+              stepLabel.setStepLabelContent('20-21.血量不安全，返回')
+              return { type = 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+            end
+          end
+
+        elseif (action.type == 'ACTIVITY_QUICK_SUPPLY_MODAL') then
+
+          stepLabel.setStepLabelContent('20-22.快速补给界面点击确定')
+          map.activity.clickReadyBattlePageQuickSupplyModalOkBtn()
+          stepLabel.setStepLabelContent('20-23.等待出征准备界面')
+          state.activity.quickSupplyCount = state.activity.quickSupplyCount + 1
+          if (state.activity.quickSupplyCount < 3) then
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+              { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+              { 'ACTIVITY_QUICK_SUPPLY_MODAL', 'missionsGroup', map.activity.isQuickSupplyModal, 2000 },
+            }))
+            return makeAction(newstateTypes), state
+          else
+            stepLabel.setStepLabelContent('20-24.资源数量不足')
+            return { type = 'ACTIVITY_QUICK_SUPPLY_MODAL_CLOSE' }, state
+          end
+
+        elseif (action.type == 'ACTIVITY_QUICK_SUPPLY_MODAL_CLOSE') then
+
+          stepLabel.setStepLabelContent('20-25.点击快速补给关闭')
+          c.yield(sleepPromise(100))
+          map.activity.clickQuickSupplyModalCloseBtn()
+          c.yield(sleepPromise(300))
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.activity.isQuickSupplyModal, 2000 },
+            { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_QUICK_REPAIR_MODAL') then
+
+          if (settings.activityQuickRepair == 3) then
+            -- 不满血则快修
+            stepLabel.setStepLabelContent('20-26.点击快速修理确定')
+            c.yield(sleepPromise(500))
+            map.activity.clickQuickRepairModalOkBtn()
+            state.activity.quickRepairCount = state.activity.quickRepairCount + 1
+            stepLabel.setStepLabelContent('20-27.等待出征准备界面')
+            if (state.activity.quickRepairCount < 3) then
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+                { 'ACTIVITY_QUICK_REPAIR_MODAL', 'missionsGroup', map.activity.isQuickRepairModal, 2000 },
+              }))
+              return makeAction(newstateTypes), state
+            else
+              stepLabel.setStepLabelContent('20-28.快修数量不足')
+              return { type = 'ACTIVITY_QUICK_REPAIR_MODAL_CLOSE' }, state
+            end
+
+          elseif (settings.activityQuickRepair == 2) then
+            -- 中破或大破快修
+            stepLabel.setStepLabelContent('20-29.寻找中破或大破的船')
+            c.yield(sleepPromise(1000))
+            local res = map.activity.isQuickRepairModalShipNeedRepair(settings.activityQuickRepair)
+            if (#res > 0) then
+              stepLabel.setStepLabelContent('20-30.中破或大破:' .. table.concat(res, ','))
+              map.activity.clickQuickRepairModalSingleShip(res[1])
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+                { 'ACTIVITY_QUICK_REPAIR_MODAL', 'missionsGroup', map.activity.isQuickRepairModal, 500 },
+              }))
+              return makeAction(newstateTypes), state
+            else
+              stepLabel.setStepLabelContent('20-31.修理完成')
+              state.activity.quickRepairCount = state.activity.quickRepairCount + 1
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+                { 'ACTIVITY_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.activity.isQuickRepairModal },
+              }))
+              return makeAction(newstateTypes), state
+            end
+
+          elseif (settings.activityQuickRepair == 1) then
+            -- 大破快修
+            stepLabel.setStepLabelContent('20-32.寻找大破的船')
+            c.yield(sleepPromise(1000))
+            local res = map.activity.isQuickRepairModalShipNeedRepair(settings.activityQuickRepair)
+            if (#res > 0) then
+              stepLabel.setStepLabelContent('20-33.大破:' .. table.concat(res, ','))
+              map.activity.clickQuickRepairModalSingleShip(res[1])
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+                { 'ACTIVITY_QUICK_REPAIR_MODAL', 'missionsGroup', map.activity.isQuickRepairModal, 500 },
+              }))
+              return makeAction(newstateTypes), state
+            else
+              stepLabel.setStepLabelContent('20-34.修理完成')
+              state.activity.quickRepairCount = state.activity.quickRepairCount + 1
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+                { 'ACTIVITY_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.activity.isQuickRepairModal },
+              }))
+              return makeAction(newstateTypes), state
+            end
+          end
+
+        elseif (action.type == 'ACTIVITY_QUICK_REPAIR_MODAL_CLOSE') then
+
+          stepLabel.setStepLabelContent('20-35.点击快速修理关闭')
+          c.yield(sleepPromise(500))
+          map.activity.clickQuickRepairModalCloseBtn()
+          c.yield(sleepPromise(300))
+          stepLabel.setStepLabelContent('20-36.等待出征准备界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.activity.isQuickRepairModal, 2000 },
+            { 'ACTIVITY_READY_BATTLE_PAGE', 'missionsGroup', map.activity.isReadyBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_READY_BATTLE_PAGE_CHECK_CAN_GO') then
+
+          stepLabel.setStepLabelContent('20-37.检测舰队可以出征')
+          c.yield(sleepPromise(500))
+          local fleetCanBattle = map.activity.isFleetsCanBattle()
+          if (fleetCanBattle) then
+            stepLabel.setStepLabelContent('20-38.可以出征')
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+              { 'ACTIVITY_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.activity.isReadyBattlePage },
+            }))
+            return makeAction(newstateTypes), state
+          else
+            stepLabel.setStepLabelContent('20-39.返回HOME')
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+              { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+            }))
+            return makeAction(newstateTypes), state
+          end
+
+        elseif (action.type == 'ACTIVITY_READY_BATTLE_PAGE_CAN_GO') then
+
+          stepLabel.setStepLabelContent('20-40.出征准备界面，点击出征开始')
+          c.yield(sleepPromise(100))
+          map.activity.clickBattleStartBtn()
+          return { type = 'ACTIVITY_GO_A_BATTLE' }, state
+
+        elseif (action.type == 'ACTIVITY_GO_A_BATTLE') then
+
+          if (state.activity.battleNum < settings.activityMaxBattleNum) then
+            stepLabel.setStepLabelContent('20-41.第' .. state.activity.battleNum .. '战开始')
+          else
+            stepLabel.setStepLabelContent('20-42.第' .. state.activity.battleNum .. '战Boss战开始')
+          end
+          stepLabel.setStepLabelContent('20-43.等待额外获得面板，开始面板，阵型面板，追击面板，勋章对话框，home，胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.activity.isReadyBattlePage, 2000 },
+            { 'ACTIVITY_EXTRA_RECEIVE_MODAL', 'missionsGroup', map.activity.isExtraReceiveModal },
+            { 'ACTIVITY_BATTLE_START_PAGE', 'missionsGroup', map.activity.isBattleStartPage },
+            { 'ACTIVITY_FORMATION_PAGE', 'missionsGroup', map.activity.isFormationPage },
+            { 'ACTIVITY_PURSUE_PAGE', 'missionsGroup', map.activity.isPursueModal },
+            { 'ACTIVITY_VICTORY_PAGE', 'missionsGroup', map.activity.isVictoryPage },
+            { 'ACTIVITY_VICTORY_NEXT_PAGE', 'missionsGroup', map.activity.isVictoryPage2 },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            -- { 'ACTIVITY_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.activity.isNewShipPageLockModal },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_EXTRA_RECEIVE_MODAL') then
+
+          stepLabel.setStepLabelContent('20-44.额外获得面板，点击确定')
+          map.activity.clickExtraReceiveModalOk()
+          state.activity.battleNum = state.activity.battleNum + 1
+          stepLabel.setStepLabelContent('20-45.等待额外获得面板，开始面板，阵型面板，追击面板，勋章对话框，home，胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_EXTRA_RECEIVE_MODAL', 'missionsGroup', map.activity.isExtraReceiveModal, 2000 },
+            { 'ACTIVITY_BATTLE_START_PAGE', 'missionsGroup', map.activity.isBattleStartPage },
+            { 'ACTIVITY_FORMATION_PAGE', 'missionsGroup', map.activity.isFormationPage },
+            { 'ACTIVITY_PURSUE_PAGE', 'missionsGroup', map.activity.isPursueModal },
+            { 'ACTIVITY_VICTORY_PAGE', 'missionsGroup', map.activity.isVictoryPage },
+            { 'ACTIVITY_VICTORY_NEXT_PAGE', 'missionsGroup', map.activity.isVictoryPage2 },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_BATTLE_START_PAGE') then
+
+          stepLabel.setStepLabelContent('20-46.开始面板，点击开始')
+          c.yield(sleepPromise(200))
+          if (settings.activityRoundabout and map.activity.isBattleStartPageCanRoundabout()) then
+            map.activity.clickBattleStartModalRoundaboutBtn()
+          else
+            map.activity.clickBattleStartModalStartBtn()
+          end
+          stepLabel.setStepLabelContent('20-47.等待阵型面板，追击面板，胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_BATTLE_START_PAGE', 'missionsGroup', map.activity.isBattleStartPage, 2000 },
+            { 'ACTIVITY_FORMATION_PAGE', 'missionsGroup', map.activity.isFormationPage },
+            { 'ACTIVITY_PURSUE_PAGE', 'missionsGroup', map.activity.isPursueModal },
+            { 'ACTIVITY_VICTORY_PAGE', 'missionsGroup', map.activity.isVictoryPage },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_FORMATION_PAGE') then
+
+          stepLabel.setStepLabelContent('20-48.阵型面板')
+          c.yield(sleepPromise(100))
+          map.activity.clickFormationPageStartBtn(settings.activityFormation)
+          stepLabel.setStepLabelContent('20-49.等待追击面板，胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'ACTIVITY_BATTLE_START_PAGE', 'missionsGroup', map.activity.isBattleStartPage, 2000 },
+            { 'ACTIVITY_FORMATION_PAGE', 'missionsGroup', map.activity.isFormationPage, 2000 },
+            { 'ACTIVITY_PURSUE_PAGE', 'missionsGroup', map.activity.isPursueModal },
+            { 'ACTIVITY_VICTORY_PAGE', 'missionsGroup', map.activity.isVictoryPage },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_PURSUE_PAGE') then
+
+          stepLabel.setStepLabelContent('20-50.追击面板')
+          if ((settings.activityPursue and (state.activity.battleNum < settings.activityMaxBattleNum))
+            or (settings.activityPursueBoss and (state.activity.battleNum == settings.activityMaxBattleNum))) then
+            stepLabel.setStepLabelContent('20-51.追击')
+            map.activity.clickPursueModalOk()
+          else
+            stepLabel.setStepLabelContent('20-52.放弃追击')
+            map.activity.clickPursuePageCancel()
+          end
+          stepLabel.setStepLabelContent('20-53.等待胜利界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_FORMATION_PAGE', 'missionsGroup', map.activity.isFormationPage, 2000 },
+            { 'ACTIVITY_PURSUE_PAGE', 'missionsGroup', map.activity.isPursueModal, 2000 },
+            { 'ACTIVITY_VICTORY_PAGE', 'missionsGroup', map.activity.isVictoryPage },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_VICTORY_PAGE') then
+
+          c.yield(sleepPromise(1000))
+          stepLabel.setStepLabelContent('20-54.胜利界面检测HP是否安全')
+          c.yield(sleepPromise(300))
+          -- 有大破就回港
+          state.activity.HPIsSafe = map.activity.isVictoryPageShipHPSafe(1)
+          if (state.activity.HPIsSafe) then
+            stepLabel.setStepLabelContent('20-55.HP安全')
+          else
+            stepLabel.setStepLabelContent('20-56.HP不安全')
+          end
+          c.yield(sleepPromise(200))
+          stepLabel.setStepLabelContent('20-57.点击胜利继续')
+          map.activity.clickVictoryPageContinueBtn()
+          stepLabel.setStepLabelContent('20-58.等待胜利继续界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_PURSUE_PAGE', 'missionsGroup', map.activity.isPursueModal, 2000 },
+            { 'ACTIVITY_VICTORY_PAGE', 'missionsGroup', map.activity.isVictoryPage, 2000 },
+            { 'ACTIVITY_VICTORY_NEXT_PAGE', 'missionsGroup', map.activity.isVictoryPage2 },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_VICTORY_NEXT_PAGE') then
+
+          stepLabel.setStepLabelContent('20-59.点击胜利继续')
+          map.activity.clickVictoryPageContinueBtn2()
+          stepLabel.setStepLabelContent('20-60.等待大破警告，新船，下回合窗口，勋章对话框，home')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_VICTORY_PAGE', 'missionsGroup', map.activity.isVictoryPage, 2000 },
+            { 'ACTIVITY_VICTORY_NEXT_PAGE', 'missionsGroup', map.activity.isVictoryPage2, 2000 },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL') then
+
+          stepLabel.setStepLabelContent('20-61.大破警告框点击返回')
+          map.activity.clickShipSevereDamageModalBack()
+          stepLabel.setStepLabelContent('20-62.等待新船，下回合窗口，勋章对话框，home')
+          state.activity.HPIsSafe = false
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_VICTORY_NEXT_PAGE', 'missionsGroup', map.activity.isVictoryPage2, 2000 },
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal, 2000 },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+            { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_SHIP_CANT_GO_ON_MODAL') then
+
+          stepLabel.setStepLabelContent('20-63.无法前进警告框点击返回')
+          map.activity.clickShipCantGoOnModalBackBtn()
+          stepLabel.setStepLabelContent('20-64.等待新船，下回合窗口，勋章对话框，home')
+          state.activity.HPIsSafe = false
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal, 2000 },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal, 2000 },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+            { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_NEW_SHIP_PAGE') then
+
+          stepLabel.setStepLabelContent('20-65.获取新船')
+          c.yield(sleepPromise(500))
+          map.activity.clickNewShip()
+          stepLabel.setStepLabelContent('20-66.等待新船锁定窗口，下回合窗口，勋章对话框，home')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal, 2000 },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal, 2000 },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage, 2000 },
+            { 'ACTIVITY_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.activity.isNewShipPageLockModal },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+            { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_NEW_SHIP_PAGE_LOCK_MODAL') then
+
+          stepLabel.setStepLabelContent('20-67.新船锁定窗口点击确认')
+          map.activity.clickNewShipPageLockModalOkBtn()
+          stepLabel.setStepLabelContent('20-68.等待下回合窗口，勋章对话框，home')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.activity.isShipSevereDamageModal, 2000 },
+            { 'ACTIVITY_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.activity.isShipCantGoOnModal, 2000 },
+            { 'ACTIVITY_NEW_SHIP_PAGE', 'missionsGroup', map.activity.isNewShipPage, 2000 },
+            { 'ACTIVITY_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.activity.isNewShipPageLockModal, 2000 },
+            { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal },
+            { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_NEXT_LEVEL_STEP_MODAL') then
+
+          if ((state.activity.battleNum < settings.activityMaxBattleNum) and state.activity.HPIsSafe) then
+            stepLabel.setStepLabelContent('20-69.点击继续下一关')
+            map.activity.clickLevelStepModalContinueBtn()
+            state.activity.battleNum = state.activity.battleNum + 1
+            return { type = 'ACTIVITY_GO_A_BATTLE' }, state
+          else
+            stepLabel.setStepLabelContent('20-70.点击回港')
+            map.activity.clickLevelStepModalBackBtn()
+            stepLabel.setStepLabelContent('20-71.等待主界面')
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+              { 'ACTIVITY_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.activity.isNextLevelStepModal, 2000 },
+              { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+              { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
+              { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+            }))
+            return makeAction(newstateTypes), state
+          end
+
+        elseif (action.type == 'ACTIVITY_READY_BATTLE_PAGE_CHECK_CANT_GO') then
+
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME') then
+
+          map.activity.clickReadyBattlePageBackBtn()
+          stepLabel.setStepLabelContent('20-72.等待出征界面')
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isReadyBattlePage, 2000 },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME') then
+
+          map.activity.clickBackToHomeBtn()
+          stepLabel.setStepLabelContent('20-73.等待主界面')
+
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattleBattlePage, 2000 },
+            { 'ACTIVITY_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.activity.isBattlePage, 2000 },
+          }))
+          return makeAction(newstateTypes), state
+        end
+
+        return nil, state
+      end))
+    end
 
     return missions
   end,

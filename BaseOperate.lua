@@ -27,6 +27,9 @@ return function()
 
     -- 战役
     campaign = {},
+
+    -- 决战无畏之海
+    activity = {},
   }
 
   -- 检测主页
@@ -2517,11 +2520,228 @@ return function()
   -- 点击关闭挑战
   map.campaign.clickVictoryOpponentDetailPageClose = function()
     tap(1803, 217, 100)
-    return true
   end
 
   -- 返回home
   map.campaign.clickBackToHomeBtn = map.battle.clickBackToHomeBtn
   -- 战役流程
+
+  -- 决战无畏之海
+  -- 是否有活动按钮
+  map.activity.haveHomeActivityBtn = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 32, 855, 0xd67521 }, { 66, 835, 0x6b3d00 }, { 85, 818, 0xad8152 }, { 97, 799, 0xf7924a },
+      { 118, 845, 0x7b5521 }, { 139, 855, 0x944119 }, { 154, 867, 0xd66d19 }, { 108, 909, 0xe6e7e6 },
+      { 95, 933, 0x9c4108 }, { 53, 898, 0x3a1c00 }, { 70, 917, 0x5a4129 }, { 68, 911, 0xffffff },
+      { 103, 881, 0xfffbef }, { 77, 827, 0xfffbef }, { 91, 804, 0xef8642 }, { 158, 860, 0xd67521 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击活动按钮
+  map.activity.clickHomeActivityBtn = function()
+    tap(91, 863, 100)
+  end
+
+  -- 检测活动页
+  map.activity.isActivityPage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 855, 20, 0xffffff }, { 776, 27, 0x08598c }, { 700, 37, 0x08598c }, { 790, 53, 0x00598c },
+      { 859, 46, 0xffffff }, { 981, 47, 0x105d7b }, { 996, 33, 0xffffff }, { 1030, 30, 0xdee7ef },
+      { 1031, 47, 0x105d94 }, { 1449, 988, 0xeff3ce }, { 1250, 988, 0xe6efb5 }, { 974, 968, 0x9cc2b5 },
+      { 911, 1008, 0x73b6c5 }, { 566, 1017, 0x73b2bd }, { 196, 1029, 0x3a8ea4 }, { 57, 1003, 0x428aa4 },
+      { 1860, 808, 0x94baad },
+      -- 返回按钮
+      { 1604, 946, 0x42ceef }, { 1649, 962, 0xffffff }, { 1702, 962, 0x42c6ef }, { 1762, 953, 0xffffff },
+      { 1781, 977, 0x08a2ce }, { 1790, 948, 0x42caef }, { 1784, 1015, 0x008abd }, { 1709, 1020, 0x008abd },
+      { 1618, 1013, 0x008abd },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击关卡
+  map.activity.clickChapter = function(n)
+    if (n == 1) then
+      tap(744, 739, 100)
+    elseif (n == 2) then
+      tap(1455, 157, 100)
+    elseif (n == 3) then
+      tap(1159, 192, 100)
+    elseif (n == 3.5) then
+      tap(1650, 371, 100)
+    elseif (n == 4) then
+      tap(364, 584, 100)
+    end
+  end
+
+  -- 检测关卡介绍页
+  map.activity.isActivityInfoPage = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    local list = {
+      { 143, 123, 0x0875bd }, { 165, 156, 0x0892ce }, { 881, 157, 0x0865a4 }, { 882, 119, 0x005994 },
+      { 956, 157, 0xcecabd }, { 1320, 164, 0xd6cac5 }, { 1725, 160, 0xd6cabd }, { 1771, 481, 0xd6cec5 },
+      { 1775, 645, 0xd6cec5 }, { 1787, 880, 0xcecabd }, { 1561, 898, 0xcecabd }, { 1327, 894, 0xc5b69c },
+      { 101, 543, 0xd6cec5 }, { 1405, 647, 0xd6cec5 }, { 1414, 521, 0xcecabd },
+      -- 出征按钮
+      { 1476, 771, 0xef8a3a }, { 1493, 782, 0xa45d21 }, { 1517, 790, 0xf7fbff }, { 1534, 806, 0x522d10 },
+      { 1547, 812, 0xefebe6 }, { 1553, 812, 0xfffbff }, { 1576, 811, 0xf7fbff }, { 1613, 771, 0xef8a42 },
+      { 1705, 804, 0xd67119 }, { 1702, 833, 0xad4900 },
+    }
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
+  -- 点击出征准备按钮
+  map.activity.clickActivityReadyBattleBtn = function()
+    tap(1590, 802, 100)
+  end
+
+  -- 等待出征准备界面
+  map.activity.isReadyBattlePage = map.battle.isReadyBattlePage
+
+  -- 点击选择舰队
+  map.activity.selectFleet = map.battle.selectFleet
+
+  -- 检测所有状态正常
+  map.activity.isReadyBattlePageShipStatusAllRight = map.battle.isReadyBattlePageShipStatusAllRight
+
+  -- 点击快速补给
+  map.activity.clickReadyBattlePageQuickSupplyBtn = map.battle.clickReadyBattlePageQuickSupplyBtn
+
+  -- 检测hp是否安全
+  map.activity.isReadyBattlePageShipHPSafe = map.battle.isReadyBattlePageShipHPSafe
+
+  -- 不满血，返回出征
+  map.activity.clickReadyBattlePageBackBtn = map.battle.clickReadyBattlePageBackBtn
+
+  -- 等待快速补给界面
+  map.activity.isQuickSupplyModal = map.battle.isQuickSupplyModal
+
+  -- 点击快速补给
+  map.activity.clickReadyBattlePageQuickSupplyModalOkBtn = map.battle.clickReadyBattlePageQuickSupplyModalOkBtn
+
+  -- 点击快速修理
+  map.activity.clickQuickRepairBtn = map.battle.clickQuickRepairBtn
+
+  -- 等待快速修理界面
+  map.activity.isQuickRepairModal = map.battle.isQuickRepairModal
+
+  -- 点击快速修理
+  map.activity.clickQuickRepairModalOkBtn = map.battle.clickQuickRepairModalOkBtn
+
+  -- 检测快速修理界面HP是否安全，有几艘船需要快速修理
+  map.activity.isQuickRepairModalShipNeedRepair = map.battle.isQuickRepairModalShipNeedRepair
+
+  -- 点击快速修理单个船
+  map.activity.clickQuickRepairModalSingleShip = map.battle.clickQuickRepairModalSingleShip
+
+  -- 点击快速补给关闭
+  map.activity.clickQuickSupplyModalCloseBtn = map.battle.clickQuickSupplyModalCloseBtn
+
+  -- 点击快速修理关闭
+  map.activity.clickQuickRepairModalCloseBtn = map.battle.clickQuickRepairModalCloseBtn
+
+  -- 检测舰队可以出征
+  map.activity.isFleetsCanBattle = map.battle.isFleetsCanBattle
+
+  -- 点击出征开始
+  map.activity.clickBattleStartBtn = map.battle.clickBattleStartBtn
+
+  -- 等待额外获得资源面板
+  map.activity.isExtraReceiveModal = map.battle.isExtraReceiveModal
+
+  -- 点击额外获得确定
+  map.activity.clickExtraReceiveModalOk = map.battle.clickExtraReceiveModalOk
+
+  -- 等待快开始战斗界面
+  map.activity.isBattleStartPage = map.battle.isBattleStartPage
+
+  -- 快开始页面能否迂回
+  map.activity.isBattleStartPageCanRoundabout = map.battle.isBattleStartPageCanRoundabout
+
+  -- 点击战术迂回
+  map.activity.clickBattleStartModalRoundaboutBtn = map.battle.clickBattleStartModalRoundaboutBtn
+
+  -- 点击开始战斗
+  map.activity.clickBattleStartModalStartBtn = map.battle.clickBattleStartModalStartBtn
+
+  -- 等待阵型界面
+  map.activity.isFormationPage = map.battle.isFormationPage
+
+  -- 点击阵型
+  map.activity.clickFormationPageStartBtn = map.battle.clickFormationPageStartBtn
+
+  -- 等待追击页面
+  map.activity.isPursueModal = map.battle.isPursueModal
+
+  -- 点击追击
+  map.activity.clickPursueModalOk = map.battle.clickPursueModalOk
+
+  -- 点击放弃
+  map.activity.clickPursuePageCancel = map.battle.clickPursuePageCancel
+
+  -- 等待胜利界面
+  map.activity.isVictoryPage = map.battle.isVictoryPage
+
+  -- 胜利界面检测船是否受损
+  map.activity.isVictoryPageShipDamaged = map.battle.isVictoryPageShipDamaged
+
+  -- 胜利界面检测船HP是否安全
+  map.activity.isVictoryPageShipHPSafe = map.battle.isVictoryPageShipHPSafe
+
+  -- 点击胜利继续
+  map.activity.clickVictoryPageContinueBtn = map.battle.clickVictoryPageContinueBtn
+
+  -- 等待胜利继续面板
+  map.activity.isVictoryPage2 = map.battle.isVictoryPage2
+
+  -- 点击胜利继续2
+  map.activity.clickVictoryPageContinueBtn2 = map.battle.clickVictoryPageContinueBtn2
+
+  -- 等待大破警告
+  map.activity.isShipSevereDamageModal = map.battle.isShipSevereDamageModal
+
+  -- 大破警告框点击回港
+  map.activity.clickShipSevereDamageModalBack = map.battle.clickShipSevereDamageModalBack
+
+  -- 等待无法前进警告框
+  map.activity.isShipCantGoOnModal = map.battle.isShipCantGoOnModal
+
+  -- 受损过重警告框点击回港
+  map.activity.clickShipCantGoOnModalBackBtn = map.battle.clickShipCantGoOnModalBackBtn
+
+  -- 等待新船
+  map.activity.isNewShipPage = map.battle.isNewShipPage
+
+  -- 点击新船
+  map.activity.clickNewShip = map.battle.clickNewShip
+
+  -- 等待新船锁定对话框
+  map.activity.isNewShipPageLockModal = map.battle.isNewShipPageLockModal
+
+  -- 船锁定对话框点击确认
+  map.activity.clickNewShipPageLockModalOkBtn = map.battle.clickNewShipPageLockModalOkBtn
+
+  -- 等待前进对话框
+  map.activity.isNextLevelStepModal = map.battle.isNextLevelStepModal
+
+  -- 等待前进点击前进
+  map.activity.clickLevelStepModalContinueBtn = map.battle.clickLevelStepModalContinueBtn
+
+  -- 等待前进点击回港
+  map.activity.clickLevelStepModalBackBtn = map.battle.clickLevelStepModalBackBtn
+
+
+  -- 决战无畏之海
   return map
 end
