@@ -55,11 +55,11 @@ local setScreenListeners = function(theArr)
     return Promise.resolve({})
   end
 
-  local theArrUnique = table.reverse(table.uniqueOf(table.reverse(theArr), 3))
-
-  console.log('----------------------------------')
-  console.log(theArr)
-  console.log('--------------------2323------------')
+  local tmp1 = table.reverse(theArr)
+  console.log(tmp1)
+  local tmp2 = table.uniqueOf(tmp1, 3)
+  console.log(tmp2)
+  local theArrUnique = table.reverse(tmp2)
   console.log(theArrUnique)
 
   return co(c.create(function()
@@ -954,6 +954,7 @@ return {
           stepLabel.setStepLabelContent('4-3.检测是否有远征奖励')
           c.yield(sleepPromise(100))
           local res = map.expedition.isExpeditionCompleted()
+          res = true
           if (not res) then
             stepLabel.setStepLabelContent('4-4.没有远征奖励和任务')
             local newstateTypes = c.yield(setScreenListeners(table.merge(getComListener(), getHomeListener())))
@@ -986,6 +987,7 @@ return {
         elseif (action.type == 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER') then
 
           if (#state.expeditionReward.enableChapter > 0) then
+            console.log(state.expeditionReward.enableChapter)
             local chapter = state.expeditionReward.enableChapter[1]
             stepLabel.setStepLabelContent('4-9.移动到第' .. chapter .. '章')
             map.expedition.moveToChapter(chapter, state.expedition.lastChapter)

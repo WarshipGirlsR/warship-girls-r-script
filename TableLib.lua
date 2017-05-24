@@ -75,8 +75,9 @@ local __tmp = (function()
 
   table.reverse = table.reverse or function(target)
     local result = {}
-    for i = #target, 1, -1 do
-      table.insert(result, target[i])
+    local theLength = table.length(target)
+    for key, value in ipairs(target) do
+      result[theLength - key + 1] = value
     end
     return result
   end
@@ -93,6 +94,7 @@ local __tmp = (function()
       end
     elseif ((type(path) == 'number') or type(path) == 'string') then
       for key, value in ipairs(target) do
+        console.log(value)
         if (type(theMap[value[path]]) == 'nil') then
           theMap[value[path]] = value
           table.insert(result, value)
