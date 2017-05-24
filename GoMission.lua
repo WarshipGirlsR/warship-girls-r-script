@@ -985,6 +985,7 @@ return {
           if (#state.expeditionReward.enableChapter > 0) then
             local chapter = state.expeditionReward.enableChapter[1]
             stepLabel.setStepLabelContent('4-9.移动到第' .. chapter .. '章')
+            c.yield(sleepPromise(300))
             map.expedition.moveToChapter(chapter, state.expedition.lastChapter)
             state.expedition.lastChapter = chapter
             stepLabel.setStepLabelContent('4-10.检测本页有可收获奖励')
@@ -1148,8 +1149,8 @@ return {
           else
             stepLabel.setStepLabelContent('4-27.没有远征')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-              { 'EXPEDITION_RETURN_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-              { 'EXPEDITION_RETURN_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+              { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+              { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
             }))
             return makeAction(newstateTypes), state
           end
@@ -1381,13 +1382,23 @@ return {
 
           return makeAction(newstateTypes), state
 
-        elseif (action.type == 'EXPEDITION_RETURN_TO_HOME') then
+        elseif (action.type == 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME') then
 
-          stepLabel.setStepLabelContent('4-62.返回港口')
+          stepLabel.setStepLabelContent('4-62.返回远征页')
+          map.expedition.clickBackToExpedition()
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+            { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+            { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME') then
+
+          stepLabel.setStepLabelContent('4-63.返回港口')
           map.expedition.clickBackToHome()
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-            { 'EXPEDITION_RETURN_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-            { 'EXPEDITION_RETURN_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+            { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+            { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
           }))
           return makeAction(newstateTypes), state
         end
@@ -1926,6 +1937,7 @@ return {
           c.yield(sleepPromise(100))
           stepLabel.setStepLabelContent('7-5.移动到战役' .. settings.campaignChapter)
           map.campaign.moveToCampaignMission(settings.campaignChapter)
+          c.yield(sleepPromise(300))
           stepLabel.setStepLabelContent('7-6.点击战役')
           map.campaign.clickCampainReadyBtn(settings.campaignDifficulty)
           stepLabel.setStepLabelContent('7-7.等待战役准备界面')
