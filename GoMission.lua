@@ -130,7 +130,7 @@ return {
         { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.home.isNetworkFailureModal, 2000 },
         { 'LOGIN_START_APP', 'homeGroup', map.login.isAppNotRun, 20000 },
         -- 5分钟界面不变化则重启游戏
-        { 'LOGIN_START_APP', 'homeGroup', function() return true end, settings.restartInterval },
+        { 'LOGIN_START_APP', 'homeGroup', function() return true end, settings.restartInterval * 1000 },
       }
     end
     local getHomeListener = function()

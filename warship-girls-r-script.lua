@@ -204,7 +204,7 @@ local settingTable = {
         ['id'] = 'restartInterval',
         ['type'] = 'Edit',
         ['prompt'] = '多长时间画面不变则重启游戏(秒)最少60秒',
-        ['text'] = '15',
+        ['text'] = '120',
         ['kbtype'] = 'number',
       },
       {
@@ -832,8 +832,8 @@ local __tmp = (function(settings)
   -- 总循环间隔时间
   settings.missionsInterval = tonumber(settings.missionsInterval) or 0
   -- 多长时间界面不变则重启，最少60秒
-  settings.restartInterval = tonumber(settings.restartInterval) or 120000
-  settings.restartInterval = math.max(settings.restartInterval, 60000)
+  settings.restartInterval = tonumber(settings.restartInterval) or 120
+  settings.restartInterval = math.max(settings.restartInterval, 60)
 
   -- 远征收获和派遣是否连续（否则先收获，再出征，再派遣），为了可以在远征的间隙出征一次
   settings.expeditionTogether = (function(expeditionTogether)
