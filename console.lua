@@ -24,24 +24,27 @@ end
 local __console = console or {}
 
 local function runTable(tab, space)
-  if (type(tab) == "number") then
-    return { "" .. tab }
+  if (type(tab) == 'number') then
+    return { tostring(tab) }
   end
-  if (type(tab) == "string") then
+  if (type(tab) == 'string') then
     return { '"' .. tab .. '"' }
   end
-  if (type(tab) == "boolean") then
+  if (type(tab) == 'boolean') then
     if (tab) then
-      return { "true" }
+      return { 'true' }
     else
-      return { "false" }
+      return { 'false' }
     end
   end
-  if (type(tab) ~= "table") then
-    return { "(" .. type(tab) .. ")" }
+  if (type(tab) ~= 'table') then
+    return { '(' .. type(tab) .. ')' }
   end
-  if (type(space) ~= "string") then
-    space = "  "
+  if (type(space) == 'number') then
+    space = string.rep(' ', space)
+  end
+  if (type(space) ~= 'string') then
+    space = ''
   end
 
   local resultStrList = {}
@@ -73,39 +76,40 @@ local function runTable(tab, space)
     local newTabArr = newTabPairs
 
     if (hasSubTab) then
-      table.insert(resultStrList, "[")
+      table.insert(resultStrList, '[')
       for k, v in ipairs(newTabArr) do
         local v2Length = getLength(v[2])
-        v[2][v2Length] = v[2][v2Length] .. ","
+        v[2][v2Length] = v[2][v2Length] .. ','
         for k2, v2 in ipairs(v[2]) do
-          table.insert(resultStrList, space .. v2 .. "")
+          table.insert(resultStrList, space .. v2)
         end
       end
-      table.insert(resultStrList, "]")
+      table.insert(resultStrList, ']')
     else
       local theStr = {}
       for k, v in ipairs(newTabPairs) do
         table.insert(theStr, v[2][1])
       end
-      local childStr = table.concat(theStr, ", ")
-      table.insert(resultStrList, "[" .. childStr .. "]")
+      local childStr = table.concat(theStr, ', ')
+      table.insert(resultStrList, '[' .. childStr .. ']')
     end
   else
     local newTabArr = newTabPairs
 
-    table.insert(resultStrList, "{")
+    table.insert(resultStrList, '{')
     for k, v in ipairs(newTabArr) do
-      v[2][1] = v[1] .. ": " .. v[2][1]
+      v[2][1] = v[1] .. ': ' .. v[2][1]
       local v2Length = getLength(v[2])
-      v[2][v2Length] = v[2][v2Length] .. ","
+      v[2][v2Length] = v[2][v2Length] .. ','
       for k2, v2 in ipairs(v[2]) do
-        table.insert(resultStrList, space .. v2 .. "")
+        table.insert(resultStrList, space .. v2 .. '')
       end
     end
-    table.insert(resultStrList, "}")
+    table.insert(resultStrList, '}')
   end
   return resultStrList
 end
+
 
 __console.log = __console.log or function(obj)
   local js = table.concat(runTable(obj), "\n")

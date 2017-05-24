@@ -1567,26 +1567,6 @@ return function()
     return true
   end
 
-  -- 检测在远征准备界面
-  map.expedition.isExpeditionPrepare = function()
-    local __keepScreenState = keepScreenState
-    if (not __keepScreenState) then keepScreen(true) end
-    local list = {
-      { 76, 822, 0xc5b69c },
-      { 1628, 822, 0xc5b69c },
-      { 1643, 247, 0xded2ce },
-      { 71, 249, 0xc5baa4 },
-      { 1610, 733, 0xcecabd },
-      { 538, 706, 0xd6cac5 },
-      { 1813, 416, 0xd6a631 },
-      { 1792, 676, 0xd6a229 },
-      { 1266, 91, 0xc5cac5 },
-    }
-    local result = multiColor(list)
-    if (not __keepScreenState) then keepScreen(false) end
-    return result
-  end
-
   -- 检测第n章能否远征
   map.expedition.isChapterCanExpedition = function(n)
     n = tonumber(n) or 1
@@ -1619,46 +1599,41 @@ return function()
     return result
   end
 
+  -- 等待出征准备界面
+  map.expedition.isReadyBattlePage = map.battle.isReadyBattlePage
+
   -- 选择舰队
   map.expedition.clickSelectFleet = map.battle.selectFleet
 
   -- 检测所有状态正常
-  map.expedition.isReadyExpeditionShipStatus = function()
-    local __keepScreenState = keepScreenState
-    if (not __keepScreenState) then keepScreen(true) end
-    local list = {
-      { 480, 802, 0xc5b69c },
-      { 500, 802, 0xc5b69c },
-      { 520, 802, 0xc5b69c },
-      { 540, 802, 0xc5b69c },
-      { 560, 802, 0xc5b69c },
-      { 580, 802, 0xc5b69c },
-      { 600, 802, 0xc5b69c },
-      { 620, 802, 0xc5b69c },
-      { 640, 802, 0xc5b69c },
-    }
-    local result = multiColor(list, 60)
-    if (not __keepScreenState) then keepScreen(false) end
-    return result
-  end
+  map.expedition.isReadyBattlePageShipStatusAllRight = map.battle.isReadyBattlePageShipStatusAllRight
+
+  -- 检测hp是否安全
+  map.expedition.isReadyBattlePageShipHPSafe = map.battle.isReadyBattlePageShipHPSafe
 
   -- 点击快速补给
-  map.expedition.clickQuickSupply = map.battle.clickReadyBattlePageQuickSupplyBtn
+  map.expedition.clickReadyBattlePageQuickSupplyBtn = map.battle.clickReadyBattlePageQuickSupplyBtn
 
   -- 检测快速补给界面
-  map.expedition.isQuickSupply = map.battle.isQuickSupplyModal
+  map.expedition.isQuickSupplyModal = map.battle.isQuickSupplyModal
 
   -- 点击快速补给确定
-  map.expedition.clickQuickSupplyDo = map.battle.clickReadyBattlePageQuickSupplyModalOkBtn
+  map.expedition.clickReadyBattlePageQuickSupplyModalOkBtn = map.battle.clickReadyBattlePageQuickSupplyModalOkBtn
+
+  -- 点击快速补给关闭
+  map.expedition.clickQuickSupplyModalCloseBtn = map.battle.clickQuickSupplyModalCloseBtn
 
   -- 点击快速维修
-  map.expedition.clickQuickRepair = map.battle.clickQuickRepairBtn
+  map.expedition.clickQuickRepairBtn = map.battle.clickQuickRepairBtn
 
   -- 等待快速维修界面
-  map.expedition.isQuickRepair = map.battle.isQuickRepairModal
+  map.expedition.isQuickRepairModal = map.battle.isQuickRepairModal
 
   -- 点击快速维修确定
-  map.expedition.clickQuickRepairDo = map.battle.clickQuickRepairModalOkBtn
+  map.expedition.clickQuickRepairModalOkBtn = map.battle.clickQuickRepairModalOkBtn
+
+  -- 点击快速修理关闭
+  map.expedition.clickQuickRepairModalCloseBtn = map.battle.clickQuickRepairModalCloseBtn
 
   -- 检测快速修理界面HP是否安全，有几艘船需要快速修理
   map.expedition.isQuickRepairModalShipNeedRepair = map.battle.isQuickRepairModalShipNeedRepair
@@ -1666,20 +1641,8 @@ return function()
   -- 点击快速修理单个船
   map.expedition.clickQuickRepairModalSingleShip = map.battle.clickQuickRepairModalSingleShip
 
-  -- 检测舰队可以远征
-  map.expedition.isCanExpedition = function()
-    local __keepScreenState = keepScreenState
-    if (not __keepScreenState) then keepScreen(true) end
-    local list = {
-      { 810, 971, 0xfff7ef },
-      { 913, 971, 0xfffbf7 },
-      { 988, 973, 0xfff7ef },
-      { 1071, 979, 0xfffbf7 },
-    }
-    local result = not multiColor(list, 70)
-    if (not __keepScreenState) then keepScreen(false) end
-    return result
-  end
+  -- 检测舰队可以出征
+  map.expedition.isFleetsCanBattle = map.battle.isFleetsCanBattle
 
   -- 点击返回远征界面
   map.expedition.clickBackToExpedition = function()
@@ -1688,7 +1651,7 @@ return function()
   end
 
   -- 点击远征开始
-  map.expedition.clickBattleStart = map.battle.clickBattleStartBtn
+  map.expedition.clickBattleStartBtn = map.battle.clickBattleStartBtn
 
   -- 点击返回港口
   map.expedition.clickBackToHome = function()
