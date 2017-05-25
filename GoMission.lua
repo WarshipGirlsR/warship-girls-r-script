@@ -113,9 +113,12 @@ local stateTree = {
     enableChapter = {},
   },
   expedition = {
+    needExpedition = true,
     expeditionFleetToChapter = {},
   },
-  repair = {},
+  repair = {
+    needRepair = true,
+  },
   exercise = {},
   campaign = {},
   activity = {},
@@ -329,6 +332,9 @@ return {
           state.battle.battleRebootAt6_1AMeetCVFlag = false
           state.battle.battleChapter = nil
           state.battle.passBattleStartPage = false
+
+          -- 出征后就应该需要维修
+          state.repair.needRepair = true
 
           stepLabel.setStepLabelContent('2-1.等待HOME')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
@@ -1064,24 +1070,11 @@ return {
           return makeAction(newstateTypes), state
 
         elseif (action.type == 'EXPEDITION_REWARD_INIT') then
-          if (type(settings.enableChapter) ~= 'table') then
-            settings.enableChapter = { 1, 2, 3, 4, 5, 6, 7 }
-          elseif (#settings.enableChapter < 1) then
-            stepLabel.setStepLabelContent('4-2.没有远征任务！')
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
-            return makeAction(newstateTypes), state
-          end
 
-          -- 复制一份数组
-          (function()
-            local newC = {}
-            for i, v in ipairs(settings.enableChapter) do
-              table.insert(newC, v)
-            end
-            state.expeditionReward.enableChapter = newC
-          end)()
+          -- 远征章节
+          state.expeditionReward.enableChapter = { 1, 2, 3, 4, 5, 6, 7 }
 
-          return { type = 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED' }, state
+          return makeAction('EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED'), state
 
         elseif (action.type == 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED') then
 
@@ -1136,6 +1129,10 @@ return {
           local res, list = map.expedition.isThisExpeditionPageHasReward()
           if (res) then
             local v = list[1]
+
+            -- 当回收一个远征奖励时，就需要远征派遣
+            state.expedition.needExpedition = true
+
             stepLabel.setStepLabelContent('4-11.点击第' .. v .. '节')
             map.expedition.clickExpeditionBtn(v)
             stepLabel.setStepLabelContent('4-12.等待远征完成页面')
@@ -1185,6 +1182,25 @@ return {
       return co(c.create(function()
         if (action.type == 'EXPEDITION_ONCE_START') then
 
+          if (not state.expedition.needExpedition) then
+            stepLabel.setStepLabelContent('4-18.跳过远征派遣，返回港口')
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
+            return makeAction(newstateTypes), state
+          end
+
+          if (type(settings.expeditionFleetToChapter) ~= 'table') then
+            state.expedition.expeditionFleetToChapter = { false, false, false, false }
+          end
+
+          if ((not settings.expeditionFleetToChapter[1])
+            and (not settings.expeditionFleetToChapter[2])
+            and (not settings.expeditionFleetToChapter[3])
+            and (not settings.expeditionFleetToChapter[4])) then
+            stepLabel.setStepLabelContent('4-18.没有远征任务！返回港口')
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
+            return makeAction(newstateTypes), state
+          end
+
           stepLabel.setStepLabelContent('4-16.等待HOME')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'EXPEDITION_INIT', 'missionsGroup', map.home.isHome },
@@ -1194,27 +1210,14 @@ return {
         elseif (action.type == 'EXPEDITION_INIT') then
           stepLabel.setStepLabelContent('4-17.准备远征派遣舰队')
           -- 准备开始远征派遣舰队任务
-          if (type(settings.expeditionFleetToChapter) ~= 'table') then
-            state.expedition.expeditionFleetToChapter = { false, false, false, false }
-          end
 
-          if ((not settings.expeditionFleetToChapter[1])
-            and (not settings.expeditionFleetToChapter[2])
-            and (not settings.expeditionFleetToChapter[3])
-            and (not settings.expeditionFleetToChapter[4])) then
-            stepLabel.setStepLabelContent('4-18.没有远征任务！')
-            return nil
-          end
-          -- 转换数组
-          (function()
-            local newC = {}
-            for i, v in ipairs(settings.expeditionFleetToChapter) do
-              if (v) then
-                table.insert(newC, { i, v })
-              end
+          -- 将出征派遣列表复制到缓存中
+          state.expedition.expeditionFleetToChapter = {}
+          for i, v in ipairs(settings.expeditionFleetToChapter) do
+            if (v) then
+              table.insert(state.expedition.expeditionFleetToChapter, { i, v })
             end
-            state.expedition.expeditionFleetToChapter = newC
-          end)()
+          end
 
 
           -- 此任务使用的变量恢复默认值
@@ -1225,6 +1228,7 @@ return {
           state.expedition.lastChapter = nil
           state.expedition.fleet = nil
           state.expedition.chapters = nil
+          state.expedition.hasShipCantExpedition = false
 
 
           stepLabel.setStepLabelContent('4-19.点击出征')
@@ -1243,6 +1247,7 @@ return {
           stepLabel.setStepLabelContent('4-21.点击远征')
           map.expedition.clickExpedition()
           stepLabel.setStepLabelContent('4-22.等待远征界面')
+
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
@@ -1537,6 +1542,7 @@ return {
 
         elseif (action.type == 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO') then
           -- 舰队不能远征，准备返回远征页
+          state.expedition.hasShipCantExpedition = true
 
           -- 震动提示不能远征
           if (settings.expeditionAlertWhenNoHp) then
@@ -1561,6 +1567,10 @@ return {
           return makeAction(newstateTypes), state
 
         elseif (action.type == 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME') then
+
+          if (not state.expedition.hasShipCantExpedition) then
+            state.expedition.needExpedition = false
+          end
 
           stepLabel.setStepLabelContent('4-66.返回远征页')
           map.expedition.clickBackToExpedition()
@@ -1588,6 +1598,12 @@ return {
     missions.repairOnce = function(action, state)
       return co(c.create(function()
         if (action.type == 'REPAIR_ONCE_START') then
+
+          if (not state.repair.needRepair) then
+            stepLabel.setStepLabelContent('5-1.跳过维修，返回港口')
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener()))
+            return makeAction(newstateTypes), state
+          end
 
           stepLabel.setStepLabelContent('5-1.等待HOME')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
@@ -1645,12 +1661,14 @@ return {
             }))
 
             if (newstateTypes == 'REPAIR_REPAIR_FINISH') then
+              state.repair.needRepair = false
               stepLabel.setStepLabelContent('5-9.没有船需要维修')
             end
 
             return makeAction(newstateTypes), state
           else
             stepLabel.setStepLabelContent('5-10.没有空位')
+            state.repair.needRepair = true
 
             local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
               { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
@@ -1769,7 +1787,7 @@ return {
             c.yield(sleepPromise(1000))
             local res = map.exercise.isReadyBattlePageShipStatusAllRight()
             if (res) then
-              stepLabel.setStepLabelContent('2-13.状态正常')
+              stepLabel.setStepLabelContent('6-10.状态正常')
               state.exercise.quickSupplyCount = 1
               state.exercise.quickRepairCount = 1
               return { type = 'EXERCISE_READY_BATTLE_PAGE_CAN_GO' }, state
@@ -2130,6 +2148,8 @@ return {
           state.campaign.quickRepairSingleCount = 0
           state.campaign.battleNum = 1
           state.campaign.HPIsSafe = true
+          -- 出征后就应该需要维修
+          state.repair.needRepair = true
 
           stepLabel.setStepLabelContent('7-2.点击出征')
           map.home.clickBattleBtn()
@@ -2528,6 +2548,8 @@ return {
           state.activity.HPIsSafe = true
           state.activity.battleNum = 1
           state.activity.HPIsSafe = true
+          -- 出征后就应该需要维修
+          state.repair.needRepair = true
 
           stepLabel.setStepLabelContent('20-2.是否有活动按钮')
           local res = map.activity.haveHomeActivityBtn()

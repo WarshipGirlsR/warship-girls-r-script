@@ -247,19 +247,6 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = '现在可以参加的远征章节',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionEnableChapter',
-        ['type'] = 'CheckBoxGroup',
-        ['list'] = '第一章,第二章,第三章,第四章,第五章,第六章,第七章',
-        ['select'] = '0@1@2@3@4@5',
-      },
-      {
-        ['type'] = 'Label',
         ['text'] = '使用快修',
         ['size'] = 15,
         ['align'] = 'left',
@@ -879,18 +866,6 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[expeditionTogether] or false
   end)(settings.expeditionTogether)
-  -- 选择远征可用关卡
-  settings.expeditionEnableChapter = (function(expeditionEnableChapter)
-    local tempArr = strSplit(expeditionEnableChapter, '@')
-    local list = transStrToTable({ 1, 2, 3, 4, 5, 6, 7, })
-    local result = {}
-    for _, v in ipairs(tempArr) do
-      if (type(list[v]) == 'number') then
-        table.insert(result, list[v])
-      end
-    end
-    return result
-  end)(settings.expeditionEnableChapter)
   -- 选择远征要参加的章节
   settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 = (function(fleet1, fleet2, fleet3, fleet4)
     local list = transStrToTable({
