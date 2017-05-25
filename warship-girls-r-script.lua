@@ -1177,22 +1177,22 @@ co(c.create(function()
         table.remove(theMissionsQuery, 1)
       end
 
-      --      -- 如果点了暂停按钮
-      --      if (isPause) then
-      --        stepLabel.setPrefix('')
-      --        local lasttext = stepLabel.getText()
-      --        stepLabel.setStepLabelContent('暂停')
-      --        c.yield(Promise.new(function(resolve)
-      --          local theEid
-      --          theEid = eq.setButotnListener('stopbtn', function()
-      --            if (not isPause) then
-      --              eq.clearButotnListener(theEid)
-      --              resolve()
-      --            end
-      --          end)
-      --        end))
-      --        stepLabel.setStepLabelContent(lasttext)
-      --      end
+      -- 如果点了暂停按钮
+      if (isPause) then
+        stepLabel.setPrefix('')
+        local lasttext = stepLabel.getText()
+        stepLabel.setStepLabelContent('暂停')
+        c.yield(Promise.new(function(resolve)
+          local theEid
+          theEid = eq.setButotnListener('stopbtn', function()
+            if (not isPause) then
+              eq.clearButotnListener(theEid)
+              resolve()
+            end
+          end)
+        end))
+        stepLabel.setStepLabelContent(lasttext)
+      end
 
       if (action.isEnd) then
         local diffTime = (socket.gettime() * 1000) - runStartTime

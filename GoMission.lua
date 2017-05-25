@@ -133,7 +133,7 @@ return {
         { 'LOGIN_START_APP', 'homeGroup', map.login.isAppNotRun, 20000 },
         -- 5分钟界面不变化则重启游戏
         { 'LOGIN_START_APP', 'homeGroup', function() return true end, settings.restartInterval * 1000 },
-        { { type = 'PAUSE_PAUSE', addToStart = true }, 'homeGroup', map.home.isPause },
+        --        { { type = 'PAUSE_PAUSE', addToStart = true }, 'homeGroup', map.home.isPause },
       }
     end
     local getHomeListener = function()
