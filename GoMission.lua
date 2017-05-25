@@ -128,7 +128,8 @@ return {
     -- 定义需要全局监听状态
     local getComListener = function()
       return {
-        { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.home.isNetworkFailureModal, 2000 },
+        { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.network.isNetworkFailureModal, 2000 },
+        { { type = 'NETWORK_CHECK_NETWORK_MODAL', addToStart = true }, 'homeGroup', map.network.isCheckNetworkModal, 2000 },
         { 'LOGIN_START_APP', 'homeGroup', map.login.isAppNotRun, 20000 },
         -- 5分钟界面不变化则重启游戏
         { 'LOGIN_START_APP', 'homeGroup', function() return true end, settings.restartInterval * 1000 },
@@ -228,11 +229,32 @@ return {
         if (action.type == 'NETWORK_NETWORK_FAILURE_MODAL') then
 
           stepLabel.setStepLabelContent('1-10.网络不通，点击确认')
-          map.home.clickNetworkFailureModalOk()
+          state.network.networkFalureCount = state.network.networkFalureCount or 0
+          state.network.networkFalureCount = state.network.networkFalureCount + 1
+          if (state.network.networkFalureCount > 50) then
+            return makeAction('LOGIN_START_APP'), state
+          end
+          map.network.clickNetworkFailureModalOk()
           c.yield(sleepPromise(2000))
-          local res = map.home.isNetworkFailureModal()
+          local res = map.network.isNetworkFailureModal()
           if (res) then
             return makeAction('NETWORK_NETWORK_FAILURE_MODAL'), state
+          end
+          return nil, state
+
+        elseif (action.type == 'NETWORK_CHECK_NETWORK_MODAL') then
+
+          stepLabel.setStepLabelContent('1-11.检查您的网络，点击确认')
+          state.network.networkFalureCount = state.network.networkFalureCount or 0
+          state.network.networkFalureCount = state.network.networkFalureCount + 1
+          if (state.network.networkFalureCount > 50) then
+            return makeAction('LOGIN_START_APP'), state
+          end
+          map.network.clickCheckNetworkModalOk()
+          c.yield(sleepPromise(2000))
+          local res = map.network.isCheckNetworkModal()
+          if (res) then
+            return makeAction('NETWORK_CHECK_NETWORK_MODAL'), state
           end
           return nil, state
         end
@@ -721,7 +743,7 @@ return {
 
           stepLabel.setStepLabelContent('2-55.追击面板')
           if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-              or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+            or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
             stepLabel.setStepLabelContent('2-56.追击')
             map.battle.clickPursueModalOk()
           else
@@ -1177,9 +1199,9 @@ return {
           end
 
           if ((not settings.expeditionFleetToChapter[1])
-              and (not settings.expeditionFleetToChapter[2])
-              and (not settings.expeditionFleetToChapter[3])
-              and (not settings.expeditionFleetToChapter[4])) then
+            and (not settings.expeditionFleetToChapter[2])
+            and (not settings.expeditionFleetToChapter[3])
+            and (not settings.expeditionFleetToChapter[4])) then
             stepLabel.setStepLabelContent('4-18.没有远征任务！')
             return nil
           end
@@ -2867,7 +2889,7 @@ return {
 
           stepLabel.setStepLabelContent('20-52.追击面板')
           if ((settings.activityPursue and (state.activity.battleNum < settings.activityMaxBattleNum))
-              or (settings.activityPursueBoss and (state.activity.battleNum == settings.activityMaxBattleNum))) then
+            or (settings.activityPursueBoss and (state.activity.battleNum == settings.activityMaxBattleNum))) then
             stepLabel.setStepLabelContent('20-53.追击')
             map.activity.clickPursueModalOk()
           else
