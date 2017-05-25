@@ -417,7 +417,7 @@ return {
             -- 已经快速补给，还没维修
             stepLabel.setStepLabelContent('2-15.检测血量是否安全')
             c.yield(sleepPromise(1000))
-            local res = map.battle.isReadyBattlePageShipHPSafe(settings.battleQuickRepair)
+            local res = map.battle.isReadyBattlePageShipHPSafe(math.max(1, settings.battleQuickRepair))
             if (res) then
               stepLabel.setStepLabelContent('2-16.血量安全')
               state.battle.quickRepairCount = 1
@@ -1323,7 +1323,7 @@ return {
             -- 已经快速补给，还没维修
             stepLabel.setStepLabelContent('4-33.检测血量是否安全')
             c.yield(sleepPromise(1000))
-            local res = map.expedition.isReadyBattlePageShipHPSafe(settings.expeditionQuickRepair)
+            local res = map.expedition.isReadyBattlePageShipHPSafe(math.max(1, settings.expeditionQuickRepair))
             if (res) then
               stepLabel.setStepLabelContent('4-34.血量安全')
               state.expedition.quickRepairCount = 1
@@ -1786,7 +1786,7 @@ return {
           elseif (state.exercise.quickRepairCount <= 0) then
             stepLabel.setStepLabelContent('6-13.检测血量是否安全')
             c.yield(sleepPromise(1000))
-            local res = map.exercise.isReadyBattlePageShipHPSafe(settings.exerciseQuickRepair)
+            local res = map.exercise.isReadyBattlePageShipHPSafe(math.max(1, settings.exerciseQuickRepair))
             if (res) then
               stepLabel.setStepLabelContent('6-14.血量安全')
               state.exercise.quickRepairCount = 1
@@ -2185,14 +2185,15 @@ return {
               return makeAction(newstateTypes), state
             else
               stepLabel.setStepLabelContent('7-11.状态正常')
-              state.campaign.quickSupplyCount = 1
+              state.campaign.quickSupplyCount = state.campaign.quickSupplyCount + 1
               return { type = 'CAMPAIGN_READY_BATTLE_PAGE' }, state
             end
           elseif (state.campaign.quickRepairCount <= 0) then
             stepLabel.setStepLabelContent('7-13.检测血量是否安全')
             c.yield(sleepPromise(1000))
-            local res = map.campaign.isReadyBattlePageShipHPSafe(settings.campaignQuickRepair)
+            local res = map.campaign.isReadyBattlePageShipHPSafe(math.max(1, settings.campaignQuickRepair))
             if (res) then
+              state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
               stepLabel.setStepLabelContent('7-14.血量安全，继续')
               return { type = 'CAMPAIGN_READY_BATTLE_PAGE_CAN_GO' }, state
             else
@@ -2597,7 +2598,7 @@ return {
             -- 已经快速补给，还没维修
             stepLabel.setStepLabelContent('20-15.检测血量是否安全')
             c.yield(sleepPromise(1000))
-            local res = map.activity.isReadyBattlePageShipHPSafe(settings.activityQuickRepair)
+            local res = map.activity.isReadyBattlePageShipHPSafe(math.max(1, settings.activityQuickRepair))
             if (res) then
               stepLabel.setStepLabelContent('20-16.血量安全')
               state.activity.quickRepairCount = 1
