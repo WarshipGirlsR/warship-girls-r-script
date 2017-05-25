@@ -5,16 +5,27 @@ mSleep(6000)
 keepScreen(false)
 keepScreen(true)
 local sideLength = 1080
-local list = {
-  { 143, 123, 0x0875bd }, { 165, 156, 0x0892ce }, { 881, 157, 0x0865a4 }, { 882, 119, 0x005994 },
-  { 956, 157, 0xcecabd }, { 1320, 164, 0xd6cac5 }, { 1725, 160, 0xd6cabd }, { 1771, 481, 0xd6cec5 },
-  { 1775, 645, 0xd6cec5 }, { 1787, 880, 0xcecabd }, { 1561, 898, 0xcecabd }, { 1327, 894, 0xc5b69c },
-  { 101, 543, 0xd6cec5 }, { 1405, 647, 0xd6cec5 }, { 1414, 521, 0xcecabd },
-  -- 出征按钮
-  { 1476, 771, 0xef8a3a }, { 1493, 782, 0xa45d21 }, { 1517, 790, 0xf7fbff }, { 1534, 806, 0x522d10 },
-  { 1547, 812, 0xefebe6 }, { 1553, 812, 0xfffbff }, { 1576, 811, 0xf7fbff }, { 1613, 771, 0xef8a42 },
-  { 1705, 804, 0xd67119 }, { 1702, 833, 0xad4900 },
+local list2 = {
+  -- 第一位是航母
+  { 227, 333, 0xf7f7f7 }, { 252, 331, 0xdee3de }, { 287, 329, 0x84497b }, { 309, 328, 0x8c4984 },
+  { 351, 323, 0x6b5d63 }, { 379, 321, 0xa4868c }, { 457, 326, 0x948e94 }, { 520, 348, 0x4a3d42 },
+  { 448, 392, 0x943d6b }, { 348, 393, 0x63595a }, { 206, 398, 0x635d63 }, { 223, 394, 0xcecece },
+  { 261, 390, 0xe6e7e6 }, { 268, 388, 0x08819c }, { 249, 362, 0x639aad }, { 310, 392, 0x8c4d84 },
+  { 357, 396, 0x736973 }, { 400, 393, 0xd68694 }, { 455, 410, 0x734563 }, { 516, 413, 0xdecace },
 }
+local list = {-- 第二位是航母
+}
+
+for key, value in ipairs(list2) do
+  table.insert(list, value)
+end
+for key, value in ipairs(list2) do
+  table.insert(list, {
+    value[1] + 390,
+    value[2],
+    value[3],
+  })
+end
 
 local resultStr = ''
 

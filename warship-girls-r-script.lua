@@ -478,6 +478,19 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['text'] = '6-1a点遇到航母SL',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'battleRebootAt6_1AMeetCV',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
         ['size'] = 50,
         ['align'] = 'left',
@@ -964,6 +977,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })
     return list[battleFormation] or 2
   end)(settings.battleFormation)
+  -- 6-1a点遇到航母SL
+  settings.battleRebootAt6_1AMeetCV = (function(battleRebootAt6_1AMeetCV)
+    local list = transStrToTable({ true, false })
+    return list[battleRebootAt6_1AMeetCV] or false
+  end)(settings.battleRebootAt6_1AMeetCV)
 
   -- 演习
   -- 选择舰队

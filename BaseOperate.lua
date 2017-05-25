@@ -811,6 +811,33 @@ return function()
     tap(1643, 920, 100)
   end
 
+  -- 检测前两船是不是航母
+  map.battle.isFirstSecondShipIsCV = function()
+    local __keepScreenState = keepScreenState
+    if (not __keepScreenState) then keepScreen(true) end
+    -- 第一位是航母
+    local list1 = {
+      { 227, 333, 0xf7f7f7 }, { 252, 331, 0xdee3de }, { 287, 329, 0x84497b }, { 309, 328, 0x8c4984 },
+      { 351, 323, 0x6b5d63 }, { 379, 321, 0xa4868c }, { 457, 326, 0x948e94 }, { 520, 348, 0x4a3d42 },
+      { 448, 392, 0x943d6b }, { 348, 393, 0x63595a }, { 206, 398, 0x635d63 }, { 223, 394, 0xcecece },
+      { 261, 390, 0xe6e7e6 }, { 268, 388, 0x08819c }, { 249, 362, 0x639aad }, { 310, 392, 0x8c4d84 },
+      { 357, 396, 0x736973 }, { 400, 393, 0xd68694 }, { 455, 410, 0x734563 }, { 516, 413, 0xdecace },
+    }
+    -- 第二位是航母
+    local list2 = {}
+    for key, value in ipairs(list1) do
+      table.insert(list2, { value[1] + 390, value[2], value[3] })
+    end
+
+    local list = {}
+    for key, value in ipairs(list1) do table.insert(list, value) end
+    for key, value in ipairs(list1) do table.insert(list, value) end
+
+    local result = multiColor(list)
+    if (not __keepScreenState) then keepScreen(false) end
+    return result
+  end
+
   -- 点击开始战斗
   map.battle.clickBattleStartModalStartBtn = function()
     tap(1327, 919, 100)
