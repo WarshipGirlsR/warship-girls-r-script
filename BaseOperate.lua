@@ -142,6 +142,17 @@ return function()
     return true
   end
 
+  -- 检测暂停
+  map.home.isPause = function()
+    return isPause
+  end
+
+  -- 检测恢复
+  map.home.isNotPause = function()
+    return not isPause
+  end
+
+  -- 检测新闻窗口
   map.home.isNewsModal = function()
     local __keepScreenState = keepScreenState
     if (not __keepScreenState) then keepScreen(true) end
