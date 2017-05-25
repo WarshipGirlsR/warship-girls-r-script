@@ -273,6 +273,19 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['text'] = '不能远征则震动提示',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'expeditionAlertWhenNoHp',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '0',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = '自动参加的远征章节',
         ['size'] = 15,
         ['align'] = 'left',
@@ -603,6 +616,19 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['text'] = '不能出征则震动提示',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'campaignAlertWhenNoHp',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '0',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = '阵型',
         ['size'] = 15,
         ['align'] = 'left',
@@ -872,6 +898,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 3, 2, 1, 0 })
     return list[expeditionQuickRepair] or 2
   end)(settings.expeditionQuickRepair)
+  -- 当无法远征时是否震动提示
+  settings.expeditionAlertWhenNoHp = (function(expeditionAlertWhenNoHp)
+    local list = transStrToTable({ true, false, })
+    return list[expeditionAlertWhenNoHp] or false
+  end)(settings.expeditionAlertWhenNoHp)
   -- 选择关卡
   settings.battleChapter = (function(battleChapter)
     local tempArr = strSplit(battleChapter, '@')
@@ -979,6 +1010,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 3, 2, 1, 0 })
     return list[campaignQuickRepair] or 2
   end)(settings.campaignQuickRepair)
+  -- 不能出征则震动提示
+  settings.campaignAlertWhenNoHp = (function(campaignAlertWhenNoHp)
+    local list = transStrToTable({ true, false, })
+    return list[campaignAlertWhenNoHp] or false
+  end)(settings.campaignAlertWhenNoHp)
   -- 阵型
   settings.campaignFormation = (function(campaignFormation)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })

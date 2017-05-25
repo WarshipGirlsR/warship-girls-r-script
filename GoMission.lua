@@ -428,7 +428,7 @@ return {
               return { type = 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
             else
               stepLabel.setStepLabelContent('2-21.血量不安全，返回')
-              return { type = 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+              return makeAction('BATTLE_READY_BATTLE_PAGE_CANT_GO'), state
             end
           end
 
@@ -457,7 +457,7 @@ return {
           c.yield(sleepPromise(300))
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'BATTLE_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickSupplyModal, 2000 },
-            { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
+            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
           }))
           return makeAction(newstateTypes), state
 
@@ -589,10 +589,7 @@ return {
             return makeAction(newstateTypes), state
           else
             stepLabel.setStepLabelContent('2-41.返回HOME')
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
-            }))
-            return makeAction(newstateTypes), state
+            return makeAction('BATTLE_READY_BATTLE_PAGE_CANT_GO'), state
           end
 
         elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CAN_GO') then
@@ -826,10 +823,19 @@ return {
             return makeAction(newstateTypes), state
           end
 
-        elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CHECK_CANT_GO') then
+        elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CANT_GO') then
+
+          -- 震动提示不能战斗
+          if (settings.battleAlertWhenNoHp) then
+            vibrator(500)
+            mSleep(500)
+            vibrator(500)
+          end
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
             { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
+            { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleBattlePage },
+            { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattlePage },
           }))
           return makeAction(newstateTypes), state
 
@@ -1295,7 +1301,7 @@ return {
               return { type = 'EXPEDITION_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
             else
               stepLabel.setStepLabelContent('4-40.血量不安全，返回')
-              return { type = 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+              return { type = 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO' }, state
             end
           end
 
@@ -1324,7 +1330,7 @@ return {
           c.yield(sleepPromise(300))
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'EXPEDITION_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickSupplyModal, 2000 },
-            { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.expedition.isReadyBattlePage },
           }))
           return makeAction(newstateTypes), state
 
@@ -1455,11 +1461,8 @@ return {
             }))
             return makeAction(newstateTypes), state
           else
-            stepLabel.setStepLabelContent('4-60.返回HOME')
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage },
-            }))
-            return makeAction(newstateTypes), state
+            stepLabel.setStepLabelContent('4-60.返回')
+            return makeAction('EXPEDITION_READY_BATTLE_PAGE_CANT_GO'), state
           end
 
         elseif (action.type == 'EXPEDITION_READY_BATTLE_PAGE_CAN_GO') then
@@ -1478,6 +1481,14 @@ return {
 
         elseif (action.type == 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO') then
           -- 舰队不能远征，准备返回远征页
+
+          -- 震动提示不能远征
+          if (settings.expeditionAlertWhenNoHp) then
+            vibrator(500)
+            mSleep(500)
+            vibrator(500)
+          end
+
           stepLabel.setStepLabelContent('4-64.点击返回远征界面')
           map.expedition.clickBackToExpedition()
 
@@ -1495,7 +1506,7 @@ return {
 
         elseif (action.type == 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME') then
 
-          stepLabel.setStepLabelContent('4-65.返回远征页')
+          stepLabel.setStepLabelContent('4-66.返回远征页')
           map.expedition.clickBackToExpedition()
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
             { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
@@ -1505,7 +1516,7 @@ return {
 
         elseif (action.type == 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME') then
 
-          stepLabel.setStepLabelContent('4-66.返回港口')
+          stepLabel.setStepLabelContent('4-67.返回港口')
           map.expedition.clickBackToHome()
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
             { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
@@ -1736,7 +1747,7 @@ return {
                 return makeAction(newstateTypes), state
               else
                 stepLabel.setStepLabelContent('6-17.血量不安全，返回')
-                return { type = 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+                return { type = 'EXERCISE_READY_BATTLE_PAGE_CANT_GO' }, state
               end
             end
           else
@@ -1749,7 +1760,7 @@ return {
               return { type = 'EXERCISE_READY_BATTLE_PAGE_CAN_GO' }, state
             else
               stepLabel.setStepLabelContent('6-20.血量不安全，返回')
-              return { type = 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+              return { type = 'EXERCISE_READY_BATTLE_PAGE_CANT_GO' }, state
             end
           end
 
@@ -1905,8 +1916,9 @@ return {
           c.yield(sleepPromise(300))
           local fleetCanBattle = map.exercise.isFleetsCanBattle()
           if (not fleetCanBattle) then
+
             stepLabel.setStepLabelContent('6-41.舰队无法战斗')
-            return { type = 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+            return { type = 'EXERCISE_READY_BATTLE_PAGE_CANT_GO' }, state
           else
             return { type = 'EXERCISE_READY_BATTLE_PAGE_CAN_GO' }, state
           end
@@ -1990,8 +2002,8 @@ return {
             { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
             { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage, 2000 },
             { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2 },
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isBattlePage },
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isExercisePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
           }))
           return makeAction(newstateTypes), state
 
@@ -2003,8 +2015,17 @@ return {
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
             { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2, 2000 },
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isBattlePage },
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isExercisePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'EXERCISE_READY_BATTLE_PAGE_CANT_GO') then
+
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
           }))
           return makeAction(newstateTypes), state
 
@@ -2014,19 +2035,19 @@ return {
           stepLabel.setStepLabelContent("6-56.等待出征界面")
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isBattlePage },
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isExercisePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
           }))
           return makeAction(newstateTypes), state
 
-        elseif (action.type == 'EXERCISE_BATTLE_PAGE2') then
+        elseif (action.type == 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME') then
 
           stepLabel.setStepLabelContent('6-57.点击回港')
           map.exercise.clickBackToHomeBtn()
           stepLabel.setStepLabelContent('6-68.等待home')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isBattlePage, 2000 },
-            { 'EXERCISE_BATTLE_PAGE2', 'missionsGroup', map.exercise.isExercisePage, 2000 },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage, 2000 },
+            { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage, 2000 },
           }))
           return makeAction(newstateTypes), state
         end
@@ -2130,7 +2151,7 @@ return {
                 return makeAction(newstateTypes), state
               else
                 stepLabel.setStepLabelContent('7-17.血量不安全，返回')
-                return { type = 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+                return { type = 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO' }, state
               end
             end
           else
@@ -2143,7 +2164,7 @@ return {
               return { type = 'CAMPAIGN_READY_BATTLE_PAGE_CAN_GO' }, state
             else
               stepLabel.setStepLabelContent('7-20.血量不安全，返回')
-              return { type = 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
+              return { type = 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO' }, state
             end
           end
 
@@ -2172,7 +2193,7 @@ return {
           stepLabel.setStepLabelContent('7-26.等待出征准备界面')
           c.yield(sleepPromise(300))
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
             { 'CAMPAIGN_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickSupplyModal, 2000 },
           }))
           return makeAction(newstateTypes), state
@@ -2302,7 +2323,7 @@ return {
 
           stepLabel.setStepLabelContent('7-40.等待出征准备界面，...')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage, 3000 },
+            { 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.campaign.isReadyBattlePage, 3000 },
             { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage },
             { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
             { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
@@ -2383,6 +2404,22 @@ return {
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
             { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2, 2000 },
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
+            { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+          }))
+          return makeAction(newstateTypes), state
+
+        elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO') then
+
+          -- 震动提示不能战斗
+          if (settings.campaignAlertWhenNoHp) then
+            vibrator(500)
+            mSleep(500)
+            vibrator(500)
+          end
+
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage },
             { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
             { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
           }))
