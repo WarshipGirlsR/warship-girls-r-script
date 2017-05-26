@@ -652,7 +652,6 @@ return {
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.battle.isNewShipPageLockModal },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
-            { '', 'missionsGroup', map.battle.autoClickWhenBattle },
           }))
           return makeAction(newstateTypes), state
 
@@ -672,7 +671,6 @@ return {
             { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
-            { '', 'missionsGroup', map.battle.autoClickWhenBattle },
           }))
           return makeAction(newstateTypes), state
 
@@ -710,7 +708,6 @@ return {
             { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
-            { '', 'missionsGroup', map.battle.autoClickWhenBattle, 2000 },
           }))
           return makeAction(newstateTypes), state
 
