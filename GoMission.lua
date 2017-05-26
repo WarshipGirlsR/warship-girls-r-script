@@ -652,6 +652,7 @@ return {
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.battle.isNewShipPageLockModal },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+            { '', 'missionsGroup', map.battle.autoClickWhenBattle },
           }))
           return makeAction(newstateTypes), state
 
@@ -659,7 +660,6 @@ return {
 
           stepLabel.setStepLabelContent('2-46.额外获得面板，点击确定')
           map.battle.clickExtraReceiveModalOk()
-          state.battle.battleNum = state.battle.battleNum + 1
           stepLabel.setStepLabelContent('2-47.等待额外获得面板，开始面板，阵型面板，追击面板，勋章对话框，home，胜利界面')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'BATTLE_EXTRA_RECEIVE_MODAL', 'missionsGroup', map.battle.isExtraReceiveModal, 2000 },
@@ -672,6 +672,7 @@ return {
             { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+            { '', 'missionsGroup', map.battle.autoClickWhenBattle },
           }))
           return makeAction(newstateTypes), state
 
@@ -743,7 +744,6 @@ return {
             { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
-            { '', 'missionsGroup', map.battle.autoClickWhenBattle, 2000 },
           }))
           return makeAction(newstateTypes), state
 
