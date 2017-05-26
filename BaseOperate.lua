@@ -848,6 +848,12 @@ return function()
     tap(1327, 919, 100)
   end
 
+  -- 战斗中自动点击，加速战斗
+  map.battle.autoClickWhenBattle = function()
+    tap(668, 842, 100)
+    return false
+  end
+
   -- 等待阵型界面
   map.battle.isFormationPage = function()
     local __keepScreenState = keepScreenState

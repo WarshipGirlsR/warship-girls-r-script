@@ -709,6 +709,7 @@ return {
             { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+            { '', 'missionsGroup', map.battle.autoClickWhenBattle, 2000 },
           }))
           return makeAction(newstateTypes), state
 
@@ -742,6 +743,7 @@ return {
             { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
             { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
             { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+            { '', 'missionsGroup', map.battle.autoClickWhenBattle, 2000 },
           }))
           return makeAction(newstateTypes), state
 
@@ -749,7 +751,7 @@ return {
 
           stepLabel.setStepLabelContent('2-55.追击面板')
           if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-            or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+              or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
             stepLabel.setStepLabelContent('2-56.追击')
             map.battle.clickPursueModalOk()
           else
@@ -1193,9 +1195,9 @@ return {
           end
 
           if ((not settings.expeditionFleetToChapter[1])
-            and (not settings.expeditionFleetToChapter[2])
-            and (not settings.expeditionFleetToChapter[3])
-            and (not settings.expeditionFleetToChapter[4])) then
+              and (not settings.expeditionFleetToChapter[2])
+              and (not settings.expeditionFleetToChapter[3])
+              and (not settings.expeditionFleetToChapter[4])) then
             stepLabel.setStepLabelContent('4-18.没有远征任务！返回港口')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
             return makeAction(newstateTypes), state
@@ -2912,7 +2914,7 @@ return {
 
           stepLabel.setStepLabelContent('20-52.追击面板')
           if ((settings.activityPursue and (state.activity.battleNum < settings.activityMaxBattleNum))
-            or (settings.activityPursueBoss and (state.activity.battleNum == settings.activityMaxBattleNum))) then
+              or (settings.activityPursueBoss and (state.activity.battleNum == settings.activityMaxBattleNum))) then
             stepLabel.setStepLabelContent('20-53.追击')
             map.activity.clickPursueModalOk()
           else
