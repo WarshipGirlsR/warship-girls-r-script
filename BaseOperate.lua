@@ -1971,14 +1971,17 @@ local function transPointList(tab)
   return newTab
 end
 
-local function diffPointList(target, source)
-  local sourceMap = {}
+local function subtractionList(target, ...)
+  local sources = { ... }
+  local sourcesMap = {}
   local newTab = {}
-  for key, value in ipairs(source) do
-    sourceMap[value[1] .. ',' .. value[2]] = value
+  for _, source in ipairs(sources) do
+    for _, value in ipairs(source) do
+      sourcesMap[value[1] .. ',' .. value[2]] = value
+    end
   end
   for key, value in ipairs(target) do
-    if (not sourceMap[value[1] .. ',' .. value[2]]) then
+    if (not sourcesMap[value[1] .. ',' .. value[2]]) then
       table.insert(newTab, value)
     end
   end
@@ -2016,7 +2019,21 @@ map.repair.findFirstShipNotInFleet = function()
     { 89, 192, 0xffffff },
   }, { point1[1], point1[2], })
   local thePointFleet = transPointList(findMultiColorInRegionFuzzyExt(point1[3], transColorListToString(posandcolorFleet), 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2]))
-  local resultList = diffPointList(thePointBase, thePointFleet)
+  local posandcolorFleetFlatShip = transRelativePoint({
+    { 34, 799, 0x00203a },
+    { 40, 722, 0x002042 },
+    { 40, 724, 0xb5babd },
+
+    { 48, 231, 0xf7d773 },
+    { 52, 208, 0x845500 },
+    { 65, 222, 0x7b5100 },
+    { 79, 207, 0x845908 },
+    { 65, 193, 0x8c6108 },
+    { 89, 192, 0xfff3ad },
+  }, { point1[1], point1[2], })
+  local thePointFleetFlatShip = transPointList(findMultiColorInRegionFuzzyExt(point1[3], transColorListToString(posandcolorFleetFlatShip), 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2]))
+
+  local resultList = subtractionList(thePointBase, thePointFleet, thePointFleetFlatShip)
 
   if (not __keepScreenState) then keepScreen(false) end
   if (#resultList > 0) then
