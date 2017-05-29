@@ -156,7 +156,10 @@ end
 function case6()
   require 'TableLib'
   require 'console'
-  console.log(isFrontApp("com.huanmeng.zhanjian2"))
+  require 'TSLib'
+  init(1)
+  local mapMaker = require 'BaseOperate'
+  console.log(mapMaker().repair.findFirstShipNotInFleet())
 end
 
 case6()

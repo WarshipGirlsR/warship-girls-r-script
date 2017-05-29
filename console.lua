@@ -130,10 +130,10 @@ __console.color = function(value)
   local oldColorStr = string.format('0x%06x', oldColor)
   value[3] = oldColorStr
   if (color == oldColor) then
-    resultStr = resultStr .. '\n' .. runTable(value)
+    resultStr = resultStr .. '\n' .. table.concat(runTable(value), "")
   else
     value[3] = colorStr
-    resultStr = resultStr .. '\n' .. runTable(value) .. '  old Color: ' .. oldColorStr
+    resultStr = resultStr .. '\n' .. table.concat(runTable(value), "") .. '  old Color: ' .. oldColorStr
   end
   __console.log(resultStr)
 end

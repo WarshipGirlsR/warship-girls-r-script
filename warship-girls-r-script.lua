@@ -657,6 +657,19 @@ local settingTable = {
         ['align'] = 'left',
         ['color'] = '0,0,0',
       },
+      {
+        ['type'] = 'Label',
+        ['text'] = '修理目标',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'repairAll',
+        ['type'] = 'RadioGroup',
+        ['list'] = '所有,不在舰队里的',
+        ['select'] = '1',
+      },
     },
 
     {
@@ -1013,6 +1026,12 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })
     return list[campaignFormation] or 2
   end)(settings.campaignFormation)
+  -- 修理
+  -- 是否修理所有船
+  settings.repairAll = (function(repairAll)
+    local list = transStrToTable({ true, false, })
+    return list[repairAll] or false
+  end)(settings.repairAll)
   -- 决战无畏之海
   -- 章节
   settings.activityChapter = (function(activityChapter)
@@ -1076,12 +1095,12 @@ local theMissionsQuery = {}
 
 co(c.create(function()
   if (settings.missionEnable
-      or settings.expeditionEnable
-      or settings.battleEnable
-      or settings.repairEnable
-      or settings.exerciseEnable
-      or settings.campaignEnable
-      or settings.activityEnable) then
+    or settings.expeditionEnable
+    or settings.battleEnable
+    or settings.repairEnable
+    or settings.exerciseEnable
+    or settings.campaignEnable
+    or settings.activityEnable) then
 
     -- 插入一个特殊的任务表示这是队列的开头
     table.insert(theMissionsQuery, { isBase = true, isStart = true })
