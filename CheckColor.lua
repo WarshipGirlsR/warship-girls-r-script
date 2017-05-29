@@ -7,7 +7,10 @@ keepScreen(true)
 local sideLength = 1080
 
 local list = {
-  { 469, 472, 0xef0c08 },
+  { 781, 999, 0xfff3e6 },
+  { 968, 971, 0xfff7ef },
+  { 1017, 971, 0xfffbf7 },
+  { 1083, 990, 0xfff7ef },
 }
 
 local resultStr = ''

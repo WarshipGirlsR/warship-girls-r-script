@@ -1531,10 +1531,10 @@ return {
           c.yield(sleepPromise(100))
           stepLabel.setStepLabelContent('4-62.点击远征开始')
           map.expedition.clickBattleStartBtn()
-          stepLabel.setStepLabelContent('4-63.等待远征界面')
+          stepLabel.setStepLabelContent('4-63.等待战斗开始')
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+            { 'EXPEDITION_READY_BATTLE_PAGE_CHECK_CAN_GO', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
             { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
           }))
           return makeAction(newstateTypes), state
