@@ -1,3 +1,5 @@
+local ImgInfo = require 'BaseOperate__ImgInfo'
+
 -- 原子操作列表
 
 local map = {
@@ -816,31 +818,46 @@ map.battle.clickBattleStartModalRoundaboutBtn = function()
   tap(1643, 920, 100)
 end
 
--- 检测前两船是不是航母
-map.battle.isFirstSecondShipIsCV = function()
+-- 检测敌方队伍有没有航母
+map.battle.isEnemyShipIsCV = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
-  -- 第一位是航母
-  local list1 = {
-    { 227, 333, 0xf7f7f7 }, { 252, 331, 0xdee3de }, { 287, 329, 0x84497b }, { 309, 328, 0x8c4984 },
-    { 351, 323, 0x6b5d63 }, { 379, 321, 0xa4868c }, { 457, 326, 0x948e94 }, { 520, 348, 0x4a3d42 },
-    { 448, 392, 0x943d6b }, { 348, 393, 0x63595a }, { 206, 398, 0x635d63 }, { 223, 394, 0xcecece },
-    { 261, 390, 0xe6e7e6 }, { 268, 388, 0x08819c }, { 249, 362, 0x639aad }, { 310, 392, 0x8c4d84 },
-    { 357, 396, 0x736973 }, { 400, 393, 0xd68694 }, { 455, 410, 0x734563 }, { 516, 413, 0xdecace },
-  }
-  -- 第二位是航母
-  local list2 = {}
-  for key, value in ipairs(list1) do
-    table.insert(list2, { value[1] + 390, value[2], value[3] })
-  end
-
-  local list = {}
-  for key, value in ipairs(list1) do table.insert(list, value) end
-  for key, value in ipairs(list1) do table.insert(list, value) end
-
-  local result = multiColor(list)
+  local theCV = ImgInfo.battle.enemyInfoPanel.CV
+  local pointList = findMultiColorInRegionFuzzyExt(theCV.basePoint[3], theCV.posandcolor, 90, theCV.leftTop[1], theCV.leftTop[2], theCV.rightBotton[1], theCV.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
-  return result
+  if (#pointList > 0) then
+    return true
+  end
+  return false
+end
+
+-- 检测敌方队伍有没有雷巡
+map.battle.isEnemyShipIsCit = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local theCit = ImgInfo.battle.enemyInfoPanel.Cit
+  local pointList = findMultiColorInRegionFuzzyExt(theCit.basePoint[3], theCit.posandcolor, 90, theCit.leftTop[1], theCit.leftTop[2], theCit.rightBotton[1], theCit.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
+  if (not __keepScreenState) then keepScreen(false) end
+  if (#pointList > 0) then
+    return true
+  end
+  return false
+end
+
+-- 检测敌方队伍有没有潜艇
+map.battle.isEnemyShipIsSS = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local theSS = ImgInfo.battle.enemyInfoPanel.SS
+  local pointList = findMultiColorInRegionFuzzyExt(theSS.basePoint[3], theSS.posandcolor, 90, theSS.leftTop[1], theSS.leftTop[2], theSS.rightBotton[1], theSS.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
+  if (not __keepScreenState) then keepScreen(false) end
+  if (#pointList > 0) then
+    return true
+  end
+  return false
 end
 
 -- 点击开始战斗

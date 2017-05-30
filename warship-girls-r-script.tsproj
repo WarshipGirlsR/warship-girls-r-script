@@ -1,6 +1,7 @@
 [res]
 [lib]
 [file]
+BaseOperate__ImgInfo.lua
 CheckColor.lua
 warship-girls-r-script.min.lua
 TableLib.lua

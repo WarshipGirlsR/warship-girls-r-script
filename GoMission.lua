@@ -683,7 +683,7 @@ return {
             if (state.battle.battleChapter == '6-1') then
               if (state.battle.battleNum == 1) then
                 c.yield(sleepPromise(500))
-                if (map.battle.isFirstSecondShipIsCV()) then
+                if (map.battle.isEnemyShipIsCV()) then
                   stepLabel.setStepLabelContent('2-49.遇到2航母，SL大法')
                   return makeAction({ type = 'LOGIN_START_APP' }), state
                 end
@@ -719,10 +719,8 @@ return {
               if (state.battle.battleChapter == '6-1') then
                 if (state.battle.battleNum == 1) then
                   c.yield(sleepPromise(500))
-                  if (map.battle.isFirstSecondShipIsCV()) then
-                    stepLabel.setStepLabelContent('2-52.未发现敌舰，SL大法')
-                    return makeAction({ type = 'LOGIN_START_APP' }), state
-                  end
+                  stepLabel.setStepLabelContent('2-52.未发现敌舰，SL大法')
+                  return makeAction({ type = 'LOGIN_START_APP' }), state
                 end
               end
             end

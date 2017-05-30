@@ -112,14 +112,14 @@ end
 
 
 __console.log = __console.log or function(obj)
-  local js = table.concat(runTable(obj), "\n")
+  local js = table.concat(runTable(obj, 2), "\n")
   print(js)
   nLog(js)
   return js
 end
 
 __console.getJsStr = function(obj)
-  return table.concat(runTable(obj), ",\n")
+  return table.concat(runTable(obj, 2), ",\n")
 end
 
 __console.color = function(value)

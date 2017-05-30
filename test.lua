@@ -159,7 +159,7 @@ function case6()
   require 'TSLib'
   init(1)
   local mapMaker = require 'BaseOperate'
-  console.log(mapMaker().repair.findFirstShipNotInFleet())
+  console.log(mapMaker().battle.isEnemyShipIsSS())
 end
 
 case6()
