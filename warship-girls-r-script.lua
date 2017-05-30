@@ -478,6 +478,19 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['text'] = '6-1a点遇到雷巡SL',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'battleRebootAt6_1AMeetCit',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
         ['size'] = 50,
         ['align'] = 'left',
@@ -970,6 +983,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false })
     return list[battleRebootAt6_1AMeetCV] or false
   end)(settings.battleRebootAt6_1AMeetCV)
+  -- 6-1a点遇到雷巡SL
+  settings.battleRebootAt6_1AMeetCit = (function(battleRebootAt6_1AMeetCit)
+    local list = transStrToTable({ true, false })
+    return list[battleRebootAt6_1AMeetCit] or false
+  end)(settings.battleRebootAt6_1AMeetCit)
 
   -- 演习
   -- 选择舰队
