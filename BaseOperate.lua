@@ -270,6 +270,7 @@ end
 -- 重启游戏
 map.login.restartApp = function()
   closeApp("com.huanmeng.zhanjian2")
+  mSleep(1000)
   return runApp("com.huanmeng.zhanjian2")
 end
 
