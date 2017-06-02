@@ -1197,10 +1197,9 @@ co(c.create(function()
         c.yield(Promise.new(function(resolve)
           local theEid
           theEid = eq.setButotnListener('stopbtn', function()
-            if (not isPause) then
-              eq.clearButotnListener(theEid)
-              resolve()
-            end
+            isPause = false
+            eq.clearButotnListener(theEid)
+            resolve()
           end)
         end))
         stepLabel.setStepLabelContent(lasttext)
