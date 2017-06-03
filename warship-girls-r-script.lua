@@ -1198,6 +1198,7 @@ co(c.create(function()
           local theEid
           theEid = eq.setButotnListener('stopbtn', function()
             isPause = false
+            stepLabel.setPrefix('')
             eq.clearButotnListener(theEid)
             resolve()
           end)
