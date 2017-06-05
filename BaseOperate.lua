@@ -861,6 +861,20 @@ map.battle.isEnemyShipIsSS = function()
   return false
 end
 
+-- 检测敌方队伍有没有补给
+map.battle.isEnemyShipIsAP = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local theAP = ImgInfo.battle.enemyInfoPanel.AP
+  local pointList = findMultiColorInRegionFuzzyExt(theAP.basePoint[3], theAP.posandcolor, 90, theAP.leftTop[1], theAP.leftTop[2], theAP.rightBotton[1], theAP.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
+  if (not __keepScreenState) then keepScreen(false) end
+  if (#pointList > 0) then
+    return true
+  end
+  return false
+end
+
 -- 点击开始战斗
 map.battle.clickBattleStartModalStartBtn = function()
   tap(1327, 919, 100)

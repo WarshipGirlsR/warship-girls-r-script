@@ -216,7 +216,7 @@ end
 
 function clearButotnListener(id)
   local theEventObj = buttonListenerQueryIndex[id]
-  if (not theEventObj) then
+  if (theEventObj) then
     theEventObj.drop = true
     buttonListenerQueryIndex[id] = nil
   end

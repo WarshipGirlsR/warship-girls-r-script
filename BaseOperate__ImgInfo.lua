@@ -93,6 +93,25 @@ return {
         }, basePoint))
         return { leftTop = leftTop, rightBotton = rightBotton, basePoint = basePoint, posandcolor = posandcolor, }
       end)(),
+      -- 补给（捞战利品）
+      AP = (function()
+        local leftTop = { 192, 304 }
+        local rightBotton = { 943, 797 }
+        local basePoint = { 206, 509, 0xefefef }
+        local posandcolor = transColorListToString(transRelativePoint({
+          { 222, 507, 0xdedfde }, { 230, 508, 0x737573 },
+          { 231, 522, 0x3a494a }, { 222, 517, 0xf7f7f7 },
+          { 241, 509, 0xdedbde }, { 250, 503, 0x6b797b },
+          { 246, 531, 0x4a454a }, { 234, 536, 0x42454a },
+          { 234, 550, 0x63a6bd }, { 216, 551, 0x42868c },
+          { 271, 540, 0xd6d7d6 }, { 263, 545, 0x424142 },
+          { 268, 555, 0xf7fbf7 }, { 270, 561, 0x007184 },
+          { 257, 556, 0x4abed6 }, { 252, 568, 0x108eb5 },
+          { 256, 580, 0x00799c }, { 268, 573, 0x636163 },
+          { 283, 575, 0x424142 }, { 288, 554, 0x08798c },
+        }, basePoint))
+        return { leftTop = leftTop, rightBotton = rightBotton, basePoint = basePoint, posandcolor = posandcolor, }
+      end)(),
     },
   },
 }

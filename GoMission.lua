@@ -703,6 +703,16 @@ return {
               end
             end
           end
+          -- 所有关卡，遇到补给船就继续，没遇到就SL大法
+          if (settings.battleRebootAtNotMeetAP) then
+            stepLabel.setStepLabelContent('2-48.开始检测补给')
+            c.yield(sleepPromise(500))
+            if (not map.battle.isEnemyShipIsAP()) then
+              stepLabel.setStepLabelContent('2-49.没遇到补给，SL大法')
+              return makeAction({ type = 'LOGIN_START_APP' }), state
+            end
+          end
+
 
           stepLabel.setStepLabelContent('2-50.开始面板，点击开始')
           c.yield(sleepPromise(200))

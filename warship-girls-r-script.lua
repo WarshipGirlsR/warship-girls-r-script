@@ -491,6 +491,19 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['text'] = '没遇到补给就SL（捞胖次）',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'battleRebootAtNotMeetAP',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
         ['size'] = 50,
         ['align'] = 'left',
@@ -988,6 +1001,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false })
     return list[battleRebootAt6_1AMeetCit] or false
   end)(settings.battleRebootAt6_1AMeetCit)
+  -- 没遇到补给就SL（捞胖次）
+  settings.battleRebootAtNotMeetAP = (function(battleRebootAtNotMeetAP)
+    local list = transStrToTable({ true, false })
+    return list[battleRebootAtNotMeetAP] or false
+  end)(settings.battleRebootAtNotMeetAP)
 
   -- 演习
   -- 选择舰队
@@ -1099,8 +1117,8 @@ end)(settings)
 -- 注册按钮事件，目前只有暂停按钮
 eq.setButotnListener('stopbtn', function()
   if (isPause) then
-    stepLabel.setPrefix('')
-    isPause = false
+    --    stepLabel.setPrefix('')
+    --    isPause = false
   else
     stepLabel.setPrefix('即将暂停 ')
     isPause = true
