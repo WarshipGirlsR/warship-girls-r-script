@@ -5,6 +5,8 @@ do
 do
 local _ENV = _ENV
 package.preload[ "BaseOperate" ] = function( ... ) local arg = _G.arg;
+local ImgInfo = require 'BaseOperate__ImgInfo'
+
 -- 原子操作列表
 
 local map = {
@@ -275,6 +277,7 @@ end
 -- 重启游戏
 map.login.restartApp = function()
   closeApp("com.huanmeng.zhanjian2")
+  mSleep(1000)
   return runApp("com.huanmeng.zhanjian2")
 end
 
@@ -823,31 +826,60 @@ map.battle.clickBattleStartModalRoundaboutBtn = function()
   tap(1643, 920, 100)
 end
 
--- 检测前两船是不是航母
-map.battle.isFirstSecondShipIsCV = function()
+-- 检测敌方队伍有没有航母
+map.battle.isEnemyShipIsCV = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
-  -- 第一位是航母
-  local list1 = {
-    { 227, 333, 0xf7f7f7 }, { 252, 331, 0xdee3de }, { 287, 329, 0x84497b }, { 309, 328, 0x8c4984 },
-    { 351, 323, 0x6b5d63 }, { 379, 321, 0xa4868c }, { 457, 326, 0x948e94 }, { 520, 348, 0x4a3d42 },
-    { 448, 392, 0x943d6b }, { 348, 393, 0x63595a }, { 206, 398, 0x635d63 }, { 223, 394, 0xcecece },
-    { 261, 390, 0xe6e7e6 }, { 268, 388, 0x08819c }, { 249, 362, 0x639aad }, { 310, 392, 0x8c4d84 },
-    { 357, 396, 0x736973 }, { 400, 393, 0xd68694 }, { 455, 410, 0x734563 }, { 516, 413, 0xdecace },
-  }
-  -- 第二位是航母
-  local list2 = {}
-  for key, value in ipairs(list1) do
-    table.insert(list2, { value[1] + 390, value[2], value[3] })
-  end
-
-  local list = {}
-  for key, value in ipairs(list1) do table.insert(list, value) end
-  for key, value in ipairs(list1) do table.insert(list, value) end
-
-  local result = multiColor(list)
+  local theCV = ImgInfo.battle.enemyInfoPanel.CV
+  local pointList = findMultiColorInRegionFuzzyExt(theCV.basePoint[3], theCV.posandcolor, 90, theCV.leftTop[1], theCV.leftTop[2], theCV.rightBotton[1], theCV.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
-  return result
+  if (#pointList > 0) then
+    return true
+  end
+  return false
+end
+
+-- 检测敌方队伍有没有雷巡
+map.battle.isEnemyShipIsCit = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local theCit = ImgInfo.battle.enemyInfoPanel.Cit
+  local pointList = findMultiColorInRegionFuzzyExt(theCit.basePoint[3], theCit.posandcolor, 90, theCit.leftTop[1], theCit.leftTop[2], theCit.rightBotton[1], theCit.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
+  if (not __keepScreenState) then keepScreen(false) end
+  if (#pointList > 0) then
+    return true
+  end
+  return false
+end
+
+-- 检测敌方队伍有没有潜艇
+map.battle.isEnemyShipIsSS = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local theSS = ImgInfo.battle.enemyInfoPanel.SS
+  local pointList = findMultiColorInRegionFuzzyExt(theSS.basePoint[3], theSS.posandcolor, 90, theSS.leftTop[1], theSS.leftTop[2], theSS.rightBotton[1], theSS.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
+  if (not __keepScreenState) then keepScreen(false) end
+  if (#pointList > 0) then
+    return true
+  end
+  return false
+end
+
+-- 检测敌方队伍有没有补给
+map.battle.isEnemyShipIsAP = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local theAP = ImgInfo.battle.enemyInfoPanel.AP
+  local pointList = findMultiColorInRegionFuzzyExt(theAP.basePoint[3], theAP.posandcolor, 90, theAP.leftTop[1], theAP.leftTop[2], theAP.rightBotton[1], theAP.rightBotton[2])
+  pointList = ImgInfo.toPoint(pointList)
+  if (not __keepScreenState) then keepScreen(false) end
+  if (#pointList > 0) then
+    return true
+  end
+  return false
 end
 
 -- 点击开始战斗
@@ -3476,7 +3508,7 @@ end
 
 function clearButotnListener(id)
   local theEventObj = buttonListenerQueryIndex[id]
-  if (not theEventObj) then
+  if (theEventObj) then
     theEventObj.drop = true
     buttonListenerQueryIndex[id] = nil
   end
@@ -4323,13 +4355,36 @@ return {
             if (state.battle.battleChapter == '6-1') then
               if (state.battle.battleNum == 1) then
                 c.yield(sleepPromise(500))
-                if (map.battle.isFirstSecondShipIsCV()) then
-                  stepLabel.setStepLabelContent('2-49.遇到2航母，SL大法')
+                if (map.battle.isEnemyShipIsCV()) then
+                  stepLabel.setStepLabelContent('2-49.遇到航母，SL大法')
                   return makeAction({ type = 'LOGIN_START_APP' }), state
                 end
               end
             end
           end
+          -- 6-1第一战，遇到2雷巡，SL大法
+          if (settings.battleRebootAt6_1AMeetCit) then
+            stepLabel.setStepLabelContent('2-48.开始检测雷巡')
+            if (state.battle.battleChapter == '6-1') then
+              if (state.battle.battleNum == 1) then
+                c.yield(sleepPromise(500))
+                if (map.battle.isEnemyShipIsCit()) then
+                  stepLabel.setStepLabelContent('2-49.遇到雷巡，SL大法')
+                  return makeAction({ type = 'LOGIN_START_APP' }), state
+                end
+              end
+            end
+          end
+          -- 所有关卡，遇到补给船就继续，没遇到就SL大法
+          if (settings.battleRebootAtNotMeetAP) then
+            stepLabel.setStepLabelContent('2-48.开始检测补给')
+            c.yield(sleepPromise(500))
+            if (not map.battle.isEnemyShipIsAP()) then
+              stepLabel.setStepLabelContent('2-49.没遇到补给，SL大法')
+              return makeAction({ type = 'LOGIN_START_APP' }), state
+            end
+          end
+
 
           stepLabel.setStepLabelContent('2-50.开始面板，点击开始')
           c.yield(sleepPromise(200))
@@ -4359,10 +4414,8 @@ return {
               if (state.battle.battleChapter == '6-1') then
                 if (state.battle.battleNum == 1) then
                   c.yield(sleepPromise(500))
-                  if (map.battle.isFirstSecondShipIsCV()) then
-                    stepLabel.setStepLabelContent('2-52.未发现敌舰，SL大法')
-                    return makeAction({ type = 'LOGIN_START_APP' }), state
-                  end
+                  stepLabel.setStepLabelContent('2-52.未发现敌舰，SL大法')
+                  return makeAction({ type = 'LOGIN_START_APP' }), state
                 end
               end
             end
@@ -7955,14 +8008,14 @@ end
 
 
 __console.log = __console.log or function(obj)
-  local js = table.concat(runTable(obj), "\n")
+  local js = table.concat(runTable(obj, 2), "\n")
   print(js)
   nLog(js)
   return js
 end
 
 __console.getJsStr = function(obj)
-  return table.concat(runTable(obj), ",\n")
+  return table.concat(runTable(obj, 2), ",\n")
 end
 
 __console.color = function(value)
@@ -8467,6 +8520,32 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
+        ['text'] = '6-1a点遇到雷巡SL',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'battleRebootAt6_1AMeetCit',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
+        ['text'] = '没遇到补给就SL（捞胖次）',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'battleRebootAtNotMeetAP',
+        ['type'] = 'RadioGroup',
+        ['list'] = '是,否',
+        ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
         ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
         ['size'] = 50,
         ['align'] = 'left',
@@ -8959,6 +9038,16 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false })
     return list[battleRebootAt6_1AMeetCV] or false
   end)(settings.battleRebootAt6_1AMeetCV)
+  -- 6-1a点遇到雷巡SL
+  settings.battleRebootAt6_1AMeetCit = (function(battleRebootAt6_1AMeetCit)
+    local list = transStrToTable({ true, false })
+    return list[battleRebootAt6_1AMeetCit] or false
+  end)(settings.battleRebootAt6_1AMeetCit)
+  -- 没遇到补给就SL（捞胖次）
+  settings.battleRebootAtNotMeetAP = (function(battleRebootAtNotMeetAP)
+    local list = transStrToTable({ true, false })
+    return list[battleRebootAtNotMeetAP] or false
+  end)(settings.battleRebootAtNotMeetAP)
 
   -- 演习
   -- 选择舰队
@@ -9070,8 +9159,8 @@ end)(settings)
 -- 注册按钮事件，目前只有暂停按钮
 eq.setButotnListener('stopbtn', function()
   if (isPause) then
-    stepLabel.setPrefix('')
-    isPause = false
+    --    stepLabel.setPrefix('')
+    --    isPause = false
   else
     stepLabel.setPrefix('即将暂停 ')
     isPause = true
@@ -9168,10 +9257,10 @@ co(c.create(function()
         c.yield(Promise.new(function(resolve)
           local theEid
           theEid = eq.setButotnListener('stopbtn', function()
-            if (not isPause) then
-              eq.clearButotnListener(theEid)
-              resolve()
-            end
+            isPause = false
+            stepLabel.setPrefix('')
+            eq.clearButotnListener(theEid)
+            resolve()
           end)
         end))
         stepLabel.setStepLabelContent(lasttext)
