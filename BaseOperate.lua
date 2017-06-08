@@ -39,9 +39,11 @@ map.home.isHome = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 18, 63, 0x10699c },
-    { 58, 65, 0x1071a4 },
-    { 120, 45, 0x10699c },
+    { 31, 86, 0xcecace },
+    { 190, 9, 0xc5cac5 },
+    { 142, 6, 0x085d94 },
+    { 697, 44, 0x9ca63a },
+    { 1379, 36, 0xfffbf7 },
     { 81, 85, 0xcecece },
     { 1855, 64, 0xb54d00 },
     { 1651, 1027, 0xcecece },
