@@ -131,8 +131,8 @@ return {
     -- 定义需要全局监听状态
     local getComListener = function()
       return {
-        { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.network.isNetworkFailureModal, 2000 },
-        { { type = 'NETWORK_CHECK_NETWORK_MODAL', addToStart = true }, 'homeGroup', map.network.isCheckNetworkModal, 2000 },
+        { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.network.isNetworkFailureModal, 6000 },
+        { { type = 'NETWORK_CHECK_NETWORK_MODAL', addToStart = true }, 'homeGroup', map.network.isCheckNetworkModal, 6000 },
         { 'LOGIN_START_APP', 'homeGroup', map.login.isAppNotRun, 20000 },
         -- 5分钟界面不变化则重启游戏
         { 'LOGIN_START_APP', 'homeGroup', function() return true end, settings.restartInterval * 1000 },
@@ -142,14 +142,14 @@ return {
     local getHomeListener = function()
       return {
         { 'HOME_HOME', 'homeGroup', map.home.isHome, 2000 },
-        { { type = 'HOME_MEDAL_MODAL', addToStart = true }, 'homeGroup', map.home.isMedalModal, 2000 },
-        { { type = 'HOME_NEWS_MODAL', addToStart = true }, 'homeGroup', map.home.isNewsModal, 2000 },
-        { { type = 'HOME_SIGN_MODAL', addToStart = true }, 'homeGroup', map.home.isSignModal, 2000 },
+        { { type = 'HOME_MEDAL_MODAL', addToStart = true }, 'homeGroup', map.home.isMedalModal, 6000 },
+        { { type = 'HOME_NEWS_MODAL', addToStart = true }, 'homeGroup', map.home.isNewsModal, 6000 },
+        { { type = 'HOME_SIGN_MODAL', addToStart = true }, 'homeGroup', map.home.isSignModal, 6000 },
       }
     end
     local getLoginListener = function()
       return {
-        { { type = 'LOGIN_SELECT_SERVER', addToStart = true }, 'loginGroup', map.login.isSelectServerPage, 2000 },
+        { { type = 'LOGIN_SELECT_SERVER', addToStart = true }, 'loginGroup', map.login.isSelectServerPage, 6000 },
       }
     end
     local makeAction = function(action)
