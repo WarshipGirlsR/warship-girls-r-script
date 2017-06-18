@@ -7,18 +7,16 @@ keepScreen(true)
 local sideLength = 1080
 
 local list = {
-  { 31, 86, 0xcecace },
-  { 190, 9, 0xc5cac5 },
-  { 142, 6, 0x085d94 },
-  { 697, 44, 0x9ca63a },
-  { 1379, 36, 0xfffbf7 },
-  { 81, 85, 0xcecece },
-  { 1855, 64, 0xb54d00 },
-  { 1651, 1027, 0xcecece },
-  { 1435, 443, 0xbd4d00 },
-  { 1132, 532, 0x3abee6 },
-  { 1749, 531, 0x3ac2e6 },
-  { 1430, 862, 0x0092c5 },
+  { 77, 125, 0x105d9c },
+  { 51, 237, 0xd6cec5 },
+  { 50, 842, 0xd6cac5 },
+  { 1631, 823, 0xc5baa4 },
+  { 1647, 243, 0xd6cec5 },
+  { 517, 703, 0xd6cec5 },
+  { 1837, 445, 0xdeaa3a },
+  { 1828, 648, 0xd6a631 },
+  { 1220, 86, 0xcecace },
+  { 1647, 136, 0xcecace },
 }
 
 local resultStr = ''

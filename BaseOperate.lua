@@ -438,16 +438,16 @@ map.battle.isReadyBattlePage = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 68, 247, 0xbdb69c },
-    { 73, 825, 0xc5baa4 },
-    { 498, 721, 0xcecabd },
-    { 1576, 711, 0xcecabd },
-    { 1570, 803, 0xbdb69c },
-    { 1834, 379, 0xd6a631 },
-    { 1803, 698, 0xd6a229 },
-    { 1004, 177, 0x7b756b },
-    { 1365, 912, 0x63615a },
-    { 557, 913, 0x635d5a },
+    { 77, 125, 0x105d9c },
+    { 51, 237, 0xd6cec5 },
+    { 50, 842, 0xd6cac5 },
+    { 1631, 823, 0xc5baa4 },
+    { 1647, 243, 0xd6cec5 },
+    { 517, 703, 0xd6cec5 },
+    { 1837, 445, 0xdeaa3a },
+    { 1828, 648, 0xd6a631 },
+    { 1220, 86, 0xcecace },
+    { 1647, 136, 0xcecace },
   }
   local result = multiColor(list)
   if (not __keepScreenState) then keepScreen(false) end
