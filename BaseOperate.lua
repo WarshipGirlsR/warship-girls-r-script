@@ -789,7 +789,7 @@ map.battle.isBattleStartPage = function()
     { 84, 981, 0xcecabd },
     { 909, 994, 0xcecabd },
     { 1820, 993, 0xcecabd },
-    { 1205, 942, 0xb54900 },
+    { 1205, 942, 0xcecabd },
     { 1427, 951, 0xad4d08 },
     { 1180, 512, 0xd6cac5 },
   }
