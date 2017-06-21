@@ -12,26 +12,7 @@ local missions = {--  home = function() end,
   --  exerciseOnce = function() end,
 }
 
-local stateTree = {
-  pause = {},
-  home = {},
-  network = {},
-  login = {},
-  battle = {},
-  expeditionReward = {
-    enableChapter = {},
-  },
-  expedition = {
-    needExpedition = true,
-    expeditionFleetToChapter = {},
-  },
-  repair = {
-    needRepair = true,
-  },
-  exercise = {},
-  campaign = {},
-  activity = {},
-}
+local stateTree = {}
 
 
 
