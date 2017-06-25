@@ -4,12 +4,10 @@ local stepLabel = require 'StepLabel'
 local makeAction = (require 'GoMission__utils').makeAction
 local sleepPromise = (require 'GoMission__utils').sleepPromise
 local setScreenListeners = (require 'GoMission__utils').setScreenListeners
-local commonListenerFactory = require 'GoMission__commonListener'
-
-local allOptions
-local getHomeListener
-local getLoginListener
-local getComListener
+local allOptions = require 'GoMission__options'
+local getHomeListener = (require 'GoMission__commonListener').getHomeListener
+local getLoginListener = (require 'GoMission__commonListener').getLoginListener
+local getComListener = (require 'GoMission__commonListener').getComListener
 
 
 local battleOnce = function(action, state)
@@ -645,12 +643,7 @@ local battleOnce = function(action, state)
   end))
 end
 
-return function(theAllOptions, state)
-  allOptions = theAllOptions
+return function(state)
   state.battle = {}
-  local commonListener = commonListenerFactory(theAllOptions)
-  getComListener = commonListener.getComListener;
-  getHomeListener = commonListener.getHomeListener;
-  getLoginListener = commonListener.getHomeListener;
   return battleOnce
 end

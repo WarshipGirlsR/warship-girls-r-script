@@ -5,11 +5,11 @@ local makeAction = (require 'GoMission__utils').makeAction
 local sleepPromise = (require 'GoMission__utils').sleepPromise
 local setScreenListeners = (require 'GoMission__utils').setScreenListeners
 local commonListenerFactory = require 'GoMission__commonListener'
+local allOptions = require 'GoMission__options'
 
-local allOptions
-local getHomeListener
-local getLoginListener
-local getComListener
+local getHomeListener = (require 'GoMission__commonListener').getHomeListener
+local getLoginListener = (require 'GoMission__commonListener').getLoginListener
+local getComListener = (require 'GoMission__commonListener').getComListener
 
 local expeditionReward = function(action, state)
   local map = allOptions.map
@@ -129,13 +129,7 @@ local expeditionReward = function(action, state)
   end))
 end
 
-return function(theAllOptions, state)
-  allOptions = theAllOptions
+return function(state)
   state.expeditionReward = {}
-
-  local commonListener = commonListenerFactory(theAllOptions)
-  getComListener = commonListener.getComListener;
-  getHomeListener = commonListener.getHomeListener;
-  getLoginListener = commonListener.getHomeListener;
   return expeditionReward
 end

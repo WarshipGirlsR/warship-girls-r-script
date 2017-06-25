@@ -11,34 +11,31 @@ local repairOnceFactory = require 'GoMission__repairOnce'
 local exerciseOnceFactory = require 'GoMission__exerciseOnce'
 local campaignOnceFactory = require 'GoMission__campaignOnce'
 
+-- 运行时的变量，全局共享
+local stateTree = require 'GoMission__stateTree'
+-- 保存整个GoMission共享的参数
+local allOptions = require 'GoMission__options'
 
 local c = coroutine
 
 
 
 
--- 保存整个GoMission共享的参数
-local allOptions = {
-  map = nil,
-  settings = nil,
-}
 
--- 运行时的变量，也是共享的
-local stateTree = {}
 
 -- 将分散在各个文件的任务集合到一起
 local missions = {
-  home = homeFactory(allOptions, stateTree),
-  network = networkFactory(allOptions, stateTree),
-  pause = pauseFactory(allOptions, stateTree),
-  login = loginFactory(allOptions, stateTree),
-  battleOnce = battleOnceFactory(allOptions, stateTree),
-  mission = missionFactory(allOptions, stateTree),
-  expeditionReward = expeditionRewardFactory(allOptions, stateTree),
-  expeditionOnce = expeditionOnceFactory(allOptions, stateTree),
-  repairOnce = repairOnceFactory(allOptions, stateTree),
-  exerciseOnce = exerciseOnceFactory(allOptions, stateTree),
-  campaignOnce = campaignOnceFactory(allOptions, stateTree),
+  home = homeFactory(stateTree),
+  network = networkFactory(stateTree),
+  pause = pauseFactory(stateTree),
+  login = loginFactory(stateTree),
+  battleOnce = battleOnceFactory(stateTree),
+  mission = missionFactory(stateTree),
+  expeditionReward = expeditionRewardFactory(stateTree),
+  expeditionOnce = expeditionOnceFactory(stateTree),
+  repairOnce = repairOnceFactory(stateTree),
+  exerciseOnce = exerciseOnceFactory(stateTree),
+  campaignOnce = campaignOnceFactory(stateTree),
 }
 
 return {

@@ -4,8 +4,8 @@ local stepLabel = require 'StepLabel'
 local makeAction = (require 'GoMission__utils').makeAction
 local sleepPromise = (require 'GoMission__utils').sleepPromise
 local setScreenListeners = (require 'GoMission__utils').setScreenListeners
+local allOptions = require 'GoMission__options'
 
-local allOptions
 
 local login = function(action, state)
   local map = allOptions.map
@@ -37,7 +37,6 @@ local login = function(action, state)
   end))
 end
 
-return function(theAllOptions)
-  allOptions = theAllOptions
+return function()
   return login
 end

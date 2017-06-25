@@ -3,8 +3,8 @@ local c = coroutine
 local stepLabel = require 'StepLabel'
 local makeAction = (require 'GoMission__utils').makeAction
 local sleepPromise = (require 'GoMission__utils').sleepPromise
+local allOptions = require 'GoMission__options'
 
-local allOptions
 
 local network = function(action, state)
   local map = allOptions.map
@@ -48,9 +48,7 @@ local network = function(action, state)
   end))
 end
 
-return function(theAllOptions, state)
-  allOptions = theAllOptions
+return function(state)
   state.network = {}
-
   return network
 end

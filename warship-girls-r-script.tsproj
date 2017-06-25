@@ -3,6 +3,8 @@ build_test.bat
 build.bat
 [lib]
 [file]
+GoMission__stateTree.lua
+GoMission__options.lua
 GoMission__utils.lua
 GoMission__repairOnce.lua
 GoMission__pause.lua

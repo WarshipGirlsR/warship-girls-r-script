@@ -1,9 +1,4 @@
-local eq = require 'EventQuery'
-local co = require 'Co'
-local Promise = require 'Promise'
-local c = coroutine
-
-local allOptions
+local allOptions = require 'GoMission__options'
 
 local getComListener = function()
   local map = allOptions.map
@@ -39,12 +34,8 @@ local getLoginListener = function()
   }
 end
 
-return function(theAllOptions)
-  allOptions = theAllOptions
-
-  return {
-    getComListener = getComListener,
-    getHomeListener = getHomeListener,
-    getLoginListener = getLoginListener,
-  }
-end
+return {
+  getComListener = getComListener,
+  getHomeListener = getHomeListener,
+  getLoginListener = getLoginListener,
+}
