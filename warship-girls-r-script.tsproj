@@ -32,7 +32,6 @@ CheckColor.lua
 warship-girls-r-script.min.lua
 TableLib.lua
 GetColor.lua
-TSLib.lua
 Co.lua
 Promise.lua
 EventQuery.lua

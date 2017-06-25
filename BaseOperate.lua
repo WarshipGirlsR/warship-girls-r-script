@@ -6,6 +6,7 @@ local mission = require 'BaseOperate__mission'
 local expedition = require 'BaseOperate__expedition'
 local repair = require 'BaseOperate__repair'
 local exercise = require 'BaseOperate__exercise'
+local campaign = require 'BaseOperate__campaign'
 
 
 -- 原子操作列表
