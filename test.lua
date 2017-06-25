@@ -162,4 +162,17 @@ function case6()
   console.log(mapMaker().battle.isEnemyShipIsSS())
 end
 
-case6()
+function case7()
+  require 'TableLib'
+  require 'console'
+  require 'TSLib'
+  local t = {}
+  function change(t)
+    t.a = 1
+  end
+
+  change(t)
+  console.log(t)
+end
+
+case7()

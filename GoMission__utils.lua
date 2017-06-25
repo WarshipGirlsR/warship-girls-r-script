@@ -82,9 +82,15 @@ local setScreenListeners = function(theArr, ...)
   end))
 end
 
+local makeAction = function(action)
+  if (type(action) == 'table') then return action end
+  return { type = action }
+end
+
 return {
   combineListener = combineListener,
   sleepPromise = sleepPromise,
   setScreenListenerPromise = setScreenListenerPromise,
   setScreenListeners = setScreenListeners,
+  makeAction = makeAction,
 }

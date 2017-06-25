@@ -17,24 +17,19 @@ initLog('warship-girls-r-script', 1)
 require 'TableLib'
 require 'console'
 require 'KeepScreenHock'
-require 'TSLib'
 require 'DeviceOrientHock'
 local eq = require 'EventQuery'
 local co = require 'Co'
 local Promise = require 'Promise'
-Promise.setStackTraceback(false)
 local sz = require 'sz'
 local json = sz.json
 local socket = require 'szocket.core'
 local mapMaker = require 'BaseOperate'
 local gomission = require 'GoMission'
 local stepLabel = (require 'StepLabel').init('stopbtn')
-require 'KeepScreenHock'
-require 'TSLib'
-require 'DeviceOrientHock'
 
 
-
+Promise.setStackTraceback(false)
 
 
 local width, height = getScreenSize()
@@ -1125,7 +1120,7 @@ eq.setButotnListener('stopbtn', function()
   end
 end)
 
-gomission.init(mapMaker(), stepLabel, settings)
+gomission.init(mapMaker(), settings)
 
 local theMissionsQuery = {}
 

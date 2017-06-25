@@ -248,7 +248,7 @@ end
 
 -- 寻找一个不在舰队里的船。
 -- 先找到所有船的位置，再找到所有在舰队里船的位置，将两个数组相差
-map.repair.findFirstShipNotInFleet = function()
+repair.findFirstShipNotInFleet = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
 
@@ -302,18 +302,18 @@ map.repair.findFirstShipNotInFleet = function()
 end
 
 -- 点击第一艘船
-map.repair.clickFirstShip = function()
+repair.clickFirstShip = function()
   tap(151, 432, 100)
   return true
 end
 
 -- 点击一搜船
-map.repair.clickAShip = function(point)
+repair.clickAShip = function(point)
   tap(point[1], point[2], 100)
 end
 
 -- 滑动到下一页
-map.repair.moveToNextPage = function()
+repair.moveToNextPage = function()
   local point = {
     { 1477, 824, 0x3a516b },
     { 265, 814, 0xcecabd },
@@ -322,12 +322,12 @@ map.repair.moveToNextPage = function()
 end
 
 -- 点击返回港口
-map.repair.clickSelectShipPageBackBtn = function()
+repair.clickSelectShipPageBackBtn = function()
   tap(1819, 974, 100)
 end
 
 -- 点击返回港口
-map.repair.clickBackToHomeBtn = function()
+repair.clickBackToHomeBtn = function()
   tap(100, 1015, 100)
   return true
 end
