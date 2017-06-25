@@ -469,12 +469,13 @@ battle.isBattleStartPageCanRoundabout = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 1525, 897, 0x4acef7 },
-    { 1753, 892, 0x42cef7 },
-    { 1749, 946, 0x008ebd },
-    { 1525, 944, 0x0092bd },
-    { 1613, 916, 0xffffff },
-    { 1677, 920, 0xffffff },
+    { 1169, 895, 0x4acef7 },
+    { 1223, 890, 0x42cef7 },
+    { 1317, 890, 0x42ceef },
+    { 1326, 943, 0x0092bd },
+    { 1231, 916, 0xffffff },
+    { 1201, 928, 0xffffff },
+    { 1184, 948, 0x008ec5 },
   }
   local result = multiColor(list)
   if (not __keepScreenState) then keepScreen(false) end
@@ -484,7 +485,7 @@ end
 
 -- 点击战术迂回
 battle.clickBattleStartModalRoundaboutBtn = function()
-  tap(1643, 920, 100)
+  tap(1251, 918, 100)
 end
 
 -- 检测敌方队伍有没有航母
@@ -545,13 +546,12 @@ end
 
 -- 点击开始战斗
 battle.clickBattleStartModalStartBtn = function()
-  tap(1327, 919, 100)
+  tap(1421, 919, 100)
 end
 
--- 战斗中自动点击，加速战斗
-battle.autoClickWhenBattle = function()
-  tap(668, 842, 100)
-  return false
+-- 点击返回港口
+battle.clickBattleStartModalBackToHomeBtn = function()
+  tap(1650, 918, 100)
 end
 
 -- 等待阵型界面

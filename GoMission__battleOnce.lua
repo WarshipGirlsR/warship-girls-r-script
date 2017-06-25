@@ -371,7 +371,7 @@ local battleOnce = function(action, state)
 
     elseif (action.type == 'BATTLE_BATTLE_START_PAGE') then
 
-      -- 6-1第一战，遇到2航母，SL大法
+      -- 6-1第一战，遇到2航母，返回港口
       state.battle.passBattleStartPage = true
       if (settings.battleRebootAt6_1AMeetCV) then
         stepLabel.setStepLabelContent('2-48.开始检测航母')
@@ -379,32 +379,32 @@ local battleOnce = function(action, state)
           if (state.battle.battleNum == 1) then
             c.yield(sleepPromise(500))
             if (map.battle.isEnemyShipIsCV()) then
-              stepLabel.setStepLabelContent('2-49.遇到航母，SL大法')
-              return makeAction({ type = 'LOGIN_START_APP' }), state
+              stepLabel.setStepLabelContent('2-49.遇到航母，返回港口')
+              return makeAction({ type = 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME' }), state
             end
           end
         end
       end
-      -- 6-1第一战，遇到2雷巡，SL大法
+      -- 6-1第一战，遇到2雷巡，返回港口
       if (settings.battleRebootAt6_1AMeetCit) then
         stepLabel.setStepLabelContent('2-48.开始检测雷巡')
         if (state.battle.battleChapter == '6-1') then
           if (state.battle.battleNum == 1) then
             c.yield(sleepPromise(500))
             if (map.battle.isEnemyShipIsCit()) then
-              stepLabel.setStepLabelContent('2-49.遇到雷巡，SL大法')
-              return makeAction({ type = 'LOGIN_START_APP' }), state
+              stepLabel.setStepLabelContent('2-49.遇到雷巡，返回港口')
+              return makeAction({ type = 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME' }), state
             end
           end
         end
       end
-      -- 所有关卡，遇到补给船就继续，没遇到就SL大法
+      -- 所有关卡，遇到补给船就继续，没遇到就返回港口
       if (settings.battleRebootAtNotMeetAP) then
         stepLabel.setStepLabelContent('2-48.开始检测补给')
         c.yield(sleepPromise(500))
         if (not map.battle.isEnemyShipIsAP()) then
-          stepLabel.setStepLabelContent('2-49.没遇到补给，SL大法')
-          return makeAction({ type = 'LOGIN_START_APP' }), state
+          stepLabel.setStepLabelContent('2-49.没遇到补给，返回港口')
+          return makeAction({ type = 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME' }), state
         end
       end
 
@@ -610,6 +610,17 @@ local battleOnce = function(action, state)
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+        { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattlePage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME') then
+
+      map.battle.clickBattleStartModalBackToHomeBtn()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+        { 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleStartPage },
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattlePage },

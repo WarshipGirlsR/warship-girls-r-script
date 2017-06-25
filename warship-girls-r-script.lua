@@ -163,19 +163,6 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = '决战无畏之海',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityEnable',
-        ['type'] = 'RadioGroup',
-        ['list'] = '开启,关闭',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
         ['text'] = '每一轮的间隔时间(秒)',
         ['size'] = 15,
         ['align'] = 'left',
@@ -692,140 +679,6 @@ local settingTable = {
         ['select'] = '1',
       },
     },
-
-    {
-      {
-        ['type'] = 'Label',
-        ['text'] = '决战无畏之海',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '章节',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityChapter',
-        ['type'] = 'CheckBoxGroup',
-        ['list'] = '1,2,3,3.5,4',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '舰队',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityFleet',
-        ['type'] = 'RadioGroup',
-        ['list'] = '1队,2队,3队,4队',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '追击',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityPursue',
-        ['type'] = 'RadioGroup',
-        ['list'] = '是,否',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '追击Boss',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityPursueBoss',
-        ['type'] = 'RadioGroup',
-        ['list'] = '是,否',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '使用快修',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityQuickRepair',
-        ['type'] = 'RadioGroup',
-        ['list'] = '不满血,中破,大破,不使用',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '迂回',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityRoundabout',
-        ['type'] = 'RadioGroup',
-        ['list'] = '是,否',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '不能出征则震动提示',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityAlertWhenNoHp',
-        ['type'] = 'RadioGroup',
-        ['list'] = '是,否',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '最多几战',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityMaxBattleNum',
-        ['type'] = 'RadioGroup',
-        ['list'] = '1,2,3,4,5',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '阵型',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'activityFormation',
-        ['type'] = 'RadioGroup',
-        ['list'] = '单纵,复纵,轮型,梯形,单横',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-        ['size'] = 50,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-    },
   }
 }
 
@@ -884,11 +737,6 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[campaignEnable] or false
   end)(settings.campaignEnable)
-  -- 决战无畏之海
-  settings.activityEnable = (function(activityEnable)
-    local list = transStrToTable({ true, false, })
-    return list[activityEnable] or false
-  end)(settings.activityEnable)
   -- 总循环间隔时间
   settings.missionsInterval = tonumber(settings.missionsInterval) or 0
   -- 多长时间界面不变则重启，最少60秒
@@ -1063,48 +911,6 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[repairAll] or false
   end)(settings.repairAll)
-  -- 决战无畏之海
-  -- 章节
-  settings.activityChapter = (function(activityChapter)
-    local list = transStrToTable({ 1, 2, 3, 3.5, 4 })
-    return list[activityChapter] or 1
-  end)(settings.activityChapter)
-  -- 选择舰队
-  settings.activityFleet = (function(activityFleet)
-    local list = transStrToTable({ 1, 2, 3, 4, })
-    return list[activityFleet] or 1
-  end)(settings.activityFleet)
-  -- 是否追击Boss
-  settings.activityPursueBoss = (function(activityPursueBoss)
-    local list = transStrToTable({ true, false, })
-    return list[activityPursueBoss] or false
-  end)(settings.activityPursueBoss)
-  -- 是否使用快速修理
-  settings.activityQuickRepair = (function(activityQuickRepair)
-    -- '不满血,中破,大破,不使用'
-    local list = transStrToTable({ 3, 2, 1, 0 })
-    return list[activityQuickRepair] or 2
-  end)(settings.activityQuickRepair)
-  -- 迂回战术
-  settings.activityRoundabout = (function(activityRoundabout)
-    local list = transStrToTable({ true, false, })
-    return list[activityRoundabout] or false
-  end)(settings.activityRoundabout)
-  -- 当无法出征时是否跳过出征
-  settings.activityAlertWhenNoHp = (function(activityAlertWhenNoHp)
-    local list = transStrToTable({ true, false, })
-    return list[activityAlertWhenNoHp] or false
-  end)(settings.activityAlertWhenNoHp)
-  -- 出征最大战斗次数
-  settings.activityMaxBattleNum = (function(activityMaxBattleNum)
-    local list = transStrToTable({ 1, 2, 3, 4, 5 })
-    return list[activityMaxBattleNum] or 1
-  end)(settings.activityMaxBattleNum)
-  -- 阵型
-  settings.activityFormation = (function(activityFormation)
-    local list = transStrToTable({ 1, 2, 3, 4, 5 })
-    return list[activityFormation] or 2
-  end)(settings.activityFormation)
 end)(settings)
 
 -- --转换settings结果
@@ -1130,8 +936,7 @@ co(c.create(function()
     or settings.battleEnable
     or settings.repairEnable
     or settings.exerciseEnable
-    or settings.campaignEnable
-    or settings.activityEnable) then
+    or settings.campaignEnable) then
 
     -- 插入一个特殊的任务表示这是队列的开头
     table.insert(theMissionsQuery, { isBase = true, isStart = true })
@@ -1155,10 +960,6 @@ co(c.create(function()
     -- 是否运行战役
     if (settings.campaignEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'CAMPAIGN_START' })
-    end
-    -- 是否运行决战无畏之海
-    if (settings.activityEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'ACTIVITY_START' })
     end
     -- 是否运行修理
     if (settings.repairEnable) then
