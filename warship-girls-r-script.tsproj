@@ -3,6 +3,8 @@ build_test.bat
 build.bat
 [lib]
 [file]
+StringLib.lua
+lfs.lua
 GoMission__stateTree.lua
 GoMission__options.lua
 GoMission__utils.lua

@@ -164,15 +164,47 @@ end
 
 function case7()
   require 'TableLib'
+  require 'StringLib'
   require 'console'
-  require 'TSLib'
-  local t = {}
-  function change(t)
-    t.a = 1
-  end
 
-  change(t)
-  console.log(t)
+  local lfs = require 'lfs'
+  local logPath = userPath() .. '/log'
+  local dirs = lfs.dir(logPath)
+  console.log(dirs)
+
+  local sevenDayBeforeTime = os.time() - (7 * 24 * 60 * 60)
+  local theTime = os.time()
+
+  local dirsLen = #dirs
+
+  dirs = table.filter(dirs, function(e, index)
+    if (string.startWith(e, 'warship-girls-r-script_')) then
+      local res = string.match(e, 'warship%-girls%-r%-script_(%d+)')
+      res = tonumber(res) or theTime
+      if ((index < (dirsLen - 50)) and (res < sevenDayBeforeTime)) then
+        return true
+      end
+    end
+    return false
+  end)
+
+  for k, v in ipairs(dirs) do
+    lfs.rm(logPath .. '/' .. v)
+  end
+  local dirs = lfs.dir(logPath)
+  console.log(dirs)
+end
+
+function case8()
+  require 'TableLib'
+  require 'StringLib'
+  require 'console'
+  console.log(string)
+  local res, num = string.match('warship-girls-r-script_1495353138.log', 'warship%-girls%-r%-script_(%d+)')
+
+  console.log(res)
+  console.log(table.from(res))
+  console.log(num)
 end
 
 case7()

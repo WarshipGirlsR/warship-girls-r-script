@@ -15,6 +15,7 @@ end
 initLog('warship-girls-r-script', 1)
 
 require 'TableLib'
+require 'StringLib'
 require 'console'
 require 'KeepScreenHock'
 require 'DeviceOrientHock'
@@ -27,9 +28,35 @@ local socket = require 'szocket.core'
 local mapMaker = require 'BaseOperate'
 local gomission = require 'GoMission'
 local stepLabel = (require 'StepLabel').init('stopbtn')
-
+local lfs = require 'lfs'
 
 Promise.setStackTraceback(false)
+
+-- 删除大于7天并且大于50条的log，避免日志过大
+local _ = (function()
+  local logPath = userPath() .. '/log'
+  local dirs = lfs.dir(logPath)
+  local sevenDayBeforeTime = os.time() - (7 * 24 * 60 * 60)
+  local theTime = os.time()
+
+  local dirsLen = #dirs
+
+  dirs = table.filter(dirs, function(e, index)
+    if (string.startWith(e, 'warship-girls-r-script_')) then
+      local res = string.match(e, 'warship%-girls%-r%-script_(%d+)')
+      res = tonumber(res) or theTime
+      if ((index < (dirsLen - 50)) and (res < sevenDayBeforeTime)) then
+        return true
+      end
+    end
+    return false
+  end)
+
+  for k, v in ipairs(dirs) do
+    lfs.rm(logPath .. '/' .. v)
+  end
+end)()
+
 
 
 local width, height = getScreenSize()
@@ -932,11 +959,11 @@ local theMissionsQuery = {}
 
 co(c.create(function()
   if (settings.missionEnable
-    or settings.expeditionEnable
-    or settings.battleEnable
-    or settings.repairEnable
-    or settings.exerciseEnable
-    or settings.campaignEnable) then
+      or settings.expeditionEnable
+      or settings.battleEnable
+      or settings.repairEnable
+      or settings.exerciseEnable
+      or settings.campaignEnable) then
 
     -- 插入一个特殊的任务表示这是队列的开头
     table.insert(theMissionsQuery, { isBase = true, isStart = true })
