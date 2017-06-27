@@ -52,7 +52,7 @@ local mission = function(action, state)
     elseif (action.type == 'MISSION_PAGE') then
 
       stepLabel.setStepLabelContent('3-6.点击全部任务')
-      map.missionClickAllMission()
+      map.mission.clickAllMission()
       stepLabel.setStepLabelContent('3-7.等待任务全部任务界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {

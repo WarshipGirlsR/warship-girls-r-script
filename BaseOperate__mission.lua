@@ -48,7 +48,7 @@ mission.isMission = function()
 end
 
 -- 点击全部任务按钮
-missionClickAllMission = function()
+mission.clickAllMission = function()
   tap(785, 1016, 100)
 end
 
