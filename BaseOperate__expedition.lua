@@ -87,12 +87,12 @@ expedition.moveToChapter = function(n, m)
     -- 先移动到第1章
     for i = 1, 7 do
       tap(358, 962, 100)
-      mSleep(200)
+      mSleep(300)
     end
     -- 再移动到第n章
     for i = 2, n do
       tap(1835, 963, 100)
-      mSleep(200)
+      mSleep(300)
     end
   else
     m = tonumber(m) or 1
@@ -102,13 +102,13 @@ expedition.moveToChapter = function(n, m)
       -- 右移
       for i = 1, diff do
         tap(1835, 963, 100)
-        mSleep(200)
+        mSleep(300)
       end
     elseif (diff < 0) then
       -- 左移
       for i = 1, (0 - diff) do
         tap(358, 962, 100)
-        mSleep(200)
+        mSleep(300)
       end
     end
   end

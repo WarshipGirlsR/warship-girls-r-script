@@ -74,22 +74,22 @@ battle.moveToChapter = function(chapter)
   -- 先移到第一章
   for i = 1, 8 do
     tap(360, 958, 100)
-    mSleep(200)
+    mSleep(300)
   end
   -- 再移到第m章
   for i = 2, m do
     tap(1827, 961, 100)
-    mSleep(200)
+    mSleep(300)
   end
   -- 先移到第一节
   for i = 1, 8 do
     tap(256, 493, 100)
-    mSleep(200)
+    mSleep(300)
   end
   -- 再移到第n章
   for i = 2, n do
     tap(1889, 485, 100)
-    mSleep(200)
+    mSleep(300)
   end
   return true
 end
