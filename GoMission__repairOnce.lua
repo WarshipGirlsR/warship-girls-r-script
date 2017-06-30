@@ -199,6 +199,8 @@ local repairOnce = function(action, state)
 end
 
 return function(state)
-  state.repair = {}
+  state.repair = {
+    needRepair = true,
+  }
   return repairOnce
 end

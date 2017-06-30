@@ -29,9 +29,9 @@ local expeditionOnce = function(action, state)
       end
 
       if ((not settings.expeditionFleetToChapter[1])
-        and (not settings.expeditionFleetToChapter[2])
-        and (not settings.expeditionFleetToChapter[3])
-        and (not settings.expeditionFleetToChapter[4])) then
+          and (not settings.expeditionFleetToChapter[2])
+          and (not settings.expeditionFleetToChapter[3])
+          and (not settings.expeditionFleetToChapter[4])) then
         stepLabel.setStepLabelContent('4-18.没有远征任务！返回港口')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
         return makeAction(newstateTypes), state
@@ -430,6 +430,8 @@ local expeditionOnce = function(action, state)
 end
 
 return function(state)
-  state.expedition = {}
+  state.expedition = {
+    needExpedition = true,
+  }
   return expeditionOnce
 end
