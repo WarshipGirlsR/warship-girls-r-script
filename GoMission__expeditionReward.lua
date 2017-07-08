@@ -29,6 +29,9 @@ local expeditionReward = function(action, state)
       -- 远征章节
       state.expeditionReward.enableChapter = { 1, 2, 3, 4, 5, 6, 7 }
 
+      -- 此任务使用的变量恢复默认值
+      state.expedition.lastChapter = nil
+
       return makeAction('EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED'), state
 
     elseif (action.type == 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED') then

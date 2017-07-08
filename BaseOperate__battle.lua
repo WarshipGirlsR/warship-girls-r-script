@@ -71,10 +71,26 @@ battle.moveToChapter = function(chapter)
   local chapterArr = strSplit(chapter, "-")
   local m = tonumber(chapterArr[1]) or 1
   local n = tonumber(chapterArr[2]) or 1
+
+  local oneChapter = {
+    { 549, 91, 0x105184 }, { 562, 79, 0xeff3f7 },
+    { 561, 114, 0xffffff }, { 549, 112, 0x94a6a4 },
+    { 553, 104, 0x10517b }, { 570, 107, 0x104d7b },
+    { 572, 84, 0x105584 },
+  }
+  local leftSissionButton = {
+    { 246, 463, 0x3a92a4 }, { 249, 510, 0x218a9c },
+    { 250, 489, 0x21dbd6 }, { 272, 488, 0x29fbf7 },
+    { 281, 488, 0x217594 },
+  }
+
   -- 先移到第一章
   for i = 1, 8 do
     tap(360, 958, 100)
     mSleep(300)
+    if multiColor(oneChapter) then
+      break
+    end
   end
   -- 再移到第m章
   for i = 2, m do
@@ -85,6 +101,9 @@ battle.moveToChapter = function(chapter)
   for i = 1, 8 do
     tap(256, 493, 100)
     mSleep(300)
+    if not multiColor(leftSissionButton) then
+      break
+    end
   end
   -- 再移到第n章
   for i = 2, n do

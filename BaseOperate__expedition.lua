@@ -83,11 +83,22 @@ end
 -- 从第m章移动到第n章
 expedition.moveToChapter = function(n, m)
   n = tonumber(n) or 1
+  local oneChapter = {
+    { 523, 848, 0xffffff }, { 568, 848, 0xffffe6 },
+    { 534, 890, 0xffffff }, { 528, 930, 0xffffff },
+    { 540, 948, 0xef7131 }, { 613, 961, 0x5ae7ad },
+    { 680, 973, 0x52e3a4 }, { 753, 1005, 0xced7de },
+    { 791, 1004, 0xeff3ef }, { 735, 960, 0x8cceef },
+  }
+
   if (type(m) == "nil") then
     -- 先移动到第1章
     for i = 1, 7 do
       tap(358, 962, 100)
       mSleep(300)
+      if not multiColor(oneChapter) then
+        break
+      end
     end
     -- 再移动到第n章
     for i = 2, n do
