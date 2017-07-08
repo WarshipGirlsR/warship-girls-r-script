@@ -7,16 +7,13 @@ keepScreen(true)
 local sideLength = 1080
 
 local list = {
-  { 77, 125, 0x105d9c },
-  { 51, 237, 0xd6cec5 },
-  { 50, 842, 0xd6cac5 },
-  { 1631, 823, 0xc5baa4 },
-  { 1647, 243, 0xd6cec5 },
-  { 517, 703, 0xd6cec5 },
-  { 1837, 445, 0xdeaa3a },
-  { 1828, 648, 0xd6a631 },
-  { 1220, 86, 0xcecace },
-  { 1647, 136, 0xcecace },
+  { 505, 275, 0xcecece }, { 636, 260, 0xffffff }, { 658, 260, 0xffffff }, { 682, 262, 0xffffff },
+  { 717, 258, 0xffffff }, { 755, 266, 0xffffff }, { 1035, 271, 0x105d94 }, { 524, 349, 0xcecabd },
+  { 1390, 356, 0xd6cabd }, { 1390, 608, 0xd6cabd }, { 522, 671, 0xbdb69c }, { 1398, 772, 0xc5b69c },
+  { 668, 731, 0x0096c5 }, { 1094, 730, 0xad1400 }, { 573, 435, 0xffffff }, { 636, 446, 0xffffff },
+  { 825, 459, 0xffffff }, { 1053, 435, 0xffffff }, { 1254, 440, 0xffffff }, { 1331, 443, 0xffffff },
+  { 836, 513, 0xffffff }, { 923, 509, 0xffffff }, { 1091, 503, 0xffffff }, { 555, 444, 0xcecabd },
+  { 1292, 445, 0xcecabd }, { 1117, 516, 0xd6cabd }, { 781, 509, 0xd6cec5 },
 }
 
 local resultStr = ''
