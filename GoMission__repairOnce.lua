@@ -189,6 +189,7 @@ local repairOnce = function(action, state)
       map.repair.clickBackToHomeBtn()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', 'missionsGroup', map.repair.isSelectShipPage, 3000 },
         { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 2000 },
       }))
       return makeAction(newstateTypes), state
