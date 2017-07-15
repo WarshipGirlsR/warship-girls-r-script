@@ -19,8 +19,8 @@ local exerciseOnce = function(action, state)
     if (action.type == 'EXERCISE_START') then
 
       -- 没有到检查演习的时间
-      if state.exercise.nextStartTime < os.time() then
-        stepLabel.setStepLabelContent('6-1.跳过演习，下次检查时间：' .. os.date("%H:%M:%S", state.exercise.nextStartTime))
+      if state.exercise.nextStartTime > os.time() then
+        stepLabel.setStepLabelContent('6-1.跳过演习，下次检查时间：' .. os.date("%Y-%m-%d %H:%M:%S", state.exercise.nextStartTime))
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
         return makeAction(newstateTypes), state
       end
