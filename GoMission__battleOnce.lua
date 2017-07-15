@@ -165,7 +165,7 @@ local battleOnce = function(action, state)
       state.battle.quickSupplyCount = state.battle.quickSupplyCount + 1
       if (state.battle.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
+          { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage, 1000 },
           { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.isQuickSupplyModal, 2000 },
         }))
         return makeAction(newstateTypes), state
@@ -197,7 +197,7 @@ local battleOnce = function(action, state)
         stepLabel.setStepLabelContent('2-28.等待出征准备界面')
         if (state.battle.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
+            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage, 1000 },
             { 'BATTLE_QUICK_REPAIR_MODAL', 'missionsGroup', map.battle.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
@@ -297,7 +297,7 @@ local battleOnce = function(action, state)
       stepLabel.setStepLabelContent('2-39.等待出征准备界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickRepairModal, 2000 },
-        { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
+        { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage, 1000 },
       }))
       return makeAction(newstateTypes), state
 

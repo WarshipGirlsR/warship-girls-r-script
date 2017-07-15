@@ -243,19 +243,6 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = '收获和派遣是否连着',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionTogether',
-        ['type'] = 'RadioGroup',
-        ['list'] = '是,否',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
         ['text'] = '使用快修',
         ['size'] = 15,
         ['align'] = 'left',
@@ -289,7 +276,7 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = '1队',
+        ['text'] = '5队',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
@@ -302,7 +289,7 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = '2队',
+        ['text'] = '6队',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
@@ -315,7 +302,7 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = '3队',
+        ['text'] = '7队',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
@@ -328,7 +315,7 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = '4队',
+        ['text'] = '8队',
         ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
@@ -587,6 +574,20 @@ local settingTable = {
         ['align'] = 'left',
         ['color'] = '0,0,0',
       },
+      {
+        ['id'] = 'exerciseInterval',
+        ['type'] = 'Edit',
+        ['prompt'] = '每次演习间隔多长时间',
+        ['text'] = '900',
+        ['kbtype'] = 'number',
+      },
+      {
+        ['type'] = 'Label',
+        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+        ['size'] = 50,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
     },
 
     {
@@ -770,11 +771,6 @@ local __tmp = (function(settings)
   settings.restartInterval = tonumber(settings.restartInterval) or 120
   settings.restartInterval = math.max(settings.restartInterval, 60)
 
-  -- 远征收获和派遣是否连续（否则先收获，再出征，再派遣），为了可以在远征的间隙出征一次
-  settings.expeditionTogether = (function(expeditionTogether)
-    local list = transStrToTable({ true, false, })
-    return list[expeditionTogether] or false
-  end)(settings.expeditionTogether)
   -- 选择远征要参加的章节
   settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 = (function(fleet1, fleet2, fleet3, fleet4)
     local list = transStrToTable({
@@ -899,6 +895,9 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })
     return list[exerciseFormation] or 2
   end)(settings.exerciseFormation)
+  -- 间隔时间，最小0秒
+  settings.exerciseInterval = tonumber(settings.exerciseInterval) or 0
+  settings.exerciseInterval = math.max(0, settings.exerciseInterval)
 
   -- 战役
   -- 选择关卡
@@ -959,11 +958,11 @@ local theMissionsQuery = {}
 
 co(c.create(function()
   if (settings.missionEnable
-      or settings.expeditionEnable
-      or settings.battleEnable
-      or settings.repairEnable
-      or settings.exerciseEnable
-      or settings.campaignEnable) then
+    or settings.expeditionEnable
+    or settings.battleEnable
+    or settings.repairEnable
+    or settings.exerciseEnable
+    or settings.campaignEnable) then
 
     -- 插入一个特殊的任务表示这是队列的开头
     table.insert(theMissionsQuery, { isBase = true, isStart = true })

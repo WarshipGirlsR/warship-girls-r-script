@@ -41,7 +41,9 @@ local expeditionReward = function(action, state)
       local res = map.expedition.isExpeditionCompleted()
       if (not res) then
         stepLabel.setStepLabelContent('4-4.没有远征奖励和任务')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+          { 'HOME_HOME', 'homeGroup', map.home.isHome },
+        }))
         return makeAction(newstateTypes), state
       end
       stepLabel.setStepLabelContent('4-5.点击出征')
