@@ -272,11 +272,14 @@ battle.isQuickSupplyModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 1817, 483, 0x423510 },
-    { 1292, 224, 0xd6cac5 },
-    { 315, 835, 0xd6cec5 },
-    { 842, 189, 0x004d84 },
-    { 1785, 541, 0x423510 },
+    { 264, 173, 0x0079bd }, { 1012, 214, 0x08619c },
+    { 1412, 226, 0xd6cabd }, { 1439, 842, 0xc5b69c },
+    { 285, 835, 0xd6cec5 }, { 1144, 764, 0x42ceef },
+    { 1398, 806, 0x0096c5 }, { 1258, 779, 0xffffff },
+    { 477, 187, 0x08518c }, { 555, 200, 0x10598c },
+    { 514, 201, 0x08598c }, { 516, 170, 0x005d9c },
+    { 554, 184, 0xffffff }, { 547, 209, 0xffffff },
+    { 505, 205, 0xfffbff },
   }
   local result = multiColor(list)
   if (not __keepScreenState) then keepScreen(false) end
@@ -298,11 +301,14 @@ battle.isQuickRepairModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 1817, 483, 0x423510 },
-    { 1292, 224, 0xd6cac5 },
-    { 315, 835, 0xd6cec5 },
-    { 842, 189, 0x004d84 },
-    { 1785, 541, 0x423510 },
+    { 254, 168, 0x008ace }, { 1023, 207, 0x1061a4 },
+    { 1417, 228, 0xd6cabd }, { 1443, 841, 0xc5baa4 },
+    { 268, 841, 0xcecabd }, { 1402, 761, 0x42caef },
+    { 1142, 806, 0x0096c5 }, { 1189, 793, 0xffffff },
+    { 481, 181, 0xffffff }, { 523, 196, 0x08558c },
+    { 532, 186, 0xffffff }, { 555, 179, 0xffffff },
+    { 554, 208, 0xffffff }, { 576, 192, 0x19619c },
+    { 521, 196, 0x08558c }, { 491, 202, 0xf7f7f7 },
   }
   local result = multiColor(list)
   if (not __keepScreenState) then keepScreen(false) end

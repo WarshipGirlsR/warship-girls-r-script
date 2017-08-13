@@ -17,20 +17,31 @@ local login = function(action, state)
       stepLabel.setStepLabelContent('1-11.启动游戏')
       map.login.restartApp()
       local newstateTypes = c.yield(setScreenListeners({
+        { 'LOGIN_LOGIN', 'missionsGroup', map.login.isLoginPage, 2000 },
+        { 'LOGIN_SELECT_SERVER', 'missionsGroup', map.login.isSelectServerPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'LOGIN_LOGIN') then
+
+      stepLabel.setStepLabelContent('1-12.输入用户名界面')
+      map.login.restartApp()
+      local newstateTypes = c.yield(setScreenListeners({
+        { 'LOGIN_LOGIN', 'missionsGroup', map.login.isLoginPage, 2000 },
         { 'LOGIN_SELECT_SERVER', 'missionsGroup', map.login.isSelectServerPage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'LOGIN_SELECT_SERVER') then
 
-      stepLabel.setStepLabelContent('1-12.登录界面')
-      map.login.clickLoginBtn()
-      c.yield(sleepPromise(2000))
-      local res = map.login.isSelectServerPage()
-      if (res) then
-        return makeAction('LOGIN_SELECT_SERVER'), state
-      end
-      return nil, state
+      stepLabel.setStepLabelContent('1-13.登录界面')
+      map.login.clickLoginServerBtn()
+      local newstateTypes = c.yield(setScreenListeners({
+        { 'LOGIN_LOGIN', 'missionsGroup', map.login.isLoginPage, 2000 },
+        { 'LOGIN_SELECT_SERVER', 'missionsGroup', map.login.isSelectServerPage, 2000 },
+        { '', 'missionsGroup', function() return true end, 6000 },
+      }))
+      return makeAction(newstateTypes), state
     end
 
     return nil, state

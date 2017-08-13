@@ -1,4 +1,4 @@
-init(1)
+init(2)
 require 'console'
 mSleep(6000)
 
@@ -7,13 +7,10 @@ keepScreen(true)
 local sideLength = 1080
 
 local list = {
-  { 505, 275, 0xcecece }, { 636, 260, 0xffffff }, { 658, 260, 0xffffff }, { 682, 262, 0xffffff },
-  { 717, 258, 0xffffff }, { 755, 266, 0xffffff }, { 1035, 271, 0x105d94 }, { 524, 349, 0xcecabd },
-  { 1390, 356, 0xd6cabd }, { 1390, 608, 0xd6cabd }, { 522, 671, 0xbdb69c }, { 1398, 772, 0xc5b69c },
-  { 668, 731, 0x0096c5 }, { 1094, 730, 0xad1400 }, { 573, 435, 0xffffff }, { 636, 446, 0xffffff },
-  { 825, 459, 0xffffff }, { 1053, 435, 0xffffff }, { 1254, 440, 0xffffff }, { 1331, 443, 0xffffff },
-  { 836, 513, 0xffffff }, { 923, 509, 0xffffff }, { 1091, 503, 0xffffff }, { 555, 444, 0xcecabd },
-  { 1292, 445, 0xcecabd }, { 1117, 516, 0xd6cabd }, { 781, 509, 0xd6cec5 },
+  { 264, 173, 0x0079bd }, { 1012, 214, 0x08619c },
+  { 1412, 226, 0xd6cabd }, { 1439, 842, 0xc5b69c },
+  { 285, 835, 0xd6cec5 }, { 1144, 764, 0x42ceef },
+  { 1398, 806, 0x0096c5 }, { 1258, 779, 0xffffff },
 }
 
 local resultStr = ''

@@ -5,13 +5,14 @@ network.isNetworkFailureModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 505, 275, 0xcecece }, { 636, 260, 0xffffff }, { 658, 260, 0xffffff }, { 682, 262, 0xffffff },
-    { 717, 258, 0xffffff }, { 755, 266, 0xffffff }, { 1035, 271, 0x105d94 }, { 524, 349, 0xcecabd },
-    { 1390, 356, 0xd6cabd }, { 1390, 608, 0xd6cabd }, { 522, 671, 0xbdb69c }, { 1398, 772, 0xc5b69c },
-    { 668, 731, 0x0096c5 }, { 1094, 730, 0xad1400 }, { 573, 435, 0xffffff }, { 636, 446, 0xffffff },
-    { 825, 459, 0xffffff }, { 1053, 435, 0xffffff }, { 1254, 440, 0xffffff }, { 1331, 443, 0xffffff },
-    { 836, 513, 0xffffff }, { 923, 509, 0xffffff }, { 1091, 503, 0xffffff }, { 555, 444, 0xcecabd },
-    { 1292, 445, 0xcecabd }, { 1117, 516, 0xd6cabd }, { 781, 509, 0xd6cec5 },
+    { 518, 242, 0x088ece }, { 1105, 291, 0x0875bd }, { 1408, 293, 0xcecabd }, { 1401, 774, 0xbdb69c },
+    { 518, 777, 0xbdb69c }, { 828, 679, 0x42ceef }, { 1088, 733, 0xa41000 },
+
+    { 564, 451, 0xcecabd }, { 1356, 451, 0xcecabd },
+    { 804, 512, 0xd6cac5 }, { 1116, 512, 0xd6cac5 },
+    { 594, 447, 0xf7fbf7 }, { 743, 515, 0xd6cec5 },
+    { 1176, 513, 0xcecabd }, { 1203, 443, 0xffffff },
+    { 1022, 450, 0xd6cac5 }, { 844, 455, 0xcecabd },
   }
   local result = multiColor(list)
   if (not __keepScreenState) then keepScreen(false) end

@@ -1,8 +1,7 @@
 [res]
-build_test.bat
-build.bat
 [lib]
 [file]
+GetTime.lua
 StringLib.lua
 lfs.lua
 GoMission__stateTree.lua

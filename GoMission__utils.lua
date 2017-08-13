@@ -1,6 +1,7 @@
 local eq = require 'EventQuery'
 local co = require 'Co'
 local Promise = require 'Promise'
+local gettimeFunc = require 'GetTime'
 local c = coroutine
 
 local combineListener = function(target, ...)
@@ -37,13 +38,11 @@ local setScreenListenerPromise = function(actionType, tags, checker)
   end)
 end
 
-local setScreenListeners = function(theArr, ...)
+local setScreenListeners = function(theArr, endMs)
 
   if ((type(theArr) ~= 'table') or (#theArr == 0)) then
     return Promise.resolve(nil)
   end
-
-  theArr = table.merge(theArr, ...)
 
   local theArrUnique = table.uniqueLast(theArr, 3)
   for key, value in ipairs(theArrUnique) do
