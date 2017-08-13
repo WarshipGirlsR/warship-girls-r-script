@@ -38,11 +38,13 @@ local setScreenListenerPromise = function(actionType, tags, checker)
   end)
 end
 
-local setScreenListeners = function(theArr, endMs)
+local setScreenListeners = function(theArr, ...)
 
   if ((type(theArr) ~= 'table') or (#theArr == 0)) then
     return Promise.resolve(nil)
   end
+
+  theArr = table.merge(theArr, ...)
 
   local theArrUnique = table.uniqueLast(theArr, 3)
   for key, value in ipairs(theArrUnique) do
