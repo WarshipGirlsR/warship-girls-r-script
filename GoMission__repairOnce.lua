@@ -35,6 +35,7 @@ local repairOnce = function(action, state)
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'REPAIR_INIT') then
+
       state.repair.slot = nil
 
       stepLabel.setStepLabelContent('5-2.点击出征')
@@ -134,20 +135,27 @@ local repairOnce = function(action, state)
             state.repair.repairNum = state.repair.repairNum + 1
           else
             -- 没找到点，移动一次
-            stepLabel.setStepLabelContent('5-17.没找到，向左滑一次')
-            map.repair.moveToNextPage()
-            state.repair.moveCount = state.repair.moveCount - 1
+            stepLabel.setStepLabelContent('5-17.检测是否需要向左滑动')
+            local needMove = map.repair.isNeedMoveToNextPage();
+            if needMove then
+              stepLabel.setStepLabelContent('5-18.向左滑一次')
+              map.repair.moveToNextPage()
+              state.repair.moveCount = state.repair.moveCount - 1
 
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-              { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage },
-            }))
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
+                { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage },
+              }))
 
-            return makeAction(newstateTypes), state
+              return makeAction(newstateTypes), state
+            else
+              stepLabel.setStepLabelContent('5-19.不需要向左滑')
+              state.repair.moveCount = 0
+            end
           end
         end
 
-        stepLabel.setStepLabelContent('5-18.等待返回修理界面')
+        stepLabel.setStepLabelContent('5-20.等待返回修理界面')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
           { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
           { 'REPAIR_SELECT_SHIP_PAGE_RETURN', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
@@ -155,7 +163,7 @@ local repairOnce = function(action, state)
 
         if (newstateTypes == 'REPAIR_SELECT_SHIP_PAGE_RETURN') then
           state.repair.needRepair = false
-          stepLabel.setStepLabelContent('5-19.没有需要修理的船')
+          stepLabel.setStepLabelContent('5-21.没有需要修理的船')
         end
 
         return makeAction(newstateTypes), state
@@ -163,7 +171,7 @@ local repairOnce = function(action, state)
 
     elseif (action.type == 'REPAIR_RETURN_TO_REPAIR_PAGE') then
 
-      stepLabel.setStepLabelContent('5-20.等待第' .. state.repair.slot .. '个槽位变成修理状态')
+      stepLabel.setStepLabelContent('5-22.等待第' .. state.repair.slot .. '个槽位变成修理状态')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isSlotNotEmpty(state.repair.slot) },
@@ -174,7 +182,7 @@ local repairOnce = function(action, state)
 
     elseif (action.type == 'REPAIR_SELECT_SHIP_PAGE_RETURN') then
 
-      stepLabel.setStepLabelContent('5-21.没有可以修的船，返回维修页面')
+      stepLabel.setStepLabelContent('5-23.没有可以修的船，返回维修页面')
       map.repair.clickSelectShipPageBackBtn()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
@@ -185,7 +193,7 @@ local repairOnce = function(action, state)
 
     elseif (action.type == 'REPAIR_REPAIR_FINISH') then
 
-      stepLabel.setStepLabelContent('5-22.完成维修')
+      stepLabel.setStepLabelContent('5-24.完成维修')
       map.repair.clickBackToHomeBtn()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {

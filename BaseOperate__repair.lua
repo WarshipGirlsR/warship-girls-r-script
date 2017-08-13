@@ -321,6 +321,20 @@ repair.moveToNextPage = function()
   moveTo(point[1][1], point[1][2], point[2][1], point[2][2], 100)
 end
 
+-- 检测修理页面是否还需要滑动到下一页
+repair.isNeedMoveToNextPage = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local list = {
+    { 1557, 278, 0x4a6984 },
+    { 1544, 505, 0x426584 },
+    { 1542, 781, 0x3a516b },
+  }
+  local result = not multiColor(list)
+  if (not __keepScreenState) then keepScreen(false) end
+  return result
+end
+
 -- 点击返回港口
 repair.clickSelectShipPageBackBtn = function()
   tap(1819, 974, 100)
