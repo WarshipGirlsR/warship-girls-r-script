@@ -20,7 +20,7 @@ repair.isDockPage = function()
     { 250, 450, 0x5a718c },
     { 248, 756, 0x425d7b },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -50,7 +50,7 @@ repair.isRepairPage = function()
     { 1791, 97, 0x848184 },
     { 1874, 137, 0xc5cac5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -77,13 +77,13 @@ repair.hasEmptyRepairSlot = function()
   }
 
   mSleep(50)
-  local result1 = multiColor(list1)
+  local result1 = multiColorS(list1)
   mSleep(50)
-  local result2 = multiColor(list2)
+  local result2 = multiColorS(list2)
   mSleep(50)
-  local result3 = multiColor(list3)
+  local result3 = multiColorS(list3)
   mSleep(50)
-  local result4 = multiColor(list4)
+  local result4 = multiColorS(list4)
   local result = false
   if (result1 or result2 or result3 or result4) then
     result = true
@@ -108,25 +108,25 @@ repair.isSlotEmpty = function(n)
         { 691, 306, 0x0092c5 },
         { 952, 350, 0x52aaf7 },
       }
-      result = multiColor(list)
+      result = multiColorS(list)
     elseif (n == 2) then
       local list = {
         { 691, 531, 0x0096c5 },
         { 952, 575, 0x52a6ef },
       }
-      result = multiColor(list)
+      result = multiColorS(list)
     elseif (n == 3) then
       local list = {
         { 691, 751, 0x0096c5 },
         { 952, 794, 0x52a6f7 },
       }
-      result = multiColor(list)
+      result = multiColorS(list)
     elseif (n == 4) then
       local list = {
         { 691, 976, 0x0096c5 },
         { 952, 1022, 0x52a6f7 },
       }
-      result = multiColor(list)
+      result = multiColorS(list)
     end
     if (not __keepScreenState) then keepScreen(false) end
     return result
@@ -144,25 +144,25 @@ repair.isSlotNotEmpty = function(n)
         { 691, 306, 0x0092c5 },
         { 952, 350, 0x52aaf7 },
       }
-      result = not multiColor(list)
+      result = not multiColorS(list)
     elseif (n == 2) then
       local list = {
         { 691, 531, 0x0096c5 },
         { 952, 575, 0x52a6ef },
       }
-      result = not multiColor(list)
+      result = not multiColorS(list)
     elseif (n == 3) then
       local list = {
         { 691, 751, 0x0096c5 },
         { 952, 794, 0x52a6f7 },
       }
-      result = not multiColor(list)
+      result = not multiColorS(list)
     elseif (n == 4) then
       local list = {
         { 691, 976, 0x0096c5 },
         { 952, 1022, 0x52a6f7 },
       }
-      result = not multiColor(list)
+      result = not multiColorS(list)
     end
     if (not __keepScreenState) then keepScreen(false) end
     return result
@@ -198,7 +198,7 @@ repair.isSelectShipPage = function()
     { 1803, 815, 0x198ade },
     { 1749, 973, 0x42c2ef },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -330,7 +330,7 @@ repair.isNeedMoveToNextPage = function()
     { 1544, 505, 0x426584 },
     { 1542, 781, 0x3a516b },
   }
-  local result = not multiColor(list)
+  local result = not multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

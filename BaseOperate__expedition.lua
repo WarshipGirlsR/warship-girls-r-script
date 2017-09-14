@@ -16,7 +16,7 @@ expedition.isExpeditionCompleted = function()
     { 1478, 173, 0xc52008 },
     { 1564, 165, 0xc52408 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -43,8 +43,8 @@ expedition.isBattlePage = function()
     { 107, 429, 0xb54d08 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and (not result2))
 end
@@ -74,8 +74,8 @@ expedition.isBattleExpedition = function()
     { 107, 429, 0xb54d08 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and result2)
 end
@@ -96,7 +96,7 @@ expedition.moveToChapter = function(n, m)
     for i = 1, 7 do
       tap(358, 962, 100)
       mSleep(300)
-      if not multiColor(oneChapter) then
+      if not multiColorS(oneChapter) then
         break
       end
     end
@@ -147,13 +147,13 @@ expedition.isThisExpeditionPageHasReward = function()
     { 1539, 819, 0xbd4d08 },
   }
   mSleep(50)
-  local result1 = multiColor(list1)
+  local result1 = multiColorS(list1)
   mSleep(50)
-  local result2 = multiColor(list2)
+  local result2 = multiColorS(list2)
   mSleep(50)
-  local result3 = multiColor(list3)
+  local result3 = multiColorS(list3)
   mSleep(50)
-  local result4 = multiColor(list4)
+  local result4 = multiColorS(list4)
   local result = false
   if (result1 or result2 or result3 or result4) then
     result = true
@@ -194,7 +194,7 @@ expedition.isExpeditionCompletedPage = function()
     { 1464, 374, 0xffffff },
     { 987, 589, 0x52698c },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -232,7 +232,7 @@ expedition.isChapterCanExpedition = function(n)
       { 1539, 819, 0x0096c5 },
     }
   end
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

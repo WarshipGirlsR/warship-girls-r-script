@@ -14,10 +14,12 @@ end
 
 initLog('warship-girls-r-script', 1)
 
+require 'TSLib'
 require 'TableLib'
 require 'StringLib'
 require 'console'
 require 'KeepScreenHock'
+require 'MultiColorHock'
 require 'DeviceOrientHock'
 local eq = require 'EventQuery'
 local co = require 'Co'

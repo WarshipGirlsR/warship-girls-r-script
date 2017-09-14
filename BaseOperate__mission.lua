@@ -20,7 +20,7 @@ mission.isUnreceivedMission = function()
     { 847, 1027, 0xffffff },
     { 878, 1027, 0xffffff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -42,7 +42,7 @@ mission.isMission = function()
     { 1869, 526, 0x42617b },
     { 1635, 190, 0xd6cabd },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -69,7 +69,7 @@ mission.isMissionAllMission = function()
     { 103, 571, 0x0092c5 },
     { 104, 711, 0x008ebd },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -86,7 +86,7 @@ mission.isMissionUnreceivedReward = function()
     { 1673, 210, 0xad4900 },
     { 1824, 186, 0xde7521 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -110,7 +110,7 @@ mission.isRewardPannel = function()
     { 874, 733, 0x0092bd },
     { 1032, 727, 0x0096c5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -133,7 +133,7 @@ mission.isNewShipPage = function()
     { 1803, 951, 0xcecece },
     { 1844, 949, 0x5a5d5a },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -157,7 +157,7 @@ mission.isNewShipPageLockModal = function()
     { 1172, 745, 0xa41400 },
     { 959, 519, 0xd6cec5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

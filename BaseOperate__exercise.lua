@@ -24,8 +24,8 @@ exercise.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and (not result2))
 end
@@ -54,8 +54,8 @@ exercise.isExercisePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and result2)
 end
@@ -74,7 +74,7 @@ exercise.isExercisePageHaveExercise = function()
   local result = false
   local resList = {}
   for i, item in ipairs(list) do
-    if (multiColor({ item })) then
+    if (multiColorS({ item })) then
       table.insert(resList, i)
       result = true
     end
@@ -169,7 +169,7 @@ exercise.isBattleStartPage = function()
     { 1116, 481, 0xcec6bd },
     { 153, 577, 0xd6cec5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -228,7 +228,7 @@ exercise.isVictoryOpponentDetailPage = function()
     { 372, 204, 0xefefef },
     { 441, 208, 0xffffff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

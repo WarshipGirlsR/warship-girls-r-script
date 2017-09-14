@@ -79,7 +79,10 @@ local expeditionReward = function(action, state)
         map.expedition.moveToChapter(chapter, state.expedition.lastChapter)
         state.expedition.lastChapter = chapter
         stepLabel.setStepLabelContent('4-10.检测本页有可收获奖励')
-        return { type = 'EXPEDITION_REWARD_CHECK_HAS_REWARD' }, state
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', 'missionsGroup', map.expedition.isBattleExpedition, 1000 },
+        }))
+        return makeAction(newstateTypes), state
       else
         return { type = 'EXPEDITION_REWARD_RETURN_TO_HOME' }, state
       end

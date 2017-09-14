@@ -44,7 +44,7 @@ login.isLoginPage = function()
     { 468, 536, 0xc5b6a4 }, { 524, 545, 0xbdb29c },
     { 552, 531, 0xffffff }, { 607, 535, 0xc5baa4 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -75,7 +75,7 @@ login.isSelectServerPage = function()
     { 1076, 953, 0xf7fbff }, { 991, 946, 0xfffbff },
     { 1093, 990, 0xf7fbff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

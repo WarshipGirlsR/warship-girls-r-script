@@ -21,8 +21,8 @@ battle.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and (not result2))
 end
@@ -54,8 +54,8 @@ battle.isBattleBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and result2)
 end
@@ -88,7 +88,7 @@ battle.moveToChapter = function(chapter)
   for i = 1, 8 do
     tap(360, 958, 100)
     mSleep(300)
-    if multiColor(oneChapter) then
+    if multiColorS(oneChapter) then
       break
     end
   end
@@ -101,7 +101,7 @@ battle.moveToChapter = function(chapter)
   for i = 1, 8 do
     tap(256, 493, 100)
     mSleep(300)
-    if not multiColor(leftSissionButton) then
+    if not multiColorS(leftSissionButton) then
       break
     end
   end
@@ -134,7 +134,7 @@ battle.isReadyBattlePage = function()
     { 1220, 86, 0xcecace },
     { 1647, 136, 0xcecace },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -169,7 +169,7 @@ battle.isReadyBattlePageShipStatusAllRight = function()
     { 674, 802, 0xc5b6a4 },
     { 706, 802, 0xc5b6a4 },
   }
-  local result = multiColor(list, 60)
+  local result = multiColorS(list, 60)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -223,8 +223,8 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   if (checkLevel == 3) then
     -- 有不满血
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList23 = multiColor({ list23[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList23 = multiColorS({ list23[i] }, 80)
       if (theList and (not theList23)) then
         result = false
         break
@@ -233,9 +233,9 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 2) then
     -- 有中破或大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList22 = multiColor({ list22[i] }, 80)
-      local theList21 = multiColor({ list21[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList22 = multiColorS({ list22[i] }, 80)
+      local theList21 = multiColorS({ list21[i] }, 80)
       if (theList and (theList22 or theList21)) then
         result = false
         break
@@ -244,8 +244,8 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList21 = multiColor({ list21[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList21 = multiColorS({ list21[i] }, 80)
       if (theList and theList21) then
         result = false
         break
@@ -281,7 +281,7 @@ battle.isQuickSupplyModal = function()
     { 554, 184, 0xffffff }, { 547, 209, 0xffffff },
     { 505, 205, 0xfffbff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -310,7 +310,7 @@ battle.isQuickRepairModal = function()
     { 554, 208, 0xffffff }, { 576, 192, 0x19619c },
     { 521, 196, 0x08558c }, { 491, 202, 0xf7f7f7 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -366,8 +366,8 @@ battle.isQuickRepairModalShipNeedRepair = function(checkLevel)
   if (checkLevel == 3) then
     -- 不满血
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList23 = multiColor({ list23[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList23 = multiColorS({ list23[i] }, 80)
       if (theList and (not theList23)) then
         table.insert(result, i)
       end
@@ -375,9 +375,9 @@ battle.isQuickRepairModalShipNeedRepair = function(checkLevel)
   elseif (checkLevel == 2) then
     -- 有中破或大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList22 = multiColor({ list22[i] }, 80)
-      local theList21 = multiColor({ list21[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList22 = multiColorS({ list22[i] }, 80)
+      local theList21 = multiColorS({ list21[i] }, 80)
       if (theList and (theList22 or theList21)) then
         table.insert(result, i)
       end
@@ -385,8 +385,8 @@ battle.isQuickRepairModalShipNeedRepair = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList21 = multiColor({ list21[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList21 = multiColorS({ list21[i] }, 80)
       if (theList and theList21) then
         table.insert(result, i)
       end
@@ -436,7 +436,7 @@ battle.isFleetsCanBattle = function()
     { 1017, 971, 0xfffbf7 },
     { 1083, 990, 0xfff7ef },
   }
-  local result = not multiColor(list, 70)
+  local result = not multiColorS(list, 70)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -459,7 +459,7 @@ battle.isExtraReceiveModal = function()
     { 956, 748, 0x008ebd },
     { 962, 655, 0xbdb69c },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -484,7 +484,7 @@ battle.isBattleStartPage = function()
     { 1427, 951, 0xad4d08 },
     { 1180, 512, 0xd6cac5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -502,7 +502,7 @@ battle.isBattleStartPageCanRoundabout = function()
     { 1201, 928, 0xffffff },
     { 1184, 948, 0x008ec5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -595,7 +595,7 @@ battle.isFormationPage = function()
     { 1706, 540, 0x73df8c },
     { 1631, 737, 0x6bd27b },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -661,7 +661,7 @@ battle.isPursueModal = function()
     { 1225, 755, 0xa4a6ad },
     { 1236, 771, 0x000408 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -700,7 +700,7 @@ battle.isVictoryPage = function()
     { 1675, 1016, 0xffffff },
     { 1726, 1014, 0xffffff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -727,7 +727,7 @@ battle.isVictoryPageShipDamaged = function()
   }
   local result = false
   for i = 1, #list do
-    if ((multiColor({ list[i] })) and (not multiColor({ list2[i] }))) then
+    if ((multiColorS({ list[i] })) and (not multiColorS({ list2[i] }))) then
       result = true
       break
     end
@@ -773,9 +773,9 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   if (checkLevel == 2) then
     -- 有中破或者大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 85)
-      local theList22 = multiColor(list22[i], 85)
-      local theList21 = multiColor(list21[i], 85)
+      local theList = multiColorS({ list[i] }, 85)
+      local theList22 = multiColorS(list22[i], 85)
+      local theList21 = multiColorS(list21[i], 85)
       if (theList and (theList22 or theList21)) then
         result = false
         break
@@ -785,8 +785,8 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 85)
-      local theList21 = multiColor(list21[i], 85)
+      local theList = multiColorS({ list[i] }, 85)
+      local theList21 = multiColorS(list21[i], 85)
       if (theList and theList21) then
         result = false
         break
@@ -821,7 +821,7 @@ battle.isVictoryPage2 = function()
     { 1705, 986, 0xffffff },
     { 1823, 1010, 0x0096c5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -847,7 +847,7 @@ battle.isShipSevereDamageModal = function()
     { 725, 339, 0xff2800 },
     { 872, 354, 0xff2800 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -891,7 +891,7 @@ battle.isShipCantGoOnModal = function()
     { 1489, 823, 0xffffff },
     { 1531, 818, 0xffffff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -914,7 +914,7 @@ battle.isNewShipPage = function()
     { 1803, 951, 0xcecece },
     { 1844, 949, 0x5a5d5a },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -938,7 +938,7 @@ battle.isNewShipPageLockModal = function()
     { 1172, 745, 0xa41400 },
     { 959, 519, 0xd6cec5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -985,7 +985,7 @@ battle.isNextLevelStepModal = function()
     { 1225, 755, 0x082031 },
     { 1236, 771, 0xffffff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

@@ -18,7 +18,7 @@ home.isHome = function()
     { 1749, 531, 0x3ac2e6 },
     { 1430, 862, 0x0092c5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -43,7 +43,7 @@ home.isMedalModal = function()
     { 1173, 707, 0xce453a }, { 1265, 684, 0xce493a }, { 1264, 733, 0xa41000 }, { 1246, 709, 0xc54131 },
     { 1209, 710, 0x7b9294 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -90,7 +90,7 @@ home.isNewsModal = function()
     { 1864, 460, 0xd6cac5 },
     { 956, 103, 0xcecabd },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -118,7 +118,7 @@ home.isSignModal = function()
     { 515, 879, 0xd6cec5 },
     { 1407, 857, 0xc5bab5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -133,7 +133,7 @@ home.isSignModalHasReward = function()
     { 1045, 876, 0xb54d00 },
     { 883, 894, 0xb54900 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -158,7 +158,7 @@ home.isSignConfirmModal = function()
     { 875, 722, 0x009ac5 },
     { 1043, 713, 0x42c2ef },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

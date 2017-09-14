@@ -14,7 +14,7 @@ network.isNetworkFailureModal = function()
     { 1176, 513, 0xcecabd }, { 1203, 443, 0xffffff },
     { 1022, 450, 0xd6cac5 }, { 844, 455, 0xcecabd },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -45,7 +45,7 @@ network.isCheckNetworkModal = function()
     { 870, 485, 0x3a6163 }, { 894, 486, 0xd6cac5 }, { 931, 491, 0xf7f7f7 }, { 963, 498, 0x4a6973 },
     { 989, 499, 0x31555a }, { 1047, 483, 0x5a797b },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end

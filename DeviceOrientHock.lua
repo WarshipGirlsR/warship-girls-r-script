@@ -43,13 +43,13 @@ function calOrient(_orient)
   }
 
   -- 如果方向没变则不旋转
-  if (multiColor(checkPointList)) then
+  if (multiColorS(checkPointList)) then
     return _orient
   end
   -- 如果方向变了则旋转
   for k, v in ipairs(checkOrder) do
     __init(v)
-    if (multiColor(checkPointList)) then
+    if (multiColorS(checkPointList)) then
       return v
     end
   end

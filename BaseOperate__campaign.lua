@@ -24,8 +24,8 @@ campaign.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0xad4900 },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and (not result2))
 end
@@ -55,8 +55,8 @@ campaign.isCampaignPage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0xad4900 },
   }
-  local result = multiColor(list)
-  local result2 = multiColor(list2)
+  local result = multiColorS(list)
+  local result2 = multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return (result and result2)
 end
@@ -100,7 +100,7 @@ campaign.isReadyBattlePage = function()
     { 454, 1040, 0xd6cabd },
     { 1753, 1041, 0xd6cec5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -165,7 +165,7 @@ campaign.isReadyBattlePageShipStatusAllRight = function()
     },
   }
   for key, value in ipairs(list) do
-    if (multiColor(value, 80)) then
+    if (multiColorS(value, 80)) then
       result = false
       break
     end
@@ -218,8 +218,8 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   if (checkLevel == 3) then
     -- 有不满血
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList23 = multiColor({ list23[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList23 = multiColorS({ list23[i] }, 80)
       if ((not theList) and (not theList23)) then
         result = false
         break
@@ -228,9 +228,9 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 2) then
     -- 有中破或者大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList22 = multiColor({ list22[i] }, 80)
-      local theList21 = multiColor({ list21[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList22 = multiColorS({ list22[i] }, 80)
+      local theList21 = multiColorS({ list21[i] }, 80)
       if ((not theList) and (theList22 or theList21)) then
         result = false
         break
@@ -240,8 +240,8 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColor({ list[i] }, 80)
-      local theList21 = multiColor({ list21[i] }, 80)
+      local theList = multiColorS({ list[i] }, 80)
+      local theList21 = multiColorS({ list21[i] }, 80)
       if ((not theList) and theList21) then
         result = false
         break
@@ -310,7 +310,7 @@ campaign.isBattleStartPage = function()
     { 1116, 481, 0xcec6bd },
     { 153, 577, 0xd6cec5 },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -369,7 +369,7 @@ campaign.isVictoryOpponentDetailPage = function()
     { 372, 204, 0xefefef },
     { 441, 208, 0xffffff },
   }
-  local result = multiColor(list)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
