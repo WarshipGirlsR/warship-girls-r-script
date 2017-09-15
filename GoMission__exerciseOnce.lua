@@ -74,7 +74,7 @@ local exerciseOnce = function(action, state)
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
           { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage, 2000 },
           { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage, 2000 },
-          { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
+          { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage, 500 },
         }))
         return makeAction(newstateTypes), state
       else
