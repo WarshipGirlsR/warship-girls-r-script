@@ -21,10 +21,9 @@ battle.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and (not multiColorS(list2))
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 
 -- 点击回港
@@ -54,10 +53,9 @@ battle.isBattleBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 -- 点击出征
@@ -68,6 +66,8 @@ end
 
 -- 移动到m-n章节
 battle.moveToChapter = function(chapter)
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
   local chapterArr = strSplit(chapter, "-")
   local m = tonumber(chapterArr[1]) or 1
   local n = tonumber(chapterArr[2]) or 1
@@ -88,6 +88,7 @@ battle.moveToChapter = function(chapter)
   for i = 1, 8 do
     tap(360, 958, 100)
     mSleep(300)
+    keepScreen(true)
     if multiColorS(oneChapter) then
       break
     end
@@ -101,6 +102,7 @@ battle.moveToChapter = function(chapter)
   for i = 1, 8 do
     tap(256, 493, 100)
     mSleep(300)
+    keepScreen(true)
     if not multiColorS(leftSissionButton) then
       break
     end
@@ -110,6 +112,7 @@ battle.moveToChapter = function(chapter)
     tap(1889, 485, 100)
     mSleep(300)
   end
+  if (not __keepScreenState) then keepScreen(false) end
   return true
 end
 
@@ -223,9 +226,7 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   if (checkLevel == 3) then
     -- 有不满血
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList23 = multiColorS({ list23[i] }, 80)
-      if (theList and (not theList23)) then
+      if (multiColorS({ list[i] }, 80) and (not multiColorS({ list23[i] }, 80))) then
         result = false
         break
       end
@@ -233,10 +234,7 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 2) then
     -- 有中破或大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList22 = multiColorS({ list22[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and (theList22 or theList21)) then
+      if (multiColorS({ list[i] }, 80) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80))) then
         result = false
         break
       end
@@ -244,9 +242,7 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and theList21) then
+      if (multiColorS({ list[i] }, 80) and multiColorS({ list21[i] }, 80)) then
         result = false
         break
       end
@@ -366,28 +362,21 @@ battle.isQuickRepairModalShipNeedRepair = function(checkLevel)
   if (checkLevel == 3) then
     -- 不满血
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList23 = multiColorS({ list23[i] }, 80)
-      if (theList and (not theList23)) then
+      if (multiColorS({ list[i] }, 80) and (not multiColorS({ list23[i] }, 80))) then
         table.insert(result, i)
       end
     end
   elseif (checkLevel == 2) then
     -- 有中破或大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList22 = multiColorS({ list22[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and (theList22 or theList21)) then
+      if (multiColorS({ list[i] }, 80) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80))) then
         table.insert(result, i)
       end
     end
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and theList21) then
+      if (multiColorS({ list[i] }, 80) and multiColorS({ list21[i] }, 80)) then
         table.insert(result, i)
       end
     end
@@ -773,10 +762,7 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   if (checkLevel == 2) then
     -- 有中破或者大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 85)
-      local theList22 = multiColorS(list22[i], 85)
-      local theList21 = multiColorS(list21[i], 85)
-      if (theList and (theList22 or theList21)) then
+      if (multiColorS({ list[i] }, 85) and (multiColorS(list22[i], 85) or multiColorS(list21[i], 85))) then
         result = false
         break
       end
@@ -785,9 +771,7 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 85)
-      local theList21 = multiColorS(list21[i], 85)
-      if (theList and theList21) then
+      if (multiColorS({ list[i] }, 85) and multiColorS(list21[i], 85)) then
         result = false
         break
       end

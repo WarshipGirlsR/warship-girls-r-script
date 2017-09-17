@@ -13,7 +13,6 @@ multiColorS = multiColorS or function(array, s)
     local g = math.floor(array[var][3] % 0x10000 / 0x100)
     local b = math.floor(array[var][3] % 0x100)
     if math.abs(lr - r) > s or math.abs(lg - g) > s or math.abs(lb - b) > s then
-      keepScreen(false)
       result = false
       break
     end

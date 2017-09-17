@@ -24,10 +24,9 @@ exercise.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and (not multiColorS(list2))
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 -- 点击演习
 exercise.clickExerciseBtn = function()
@@ -54,16 +53,15 @@ exercise.isExercisePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 --  检测是否有演习
 exercise.isExercisePageHaveExercise = function()
   local __keepScreenState = keepScreenState
-  if (not __keepScreenState) then keepScreen(true) end
+  keepScreen(true)
   local list = {
     { 1799, 186, 0xc55100 },
     { 1799, 362, 0xc55100 },

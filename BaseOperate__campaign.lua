@@ -24,10 +24,9 @@ campaign.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0xad4900 },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and (not multiColorS(list2))
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 
 -- 点击战役按钮
@@ -55,10 +54,9 @@ campaign.isCampaignPage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0xad4900 },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 -- 移动到战役
@@ -218,9 +216,7 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   if (checkLevel == 3) then
     -- 有不满血
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList23 = multiColorS({ list23[i] }, 80)
-      if ((not theList) and (not theList23)) then
+      if ((not multiColorS({ list[i] }, 80)) and (not multiColorS({ list23[i] }, 80))) then
         result = false
         break
       end
@@ -228,10 +224,7 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 2) then
     -- 有中破或者大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList22 = multiColorS({ list22[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if ((not theList) and (theList22 or theList21)) then
+      if ((not multiColorS({ list[i] }, 80)) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80))) then
         result = false
         break
       end
@@ -240,9 +233,7 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if ((not theList) and theList21) then
+      if ((not multiColorS({ list[i] }, 80)) and multiColorS({ list21[i] }, 80)) then
         result = false
         break
       end

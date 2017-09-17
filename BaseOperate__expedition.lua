@@ -43,10 +43,9 @@ expedition.isBattlePage = function()
     { 107, 429, 0xb54d08 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and (not multiColorS(list2))
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 
 -- 点击远征
@@ -74,14 +73,15 @@ expedition.isBattleExpedition = function()
     { 107, 429, 0xb54d08 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 -- 从第m章移动到第n章
 expedition.moveToChapter = function(n, m)
+  local __keepScreenState = keepScreenState
+  keepScreen(true)
   n = tonumber(n) or 1
   local oneChapter = {
     { 523, 848, 0xffffff }, { 568, 848, 0xffffe6 },
@@ -96,6 +96,7 @@ expedition.moveToChapter = function(n, m)
     for i = 1, 7 do
       tap(358, 962, 100)
       mSleep(300)
+      keepScreen(true)
       if not multiColorS(oneChapter) then
         break
       end
@@ -123,6 +124,7 @@ expedition.moveToChapter = function(n, m)
       end
     end
   end
+  if (not __keepScreenState) then keepScreen(false) end
   return true
 end
 
@@ -146,13 +148,9 @@ expedition.isThisExpeditionPageHasReward = function()
     { 821, 747, 0x9c5921 },
     { 1539, 819, 0xbd4d08 },
   }
-  mSleep(50)
   local result1 = multiColorS(list1)
-  mSleep(50)
   local result2 = multiColorS(list2)
-  mSleep(50)
   local result3 = multiColorS(list3)
-  mSleep(50)
   local result4 = multiColorS(list4)
   local result = false
   if (result1 or result2 or result3 or result4) then

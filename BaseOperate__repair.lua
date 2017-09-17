@@ -76,13 +76,9 @@ repair.hasEmptyRepairSlot = function()
     { 952, 1035, 0x6baade },
   }
 
-  mSleep(50)
   local result1 = multiColorS(list1)
-  mSleep(50)
   local result2 = multiColorS(list2)
-  mSleep(50)
   local result3 = multiColorS(list3)
-  mSleep(50)
   local result4 = multiColorS(list4)
   local result = false
   if (result1 or result2 or result3 or result4) then
