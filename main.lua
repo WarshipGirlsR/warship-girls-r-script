@@ -1,2 +1,3 @@
--- #!/usr/bin/env lua
+useNlog = true
+
 require "warship-girls-r-script"
