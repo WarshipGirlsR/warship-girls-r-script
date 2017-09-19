@@ -38,7 +38,7 @@ local campaignOnce = function(action, state)
       stepLabel.setStepLabelContent('7-2.点击出征')
       map.home.clickBattleBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome, 2000 },
+        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome, 1000 },
         { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage },
         { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage },
       }))
