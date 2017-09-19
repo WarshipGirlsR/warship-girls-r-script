@@ -65,10 +65,10 @@ getDeviceOrient = function()
   local newOrient = orient
   if (os.time() > nextUpdateTime) then
     local _keepScreenState = keepScreenState
-    if (not _keepScreenState) then keepScreen(true) end
+    keepScreen(true)
     newOrient = calOrient(orient)
     nextUpdateTime = os.time() + 1
-    if (not _keepScreenState) then keepScreen(false) end
+    keepScreen(false)
   end
   return newOrient
 end

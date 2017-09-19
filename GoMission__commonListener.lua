@@ -30,8 +30,8 @@ local getLoginListener = function()
   local settings = allOptions.settings
 
   return {
-    { { type = 'LOGIN_SELECT_SERVER', addToStart = true }, 'loginGroup', map.login.isSelectServerPage, 6000 },
-    { { type = 'LOGIN_SELECT_SERVER', addToStart = true }, 'loginGroup', map.login.isLoginPage, 6000 },
+    { { type = 'LOGIN_SELECT_SERVER' }, 'loginGroup', map.login.isSelectServerPage, 6000 },
+    { { type = 'LOGIN_SELECT_SERVER' }, 'loginGroup', map.login.isLoginPage, 6000 },
   }
 end
 

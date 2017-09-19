@@ -27,9 +27,11 @@ StepLable.setStepLabelContent = function(text, noNLog)
   StepLable.text = text
   local finalText = StepLable.prefix .. text
   fwShowButton('steplabel', StepLable.labelId, finalText, '90333333', '90FFFFFF', '', 7, 0, 0, 300, 100)
-  if (useNlog and not noNLog) then
+  if (not noNLog) then
     local dateStr = os.date('%Y-%m-%d %X')
     wLog('warship-girls-r-script', '[DATE] ' .. finalText);
+  end
+  if useNlog then
     nLog(dateStr .. ' ' .. finalText)
   end
 end
