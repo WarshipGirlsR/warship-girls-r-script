@@ -114,7 +114,9 @@ end
 __console.log = __console.log or function(obj)
   local js = table.concat(runTable(obj, 2), "\n")
   print(js)
-  nLog(js)
+  if useNlog then
+    nLog(js)
+  end
   return js
 end
 
