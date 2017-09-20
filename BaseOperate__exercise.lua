@@ -63,11 +63,11 @@ exercise.isExercisePageHaveExercise = function()
   local __keepScreenState = keepScreenState
   keepScreen(true)
   local list = {
-    { 1799, 186, 0xc55100 },
-    { 1799, 362, 0xc55100 },
-    { 1799, 538, 0xc55100 },
-    { 1799, 714, 0xc55100 },
-    { 1799, 890, 0xc55100 },
+    { 1807, 155, 0xef863a },
+    { 1807, 335, 0xe6813a },
+    { 1807, 505, 0xef8a42 },
+    { 1807, 680, 0xe6863a },
+    { 1807, 855, 0xef8a42 },
   }
   local result = false
   local resList = {}
