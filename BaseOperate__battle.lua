@@ -85,9 +85,9 @@ battle.moveToChapter = function(chapter)
   }
 
   -- 先移到第一章
-  for i = 1, 8 do
+  for i = 1, 10 do
     tap(360, 958, 100)
-    mSleep(300)
+    mSleep(100)
     keepScreen(true)
     if multiColorS(oneChapter) then
       break
