@@ -66,18 +66,10 @@ end
 
 -- 移动到m-n章节
 battle.moveToChapter = function(chapter)
-  local __keepScreenState = keepScreenState
-  if (not __keepScreenState) then keepScreen(true) end
-  local chapterArr = strSplit(chapter, "-")
+  local chapterArr = strSplit(chapter, '-')
   local m = tonumber(chapterArr[1]) or 1
   local n = tonumber(chapterArr[2]) or 1
 
-  local oneChapter = {
-    { 549, 91, 0x105184 }, { 562, 79, 0xeff3f7 },
-    { 561, 114, 0xffffff }, { 549, 112, 0x94a6a4 },
-    { 553, 104, 0x10517b }, { 570, 107, 0x104d7b },
-    { 572, 84, 0x105584 },
-  }
   local leftSissionButton = {
     { 246, 463, 0x3a92a4 }, { 249, 510, 0x218a9c },
     { 250, 489, 0x21dbd6 }, { 272, 488, 0x29fbf7 },
@@ -85,35 +77,25 @@ battle.moveToChapter = function(chapter)
   }
 
   -- 先移到第一章
-  for i = 1, 10 do
+  for i = 1, 12 do
     tap(360, 958, 100)
-    mSleep(100)
-    keepScreen(true)
-    if multiColorS(oneChapter) then
-      break
-    end
+    mSleep(80)
   end
   -- 再移到第m章
   for i = 2, m do
     tap(1827, 961, 100)
-    mSleep(300)
+    mSleep(500)
   end
   -- 先移到第一节
   for i = 1, 8 do
     tap(256, 493, 100)
-    mSleep(300)
-    keepScreen(true)
-    if not multiColorS(leftSissionButton) then
-      break
-    end
+    mSleep(80)
   end
   -- 再移到第n章
   for i = 2, n do
     tap(1889, 485, 100)
-    mSleep(300)
+    mSleep(500)
   end
-  if (not __keepScreenState) then keepScreen(false) end
-  return true
 end
 
 -- 点击准备出征

@@ -80,8 +80,6 @@ end
 
 -- 从第m章移动到第n章
 expedition.moveToChapter = function(n, m)
-  local __keepScreenState = keepScreenState
-  keepScreen(true)
   n = tonumber(n) or 1
   local oneChapter = {
     { 523, 848, 0xffffff }, { 568, 848, 0xffffe6 },
@@ -93,18 +91,14 @@ expedition.moveToChapter = function(n, m)
 
   if (type(m) == "nil") then
     -- 先移动到第1章
-    for i = 1, 7 do
+    for i = 1, 12 do
       tap(358, 962, 100)
-      mSleep(300)
-      keepScreen(true)
-      if not multiColorS(oneChapter) then
-        break
-      end
+      mSleep(80)
     end
     -- 再移动到第n章
     for i = 2, n do
       tap(1835, 963, 100)
-      mSleep(300)
+      mSleep(500)
     end
   else
     m = tonumber(m) or 1
@@ -124,7 +118,6 @@ expedition.moveToChapter = function(n, m)
       end
     end
   end
-  if (not __keepScreenState) then keepScreen(false) end
   return true
 end
 

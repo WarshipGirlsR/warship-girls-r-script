@@ -44,7 +44,7 @@ local battleOnce = function(action, state)
       stepLabel.setStepLabelContent('2-3.等待出征页面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 1000 },
+        { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattleBattlePage },
         { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage },
       }))
