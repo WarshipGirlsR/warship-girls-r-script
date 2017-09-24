@@ -43,7 +43,7 @@ local exerciseOnce = function(action, state)
       stepLabel.setStepLabelContent('6-3.点击出征')
       map.home.clickBattleBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome, 1000 },
+        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome, 2000 },
         { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage },
         { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage },
       }))

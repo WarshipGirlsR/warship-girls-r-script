@@ -52,7 +52,7 @@ local expeditionReward = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', 'missionsGroup', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 1000 },
+        { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 2000 },
         { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattlePage, 2000 },
       }))
       return makeAction(newstateTypes), state

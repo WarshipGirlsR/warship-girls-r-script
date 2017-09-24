@@ -44,7 +44,7 @@ local repairOnce = function(action, state)
       stepLabel.setStepLabelContent('5-3.等待船坞界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_INIT', 'missionsGroup', map.home.isHome, 1000 },
+        { 'REPAIR_INIT', 'missionsGroup', map.home.isHome, 2000 },
         { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
         { 'REPAIR_DOCK_PAGE', 'missionsGroup', map.repair.isDockPage },
       }))

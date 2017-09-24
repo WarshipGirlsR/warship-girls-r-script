@@ -74,7 +74,7 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-20.等待出征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 1000 },
+        { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
         { 'EXPEDITION_IS_BATTLE_PAGE', 'missionsGroup', map.expedition.isBattlePage },
         { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
       }))
