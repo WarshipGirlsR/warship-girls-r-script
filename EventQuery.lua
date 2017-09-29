@@ -52,8 +52,8 @@ end
 local function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-        (e .. '\n' .. debug.traceback())
-        or (e)
+      (e .. '\n' .. debug.traceback())
+      or (e)
   end)
 end
 
@@ -290,6 +290,7 @@ function run()
       local hasDropEvent = false
       continue = continue + 1
       sleepTime = math.min(sleepTime, 200)
+      keepScreen(false);
       keepScreen(true);
       for key = 1, #screenListenerQuery do
         local value = screenListenerQuery[key]

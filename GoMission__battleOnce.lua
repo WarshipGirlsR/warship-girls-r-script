@@ -59,7 +59,7 @@ local battleOnce = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattleBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattleBattlePage, 2000 },
         { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage },
       }))
       return makeAction(newstateTypes), state
@@ -76,16 +76,26 @@ local battleOnce = function(action, state)
       stepLabel.setStepLabelContent('2-8.移动到章节' .. state.battle.battleChapter)
       c.yield(sleepPromise(300))
       map.battle.moveToChapter(state.battle.battleChapter)
-      stepLabel.setStepLabelContent('2-9.进入章节')
-      c.yield(sleepPromise(300))
-      map.battle.clickReadyBattleBtn()
-      c.yield(sleepPromise(100))
-      stepLabel.setStepLabelContent('2-10.等待出征准备界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattleBattlePage, 2000 },
-        { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', 'missionsGroup', map.battle.isBattleBattlePage, 1000 },
+        { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage, 3000 },
+        { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER') then
+
+      stepLabel.setStepLabelContent('2-9.进入章节')
+      c.yield(sleepPromise(100))
+      map.battle.clickReadyBattleBtn()
+      c.yield(sleepPromise(100))
+      stepLabel.setStepLabelContent('2-10.等待出征准备界面')
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+        { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', 'missionsGroup', map.battle.isBattleBattlePage, 1000 },
+        { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage, 3000 },
         { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
