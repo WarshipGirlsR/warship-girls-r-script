@@ -44,4 +44,5 @@ StepLabel.lua
 StringLib.lua
 TableLib.lua
 test.lua
+TSLib.lua
 warship-girls-r-script.lua

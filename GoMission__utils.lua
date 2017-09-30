@@ -68,6 +68,7 @@ local setScreenListeners = function(theArr, ...)
 
       if ((type(listenerEvent[4]) == 'number') and (listenerEvent[4] > 0)) then
         table.insert(newArr, co(c.create(function()
+          console.log(listenerEvent)
           c.yield(sleepPromise(listenerEvent[4]))
           if (not done) then
             return c.yield(setScreenListenerPromise(listenerEvent[1], listenerEvent[2], listenerEvent[3]))
