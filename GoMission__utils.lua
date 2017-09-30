@@ -7,15 +7,18 @@ local c = coroutine
 local combineListener = function(target, ...)
   local sources = { ... }
   if (type(target) ~= 'table') then target = {} end
-  for _, source in ipairs(sources) do
-    for key, value in ipairs(source) do
+  for k = 1, #sources do
+    local source = sources[k]
+    for key = 1, #source do
+      local value = source[key]
       table.insert(target, value)
     end
   end
   local targetReverse = table.reverse(target)
   local resultIndex = {}
   local result = {}
-  for key, value in ipairs(targetReverse) do
+  for key = 1, #targetReverse do
+    local value = targetReverse[key]
     if (not resultIndex[value[3]]) then
       resultIndex[value[3]] = value
       table.insert(result, value)
@@ -47,14 +50,16 @@ local setScreenListeners = function(theArr, ...)
   theArr = table.merge(theArr, ...)
 
   local theArrUnique = table.uniqueLast(theArr, 3)
-  for key, value in ipairs(theArrUnique) do
+  for key = 1, #theArrUnique do
+    local value = theArrUnique[key]
     value.isOnce = true
   end
   return co(c.create(function()
     local newArr = {}
     local tags = {}
     local done = false
-    for key, listenerEvent in ipairs(theArrUnique) do
+    for key = 1, #theArrUnique do
+      local listenerEvent = theArrUnique[key]
       if (type(listenerEvent[2]) == 'table') then
         tags = table.merge(tags, listenerEvent[2])
       else

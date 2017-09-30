@@ -372,7 +372,8 @@ battle.clickQuickRepairModalSingleShip = function(shipList)
   if (type(shipList) ~= 'table') then
     shipList = { shipList }
   end
-  for key, value in ipairs(shipList) do
+  for key = 1, #shipList do
+    local value = shipList[key]
     if (value == 1) then
       tap(360, 397, 100)
     elseif (value == 2) then

@@ -188,8 +188,8 @@ function case7()
     return false
   end)
 
-  for k, v in ipairs(dirs) do
-    lfs.rm(logPath .. '/' .. v)
+  for k = 1, #dirs do
+    lfs.rm(logPath .. '/' .. dirs[k])
   end
   local dirs = lfs.dir(logPath)
   console.log(dirs)

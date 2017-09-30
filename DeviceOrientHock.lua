@@ -47,7 +47,8 @@ function calOrient(_orient)
     return _orient
   end
   -- 如果方向变了则旋转
-  for k, v in ipairs(checkOrder) do
+  for k = 1, #checkOrder do
+    local v = checkOrder[k]
     __init(v)
     if (multiColorS(checkPointList)) then
       return v

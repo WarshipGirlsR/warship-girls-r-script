@@ -30,7 +30,8 @@ local function runTable(tab, space)
   local tabLength = 0
   local hasSubTab = false
 
-  for k, v in ipairs(tab) do
+  for k = 1, #tab do
+    local v = tab[k]
     tabLength = k
     table.insert(newTabPairs, { k, runTable(v, space) })
     if (type(v) == 'table') then
@@ -53,17 +54,20 @@ local function runTable(tab, space)
 
     if (hasSubTab) then
       table.insert(resultStrList, '[')
-      for k, v in ipairs(newTabArr) do
+      for k = 1, #newTabArr do
+        local v = newTabArr[k]
         local v2Length = getLength(v[2])
         v[2][v2Length] = v[2][v2Length] .. ','
-        for k2, v2 in ipairs(v[2]) do
+        for k2 = 1, #v[2] do
+          local v2 = v[2][k2]
           table.insert(resultStrList, space .. v2)
         end
       end
       table.insert(resultStrList, ']')
     else
       local theStr = {}
-      for k, v in ipairs(newTabPairs) do
+      for k = 1, #newTabPairs do
+        local v = newTabPairs[k]
         table.insert(theStr, v[2][1])
       end
       local childStr = table.concat(theStr, ', ')
@@ -73,11 +77,13 @@ local function runTable(tab, space)
     local newTabArr = newTabPairs
 
     table.insert(resultStrList, '{')
-    for k, v in ipairs(newTabArr) do
+    for k = 1, #newTabArr do
+      local v = newTabArr[k]
       v[2][1] = v[1] .. ': ' .. v[2][1]
       local v2Length = getLength(v[2])
       v[2][v2Length] = v[2][v2Length] .. ','
-      for k2, v2 in ipairs(v[2]) do
+      for k2 = 1, #v[2] do
+        local v2 = v[2][k2]
         table.insert(resultStrList, space .. v2 .. '')
       end
     end
@@ -88,8 +94,8 @@ end
 
 table.length = table.length or function(target)
   local length = 0
-  for k, v in ipairs(target) do
-    length = k
+  for key = 1, #target do
+    length = key
   end
   return length
 end
@@ -131,9 +137,11 @@ end
 
 table.merge = table.merge or function(tab, ...)
   local args = { ... }
-  for k, tabelement in ipairs(args) do
+  for k = 1, #args do
+    local tabelement = args[k]
     local length = table.length(tabelement)
-    for k2, value in ipairs(tabelement) do
+    for k2 = 1, #tabelement do
+      local value = tabelement[k2]
       if ((type(k2) == 'number') and (k2 <= length)) then
         table.insert(tab, value)
       end
@@ -153,7 +161,8 @@ end
 table.assign = table.assign or function(target, ...)
   local sources = { ... }
   if (type(target) ~= 'table') then target = {} end
-  for _, source in ipairs(sources) do
+  for k = 1, #sources do
+    local source = sources[k]
     for key, value in pairs(source) do
       target[key] = value
     end
@@ -164,7 +173,8 @@ end
 table.reverse = table.reverse or function(target)
   local result = {}
   local theLength = table.length(target)
-  for key, value in ipairs(target) do
+  for key = 1, #target do
+    local value = target[key]
     result[theLength - key + 1] = value
   end
   return result
@@ -173,7 +183,8 @@ end
 table.filter = table.filter or function(target, func)
   local result = {}
   local theLength = table.length(target)
-  for key, value in ipairs(target) do
+  for key = 1, #target do
+    local value = target[key]
     if (func(value, key, target)) then
       table.insert(result, value)
     end
@@ -186,21 +197,24 @@ table.unique = table.unique or function(target, path)
   local result = {}
   local pathType = type(path)
   if (pathType == 'nil') then
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       if (type(theMap[value]) == 'nil') then
         theMap[value] = { key = key, value = value }
         table.insert(result, value)
       end
     end
   elseif ((pathType == 'number') or (pathType == 'string')) then
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       if (type(theMap[value[path]]) == 'nil') then
         theMap[value[path]] = { key = key, value = value }
         table.insert(result, value)
       end
     end
   elseif (pathType == 'function') then
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       if (type(theMap[path(value)]) == 'nil') then
         theMap[path(value)] = { key = key, value = value }
         table.insert(result, value)
@@ -217,28 +231,34 @@ table.uniqueLast = table.uniqueOf or function(target, path)
   local pathType = type(path)
   local targetLength = table.length(target)
   if (pathType == 'nil') then
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       theMap[value] = { key = key, value = value }
     end
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       if (key == theMap[value].key) then
         table.insert(result, value)
       end
     end
   elseif ((pathType == 'number') or (pathType == 'string')) then
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       theMap[value[path]] = { key = key, value = value }
     end
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       if (key == theMap[value[path]].key) then
         table.insert(result, value)
       end
     end
   elseif (pathType == 'function') then
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       theMap[path(value)] = { key = key, value = value }
     end
-    for key, value in ipairs(target) do
+    for key = 1, #target do
+      local value = target[key]
       if (key == theMap[path(value)].key) then
         table.insert(result, value)
       end
@@ -272,7 +292,8 @@ table.sortByKey = table.sortByKey or function(tab, call)
     table.sort(keys)
   end
   local newTable = {}
-  for _, key in ipairs(keys) do
+  for k = 1, #keys do
+    local key = keys[k]
     table.insert(newTable, { key, tab[key] })
   end
   return newTable

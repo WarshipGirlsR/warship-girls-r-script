@@ -2,7 +2,8 @@ require 'TableLib'
 
 local function transRelativePoint(tab, base)
   local newTab = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     newTab[key] = table.assign(value, { value[1] - base[1], value[2] - base[2] })
   end
   return newTab
@@ -10,7 +11,8 @@ end
 
 local function transColorListToString(tab)
   local tmp = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     value[3] = string.format('0x%06X', value[3])
     table.insert(tmp, table.concat(value, '|'))
   end
@@ -21,7 +23,8 @@ return {
   -- 基本方法
   toPoint = function(tab)
     local newTab = {}
-    for _, value in ipairs(tab) do
+    for key = 1, #tab do
+      local value = tab[key]
       table.insert(newTab, { value.x, value.y })
     end
     return newTab

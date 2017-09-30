@@ -174,7 +174,8 @@ end
 -- @api private
 function arrayToPromise(obj)
   local newArr = {}
-  for k, v in ipairs(obj) do
+  for k = 1, #obj do
+    local v = obj[k]
     table.insert(newArr, toPromise(v))
   end
   return Promise.all(newArr);

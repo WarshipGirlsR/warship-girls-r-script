@@ -202,7 +202,8 @@ end
 -- 寻找一个不在舰队里的船
 local function transColorListToString(tab)
   local tmp = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     value[3] = string.format('0x%06X', value[3])
     table.insert(tmp, table.concat(value, '|'))
   end
@@ -211,7 +212,8 @@ end
 
 local function transRelativePoint(tab, basePoint)
   local newTab = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     newTab[key] = { value[1] - basePoint[1], value[2] - basePoint[2], value[3] }
   end
   return newTab
@@ -219,7 +221,8 @@ end
 
 local function transPointList(tab)
   local newTab = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     table.insert(newTab, { value.x, value.y })
   end
   return newTab
@@ -229,12 +232,15 @@ local function subtractionList(target, ...)
   local sources = { ... }
   local sourcesMap = {}
   local newTab = {}
-  for _, source in ipairs(sources) do
-    for _, value in ipairs(source) do
+  for key = 1, #sources do
+    local source = sources[key]
+    for key2 = 1, #source do
+      local value = source[key2]
       sourcesMap[value[1] .. ',' .. value[2]] = value
     end
   end
-  for key, value in ipairs(target) do
+  for key = 1, #target do
+    local value = target[key]
     if (not sourcesMap[value[1] .. ',' .. value[2]]) then
       table.insert(newTab, value)
     end

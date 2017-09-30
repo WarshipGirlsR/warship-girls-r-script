@@ -51,9 +51,10 @@ local expeditionOnce = function(action, state)
 
       -- 将出征派遣列表复制到缓存中
       state.expedition.expeditionFleetToChapter = {}
-      for i, v in ipairs(settings.expeditionFleetToChapter) do
+      for k = 1, #settings.expeditionFleetToChapter do
+        local v = settings.expeditionFleetToChapter[k]
         if (v) then
-          table.insert(state.expedition.expeditionFleetToChapter, { i, v })
+          table.insert(state.expedition.expeditionFleetToChapter, { k, v })
         end
       end
 
