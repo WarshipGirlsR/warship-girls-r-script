@@ -27,7 +27,7 @@ local exerciseOnce = function(action, state)
 
       stepLabel.setStepLabelContent('6-2.等待home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome },
+        { 'EXERCISE_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -43,9 +43,9 @@ local exerciseOnce = function(action, state)
       stepLabel.setStepLabelContent('6-3.点击出征')
       map.home.clickBattleBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_INIT', map.home.isHome, 2000 },
+        { 'EXERCISE_BATTLE_PAGE', map.exercise.isBattlePage },
+        { 'EXERCISE_EXERCISE_PAGE', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -55,9 +55,9 @@ local exerciseOnce = function(action, state)
       map.exercise.clickExerciseBtn()
       stepLabel.setStepLabelContent('6-5.等待演习页面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome },
-        { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage, 2000 },
-        { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_INIT', map.home.isHome },
+        { 'EXERCISE_BATTLE_PAGE', map.exercise.isBattlePage, 2000 },
+        { 'EXERCISE_EXERCISE_PAGE', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -72,9 +72,9 @@ local exerciseOnce = function(action, state)
         map.exercise.clickToNExerciseBtn(nBtn)
         stepLabel.setStepLabelContent('6-8.等待出征准备界面')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage, 2000 },
-          { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage, 2000 },
-          { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage, 500 },
+          { 'EXERCISE_BATTLE_PAGE', map.exercise.isBattlePage, 2000 },
+          { 'EXERCISE_EXERCISE_PAGE', map.exercise.isExercisePage, 2000 },
+          { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage, 500 },
         }))
         return makeAction(newstateTypes), state
       else
@@ -104,8 +104,8 @@ local exerciseOnce = function(action, state)
           map.exercise.clickReadyBattlePageQuickSupplyBtn()
           stepLabel.setStepLabelContent('6-14.等待快速补给界面')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-            { 'EXERCISE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.exercise.isQuickSupplyModal },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage, 2000 },
+            { 'EXERCISE_QUICK_SUPPLY_MODAL', map.exercise.isQuickSupplyModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -123,8 +123,8 @@ local exerciseOnce = function(action, state)
             map.exercise.clickQuickRepairBtn()
             stepLabel.setStepLabelContent('6-18.等待快修界面')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-              { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage, 2000 },
+              { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
@@ -154,8 +154,8 @@ local exerciseOnce = function(action, state)
       state.exercise.quickSupplyCount = state.exercise.quickSupplyCount + 1
       if (state.exercise.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-          { 'EXERCISE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.exercise.isQuickSupplyModal, 2000 },
+          { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+          { 'EXERCISE_QUICK_SUPPLY_MODAL', map.exercise.isQuickSupplyModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       else
@@ -171,8 +171,8 @@ local exerciseOnce = function(action, state)
       stepLabel.setStepLabelContent('6-27.等待出征准备界面')
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-        { 'EXERCISE_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal, 2000 },
+        { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_QUICK_SUPPLY_MODAL_CLOSE', map.exercise.isQuickSupplyModal, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -187,15 +187,15 @@ local exerciseOnce = function(action, state)
         stepLabel.setStepLabelContent('6-29.等待出征准备界面')
         if (state.exercise.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal, 2000 },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('6-30.快速修理数量不足')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal, 2000 },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickSupplyModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         end
@@ -214,8 +214,8 @@ local exerciseOnce = function(action, state)
             stepLabel.setStepLabelContent('6-32.中破或大破:' .. table.concat(res, ','))
             map.exercise.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal, 500 },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
@@ -224,8 +224,8 @@ local exerciseOnce = function(action, state)
             state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
             stepLabel.setStepLabelContent('6-33快修数量不足')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickSupplyModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -233,8 +233,8 @@ local exerciseOnce = function(action, state)
           stepLabel.setStepLabelContent('6-34.修理完成')
           state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickRepairModal },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -253,8 +253,8 @@ local exerciseOnce = function(action, state)
             map.exercise.clickQuickRepairModalSingleShip(res[1])
             c.yield(sleepPromise(500))
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
@@ -263,8 +263,8 @@ local exerciseOnce = function(action, state)
             state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
             stepLabel.setStepLabelContent('6-37.快修数量不足')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickSupplyModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -272,8 +272,8 @@ local exerciseOnce = function(action, state)
           stepLabel.setStepLabelContent('6-38修理完成')
           state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickRepairModal },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -287,8 +287,8 @@ local exerciseOnce = function(action, state)
       c.yield(sleepPromise(300))
       stepLabel.setStepLabelContent('6-40.等待出征准备界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickRepairModal, 2000 },
-        { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickRepairModal, 2000 },
+        { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -316,12 +316,12 @@ local exerciseOnce = function(action, state)
 
       stepLabel.setStepLabelContent('6-44.等待出征准备界面，...')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_GO_A_EXERCISE', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-        { 'EXERCISE_START_PAGE', 'missionsGroup', map.exercise.isBattleStartPage },
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2 },
+        { 'EXERCISE_GO_A_EXERCISE', map.exercise.isReadyBattlePage, 2000 },
+        { 'EXERCISE_START_PAGE', map.exercise.isBattleStartPage },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
@@ -332,11 +332,11 @@ local exerciseOnce = function(action, state)
       map.exercise.clickBattleStartModalStartBtn()
       stepLabel.setStepLabelContent('6-46等待阵型面板，追击面板，胜利界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_GO_A_EXERCISE', 'missionsGroup', map.exercise.isReadyBattlePage },
-        { 'EXERCISE_START_PAGE', 'missionsGroup', map.exercise.isBattleStartPage, 2000 },
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
+        { 'EXERCISE_GO_A_EXERCISE', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_START_PAGE', map.exercise.isBattleStartPage, 2000 },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -347,10 +347,10 @@ local exerciseOnce = function(action, state)
       map.exercise.clickFormationPageStartBtn(settings.exerciseFormation)
       stepLabel.setStepLabelContent('6-48.等待追击面板，胜利界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_START_PAGE', 'missionsGroup', map.exercise.isBattleStartPage },
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage, 2000 },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
+        { 'EXERCISE_START_PAGE', map.exercise.isBattleStartPage },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage, 2000 },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -367,10 +367,10 @@ local exerciseOnce = function(action, state)
       end
       stepLabel.setStepLabelContent('6-52.等待胜利界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal, 2000 },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2 },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal, 2000 },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
@@ -380,12 +380,12 @@ local exerciseOnce = function(action, state)
       map.exercise.clickVictoryPageContinueBtn()
       stepLabel.setStepLabelContent('6-54.等待胜利继续界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage, 2000 },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage, 2000 },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -395,19 +395,19 @@ local exerciseOnce = function(action, state)
       map.exercise.clickVictoryPageContinueBtn2()
       stepLabel.setStepLabelContent('6-56.等待演习界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2, 2000 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_READY_BATTLE_PAGE_CANT_GO') then
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isReadyBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -416,9 +416,9 @@ local exerciseOnce = function(action, state)
       map.exercise.clickReadyBattlePageBackBtn()
       stepLabel.setStepLabelContent("6-57等待出征界面")
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isReadyBattlePage, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -428,8 +428,8 @@ local exerciseOnce = function(action, state)
       map.exercise.clickBackToHomeBtn()
       stepLabel.setStepLabelContent('6-59.等待home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage, 2000 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage, 2000 },
       }))
       return makeAction(newstateTypes), state
     end

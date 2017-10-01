@@ -20,7 +20,7 @@ local expeditionReward = function(action, state)
 
       stepLabel.setStepLabelContent('4-1.等待HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'EXPEDITION_REWARD_INIT', 'missionsGroup', map.home.isHome },
+        { 'EXPEDITION_REWARD_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -51,9 +51,9 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-6.等待出征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', 'missionsGroup', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_HOME', map.home.isHome, 2000 },
+        { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -64,9 +64,9 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-8.等待远征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', 'missionsGroup', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_HOME', map.home.isHome, 2000 },
+        { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -80,7 +80,7 @@ local expeditionReward = function(action, state)
         state.expedition.lastChapter = chapter
         stepLabel.setStepLabelContent('4-10.检测本页有可收获奖励')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', 'missionsGroup', map.expedition.isBattleExpedition, 1000 },
+          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition, 1000 },
         }))
         return makeAction(newstateTypes), state
       else
@@ -101,8 +101,8 @@ local expeditionReward = function(action, state)
         stepLabel.setStepLabelContent('4-12.等待远征完成页面')
 
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
-          { 'EXPEDITION_REWARD_COMPLETED_PAGE', 'missionsGroup', map.expedition.isExpeditionCompletedPage },
+          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition, 2000 },
+          { 'EXPEDITION_REWARD_COMPLETED_PAGE', map.expedition.isExpeditionCompletedPage },
         }))
         return makeAction(newstateTypes), state
       end
@@ -117,8 +117,8 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-14.等待远征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_COMPLETED_PAGE', 'missionsGroup', map.expedition.isExpeditionCompletedPage, 2000 },
-        { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_COMPLETED_PAGE', map.expedition.isExpeditionCompletedPage, 2000 },
+        { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition },
       }))
       return makeAction(newstateTypes), state
 
@@ -128,7 +128,7 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-15.返回HOME')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXPEDITION_REWARD_RETURN_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_REWARD_RETURN_TO_HOME', map.expedition.isBattleExpedition, 2000 },
       }))
       return makeAction(newstateTypes), state
     end

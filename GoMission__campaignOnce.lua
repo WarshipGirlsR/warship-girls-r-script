@@ -20,7 +20,7 @@ local campaignOnce = function(action, state)
 
       stepLabel.setStepLabelContent('7-1.等待home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome },
+        { 'CAMPAIGN_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -38,9 +38,9 @@ local campaignOnce = function(action, state)
       stepLabel.setStepLabelContent('7-2.点击出征')
       map.home.clickBattleBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome, 2000 },
-        { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_INIT', map.home.isHome, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage },
+        { 'CAMPAIGN_CAMPAIGN_PAGE', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -50,9 +50,9 @@ local campaignOnce = function(action, state)
       map.campaign.clickCampaignBtn()
       stepLabel.setStepLabelContent('7-4.等待战役页面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome },
-        { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage, 2000 },
-        { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_INIT', map.home.isHome },
+        { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage, 2000 },
+        { 'CAMPAIGN_CAMPAIGN_PAGE', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -66,9 +66,9 @@ local campaignOnce = function(action, state)
       map.campaign.clickCampainReadyBtn(settings.campaignDifficulty)
       stepLabel.setStepLabelContent('7-7.等待战役准备界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage, 2000 },
-        { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage, 2000 },
-        { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage, 2000 },
+        { 'CAMPAIGN_CAMPAIGN_PAGE', map.campaign.isCampaignPage, 2000 },
+        { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -83,8 +83,8 @@ local campaignOnce = function(action, state)
           map.campaign.clickReadyBattlePageQuickSupplyBtn()
           stepLabel.setStepLabelContent('7-12.等待快速补给界面')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
-            { 'CAMPAIGN_QUICK_SUPPLY_MODAL', 'missionsGroup', map.campaign.isQuickSupplyModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage, 2000 },
+            { 'CAMPAIGN_QUICK_SUPPLY_MODAL', map.campaign.isQuickSupplyModal },
           }))
           return makeAction(newstateTypes), state
         else
@@ -106,8 +106,8 @@ local campaignOnce = function(action, state)
             map.campaign.clickQuickRepairBtn()
             stepLabel.setStepLabelContent('7-16.等待快修界面')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage, 2000 },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
@@ -137,8 +137,8 @@ local campaignOnce = function(action, state)
       state.campaign.quickSupplyCount = state.campaign.quickSupplyCount + 1
       if (state.campaign.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-          { 'CAMPAIGN_QUICK_SUPPLY_MODAL', 'missionsGroup', map.campaign.isQuickSupplyModal, 2000 },
+          { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+          { 'CAMPAIGN_QUICK_SUPPLY_MODAL', map.campaign.isQuickSupplyModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       else
@@ -154,8 +154,8 @@ local campaignOnce = function(action, state)
       stepLabel.setStepLabelContent('7-26.等待出征准备界面')
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-        { 'CAMPAIGN_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickSupplyModal, 2000 },
+        { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_QUICK_SUPPLY_MODAL_CLOSE', map.campaign.isQuickSupplyModal, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -168,15 +168,15 @@ local campaignOnce = function(action, state)
         stepLabel.setStepLabelContent('7-28.等待出征准备界面')
         if (state.campaign.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal, 2000 },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('7-29.快修数量不足')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -194,8 +194,8 @@ local campaignOnce = function(action, state)
             stepLabel.setStepLabelContent('7-31.中破或大破:' .. table.concat(res, ','))
             map.campaign.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal, 500 },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
@@ -204,8 +204,8 @@ local campaignOnce = function(action, state)
             state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
             stepLabel.setStepLabelContent('7-32.快修数量不足')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -213,8 +213,8 @@ local campaignOnce = function(action, state)
           stepLabel.setStepLabelContent('7-33.修理完成')
           state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -234,8 +234,8 @@ local campaignOnce = function(action, state)
             map.campaign.clickQuickRepairModalSingleShip(res[1])
             c.yield(sleepPromise(500))
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
@@ -244,8 +244,8 @@ local campaignOnce = function(action, state)
             state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
             stepLabel.setStepLabelContent('7-36.快修数量不足')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -253,8 +253,8 @@ local campaignOnce = function(action, state)
           stepLabel.setStepLabelContent('7-37.修理完成')
           state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -267,8 +267,8 @@ local campaignOnce = function(action, state)
       map.campaign.clickQuickRepairModalCloseBtn()
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal, 2000 },
-        { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal, 2000 },
+        { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -284,12 +284,12 @@ local campaignOnce = function(action, state)
 
       stepLabel.setStepLabelContent('7-40.等待出征准备界面，...')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.campaign.isReadyBattlePage, 3000 },
-        { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage },
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
+        { 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO', map.campaign.isReadyBattlePage, 3000 },
+        { 'CAMPAIGN_START_PAGE', map.campaign.isBattleStartPage },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
@@ -300,11 +300,11 @@ local campaignOnce = function(action, state)
       map.campaign.clickBattleStartModalStartBtn()
       stepLabel.setStepLabelContent('7-42.等待阵型面板，追击面板，胜利界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_GO_A_EXERCISE', 'missionsGroup', map.campaign.isReadyBattlePage },
-        { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage, 2000 },
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_GO_A_EXERCISE', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_START_PAGE', map.campaign.isBattleStartPage, 2000 },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -315,10 +315,10 @@ local campaignOnce = function(action, state)
       map.campaign.clickFormationPageStartBtn(settings.exerciseFormation)
       stepLabel.setStepLabelContent('7-44.等待追击面板，胜利界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage },
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage, 2000 },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_START_PAGE', map.campaign.isBattleStartPage },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage, 2000 },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -335,10 +335,10 @@ local campaignOnce = function(action, state)
       end
       stepLabel.setStepLabelContent('7-48.等待胜利界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal, 2000 },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal, 2000 },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
@@ -348,12 +348,12 @@ local campaignOnce = function(action, state)
       map.campaign.clickVictoryPageContinueBtn()
       stepLabel.setStepLabelContent('7-50.等待胜利继续界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage, 2000 },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage, 2000 },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -363,10 +363,10 @@ local campaignOnce = function(action, state)
       map.campaign.clickVictoryPageContinueBtn2()
       stepLabel.setStepLabelContent('7-52.等待演习界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2, 2000 },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -380,9 +380,9 @@ local campaignOnce = function(action, state)
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -391,9 +391,9 @@ local campaignOnce = function(action, state)
       map.campaign.clickReadyBattlePageBackBtn()
       stepLabel.setStepLabelContent("7-53.等待出征界面")
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', map.campaign.isReadyBattlePage, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -403,8 +403,8 @@ local campaignOnce = function(action, state)
       map.campaign.clickBackToHomeBtn()
       stepLabel.setStepLabelContent('7-55.等待home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
     end

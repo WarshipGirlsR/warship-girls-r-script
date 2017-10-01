@@ -229,7 +229,6 @@ table.uniqueLast = table.uniqueOf or function(target, path)
   local theMap = {}
   local result = {}
   local pathType = type(path)
-  local targetLength = table.length(target)
   if (pathType == 'nil') then
     for key = 1, #target do
       local value = target[key]

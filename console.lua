@@ -2,7 +2,7 @@ local nLog = nLog or function() end
 
 local getLength = table.length or function(target)
   local length = 0
-  for k = 1, #target do
+  for k, v in ipairs(target) do
     length = k
   end
   return length
@@ -54,8 +54,7 @@ local function runTable(tab, space)
   local tabLength = 0
   local hasSubTab = false
 
-  for k = 1, #tab do
-    local v = tab[key]
+  for k, v in ipairs(tab) do
     tabLength = k
     table.insert(newTabPairs, { k, runTable(v, space) })
     if (type(v) == 'table') then
@@ -78,12 +77,10 @@ local function runTable(tab, space)
 
     if (hasSubTab) then
       table.insert(resultStrList, '[')
-      for k = 1, #newTabArr do
-        local v = newTabArr[k]
+      for k, v in ipairs(newTabArr) do
         local v2Length = getLength(v[2])
         v[2][v2Length] = v[2][v2Length] .. ','
-        for k2 = 1, #v[2] do
-          local v2 = v[2][k2]
+        for k2, v2 in ipairs(v[2]) do
           table.insert(resultStrList, space .. v2)
         end
       end

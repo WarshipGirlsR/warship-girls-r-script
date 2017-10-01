@@ -111,7 +111,8 @@ function Promise.race(args)
   if (type(args) ~= 'table') then args = {} end
   return Promise.new(function(resolve, reject)
     for k = 1, #args do
-      Promise.resolve(args[k]).andThen(resolve, reject)
+      local value = args[k]
+      Promise.resolve(value).andThen(resolve, reject)
     end
   end)
 end
@@ -224,8 +225,8 @@ end
 -- 移动到链表的下一个promise
 function finale(self)
   local theDef = self.deferreds
-  for k = 1, #self.deferreds do
-    handle(self, self.deferreds[k]);
+  for k = 1, #theDef do
+    handle(self, theDef[k]);
   end
   self.deferreds = {};
   if ((self.PromiseStatus == REJECTED) and (#theDef == 0)) then

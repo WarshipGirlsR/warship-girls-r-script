@@ -30,7 +30,7 @@ local repairOnce = function(action, state)
 
       stepLabel.setStepLabelContent('5-1.等待HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'REPAIR_INIT', 'missionsGroup', map.home.isHome },
+        { 'REPAIR_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -44,9 +44,9 @@ local repairOnce = function(action, state)
       stepLabel.setStepLabelContent('5-3.等待船坞界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_INIT', 'missionsGroup', map.home.isHome, 2000 },
-        { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-        { 'REPAIR_DOCK_PAGE', 'missionsGroup', map.repair.isDockPage },
+        { 'REPAIR_INIT', map.home.isHome, 2000 },
+        { 'REPAIR_REPAIR_PAGE', map.repair.isRepairPage },
+        { 'REPAIR_DOCK_PAGE', map.repair.isDockPage },
       }))
 
       return makeAction(newstateTypes), state
@@ -59,8 +59,8 @@ local repairOnce = function(action, state)
       stepLabel.setStepLabelContent('5-5.等待修理界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-        { 'REPAIR_DOCK_PAGE', 'missionsGroup', map.repair.isDockPage, 2000 },
+        { 'REPAIR_REPAIR_PAGE', map.repair.isRepairPage },
+        { 'REPAIR_DOCK_PAGE', map.repair.isDockPage, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -82,8 +82,8 @@ local repairOnce = function(action, state)
 
           -- 如果一没进入修船选船页面说明没有需要维修的船
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-            { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage },
-            { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 3000 },
+            { 'REPAIR_SELECT_SHIP_PAGE', map.repair.isSelectShipPage },
+            { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage, 3000 },
           }))
 
           if (newstateTypes == 'REPAIR_REPAIR_FINISH') then
@@ -97,14 +97,14 @@ local repairOnce = function(action, state)
           state.repair.needRepair = true
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-            { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
+            { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
           }))
           return makeAction(newstateTypes), state
         end
       else
         stepLabel.setStepLabelContent('5-12.维修出现意外')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
+          { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
         }))
         return makeAction(newstateTypes), state
       end
@@ -120,8 +120,8 @@ local repairOnce = function(action, state)
         stepLabel.setStepLabelContent('5-14.等待返回修理界面')
 
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-          { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
+          { 'REPAIR_RETURN_TO_REPAIR_PAGE', map.repair.isRepairPage },
+          { 'REPAIR_SELECT_SHIP_PAGE', map.repair.isSelectShipPage, 2000 },
         }))
 
         return makeAction(newstateTypes), state
@@ -144,8 +144,8 @@ local repairOnce = function(action, state)
               state.repair.moveCount = state.repair.moveCount - 1
 
               local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-                { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-                { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage },
+                { 'REPAIR_RETURN_TO_REPAIR_PAGE', map.repair.isRepairPage },
+                { 'REPAIR_SELECT_SHIP_PAGE', map.repair.isSelectShipPage },
               }))
 
               return makeAction(newstateTypes), state
@@ -158,8 +158,8 @@ local repairOnce = function(action, state)
 
         stepLabel.setStepLabelContent('5-20.等待返回修理界面')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-          { 'REPAIR_SELECT_SHIP_PAGE_RETURN', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
+          { 'REPAIR_RETURN_TO_REPAIR_PAGE', map.repair.isRepairPage },
+          { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 2000 },
         }))
 
         if (newstateTypes == 'REPAIR_SELECT_SHIP_PAGE_RETURN') then
@@ -175,8 +175,8 @@ local repairOnce = function(action, state)
       stepLabel.setStepLabelContent('5-22.等待第' .. state.repair.slot .. '个槽位变成修理状态')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isSlotNotEmpty(state.repair.slot) },
-        { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 3000 },
+        { 'REPAIR_REPAIR_PAGE', map.repair.isSlotNotEmpty(state.repair.slot) },
+        { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage, 3000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -187,8 +187,8 @@ local repairOnce = function(action, state)
       map.repair.clickSelectShipPageBackBtn()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
-        { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
+        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 2000 },
+        { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -198,8 +198,8 @@ local repairOnce = function(action, state)
       map.repair.clickBackToHomeBtn()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', 'missionsGroup', map.repair.isSelectShipPage, 3000 },
-        { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 2000 },
+        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 3000 },
+        { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage, 2000 },
       }))
       return makeAction(newstateTypes), state
     end

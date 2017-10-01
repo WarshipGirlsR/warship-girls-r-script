@@ -20,7 +20,7 @@ local mission = function(action, state)
 
       stepLabel.setStepLabelContent('3-1.等待HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'MISSION_IS_UNRECEIVED_MISSION', 'missionsGroup', map.home.isHome },
+        { 'MISSION_IS_UNRECEIVED_MISSION', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -44,8 +44,8 @@ local mission = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'MISSION_INIT', 'homeGroup', map.home.isHome, 2000 },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
-        { 'MISSION_PAGE', 'missionsGroup', map.mission.isMission },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission },
+        { 'MISSION_PAGE', map.mission.isMission },
       }))
       return makeAction(newstateTypes), state
 
@@ -56,8 +56,8 @@ local mission = function(action, state)
       stepLabel.setStepLabelContent('3-7.等待任务全部任务界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
-        { 'MISSION_PAGE', 'missionsGroup', map.mission.isMission, 2000 },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission },
+        { 'MISSION_PAGE', map.mission.isMission, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -75,8 +75,8 @@ local mission = function(action, state)
         stepLabel.setStepLabelContent('3-10.等待获得面板')
 
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 2000 },
-          { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel },
+          { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission, 2000 },
+          { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel },
         }))
 
         return makeAction(newstateTypes), state
@@ -89,10 +89,10 @@ local mission = function(action, state)
       stepLabel.setStepLabelContent('3-12.等待新船，任务全部任务')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
-        { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 1000 },
-        { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel, 2000 },
+        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', map.mission.isNewShipPageLockModal },
+        { 'MISSION_IS_NEW_SHIP', map.mission.isNewShipPage },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission, 1000 },
+        { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -104,10 +104,10 @@ local mission = function(action, state)
       stepLabel.setStepLabelContent('3-14.等待新船锁定，任务全部任务')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
-        { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 2000 },
-        { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel, 2000 },
+        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', map.mission.isNewShipPageLockModal },
+        { 'MISSION_IS_NEW_SHIP', map.mission.isNewShipPage },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission, 2000 },
+        { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -119,10 +119,10 @@ local mission = function(action, state)
       stepLabel.setStepLabelContent('3-16.等待任务全部任务')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
-        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
-        { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel, 2000 },
+        { 'MISSION_IS_NEW_SHIP', map.mission.isNewShipPage },
+        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', map.mission.isNewShipPageLockModal },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission },
+        { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -133,7 +133,7 @@ local mission = function(action, state)
       map.mission.clickBackToHome()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_PAGE_NO_REWAR', 'missionsGroup', map.mission.isMission, 2000 },
+        { 'MISSION_PAGE_NO_REWAR', map.mission.isMission, 2000 },
       }))
       return makeAction(newstateTypes), state
     end

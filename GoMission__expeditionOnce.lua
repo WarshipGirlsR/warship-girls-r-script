@@ -41,7 +41,7 @@ local expeditionOnce = function(action, state)
 
       stepLabel.setStepLabelContent('4-16.等待HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_INIT', 'missionsGroup', map.home.isHome },
+        { 'EXPEDITION_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -75,9 +75,9 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-20.等待出征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_IS_BATTLE_PAGE', 'missionsGroup', map.expedition.isBattlePage },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_ONCE_START', map.home.isHome, 2000 },
+        { 'EXPEDITION_IS_BATTLE_PAGE', map.expedition.isBattlePage },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -89,9 +89,9 @@ local expeditionOnce = function(action, state)
 
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_IS_BATTLE_PAGE', 'missionsGroup', map.expedition.isBattlePage, 2000 },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_ONCE_START', map.home.isHome, 2000 },
+        { 'EXPEDITION_IS_BATTLE_PAGE', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition },
       }))
       return makeAction(newstateTypes), state
 
@@ -119,8 +119,8 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-25.等待远征准备界面')
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition, 2000 },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
           }))
           return makeAction(newstateTypes), state
         else
@@ -132,8 +132,8 @@ local expeditionOnce = function(action, state)
       else
         stepLabel.setStepLabelContent('4-27.没有远征')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
         }))
         return makeAction(newstateTypes), state
       end
@@ -158,8 +158,8 @@ local expeditionOnce = function(action, state)
           map.expedition.clickReadyBattlePageQuickSupplyBtn()
           stepLabel.setStepLabelContent('4-32.等待快速补给界面')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_QUICK_SUPPLY_MODAL', 'missionsGroup', map.expedition.isQuickSupplyModal },
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+            { 'EXPEDITION_QUICK_SUPPLY_MODAL', map.expedition.isQuickSupplyModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage, 2000 },
           }))
           return makeAction(newstateTypes), state
         end
@@ -179,8 +179,8 @@ local expeditionOnce = function(action, state)
             stepLabel.setStepLabelContent('4-36.等待快速修理界面')
 
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal },
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+              { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage, 2000 },
             }))
 
             return makeAction(newstateTypes), state
@@ -213,8 +213,8 @@ local expeditionOnce = function(action, state)
       state.expedition.quickSupplyCount = state.expedition.quickSupplyCount + 1
       if (state.expedition.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_QUICK_SUPPLY_MODAL', 'missionsGroup', map.expedition.isQuickSupplyModal, 2000 },
-          { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
+          { 'EXPEDITION_QUICK_SUPPLY_MODAL', map.expedition.isQuickSupplyModal, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
         }))
         return makeAction(newstateTypes), state
       else
@@ -229,8 +229,8 @@ local expeditionOnce = function(action, state)
       map.expedition.clickQuickSupplyModalCloseBtn()
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickSupplyModal, 2000 },
-        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.expedition.isReadyBattlePage },
+        { 'EXPEDITION_QUICK_SUPPLY_MODAL_CLOSE', map.expedition.isQuickSupplyModal, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', map.expedition.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -246,15 +246,15 @@ local expeditionOnce = function(action, state)
         stepLabel.setStepLabelContent('4-46.等待出征准备界面')
         if (state.expedition.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal, 2000 },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('4-47.快修数量不足')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -272,8 +272,8 @@ local expeditionOnce = function(action, state)
             stepLabel.setStepLabelContent('4-49.中破或大破:' .. table.concat(res, ','))
             map.expedition.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal, 500 },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
@@ -282,8 +282,8 @@ local expeditionOnce = function(action, state)
             state.expedition.quickRepairCount = state.battle.quickRepairCount + 1
             stepLabel.setStepLabelContent('4-50.快修数量不足')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -291,8 +291,8 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-51.修理完成')
           state.expedition.quickRepairCount = state.expedition.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -310,8 +310,8 @@ local expeditionOnce = function(action, state)
             stepLabel.setStepLabelContent('4-53.大破:' .. table.concat(res, ','))
             map.expedition.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal, 500 },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
@@ -320,8 +320,8 @@ local expeditionOnce = function(action, state)
             state.expedition.quickRepairCount = state.battle.quickRepairCount + 1
             stepLabel.setStepLabelContent('4-54.快修数量不足')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -329,8 +329,8 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-55.修理完成')
           state.expedition.quickRepairCount = state.expedition.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -344,8 +344,8 @@ local expeditionOnce = function(action, state)
       c.yield(sleepPromise(300))
       stepLabel.setStepLabelContent('4-57.等待出征准备界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal, 2000 },
-        { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
+        { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -357,7 +357,7 @@ local expeditionOnce = function(action, state)
       if (fleetCanBattle) then
         stepLabel.setStepLabelContent('4-59.可以出征')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.expedition.isReadyBattlePage },
+          { 'EXPEDITION_READY_BATTLE_PAGE_CAN_GO', map.expedition.isReadyBattlePage },
         }))
         return makeAction(newstateTypes), state
       else
@@ -374,8 +374,8 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-63.等待战斗开始')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_CHECK_CAN_GO', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_READY_BATTLE_PAGE_CHECK_CAN_GO', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition },
       }))
       return makeAction(newstateTypes), state
 
@@ -394,8 +394,8 @@ local expeditionOnce = function(action, state)
       map.expedition.clickBackToExpedition()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition },
       }))
 
       -- 如果离开这一页，则从远征队列里退出一个队伍
@@ -414,8 +414,8 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-66.返回远征页')
       map.expedition.clickBackToExpedition()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -424,8 +424,8 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-67.返回港口')
       map.expedition.clickBackToHome()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
       }))
       return makeAction(newstateTypes), state
     end

@@ -74,7 +74,6 @@ local eventQuery = {}
 -- sub query
 local screenListenerQuery = {}
 local screenListenerQueryIndex = {}
-local screenListenerQueryGroup = {}
 local buttonListenerQuery = {}
 local buttonListenerQueryIndex = {}
 local timerQuery = {}
@@ -92,10 +91,9 @@ function getEventObj(func, time, isInterval, ms)
   }
 end
 
-function getScreenEventObj(tags, checker, func)
+function getScreenEventObj(checker, func)
   return {
     id = getEventId() or 0,
-    tags = tags,
     checker = checker,
     func = func,
     drop = false,
@@ -149,29 +147,17 @@ function setInterval(func, ms)
   return eventObj.id
 end
 
--- param: tags, checker, func
+-- param: checker, func
 function setScreenListener(...)
   local args = { ... }
-  local tags = {}
-  if (type(args[1]) == 'table') then
-    tags = table.remove(args, 1)
-  elseif (type(args[1]) == 'string') then
-    tags = { table.remove(args, 1) }
-  end
   local checker = table.remove(args, 1)
   local func = table.remove(args, 1)
 
-
   if (type(checker) ~= 'function') then return 0 end
   if (type(func) ~= 'function') then return 0 end
-  local screenEventObj = getScreenEventObj(tags, checker, func)
+  local screenEventObj = getScreenEventObj(checker, func)
   table.insert(screenListenerQuery, screenEventObj)
   screenListenerQueryIndex[screenEventObj.id] = screenEventObj
-  for key = 1, #tags do
-    local tag = tags[key]
-    screenListenerQueryGroup[tag] = screenListenerQueryGroup[tag] or {}
-    screenListenerQueryGroup[tag][screenEventObj.id] = screenEventObj
-  end
   return screenEventObj.id
 end
 
@@ -179,32 +165,6 @@ function clearScreenListener(id)
   local theEventObj = screenListenerQueryIndex[id]
   if (theEventObj) then
     theEventObj.drop = true
-    screenListenerQueryIndex[id] = nil
-    for key = 1, #theEventObj.tags do
-      local tag = theEventObj.tags[key]
-      if (type(screenListenerQueryGroup[tag]) == 'table') then
-        screenListenerQueryGroup[tag][theEventObj.id] = nil
-        if (isEmpty(screenListenerQueryGroup[tag])) then
-          screenListenerQueryGroup[tag] = nil
-        end
-      end
-    end
-  end
-end
-
-function clearScreenListenerByTags(tags)
-  if (type(tags) ~= 'table') then
-    tags = { tags }
-  end
-  for _, tag in pairs(tags) do
-    local tagsEventObj = screenListenerQueryGroup[tag]
-    if (type(tagsEventObj) == 'table') then
-      for _, eventObj in pairs(tagsEventObj) do
-        eventObj.drop = true
-        screenListenerQueryIndex[eventObj.id] = nil
-      end
-    end
-    screenListenerQueryGroup[tag] = nil
   end
 end
 
@@ -220,7 +180,6 @@ function clearButotnListener(id)
   local theEventObj = buttonListenerQueryIndex[id]
   if (theEventObj) then
     theEventObj.drop = true
-    buttonListenerQueryIndex[id] = nil
   end
 end
 
@@ -229,7 +188,6 @@ function clearListenersOnButton(btnId)
     local value = buttonListenerQuery[key]
     if (value.btnId ~= btnId) then
       value.drop = true
-      buttonListenerQueryIndex[value.id] = nil
     end
   end
 end
@@ -248,7 +206,6 @@ function run()
     for key = 1, #eventQuery do
       local value = eventQuery[key]
       value.func()
-      -- setInterval event
     end
     eventQuery = {}
 
@@ -259,7 +216,7 @@ function run()
     -- timeQuery
     if (#timerQuery > 0) then
       continue = continue + 1
-      local newTimeQuery = {}
+      local hasDropEvent = false
       for key = 1, #timerQuery do
         local value = timerQuery[key]
         if (not value.drop) then
@@ -268,24 +225,40 @@ function run()
 
             -- setInterval event
             if (value.isInterval) then
+              value.drop = false
               repeat
                 value.time = value.time + value.ms
               until (value.time > thisTime)
-              sleepTime = math.min(sleepTime, value.time)
-              table.insert(newTimeQuery, value)
+              sleepTime = math.min(sleepTime, value.time - thisTime)
+            else
+              value.drop = true
+              hasDropEvent = true
             end
           else
-            sleepTime = math.min(sleepTime, value.time)
-            table.insert(newTimeQuery, value)
+            sleepTime = math.min(sleepTime, value.time - thisTime)
           end
+        else
+          hasDropEvent = true
+          timerQueryIndex[value.id] = nil
         end
       end
-      timerQuery = newTimeQuery
-      newTimeQuery = nil
+
+      if hasDropEvent then
+        local newTimeQuery = {}
+        for key = 1, #timerQuery do
+          local value = timerQuery[key]
+          if not value.drop then
+            table.insert(newTimeQuery, value)
+          else
+            timerQueryIndex[value.id] = nil
+          end
+        end
+        timerQuery = newTimeQuery
+      end
     end
 
     -- screenListenerQuery
-    if (#screenListenerQuery > 0) then
+    if #screenListenerQuery > 0 then
       if type(getDeviceOrient) == 'function' then getDeviceOrient() end
       local hasDropEvent = false
       continue = continue + 1
@@ -314,6 +287,8 @@ function run()
           local value = screenListenerQuery[key]
           if (not value.drop) then
             table.insert(newScreenListenerQuery, value)
+          else
+            screenListenerQueryIndex[value.id] = nil
           end
         end
         screenListenerQuery = newScreenListenerQuery
@@ -351,6 +326,8 @@ function run()
             local value = buttonListenerQuery[key]
             if (not value.drop) then
               table.insert(newButtonListenerQuery, value)
+            else
+              buttonListenerQueryIndex[value.id] = nil
             end
           end
           buttonListenerQuery = newButtonListenerQuery
@@ -361,7 +338,6 @@ function run()
     if (luaExisted) then
       break
     end
-
     if (#eventQuery <= 0) then
       mSleep(sleepTime)
     end
@@ -376,7 +352,6 @@ return {
   clearInterval = clearTimeout,
   setScreenListener = setScreenListener,
   clearScreenListener = clearScreenListener,
-  clearScreenListenerByTags = clearScreenListenerByTags,
   setButotnListener = setButotnListener,
   clearListenersOnButton = clearListenersOnButton,
   clearButotnListener = clearButotnListener,

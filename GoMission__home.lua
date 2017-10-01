@@ -47,8 +47,8 @@ local home = function(action, state)
         map.home.clickSignModalGetReward()
         stepLabel.setStepLabelContent('1-6.等待获取确认')
         local newstateTypes = c.yield(setScreenListeners({
-          { 'HOME_SIGN_CONFIRM_MODAL', 'missionsGroup', map.home.isSignConfirmModal },
-          { 'HOME_SIGN_MODAL', 'missionsGroup', map.home.isSignModal, 2000 },
+          { 'HOME_SIGN_CONFIRM_MODAL', map.home.isSignConfirmModal },
+          { 'HOME_SIGN_MODAL', map.home.isSignModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       else
@@ -69,8 +69,8 @@ local home = function(action, state)
       stepLabel.setStepLabelContent('1-9.等待获取签到奖励面板')
       c.yield(sleepPromise(2000))
       local newstateTypes = c.yield(setScreenListeners({
-        { 'HOME_SIGN_CONFIRM_MODAL', 'missionsGroup', map.home.isSignConfirmModal, 2000 },
-        { 'HOME_SIGN_MODAL', 'missionsGroup', map.home.isSignModal },
+        { 'HOME_SIGN_CONFIRM_MODAL', map.home.isSignConfirmModal, 2000 },
+        { 'HOME_SIGN_MODAL', map.home.isSignModal },
       }))
       return makeAction(newstateTypes), state
     end

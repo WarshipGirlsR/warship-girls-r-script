@@ -32,7 +32,7 @@ local gomission = require 'GoMission'
 local stepLabel = (require 'StepLabel').init('stopbtn')
 local lfs = require 'lfs'
 
-Promise.setStackTraceback(false)
+Promise.setStackTraceback(setStackTraceback or false)
 
 -- 删除大于7天并且大于50条的log，避免日志过大
 local _ = (function()
