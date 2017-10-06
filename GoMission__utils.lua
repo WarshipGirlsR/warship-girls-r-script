@@ -82,7 +82,6 @@ local setScreenListeners = function(theArr, ...)
       eq.clearScreenListener(ids[key])
       eq.clearTimeout(ids[key])
     end
-    console.log(res)
     return res
   end))
 end
