@@ -18,7 +18,14 @@ local campaignOnce = function(action, state)
   return co(c.create(function()
     if (action.type == 'CAMPAIGN_START') then
 
-      stepLabel.setStepLabelContent('7-1.等待home')
+      -- 没有到检查演习的时间
+      if state.campaign.nextStartTime > os.time() then
+        stepLabel.setStepLabelContent('7-1.跳过战役，下次检查时间：' .. os.date("%Y-%m-%d %H:%M:%S", state.campaign.nextStartTime))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
+        return makeAction(newstateTypes), state
+      end
+
+      stepLabel.setStepLabelContent('7-2.等待home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
         { 'CAMPAIGN_INIT', map.home.isHome },
       }))
@@ -35,7 +42,7 @@ local campaignOnce = function(action, state)
       -- 出征后就应该需要维修
       state.repair.needRepair = true
 
-      stepLabel.setStepLabelContent('7-2.点击出征')
+      stepLabel.setStepLabelContent('7-3.点击出征')
       map.home.clickBattleBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'CAMPAIGN_INIT', map.home.isHome, 2000 },
@@ -46,9 +53,9 @@ local campaignOnce = function(action, state)
 
     elseif (action.type == 'CAMPAIGN_BATTLE_PAGE') then
 
-      stepLabel.setStepLabelContent('7-3.点击战役')
+      stepLabel.setStepLabelContent('7-4.点击战役')
       map.campaign.clickCampaignBtn()
-      stepLabel.setStepLabelContent('7-4.等待战役页面')
+      stepLabel.setStepLabelContent('7-5.等待战役页面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'CAMPAIGN_INIT', map.home.isHome },
         { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage, 2000 },
@@ -59,12 +66,12 @@ local campaignOnce = function(action, state)
     elseif (action.type == 'CAMPAIGN_CAMPAIGN_PAGE') then
 
       c.yield(sleepPromise(100))
-      stepLabel.setStepLabelContent('7-5.移动到战役' .. settings.campaignChapter)
+      stepLabel.setStepLabelContent('7-6.移动到战役' .. settings.campaignChapter)
       map.campaign.moveToCampaignMission(settings.campaignChapter)
       c.yield(sleepPromise(300))
-      stepLabel.setStepLabelContent('7-6.点击战役')
+      stepLabel.setStepLabelContent('7-7.点击战役')
       map.campaign.clickCampainReadyBtn(settings.campaignDifficulty)
-      stepLabel.setStepLabelContent('7-7.等待战役准备界面')
+      stepLabel.setStepLabelContent('7-8.等待战役准备界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage, 2000 },
         { 'CAMPAIGN_CAMPAIGN_PAGE', map.campaign.isCampaignPage, 2000 },
@@ -75,20 +82,20 @@ local campaignOnce = function(action, state)
     elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE') then
 
       if ((state.campaign.quickSupplyCount <= 0) and (state.campaign.quickRepairCount <= 0)) then
-        stepLabel.setStepLabelContent('7-10.检测所有状态')
+        stepLabel.setStepLabelContent('7-9.检测所有状态')
         c.yield(sleepPromise(1000))
         local res = map.campaign.isReadyBattlePageShipStatusAllRight()
         if (not res) then
-          stepLabel.setStepLabelContent('7-11.状态不正常')
+          stepLabel.setStepLabelContent('7-10.状态不正常')
           map.campaign.clickReadyBattlePageQuickSupplyBtn()
-          stepLabel.setStepLabelContent('7-12.等待快速补给界面')
+          stepLabel.setStepLabelContent('7-11.等待快速补给界面')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
             { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage, 2000 },
             { 'CAMPAIGN_QUICK_SUPPLY_MODAL', map.campaign.isQuickSupplyModal },
           }))
           return makeAction(newstateTypes), state
         else
-          stepLabel.setStepLabelContent('7-11.状态正常')
+          stepLabel.setStepLabelContent('7-12.状态正常')
           state.campaign.quickSupplyCount = state.campaign.quickSupplyCount + 1
           return { type = 'CAMPAIGN_READY_BATTLE_PAGE' }, state
         end
@@ -277,7 +284,10 @@ local campaignOnce = function(action, state)
       stepLabel.setStepLabelContent('7-39.出征准备界面出征开始')
       c.yield(sleepPromise(100))
       map.campaign.clickBattleStartBtn()
-      -- 如果没有开始说明无法远征
+      -- 如果没有开始说明无法战役
+      -- 设置下一次检查战役的时间
+      state.campaign.nextStartTime = os.time() + settings.campaignInterval
+
       return { type = 'CAMPAIGN_GO_A_EXERCISE' }, state
 
     elseif (action.type == 'CAMPAIGN_GO_A_EXERCISE') then
@@ -413,6 +423,8 @@ local campaignOnce = function(action, state)
 end
 
 return function(state)
-  state.campaign = {}
+  state.campaign = {
+    nextStartTime = os.time(),
+  }
   return campaignOnce
 end

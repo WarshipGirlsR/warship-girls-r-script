@@ -169,11 +169,11 @@ function clearScreenListener(id)
 end
 
 function setButotnListener(btnId, func)
-  if (type(func) ~= 'function') then return 0 end
-  local btnEventObj = getButtonEventObj(btnId, func)
-  table.insert(buttonListenerQuery, btnEventObj)
-  buttonListenerQueryIndex[btnEventObj.id] = btnEventObj
-  return btnEventObj.id
+  --  if (type(func) ~= 'function') then return 0 end
+  --  local btnEventObj = getButtonEventObj(btnId, func)
+  --  table.insert(buttonListenerQuery, btnEventObj)
+  --  buttonListenerQueryIndex[btnEventObj.id] = btnEventObj
+  --  return btnEventObj.id
 end
 
 function clearButotnListener(id)

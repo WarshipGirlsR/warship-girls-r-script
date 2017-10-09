@@ -571,15 +571,15 @@ local settingTable = {
       },
       {
         ['type'] = 'Label',
-        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-        ['size'] = 50,
+        ['text'] = '间隔多长时间检查一次',
+        ['size'] = 15,
         ['align'] = 'left',
         ['color'] = '0,0,0',
       },
       {
         ['id'] = 'exerciseInterval',
         ['type'] = 'Edit',
-        ['prompt'] = '每次演习间隔多长时间',
+        ['prompt'] = '间隔多长时间检查一次',
         ['text'] = '900',
         ['kbtype'] = 'number',
       },
@@ -663,7 +663,7 @@ local settingTable = {
         ['id'] = 'campaignAlertWhenNoHp',
         ['type'] = 'RadioGroup',
         ['list'] = '是,否',
-        ['select'] = '0',
+        ['select'] = '1',
       },
       {
         ['type'] = 'Label',
@@ -677,6 +677,20 @@ local settingTable = {
         ['type'] = 'RadioGroup',
         ['list'] = '单纵,复纵,轮型,梯形,单横',
         ['select'] = '1',
+      },
+      {
+        ['type'] = 'Label',
+        ['text'] = '间隔多长时间检查一次',
+        ['size'] = 15,
+        ['align'] = 'left',
+        ['color'] = '0,0,0',
+      },
+      {
+        ['id'] = 'campaignInterval',
+        ['type'] = 'Edit',
+        ['prompt'] = '间隔多长时间检查一次',
+        ['text'] = '900',
+        ['kbtype'] = 'number',
       },
       {
         ['type'] = 'Label',
