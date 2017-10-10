@@ -169,11 +169,11 @@ function clearScreenListener(id)
 end
 
 function setButotnListener(btnId, func)
-  --  if (type(func) ~= 'function') then return 0 end
-  --  local btnEventObj = getButtonEventObj(btnId, func)
-  --  table.insert(buttonListenerQuery, btnEventObj)
-  --  buttonListenerQueryIndex[btnEventObj.id] = btnEventObj
-  --  return btnEventObj.id
+  if (type(func) ~= 'function') then return 0 end
+  local btnEventObj = getButtonEventObj(btnId, func)
+  table.insert(buttonListenerQuery, btnEventObj)
+  buttonListenerQueryIndex[btnEventObj.id] = btnEventObj
+  return btnEventObj.id
 end
 
 function clearButotnListener(id)
@@ -203,11 +203,13 @@ function run()
     sleepTime = 3600000
 
     -- run eventQuery
-    for key = 1, #eventQuery do
-      local value = eventQuery[key]
-      value.func()
+    if #eventQuery > 0 then
+      for key = 1, #eventQuery do
+        local value = eventQuery[key]
+        value.func()
+      end
+      eventQuery = {}
     end
-    eventQuery = {}
 
 
     -- read event from other Query
