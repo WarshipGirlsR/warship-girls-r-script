@@ -3,9 +3,9 @@ isPause = false
 luaExisted = false
 function beforeUserExit()
   luaExisted = true
-  vibrator(500)
-  mSleep(500)
-  vibrator(500)
+  --  vibrator(500)
+  --  mSleep(500)
+  --  vibrator(500)
 end
 
 if (deviceIsLock() ~= 0) then
@@ -974,11 +974,11 @@ local theMissionsQuery = {}
 
 co(c.create(function()
   if (settings.missionEnable
-    or settings.expeditionEnable
-    or settings.battleEnable
-    or settings.repairEnable
-    or settings.exerciseEnable
-    or settings.campaignEnable) then
+      or settings.expeditionEnable
+      or settings.battleEnable
+      or settings.repairEnable
+      or settings.exerciseEnable
+      or settings.campaignEnable) then
 
     -- 插入一个特殊的任务表示这是队列的开头
     table.insert(theMissionsQuery, { isBase = true, isStart = true })

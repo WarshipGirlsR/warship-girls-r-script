@@ -11,6 +11,8 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
+local sendToTasker = require 'sendMessageToTasker'
+
 local expeditionOnce = function(action, state)
   local map = allOptions.map
   local settings = allOptions.settings
@@ -31,9 +33,9 @@ local expeditionOnce = function(action, state)
       end
 
       if ((not settings.expeditionFleetToChapter[1])
-        and (not settings.expeditionFleetToChapter[2])
-        and (not settings.expeditionFleetToChapter[3])
-        and (not settings.expeditionFleetToChapter[4])) then
+          and (not settings.expeditionFleetToChapter[2])
+          and (not settings.expeditionFleetToChapter[3])
+          and (not settings.expeditionFleetToChapter[4])) then
         stepLabel.setStepLabelContent('4-18.没有远征任务！返回港口')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
         return makeAction(newstateTypes), state
@@ -385,9 +387,10 @@ local expeditionOnce = function(action, state)
 
       -- 震动提示不能远征
       if (settings.expeditionAlertWhenNoHp) then
-        vibrator(500)
-        mSleep(500)
-        vibrator(500)
+        --        vibrator(500)
+        --        mSleep(500)
+        --        vibrator(500)
+        sendToTasker(os.date('%Y-%m-%d %X') .. '  ' .. getDeviceModel() .. '  ' .. '远征失败')
       end
 
       stepLabel.setStepLabelContent('4-64.点击返回远征界面')

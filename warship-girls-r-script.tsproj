@@ -40,6 +40,7 @@ lfs.lua
 main.lua
 MultiColorHock.lua
 Promise.lua
+sendMessageToTasker.lua
 StepLabel.lua
 StringLib.lua
 TableLib.lua

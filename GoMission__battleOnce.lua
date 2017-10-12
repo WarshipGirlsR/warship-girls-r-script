@@ -9,6 +9,8 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
+local sendToTasker = require 'sendMessageToTasker'
+
 
 local battleOnce = function(action, state)
   local map = allOptions.map
@@ -474,7 +476,7 @@ local battleOnce = function(action, state)
 
       stepLabel.setStepLabelContent('2-59.追击面板')
       if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-        or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+          or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
         stepLabel.setStepLabelContent('2-60.追击')
         map.battle.clickPursueModalOk()
       else
@@ -612,11 +614,12 @@ local battleOnce = function(action, state)
 
     elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CANT_GO') then
 
-      -- 震动提示不能战斗
+      -- 提示不能战斗
       if (settings.battleAlertWhenNoHp) then
-        vibrator(500)
-        mSleep(500)
-        vibrator(500)
+        --        vibrator(500)
+        --        mSleep(500)
+        --        vibrator(500)
+        sendToTasker(os.date('%Y-%m-%d %X') .. '  ' .. getDeviceModel() .. '  ' .. '不能出征')
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {

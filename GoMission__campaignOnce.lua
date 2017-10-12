@@ -11,6 +11,8 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
+local sendToTasker = require 'sendMessageToTasker'
+
 local campaignOnce = function(action, state)
   local map = allOptions.map
   local settings = allOptions.settings
@@ -384,9 +386,10 @@ local campaignOnce = function(action, state)
 
       -- 震动提示不能战斗
       if (settings.campaignAlertWhenNoHp) then
-        vibrator(500)
-        mSleep(500)
-        vibrator(500)
+        --        vibrator(500)
+        --        mSleep(500)
+        --        vibrator(500)
+        sendToTasker(os.date('%Y-%m-%d %X') .. '  ' .. getDeviceModel() .. '  ' .. '战役失败')
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
