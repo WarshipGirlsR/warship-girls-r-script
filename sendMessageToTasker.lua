@@ -33,7 +33,7 @@ function sendToTasker(title, text)
   eq.setTimeout(function()
     os.execute('rm -rf ' .. titleFileName)
     os.execute('rm -rf ' .. textFileName)
-  end, 2000)
+  end, 10000)
 end
 
 return sendToTasker
