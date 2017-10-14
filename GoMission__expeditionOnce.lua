@@ -33,9 +33,9 @@ local expeditionOnce = function(action, state)
       end
 
       if ((not settings.expeditionFleetToChapter[1])
-          and (not settings.expeditionFleetToChapter[2])
-          and (not settings.expeditionFleetToChapter[3])
-          and (not settings.expeditionFleetToChapter[4])) then
+        and (not settings.expeditionFleetToChapter[2])
+        and (not settings.expeditionFleetToChapter[3])
+        and (not settings.expeditionFleetToChapter[4])) then
         stepLabel.setStepLabelContent('4-18.没有远征任务！返回港口')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
         return makeAction(newstateTypes), state
@@ -100,6 +100,8 @@ local expeditionOnce = function(action, state)
     elseif (action.type == 'EXPEDITION_IS_EXPEDITION_PAGE') then
       -- 进入远征页面
       if (#state.expedition.expeditionFleetToChapter > 0) then
+        c.yield(sleepPromise(500))
+
         state.expedition.quickSupplyCount = 0
         state.expedition.quickRepairCount = 0
 

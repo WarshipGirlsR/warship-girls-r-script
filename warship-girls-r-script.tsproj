@@ -39,6 +39,7 @@ KeepScreenHock.lua
 lfs.lua
 main.lua
 MultiColorHock.lua
+optionsLabel.lua
 Promise.lua
 sendMessageToTasker.lua
 StepLabel.lua

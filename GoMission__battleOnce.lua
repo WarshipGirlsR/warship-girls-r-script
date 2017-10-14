@@ -27,7 +27,6 @@ local battleOnce = function(action, state)
       state.battle.battleNum = 1
       state.battle.cantBattle = true
       state.battle.battleRebootAt6_1AMeetCVFlag = false
-      state.battle.battleChapter = nil
       state.battle.passBattleStartPage = false
 
       -- 出征后就应该需要维修
@@ -68,16 +67,10 @@ local battleOnce = function(action, state)
 
     elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE') then
 
-      if (#settings.battleChapter > 1) then
-        state.battle.battleChapter = table.remove(settings.battleChapter, 1)
-        table.insert(settings.battleChapter, state.battle.battleChapter)
-      else
-        state.battle.battleChapter = settings.battleChapter[1]
-      end
       stepLabel.setStepLabelContent('2-7.出征的出征页面')
-      stepLabel.setStepLabelContent('2-8.移动到章节' .. state.battle.battleChapter)
+      stepLabel.setStepLabelContent('2-8.移动到章节' .. settings.battleChapter)
       c.yield(sleepPromise(300))
-      map.battle.moveToChapter(state.battle.battleChapter)
+      map.battle.moveToChapter(settings.battleChapter)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
@@ -387,7 +380,7 @@ local battleOnce = function(action, state)
       state.battle.passBattleStartPage = true
       if (settings.battleRebootAt6_1AMeetCV) then
         stepLabel.setStepLabelContent('2-49.开始检测航母')
-        if (state.battle.battleChapter == '6-1') then
+        if (settings.battleChapter == '6-1') then
           if (state.battle.battleNum == 1) then
             c.yield(sleepPromise(500))
             if (map.battle.isEnemyShipIsCV()) then
@@ -400,7 +393,7 @@ local battleOnce = function(action, state)
       -- 6-1第一战，遇到2雷巡，返回港口
       if (settings.battleRebootAt6_1AMeetCit) then
         stepLabel.setStepLabelContent('2-50.开始检测雷巡')
-        if (state.battle.battleChapter == '6-1') then
+        if (settings.battleChapter == '6-1') then
           if (state.battle.battleNum == 1) then
             c.yield(sleepPromise(500))
             if (map.battle.isEnemyShipIsCit()) then
@@ -446,7 +439,7 @@ local battleOnce = function(action, state)
       -- 6-1未发现敌舰
       if (settings.battleRebootAt6_1AMeetCV) then
         if (not state.battle.passBattleStartPage) then
-          if (state.battle.battleChapter == '6-1') then
+          if (settings.battleChapter == '6-1') then
             if (state.battle.battleNum == 1) then
               c.yield(sleepPromise(500))
               stepLabel.setStepLabelContent('2-56.未发现敌舰，SL大法')

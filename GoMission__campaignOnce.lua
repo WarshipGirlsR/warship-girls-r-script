@@ -385,7 +385,7 @@ local campaignOnce = function(action, state)
     elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO') then
 
       -- 震动提示不能战斗
-      if (settings.campaignAlertWhenNoHp) then
+      if (settings.campaignAlertWhenCantBattle) then
         --        vibrator(500)
         --        mSleep(500)
         --        vibrator(500)
