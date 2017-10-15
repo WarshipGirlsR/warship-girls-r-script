@@ -11,7 +11,7 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
-local sendToTasker = require 'sendMessageToTasker'
+local sendToPushBullet = require 'ajax__sentToPushBullet'
 
 local expeditionOnce = function(action, state)
   local map = allOptions.map
@@ -112,10 +112,9 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-21.移动到第' .. chapter .. '章')
           map.expedition.moveToChapter(chapter, state.expedition.lastChapter)
           state.expedition.lastChapter = chapter
-          c.yield(sleepPromise(300))
+          c.yield(sleepPromise(500))
         end
         stepLabel.setStepLabelContent('4-23.检测第' .. section .. '节能否远征')
-        c.yield(sleepPromise(200))
         local res = map.expedition.isChapterCanExpedition(section)
         if (res) then
           stepLabel.setStepLabelContent('4-24.点击按钮' .. section)
@@ -389,10 +388,17 @@ local expeditionOnce = function(action, state)
 
       -- 震动提示不能远征
       if (settings.expeditionAlertWhenNoHp) then
-        --        vibrator(500)
-        --        mSleep(500)
-        --        vibrator(500)
-        sendToTasker(os.date('%Y-%m-%d %X') .. '  ' .. getDeviceModel() .. '  ' .. '远征失败')
+        if settings.alertUseVibrate then
+          vibrator(500)
+          mSleep(500)
+          vibrator(500)
+        end
+        if settings.alertUsePushbullet then
+          local datestr = os.date('%Y-%m-%d %X')
+          sendToPushBullet(settings.pushbulletsToken,
+            datestr .. ' ' .. settings.pushbulletNickname,
+            datestr .. '  ' .. getDeviceModel() .. '  ' .. '远征失败')
+        end
       end
 
       stepLabel.setStepLabelContent('4-64.点击返回远征界面')

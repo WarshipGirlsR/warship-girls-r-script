@@ -24,26 +24,29 @@ end
 local __console = console or {}
 
 local function runTable(tab, space)
-  if (type(tab) == 'number') then
+  if type(tab) == 'number' then
     return { tostring(tab) }
   end
-  if (type(tab) == 'string') then
+  if type(tab) == 'string' then
+    if string.len(tab) > 1000 then
+      return { '"' .. string.sub(tab, 1, 1000) .. '..."' }
+    end
     return { '"' .. tab .. '"' }
   end
-  if (type(tab) == 'boolean') then
+  if type(tab) == 'boolean' then
     if (tab) then
       return { 'true' }
     else
       return { 'false' }
     end
   end
-  if (type(tab) ~= 'table') then
+  if type(tab) ~= 'table' then
     return { '(' .. type(tab) .. ')' }
   end
-  if (type(space) == 'number') then
+  if type(space) == 'number' then
     space = string.rep(' ', space)
   end
-  if (type(space) ~= 'string') then
+  if type(space) ~= 'string' then
     space = ''
   end
 
@@ -63,7 +66,7 @@ local function runTable(tab, space)
   end
 
   for k, v in pairs(tab) do
-    if ((type(k) ~= 'number') or k > tabLength) then
+    if type(k) ~= 'number' or k > tabLength then
       tabIsArray = false
       table.insert(newTabPairs, { k, runTable(v, space) })
       if (type(v) == 'table') then

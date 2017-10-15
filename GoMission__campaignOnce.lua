@@ -11,7 +11,7 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
-local sendToTasker = require 'sendMessageToTasker'
+local sendToPushBullet = require 'ajax__sentToPushBullet'
 
 local campaignOnce = function(action, state)
   local map = allOptions.map
@@ -384,12 +384,19 @@ local campaignOnce = function(action, state)
 
     elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO') then
 
-      -- 震动提示不能战斗
+      -- 提示不能战役
       if (settings.campaignAlertWhenCantBattle) then
-        --        vibrator(500)
-        --        mSleep(500)
-        --        vibrator(500)
-        sendToTasker(os.date('%Y-%m-%d %X') .. '  ' .. getDeviceModel() .. '  ' .. '战役失败')
+        if settings.alertUseVibrate then
+          vibrator(500)
+          mSleep(500)
+          vibrator(500)
+        end
+        if settings.alertUsePushbullet then
+          local datestr = os.date('%Y-%m-%d %X')
+          sendToPushBullet(settings.pushbulletsToken,
+            datestr .. ' ' .. settings.pushbulletNickname,
+            datestr .. '  ' .. getDeviceModel() .. '  ' .. '战役失败')
+        end
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {

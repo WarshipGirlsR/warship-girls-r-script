@@ -1,6 +1,7 @@
 [res]
 [lib]
 [file]
+ajax__sentToPushBullet.lua
 BaseOperate.lua
 BaseOperate__battle.lua
 BaseOperate__campaign.lua

@@ -96,7 +96,7 @@ return function()
           ['id'] = 'exerciseEnable',
           ['type'] = 'RadioGroup',
           ['list'] = '开启,关闭',
-          ['select'] = '1',
+          ['select'] = '0',
         },
         {
           ['type'] = 'Label',
@@ -109,7 +109,7 @@ return function()
           ['id'] = 'campaignEnable',
           ['type'] = 'RadioGroup',
           ['list'] = '开启,关闭',
-          ['select'] = '1',
+          ['select'] = '0',
         },
         {
           ['type'] = 'Label',
@@ -138,6 +138,56 @@ return function()
           ['prompt'] = '多长时间画面不变则重启游戏(秒)最少60秒',
           ['text'] = '120',
           ['kbtype'] = 'number',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '使用震动方式提醒',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'alertUseVibrate',
+          ['type'] = 'RadioGroup',
+          ['list'] = '开启,关闭',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '使用pushbullet推送提醒(开启后必须填写token)',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'alertUsePushbullet',
+          ['type'] = 'RadioGroup',
+          ['list'] = '开启,关闭',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'pushbullet的token',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'pushbulletsToken',
+          ['type'] = 'Edit',
+          ['prompt'] = 'token',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '设备别名，显示在pushbullet中',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'pushbulletNickname',
+          ['type'] = 'Edit',
+          ['prompt'] = '别名',
         },
         {
           ['type'] = 'Label',
@@ -706,6 +756,20 @@ return function()
   -- 多长时间界面不变则重启，最少60秒
   settings.restartInterval = tonumber(settings.restartInterval) or 120
   settings.restartInterval = math.max(settings.restartInterval, 60)
+  -- 使用震动提醒
+  settings.alertUseVibrate = (function(alertUseVibrate)
+    local list = transStrToTable({ true, false, })
+    return list[alertUseVibrate] or false
+  end)(settings.alertUseVibrate)
+  -- 使用pushbullet推送提醒
+  settings.alertUsePushbullet = (function(alertUsePushbullet)
+    local list = transStrToTable({ true, false, })
+    return list[alertUsePushbullet] or false
+  end)(settings.alertUsePushbullet)
+  -- pushbullet的token
+  settings.pushbulletsToken = settings.pushbulletsToken or ''
+  -- pushbullet的设备别名
+  settings.pushbulletNickname = settings.pushbulletNickname or ''
 
   -- 选择远征要参加的章节
   settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 = (function(fleet1, fleet2, fleet3, fleet4)

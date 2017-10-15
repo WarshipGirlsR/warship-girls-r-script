@@ -9,7 +9,7 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
-local sendToTasker = require 'sendMessageToTasker'
+local sendToPushBullet = require 'ajax__sentToPushBullet'
 
 
 local battleOnce = function(action, state)
@@ -469,7 +469,7 @@ local battleOnce = function(action, state)
 
       stepLabel.setStepLabelContent('2-59.追击面板')
       if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-          or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+        or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
         stepLabel.setStepLabelContent('2-60.追击')
         map.battle.clickPursueModalOk()
       else
@@ -609,10 +609,17 @@ local battleOnce = function(action, state)
 
       -- 提示不能战斗
       if (settings.battleAlertWhenNoHp) then
-        --        vibrator(500)
-        --        mSleep(500)
-        --        vibrator(500)
-        sendToTasker(os.date('%Y-%m-%d %X') .. '  ' .. getDeviceModel() .. '  ' .. '不能出征')
+        if settings.alertUseVibrate then
+          vibrator(500)
+          mSleep(500)
+          vibrator(500)
+        end
+        if settings.alertUsePushbullet then
+          local datestr = os.date('%Y-%m-%d %X')
+          sendToPushBullet(settings.pushbulletsToken,
+            datestr .. ' ' .. settings.pushbulletNickname,
+            datestr .. '  ' .. getDeviceModel() .. '  ' .. '不能出征')
+        end
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {

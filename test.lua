@@ -1,50 +1,44 @@
-table.assign = table.assign or function(target, ...)
-  local sources = { ... }
-  if (type(target) ~= 'table') then target = {} end
-  for k = 1, #sources do
-    local source = sources[k]
-    for key, value in pairs(source) do
-      target[key] = value
-    end
-  end
-  return target
+useNlog = true
+require 'console'
+--获取外网ip地址
+local ts = require("ts")
+local json = ts.json
+local requestBody = {
+  title = '1251261236',
+  body = '123124124',
+  type = 'note',
+}
+local requestHeader = {
+  ['Access-Token'] = 'o.lqzD6x2wqvXHK6iI2CxHeXiVbj8mvZ7w',
+  ['Content-Type'] = 'application/json';
+  ['Content-Length'] = string.len(json.encode(requestBody));
+}
+console.log(requestHeader)
+console.log(requestBody)
+--local code, header_resp, responseBody = ts.httpsPost("https://api.pushbullet.com/v2/pushes", requestBody, requestBody)
+--local responseBody = {}
+--local res, code = https.request {
+--  url = 'https://api.pushbullet.com/v2/pushes',
+--  --    create = function()
+--  --      local req_sock = socket.tcp()
+--  --      req_sock:settimeout(1, 't')
+--  --      return req_sock
+--  --    end,
+--  method = 'POST',
+--  headers = requestHeader,
+--  source = ltn12.source.string(json.encode(requestBody)),
+--  sink = ltn12.sink.table(responseBody)
+--};
+local commandTable = {}
+for k, v in pairs(requestHeader) do
+  table.insert(commandTable, '--header ' .. k .. ':' .. v)
 end
-
-local function transRelativePoint(tab, base)
-  if not base then
-    base = tab[1]
-    table.remove(tab, 1)
-  end
-  local newTab = {}
-  for key, value in ipairs(tab) do
-    newTab[key] = table.assign(value, { value[1] - base[1], value[2] - base[2] })
-  end
-  local tmp = {}
-  for _, value in ipairs(newTab) do
-    value[3] = string.format('0x%06X', value[3])
-    table.insert(tmp, table.concat(value, '|'))
-  end
-
-  return base, table.concat(tmp, ',')
-end
-
-local theParam = (function()
-  local leftTop = { 185, 155 }
-  local rightBotton = { 1899, 1022, }
-  local basePoint, posandcolor = transRelativePoint({
-    { 177, 1687, 0x00a8e9 },
-    { 158, 1648, 0x00a8e9 },
-    { 192, 1653, 0x00a8e9 },
-    { 197, 1696, 0x00a8e9 },
-    { 158, 1698, 0x00a8e9 },
-    { 119, 1741, 0x1ec8ee },
-    { 178, 1716, 0xf0f0f0 },
-    { 184, 1657, 0xf0f0f0 },
-  })
-  return { basePoint[3], posandcolor, 85, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2] }
-end)()
-
-for i = 1, 100000 do
-  local res = findMultiColorInRegionFuzzyExt(table.unpack(theParam))
-  nLog(i .. ': res.length = ' .. #res)
-end
+table.insert(commandTable, '--data-binary ' .. json.encode(json.encode(requestBody)))
+table.insert(commandTable, '--request POST')
+table.insert(commandTable, 'https://api.pushbullet.com/v2/pushes')
+console.log('curl ' .. table.concat(commandTable, ' '))
+local res = io.popen('curl ' .. table.concat(commandTable, ' '));
+console.log(res)
+local responseBody = res:read('*a')
+console.log(responseBody)
+console.log(1333)

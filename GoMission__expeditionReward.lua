@@ -75,7 +75,7 @@ local expeditionReward = function(action, state)
       if (#state.expeditionReward.enableChapter > 0) then
         local chapter = state.expeditionReward.enableChapter[1]
         stepLabel.setStepLabelContent('4-9.移动到第' .. chapter .. '章')
-        c.yield(sleepPromise(300))
+        c.yield(sleepPromise(500))
         map.expedition.moveToChapter(chapter, state.expedition.lastChapter)
         state.expedition.lastChapter = chapter
         stepLabel.setStepLabelContent('4-10.检测本页有可收获奖励')

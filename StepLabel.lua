@@ -9,7 +9,7 @@ local fontSize = 16
 local tsver = getTSVer(); --获取触动精灵引擎版本
 local tsint = tonumber(string.sub(tsver, 1, 1) .. string.sub(tsver, 3, 3) .. string.sub(tsver, 5, 5));
 --转化为数字版本号
-if tsint >= 225 then
+if tsint >= 224 then
   fontSize = 7
 end
 
