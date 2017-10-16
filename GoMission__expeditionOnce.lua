@@ -77,7 +77,7 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-20.等待出征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_ONCE_START', map.home.isHome, 2000 },
+        { 'EXPEDITION_INIT', map.home.isHome, 2000 },
         { 'EXPEDITION_IS_BATTLE_PAGE', map.expedition.isBattlePage },
         { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition, 2000 },
       }))
@@ -91,7 +91,7 @@ local expeditionOnce = function(action, state)
 
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_ONCE_START', map.home.isHome, 2000 },
+        { 'EXPEDITION_INIT', map.home.isHome, 2000 },
         { 'EXPEDITION_IS_BATTLE_PAGE', map.expedition.isBattlePage, 2000 },
         { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition },
       }))
@@ -148,7 +148,7 @@ local expeditionOnce = function(action, state)
         stepLabel.setStepLabelContent('4-28.选择舰队' .. state.expedition.fleet)
         map.expedition.clickSelectFleet(state.expedition.fleet)
         stepLabel.setStepLabelContent('4-29.检测所有状态正常')
-        c.yield(sleepPromise(300))
+        c.yield(sleepPromise(500))
         -- 检测舰队是否在最佳状态
         local res = map.expedition.isReadyBattlePageShipStatusAllRight()
         if (res) then

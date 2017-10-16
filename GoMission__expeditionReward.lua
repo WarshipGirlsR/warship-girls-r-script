@@ -52,9 +52,10 @@ local expeditionReward = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_HOME', map.home.isHome, 2000 },
+        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', map.home.isHome, 3000 },
         { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
       }))
+      console.log(newstateTypes)
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXPEDITION_REWARD_IS_BATTLE') then
@@ -65,13 +66,14 @@ local expeditionReward = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_HOME', map.home.isHome, 2000 },
+        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', map.home.isHome, 3000 },
         { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER') then
 
+      c.yield(sleepPromise(500))
       if (#state.expeditionReward.enableChapter > 0) then
         local chapter = state.expeditionReward.enableChapter[1]
         stepLabel.setStepLabelContent('4-9.移动到第' .. chapter .. '章')
