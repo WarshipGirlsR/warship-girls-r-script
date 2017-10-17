@@ -5,6 +5,7 @@ ajax__sentToPushBullet.lua
 BaseOperate.lua
 BaseOperate__battle.lua
 BaseOperate__campaign.lua
+BaseOperate__disintegrateShip.lua
 BaseOperate__exercise.lua
 BaseOperate__expedition.lua
 BaseOperate__home.lua
@@ -24,6 +25,7 @@ GoMission.lua
 GoMission__battleOnce.lua
 GoMission__campaignOnce.lua
 GoMission__commonListener.lua
+GoMission__disintegrateShipOnce.lua
 GoMission__exerciseOnce.lua
 GoMission__expeditionOnce.lua
 GoMission__expeditionReward.lua
