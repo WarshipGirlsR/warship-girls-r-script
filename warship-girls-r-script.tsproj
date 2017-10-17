@@ -22,10 +22,10 @@ EventQuery.lua
 GetColor.lua
 GetTime.lua
 GoMission.lua
-GoMission__battleOnce.lua
+GoMission__battle.lua
 GoMission__campaignOnce.lua
 GoMission__commonListener.lua
-GoMission__disintegrateShipOnce.lua
+GoMission__disintegrateShip.lua
 GoMission__exerciseOnce.lua
 GoMission__expeditionOnce.lua
 GoMission__expeditionReward.lua

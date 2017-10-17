@@ -87,6 +87,19 @@ return function()
         },
         {
           ['type'] = 'Label',
+          ['text'] = '解体',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'disintegrateShipEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = '开启,关闭',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
           ['text'] = '演习',
           ['size'] = 15,
           ['align'] = 'left',
@@ -731,6 +744,11 @@ return function()
     local list = transStrToTable({ true, false, })
     return list[repairEnable] or false
   end)(settings.repairEnable)
+  -- 解体
+  settings.disintegrateShipEnable = (function(disintegrateShipEnable)
+    local list = transStrToTable({ true, false, })
+    return list[disintegrateShipEnable] or false
+  end)(settings.disintegrateShipEnable)
   -- 任务
   settings.missionEnable = (function(missionEnable)
     local list = transStrToTable({ true, false, })

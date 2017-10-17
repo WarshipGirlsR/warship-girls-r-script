@@ -3,8 +3,9 @@ local homeFactory = require 'GoMission__home'
 local networkFactory = require 'GoMission__network'
 local pauseFactory = require 'GoMission__pause'
 local loginFactory = require 'GoMission__login'
-local battleOnceFactory = require 'GoMission__battleOnce'
+local battleFactory = require 'GoMission__battle'
 local missionFactory = require 'GoMission__mission'
+local disintegrateShipFactory = require 'GoMission__disintegrateShip'
 local expeditionRewardFactory = require 'GoMission__expeditionReward'
 local expeditionOnceFactory = require 'GoMission__expeditionOnce'
 local repairOnceFactory = require 'GoMission__repairOnce'
@@ -29,8 +30,9 @@ local missions = {
   network = networkFactory(stateTree),
   pause = pauseFactory(stateTree),
   login = loginFactory(stateTree),
-  battleOnce = battleOnceFactory(stateTree),
+  battle = battleFactory(stateTree),
   mission = missionFactory(stateTree),
+  disintegrateShip = disintegrateShipFactory(stateTree),
   expeditionReward = expeditionRewardFactory(stateTree),
   expeditionOnce = expeditionOnceFactory(stateTree),
   repairOnce = repairOnceFactory(stateTree),
@@ -49,11 +51,14 @@ return {
   next = function(action, state)
     state = table.assign(stateTree, state)
     return co(c.create(function()
-      for key, item in pairs(missions) do
-        local newAction, newState = c.yield(item(action, state))
-        if (newAction) then
-          return newAction, newState
+      if action.type and action.type ~= '' then
+        for key, item in pairs(missions) do
+          local newAction, newState = c.yield(item(action, state))
+          if (newAction) then
+            return newAction, newState
+          end
         end
+        error('Action "' .. action.type .. '" not found')
       end
     end))
   end

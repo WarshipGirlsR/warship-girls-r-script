@@ -22,7 +22,7 @@ local repairOnce = function(action, state)
       -- 维修滑动界面次数
       state.repair.moveCount = 4
 
-      if (not state.repair.needRepair) then
+      if state.repair.nextRepairStartTime > os.time() then
         stepLabel.setStepLabelContent('5-1.跳过维修，返回港口')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener()))
         return makeAction(newstateTypes), state
@@ -87,14 +87,14 @@ local repairOnce = function(action, state)
           }))
 
           if (newstateTypes == 'REPAIR_REPAIR_FINISH') then
-            state.repair.needRepair = false
+            state.repair.nextRepairStartTime = os.time() + 1800
             stepLabel.setStepLabelContent('5-10.没有船需要维修')
           end
 
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('5-11.没有空位')
-          state.repair.needRepair = true
+          state.repair.nextRepairStartTime = os.time()
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
             { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
@@ -163,7 +163,7 @@ local repairOnce = function(action, state)
         }))
 
         if (newstateTypes == 'REPAIR_SELECT_SHIP_PAGE_RETURN') then
-          state.repair.needRepair = false
+          state.repair.nextRepairStartTime = os.time() + 1800
           stepLabel.setStepLabelContent('5-21.没有需要修理的船')
         end
 
@@ -210,7 +210,7 @@ end
 
 return function(state)
   state.repair = {
-    needRepair = true,
+    nextRepairStartTime = os.time(),
   }
   return repairOnce
 end

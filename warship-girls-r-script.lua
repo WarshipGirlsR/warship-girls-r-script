@@ -99,11 +99,11 @@ local theMissionsQuery = {}
 
 co(c.create(function()
   if (settings.missionEnable
-    or settings.expeditionEnable
-    or settings.battleEnable
-    or settings.repairEnable
-    or settings.exerciseEnable
-    or settings.campaignEnable) then
+      or settings.expeditionEnable
+      or settings.battleEnable
+      or settings.repairEnable
+      or settings.exerciseEnable
+      or settings.campaignEnable) then
 
     -- 插入一个特殊的任务表示这是队列的开头
     table.insert(theMissionsQuery, { isBase = true, isStart = true })
@@ -118,7 +118,7 @@ co(c.create(function()
     end
     -- 是否运行出征
     if (settings.battleEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_START' })
+      table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_INIT' })
     end
     -- 是否运行演习
     if (settings.exerciseEnable) then
@@ -131,6 +131,11 @@ co(c.create(function()
     -- 是否运行修理
     if (settings.repairEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
+    end
+    -- 是否运行解体
+    console.log(settings.disintegrateShipEnable)
+    if (settings.disintegrateShipEnable) then
+      table.insert(theMissionsQuery, { isBase = true, type = 'DISINTEGRATE_SHIP_INIT' })
     end
     -- 插入一个特殊任务表示这是队列的结尾
     table.insert(theMissionsQuery, { isBase = true, isEnd = true })
@@ -156,7 +161,9 @@ co(c.create(function()
 
       -- 执行一个action
       if (action.type) then
+        console.log(action)
         local newAction = c.yield(gomission.next(action))
+        console.log(action)
         if (type(newAction) == 'table') then
           if (newAction.addToStart) then
             table.insert(theMissionsQuery, 1, newAction)
@@ -211,7 +218,12 @@ co(c.create(function()
   end
 end)).catch(function(err)
   wLog("warship-girls-r-script", "[DATE] " .. err);
-  eq.setImmediate(function() error(err) end)
+  nLog(err)
+  local id = eq.setImmediate(function()
+    nLog(123)
+    error(err)
+  end)
+  console.log(id)
 end)
 
 eq.run()

@@ -1,7 +1,5 @@
-local ts = require('ts')
-local json = ts.json
-local socket = require('socket')
-local http = require('socket.http')
+local sz = require 'sz'
+local json = sz.json
 
 function sendToPushBullet(token, title, body)
   local requestBody = {

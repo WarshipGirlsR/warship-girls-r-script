@@ -3,6 +3,20 @@
 
 --------------------------------------------------------------------------------------
 
+-- 字符串分割
+string.split = string.split or function(str, delimiter)
+  if str == nil or str == '' or delimiter == nil then
+    return nil
+  end
+
+  local result = {}
+  for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
+    table.insert(result, match)
+  end
+  return result
+end
+
+
 local PENDING = 0
 local RESOLVED = 1
 local REJECTED = 2
@@ -14,8 +28,8 @@ local stackTraceback = true
 function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-      (e .. '\n' .. debug.traceback())
-      or (e)
+        (e .. '\n' .. debug.traceback())
+        or (e)
   end)
 end
 
@@ -230,7 +244,17 @@ function finale(self)
   end
   self.deferreds = {};
   if ((self.PromiseStatus == REJECTED) and (#theDef == 0)) then
-    error('Uncatch error in Promise \n' .. tostring(self.PromiseValue))
+    local errStr = 'Uncatch error in Promise '
+    local resErr = tostring(self.PromiseValue)
+    local errStrTab = string.split(resErr, '\n')
+    if not errStrTab and #errStrTab > 1 then
+      console.log(string.sub(errStrTab[1], 0 - #errStr))
+      console.log(errStr)
+      if string.sub(errStrTab[1], 0 - #errStr) == errStr then
+        resErr = errStrTab[#errStrTab]
+      end
+    end
+    error(errStr .. '\n' .. resErr)
   end
 end
 

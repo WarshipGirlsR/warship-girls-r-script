@@ -17,7 +17,7 @@ local battleOnce = function(action, state)
   local settings = allOptions.settings
 
   return co(c.create(function()
-    if (action.type == 'BATTLE_START') then
+    if (action.type == 'BATTLE_INIT') then
 
       state.battle.quickSupplyCount = 0
       state.battle.quickRepairCount = 0
@@ -28,9 +28,16 @@ local battleOnce = function(action, state)
       state.battle.cantBattle = true
       state.battle.battleRebootAt6_1AMeetCVFlag = false
       state.battle.passBattleStartPage = false
-
       -- 出征后就应该需要维修
-      state.repair.needRepair = true
+      state.repair.nextRepairStartTime = os.time()
+
+
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'BATTLE_START', map.home.isHome },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'BATTLE_START') then
 
       stepLabel.setStepLabelContent('2-1.等待HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
@@ -469,7 +476,7 @@ local battleOnce = function(action, state)
 
       stepLabel.setStepLabelContent('2-59.追击面板')
       if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-        or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+          or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
         stepLabel.setStepLabelContent('2-60.追击')
         map.battle.clickPursueModalOk()
       else

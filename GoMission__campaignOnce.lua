@@ -42,7 +42,7 @@ local campaignOnce = function(action, state)
       state.campaign.battleNum = 1
       state.campaign.HPIsSafe = true
       -- 出征后就应该需要维修
-      state.repair.needRepair = true
+      state.repair.nextRepairStartTime = os.time()
 
       stepLabel.setStepLabelContent('7-3.点击出征')
       map.home.clickBattleBtn()

@@ -52,8 +52,8 @@ end
 local function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-      (e .. '\n' .. debug.traceback())
-      or (e)
+        (e .. '\n' .. debug.traceback())
+        or (e)
   end)
 end
 
