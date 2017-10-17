@@ -52,8 +52,8 @@ end
 local function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-        (e .. '\n' .. debug.traceback())
-        or (e)
+      (e .. '\n' .. debug.traceback())
+      or (e)
   end)
 end
 
@@ -115,7 +115,7 @@ end
 function setImmediate(func)
   if (type(func) ~= 'function') then return 0 end
   local eventObj = getEventObj(func)
-  table.insert(eventQuery, eventObj)
+  table.insert(timerQuery, eventObj)
   return eventObj.id
 end
 

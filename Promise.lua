@@ -23,13 +23,13 @@ local REJECTED = 2
 
 -- 是否需要显示stack traceback里的错误信息
 -- stack traceback错误信息很长，所以这个功能作为可选项
-local stackTraceback = true
+local stackTraceback = false
 -- 封装了xpcall方法
 function tryCatch(cb)
   return xpcall(cb, function(e)
     return stackTraceback and
-        (e .. '\n' .. debug.traceback())
-        or (e)
+      (e .. '\n' .. debug.traceback())
+      or (e)
   end)
 end
 
@@ -183,6 +183,7 @@ function handle(self, deferred)
     table.insert(self.deferreds, deferred)
     return
   end
+
   asap(function()
     local cb
     if (self.PromiseStatus == RESOLVED) then
@@ -243,15 +244,15 @@ function finale(self)
     handle(self, theDef[k]);
   end
   self.deferreds = {};
-  if ((self.PromiseStatus == REJECTED) and (#theDef == 0)) then
+  if self.PromiseStatus == REJECTED and #theDef == 0 then
     local errStr = 'Uncatch error in Promise '
     local resErr = tostring(self.PromiseValue)
-    local errStrTab = string.split(resErr, '\n')
-    if not errStrTab and #errStrTab > 1 then
-      console.log(string.sub(errStrTab[1], 0 - #errStr))
-      console.log(errStr)
-      if string.sub(errStrTab[1], 0 - #errStr) == errStr then
-        resErr = errStrTab[#errStrTab]
+    if not stackTraceback then
+      local errStrTab = string.split(resErr, '\n')
+      if errStrTab and #errStrTab > 1 then
+        if string.sub(errStrTab[1], 0 - #errStr) == errStr then
+          resErr = errStrTab[#errStrTab]
+        end
       end
     end
     error(errStr .. '\n' .. resErr)

@@ -7,6 +7,7 @@ local expedition = require 'BaseOperate__expedition'
 local repair = require 'BaseOperate__repair'
 local exercise = require 'BaseOperate__exercise'
 local campaign = require 'BaseOperate__campaign'
+local disintegrateShip = require 'BaseOperate__disintegrateShip'
 
 
 -- 原子操作列表
@@ -21,6 +22,7 @@ local map = {
   repair = repair, -- 修理
   exercise = exercise, -- 演习
   campaign = campaign, -- 战役
+  disintegrateShip = disintegrateShip, -- 解体舰船
 }
 
 

@@ -14,7 +14,7 @@ local home = function(action, state)
   return co(c.create(function()
     if (action.type == 'HOME_HOME') then
 
-      return nil, state
+      return '', state
 
     elseif (action.type == 'HOME_MEDAL_MODAL') then
 
@@ -25,7 +25,7 @@ local home = function(action, state)
       if (res) then
         return makeAction('HOME_MEDAL_MODAL'), state
       end
-      return nil, state
+      return '', state
 
     elseif (action.type == 'HOME_NEWS_MODAL') then
 
@@ -36,7 +36,7 @@ local home = function(action, state)
       if (res) then
         return makeAction('HOME_NEWS_MODAL'), state
       end
-      return nil, state
+      return '', state
 
     elseif (action.type == 'HOME_SIGN_MODAL') then
 
@@ -59,7 +59,7 @@ local home = function(action, state)
         if (res) then
           return makeAction('HOME_SIGN_MODAL'), state
         end
-        return nil, state
+        return '', state
       end
 
     elseif (action.type == 'HOME_SIGN_CONFIRM_MODAL') then

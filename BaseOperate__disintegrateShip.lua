@@ -35,7 +35,7 @@ disintegrateShip.isBuildPage = function()
 end
 
 -- 点击解体按钮
-disintegrateShip.clickBuildPageBtn = function()
+disintegrateShip.clickDisintegratePageBtn = function()
   tap(102, 257, 100)
   return true
 end
@@ -100,7 +100,7 @@ disintegrateShip.hasShip = function()
     { 72, 371, 0x526d8c }, { 159, 369, 0x5a7594 },
     { 159, 292, 0x52718c }, { 164, 219, 0x42617b },
   }
-  local result = multiColorS(list)
+  local result = not multiColorS(list)
   if not __keepScreenState then keepScreen(false) end
   return result
 end
