@@ -42,6 +42,12 @@ local setScreenListeners = function(theArr, ...)
   end
 
   theArr = table.merge(theArr, ...)
+  for key = 1, #theArr do
+    if not theArr[2] then
+      error('listener ' .. theArr[1] .. ' is nil.')
+      return
+    end
+  end
 
   local theArrUnique = table.uniqueLast(theArr, 2)
   for key = 1, #theArrUnique do

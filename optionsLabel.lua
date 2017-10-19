@@ -271,7 +271,7 @@ return function()
           ['id'] = 'expeditionFleet1',
           ['type'] = 'RadioGroup',
           ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '0',
+          ['select'] = '2',
         },
         {
           ['type'] = 'Label',
@@ -284,7 +284,7 @@ return function()
           ['id'] = 'expeditionFleet2',
           ['type'] = 'RadioGroup',
           ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '0',
+          ['select'] = '3',
         },
         {
           ['type'] = 'Label',
@@ -297,7 +297,7 @@ return function()
           ['id'] = 'expeditionFleet3',
           ['type'] = 'RadioGroup',
           ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '0',
+          ['select'] = '5',
         },
         {
           ['type'] = 'Label',
@@ -310,7 +310,7 @@ return function()
           ['id'] = 'expeditionFleet4',
           ['type'] = 'RadioGroup',
           ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '0',
+          ['select'] = '6',
         },
         {
           ['type'] = 'Label',
@@ -512,7 +512,7 @@ return function()
           ['id'] = 'exerciseFleet',
           ['type'] = 'RadioGroup',
           ['list'] = '1队,2队,3队,4队',
-          ['select'] = '0',
+          ['select'] = '1',
         },
         {
           ['type'] = 'Label',
@@ -705,6 +705,51 @@ return function()
           ['type'] = 'RadioGroup',
           ['list'] = '所有,不在舰队里的',
           ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '间隔多长时间检查一次',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'repairInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = '间隔多长时间检查一次',
+          ['text'] = '1800',
+          ['kbtype'] = 'number',
+        },
+      },
+
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '解体设置',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '间隔多长时间检查一次',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'disintegrateShipInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = '间隔多长时间检查一次',
+          ['text'] = '1800',
+          ['kbtype'] = 'number',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+          ['size'] = 50,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
         },
       },
     }
@@ -948,6 +993,11 @@ return function()
     local list = transStrToTable({ true, false, })
     return list[repairAll] or false
   end)(settings.repairAll)
+  -- 多长时间修理一次
+  settings.repairInterval = tonumber(settings.repairInterval) or 0
+  -- 解体
+  -- 多长时间解体一次
+  settings.disintegrateShipInterval = tonumber(settings.disintegrateShipInterval) or 0
 
   return ret, settings
   -- --转换settings结果

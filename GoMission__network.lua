@@ -25,7 +25,7 @@ local network = function(action, state)
       if (res) then
         return makeAction('NETWORK_NETWORK_FAILURE_MODAL'), state
       end
-      return nil, state
+      return '', state
 
     elseif (action.type == 'NETWORK_CHECK_NETWORK_MODAL') then
 
@@ -41,7 +41,7 @@ local network = function(action, state)
       if (res) then
         return makeAction('NETWORK_CHECK_NETWORK_MODAL'), state
       end
-      return nil, state
+      return '', state
     end
 
     return nil, state

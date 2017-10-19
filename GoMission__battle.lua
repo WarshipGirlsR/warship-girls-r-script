@@ -476,7 +476,7 @@ local battleOnce = function(action, state)
 
       stepLabel.setStepLabelContent('2-59.追击面板')
       if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-          or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+        or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
         stepLabel.setStepLabelContent('2-60.追击')
         map.battle.clickPursueModalOk()
       else
@@ -628,6 +628,9 @@ local battleOnce = function(action, state)
             datestr .. '  ' .. getDeviceModel() .. '  ' .. '不能出征')
         end
       end
+
+      -- 开启解体舰船功能
+      state.disintegrateShip.nextDisintegrateShipStartTime = os.time()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', map.battle.isReadyBattlePage },

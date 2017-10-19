@@ -247,15 +247,14 @@ function finale(self)
   if self.PromiseStatus == REJECTED and #theDef == 0 then
     local errStr = 'Uncatch error in Promise '
     local resErr = tostring(self.PromiseValue)
-    if not stackTraceback then
-      local errStrTab = string.split(resErr, '\n')
-      if errStrTab and #errStrTab > 1 then
-        if string.sub(errStrTab[1], 0 - #errStr) == errStr then
-          resErr = errStrTab[#errStrTab]
-        end
+    local errStrTab = string.split(resErr, '\n')
+    if errStrTab and #errStrTab > 1 then
+      if string.sub(errStrTab[1], 0 - #errStr) == errStr then
+        error(resErr)
       end
+    else
+      error(errStr .. '\n' .. resErr)
     end
-    error(errStr .. '\n' .. resErr)
   end
 end
 
