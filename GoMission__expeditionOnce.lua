@@ -33,9 +33,9 @@ local expeditionOnce = function(action, state)
       end
 
       if ((not settings.expeditionFleetToChapter[1])
-        and (not settings.expeditionFleetToChapter[2])
-        and (not settings.expeditionFleetToChapter[3])
-        and (not settings.expeditionFleetToChapter[4])) then
+          and (not settings.expeditionFleetToChapter[2])
+          and (not settings.expeditionFleetToChapter[3])
+          and (not settings.expeditionFleetToChapter[4])) then
         stepLabel.setStepLabelContent('4-18.没有远征任务！返回港口')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
         return makeAction(newstateTypes), state
@@ -114,6 +114,25 @@ local expeditionOnce = function(action, state)
           state.expedition.lastChapter = chapter
           c.yield(sleepPromise(500))
         end
+
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          { 'EXPEDITION_EXPEDITION_PAGE_CLICK_START_EXPEDITION_BTN', map.expedition.isBattleExpedition, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+        }))
+        return makeAction(newstateTypes), state
+      else
+        stepLabel.setStepLabelContent('4-27.没有远征')
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+    elseif (action.type == 'EXPEDITION_EXPEDITION_PAGE_CLICK_START_EXPEDITION_BTN') then
+
+      if (#state.expedition.expeditionFleetToChapter > 0) then
+        local chapter, section = table.unpack(strSplit(state.expedition.chapters, '-'))
         stepLabel.setStepLabelContent('4-23.检测第' .. section .. '节能否远征')
         local res = map.expedition.isChapterCanExpedition(section)
         if (res) then
@@ -122,7 +141,7 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-25.等待远征准备界面')
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition, 2000 },
+            { 'EXPEDITION_EXPEDITION_PAGE_CLICK_START_EXPEDITION_BTN', map.expedition.isBattleExpedition, 2000 },
             { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
           }))
           return makeAction(newstateTypes), state
@@ -130,7 +149,7 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-26.本章不能远征')
           -- 执行下一个章节
           table.remove(state.expedition.expeditionFleetToChapter, 1)
-          return { type = 'EXPEDITION_IS_EXPEDITION_PAGE' }, state
+          return makeAction('EXPEDITION_IS_EXPEDITION_PAGE'), state
         end
       else
         stepLabel.setStepLabelContent('4-27.没有远征')
