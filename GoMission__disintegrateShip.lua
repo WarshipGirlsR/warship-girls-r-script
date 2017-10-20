@@ -18,19 +18,18 @@ local disintegrateShip = function(action, state)
   return co(c.create(function()
     if action.type == 'DISINTEGRATE_SHIP_INIT' then
 
-      -- 出征后就应该需要维修
-      state.repair.nextRepairStartTime = os.time()
-
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'DISINTEGRATE_SHIP_START', map.home.isHome },
-      }))
-      return makeAction(newstateTypes), state
+      state.disintegrateShip.clickDisintegrateShipBtnCount = 0
+      return makeAction('DISINTEGRATE_SHIP_START'), state
 
     elseif action.type == 'DISINTEGRATE_SHIP_START' then
 
       stepLabel.setStepLabelContent('8-1.等待HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
         { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -40,9 +39,10 @@ local disintegrateShip = function(action, state)
       map.disintegrateShip.clickBuildPageBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
         { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
         { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -52,9 +52,10 @@ local disintegrateShip = function(action, state)
       map.disintegrateShip.clickDisintegratePageBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
         { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
         { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -64,68 +65,151 @@ local disintegrateShip = function(action, state)
       map.disintegrateShip.clickAddShipBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
         { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
         { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
       }))
       return makeAction(newstateTypes), state
 
     elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP' then
 
       stepLabel.setStepLabelContent('8-5.检测是否有船')
+      c.yield(sleepPromise(500))
       local hasShipRes = map.disintegrateShip.hasShip()
 
       if hasShipRes then
-        stepLabel.setStepLabelContent('8-5.有船，退役')
+        stepLabel.setStepLabelContent('8-6.有船，选中所有船')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-          { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
-          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
-          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage },
+          { '', map.home.isHome, 2000 },
           { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage },
         }))
         return makeAction(newstateTypes), state
       end
 
-      stepLabel.setStepLabelContent('8-6.没船，返回')
+      stepLabel.setStepLabelContent('8-7.没船，返回')
+      state.disintegrateShip.nextDisintegrateShipStartTime = os.time() + settings.disintegrateShipInterval
+      return makeAction('DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK'), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK' then
+
+      stepLabel.setStepLabelContent('8-8.点击返回')
+      map.disintegrateShip.selectAllShipClickCancel()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage },
       }))
       return makeAction(newstateTypes), state
 
     elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP' then
 
-      stepLabel.setStepLabelContent('8-6.点击所有船')
+      stepLabel.setStepLabelContent('8-9.点击所有船')
       map.disintegrateShip.clickAllShip()
-      stepLabel.setStepLabelContent('8-6.点击确定')
+      stepLabel.setStepLabelContent('8-10.点击确定')
+      c.yield(sleepPromise(500))
       map.disintegrateShip.selectAllShipClickOk()
+      state.disintegrateShip.clickDisintegrateShipBtnCount = 0
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.isDisintegrateShipPage },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage, 2000 },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_CHECK_REMOVED_ALL_EQUIPMENT_ENABLE', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_CHECK_REMOVED_ALL_EQUIPMENT_ENABLE' then
+
+      stepLabel.setStepLabelContent('8-11.检测是否选中卸下所有装备选项')
+      local res = map.disintegrateShip.checkIsRemoveAllEquipmentEnable()
+      if res then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_SELECT_REMOVED_ALL_EQUIPMENT', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_SELECT_REMOVED_ALL_EQUIPMENT' then
+
+      stepLabel.setStepLabelContent('8-12.选中卸下所有装备选项')
+      map.disintegrateShip.clickRemoveAllEquipmentCheckbox()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL' then
+
+      stepLabel.setStepLabelContent('8-13.稀有解体确认面板')
+      map.disintegrateShip.clickDisintegratePanelOkBtn()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
     elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN' then
 
-      stepLabel.setStepLabelContent('8-7.点击解体')
+      stepLabel.setStepLabelContent('8-14.点击解体')
       map.disintegrateShip.clickDisintegrateShipBtn()
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.addShipPage },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
-      }))
-      return makeAction(newstateTypes), state
+      state.disintegrateShip.clickDisintegrateShipBtnCount = state.disintegrateShip.clickDisintegrateShipBtnCount + 1
+      if state.disintegrateShip.clickDisintegrateShipBtnCount <= 2 then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.isDisintegrateShipPage, 1000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
 
-    elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK' then
+      -- 如果是快速解体模式，则不再进行第二次检查，直接退出
+      if settings.disintegrateShipFastMode then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
 
-      map.disintegrateShip.selectAllShipClickCancel()
+    elseif action.type == 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK' then
+
+      stepLabel.setStepLabelContent('8-18点击返回')
+      map.disintegrateShip.disintegrateShipPageClickBackToHome()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.addShipPage },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+        { '', map.home.isHome },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
       }))
       return makeAction(newstateTypes), state
     end
@@ -135,6 +219,8 @@ local disintegrateShip = function(action, state)
 end
 
 return function(state)
-  state.disintegrateShip = {}
+  state.disintegrateShip = {
+    nextDisintegrateShipStartTime = os.time(),
+  }
   return disintegrateShip
 end

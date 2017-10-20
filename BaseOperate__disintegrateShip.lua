@@ -52,10 +52,11 @@ disintegrateShip.isDisintegrateShipPage = function()
     { 252, 776, 0x4a6584 }, { 249, 956, 0x4a617b },
     { 269, 146, 0x0065a4 },
 
-    { 510, 622, 0xc5bead }, { 1234, 645, 0xc5bead },
     { 1884, 721, 0xcecabd }, { 1874, 209, 0xbdb69c },
     { 1293, 204, 0xd6cabd }, { 1818, 952, 0xc5b69c },
-    { 1079, 928, 0xbdb69c }, { 325, 954, 0xcecabd },
+    { 1079, 928, 0xbdb69c },
+
+    { 1176, 747, 0xbdb69c }, { 748, 725, 0xcecabd },
   }
   -- 四个按钮的颜色
   local list2 = {
@@ -119,8 +120,7 @@ disintegrateShip.clickAllShip = function()
     { 1367, 853, 0xbdaeb5 }, { 1576, 855, 0xefe7de },
   }
   for key, value in ipairs(list) do
-    tap(value[1], value[2], 100)
-    mSleep(100)
+    tap(value[1], value[2], 80)
   end
 end
 
@@ -129,7 +129,7 @@ disintegrateShip.selectAllShipClickOk = function()
   tap(1812, 804, 100)
 end
 
---  点击取消
+--  点击返回
 disintegrateShip.selectAllShipClickCancel = function()
   tap(1810, 979, 100)
 end
@@ -150,6 +150,43 @@ disintegrateShip.checkIsRemoveAllEquipmentEnable = function()
   local result = multiColorS(list)
   if not __keepScreenState then keepScreen(false) end
   return result
+end
+
+--  点击卸下所有装备
+disintegrateShip.clickRemoveAllEquipmentCheckbox = function()
+  tap(1031, 774, 100)
+end
+
+--  稀有解体确认窗口
+disintegrateShip.disintegrateSRPanel = function()
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+  local list = {
+    { 516, 244, 0x0886ce }, { 1404, 303, 0xcecabd },
+    { 1401, 771, 0xc5baa4 }, { 516, 763, 0xbdb69c },
+    { 1069, 292, 0x08659c }, { 740, 681, 0x42ceef },
+    { 1174, 679, 0xce493a }, { 1204, 709, 0xffffff },
+    { 789, 717, 0xffffff }, { 1070, 796, 0xd6cabd },
+
+    { 565, 449, 0xffffff }, { 610, 445, 0x7b6921 },
+    { 734, 441, 0x6b5910 }, { 830, 456, 0xfffbff },
+    { 1002, 447, 0xf7f7f7 }, { 1107, 441, 0x846d29 },
+    { 1248, 450, 0xf7f7f7 }, { 1315, 452, 0x7b6521 },
+    { 940, 508, 0x735d19 }, { 986, 508, 0xffffff },
+  }
+  local result = multiColorS(list)
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
+
+--  点击解体确认窗口确定
+disintegrateShip.clickDisintegratePanelOkBtn = function()
+  tap(745, 713, 100)
+end
+
+--  返回home
+disintegrateShip.disintegrateShipPageClickBackToHome = function()
+  tap(103, 1007, 100)
 end
 
 return disintegrateShip

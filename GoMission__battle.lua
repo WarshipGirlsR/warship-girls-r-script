@@ -420,6 +420,8 @@ local battleOnce = function(action, state)
         end
       end
 
+      -- 进入战斗了，需要开启解体舰船功能
+      state.disintegrateShip.nextDisintegrateShipStartTime = os.time()
 
       stepLabel.setStepLabelContent('2-54.开始面板，点击开始')
       c.yield(sleepPromise(200))
@@ -476,7 +478,7 @@ local battleOnce = function(action, state)
 
       stepLabel.setStepLabelContent('2-59.追击面板')
       if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
-          or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
+        or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
         stepLabel.setStepLabelContent('2-60.追击')
         map.battle.clickPursueModalOk()
       else
