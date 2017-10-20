@@ -14,7 +14,6 @@ end
 
 initLog('warship-girls-r-script', 1)
 
-require 'ts'
 require 'TSLib'
 require 'TableLib'
 require 'StringLib'
