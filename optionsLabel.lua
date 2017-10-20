@@ -732,6 +732,19 @@ return function()
         },
         {
           ['type'] = 'Label',
+          ['text'] = '快速解体模式',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'disintegrateShipFastMode',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
           ['text'] = '间隔多长时间检查一次',
           ['size'] = 15,
           ['align'] = 'left',
@@ -996,6 +1009,11 @@ return function()
   -- 多长时间修理一次
   settings.repairInterval = tonumber(settings.repairInterval) or 0
   -- 解体
+  -- 快速解体模式
+  settings.disintegrateShipFastMode = (function(disintegrateShipFastMode)
+    local list = transStrToTable({ true, false, })
+    return list[disintegrateShipFastMode] or false
+  end)(settings.disintegrateShipFastMode)
   -- 多长时间解体一次
   settings.disintegrateShipInterval = tonumber(settings.disintegrateShipInterval) or 0
 

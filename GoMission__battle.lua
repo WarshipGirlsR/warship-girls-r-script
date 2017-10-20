@@ -420,6 +420,8 @@ local battleOnce = function(action, state)
         end
       end
 
+      -- 进入战斗了，需要开启解体舰船功能
+      state.disintegrateShip.nextDisintegrateShipStartTime = os.time()
 
       stepLabel.setStepLabelContent('2-54.开始面板，点击开始')
       c.yield(sleepPromise(200))
@@ -628,9 +630,6 @@ local battleOnce = function(action, state)
             datestr .. '  ' .. getDeviceModel() .. '  ' .. '不能出征')
         end
       end
-
-      -- 开启解体舰船功能
-      state.disintegrateShip.nextDisintegrateShipStartTime = os.time()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', map.battle.isReadyBattlePage },

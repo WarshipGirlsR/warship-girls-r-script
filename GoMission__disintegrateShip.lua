@@ -188,14 +188,18 @@ local disintegrateShip = function(action, state)
         }))
         return makeAction(newstateTypes), state
       end
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { '', map.home.isHome, 2000 },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
-        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
-        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
-      }))
-      return makeAction(newstateTypes), state
+
+      -- 如果是快速解体模式，则不再进行第二次检查，直接退出
+      if settings.disintegrateShipFastMode then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
 
     elseif action.type == 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK' then
 
@@ -205,6 +209,7 @@ local disintegrateShip = function(action, state)
         { '', map.home.isHome },
         { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage, 2000 },
         { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
       }))
       return makeAction(newstateTypes), state
     end
