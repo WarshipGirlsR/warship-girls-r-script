@@ -325,6 +325,8 @@ local battleOnce = function(action, state)
         }))
         return makeAction(newstateTypes), state
       else
+        -- 不能出征，需要开启解体舰船功能
+        state.disintegrateShip.nextDisintegrateShipStartTime = os.time()
         stepLabel.setStepLabelContent('2-42.返回HOME')
         return makeAction('BATTLE_READY_BATTLE_PAGE_CANT_GO'), state
       end
@@ -419,9 +421,6 @@ local battleOnce = function(action, state)
           return makeAction({ type = 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME' }), state
         end
       end
-
-      -- 进入战斗了，需要开启解体舰船功能
-      state.disintegrateShip.nextDisintegrateShipStartTime = os.time()
 
       stepLabel.setStepLabelContent('2-54.开始面板，点击开始')
       c.yield(sleepPromise(200))
