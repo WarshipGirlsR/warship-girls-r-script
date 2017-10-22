@@ -348,7 +348,7 @@ local battleOnce = function(action, state)
         stepLabel.setStepLabelContent('2-45.第' .. state.battle.battleNum .. '战Boss战开始')
       end
       stepLabel.setStepLabelContent('2-46.等待额外获得面板，开始面板，阵型面板，追击面板，勋章对话框，home，胜利界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), {
         { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', map.battle.isReadyBattlePage, 2000 },
         { 'BATTLE_EXTRA_RECEIVE_MODAL', map.battle.isExtraReceiveModal },
         { 'BATTLE_BATTLE_START_PAGE', map.battle.isBattleStartPage },

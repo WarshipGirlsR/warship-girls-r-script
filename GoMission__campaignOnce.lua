@@ -423,8 +423,8 @@ local campaignOnce = function(action, state)
       map.campaign.clickBackToHomeBtn()
       stepLabel.setStepLabelContent('7-55.等待home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage, 2000 },
       }))
       return makeAction(newstateTypes), state
     end

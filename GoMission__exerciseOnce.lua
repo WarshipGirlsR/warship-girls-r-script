@@ -63,8 +63,7 @@ local exerciseOnce = function(action, state)
 
     elseif (action.type == 'EXERCISE_EXERCISE_PAGE') then
 
-      c.yield(sleepPromise(100))
-      stepLabel.setStepLabelContent('6-6寻找演习对手')
+      stepLabel.setStepLabelContent('6-6.寻找演习对手')
       local res, exeList = map.exercise.isExercisePageHaveExercise()
       local nBtn = exeList[1]
       if (type(nBtn) ~= 'nil') then
@@ -74,7 +73,7 @@ local exerciseOnce = function(action, state)
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
           { 'EXERCISE_BATTLE_PAGE', map.exercise.isBattlePage, 2000 },
           { 'EXERCISE_EXERCISE_PAGE', map.exercise.isExercisePage, 2000 },
-          { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage, 500 },
+          { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
         }))
         return makeAction(newstateTypes), state
       else

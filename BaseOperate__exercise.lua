@@ -24,7 +24,7 @@ exercise.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list) and (not multiColorS(list2))
+  local result = multiColorS(list) and not multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
@@ -46,14 +46,17 @@ exercise.isExercisePage = function()
     { 169, 1014, 0xffffff },
     { 195, 1033, 0xb58a5a },
   }
-  -- 四个按钮的颜色
   local list2 = {
+    { 687, 33, 0x0875b5 },
+  }
+  -- 四个按钮的颜色
+  local list3 = {
     { 110, 148, 0x008ebd },
     { 111, 290, 0xad4900 },
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list) and multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2) and multiColorS(list3)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
