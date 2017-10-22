@@ -91,11 +91,11 @@ local disintegrateShip = function(action, state)
       end
 
       stepLabel.setStepLabelContent('8-7.没船，返回')
-      state.disintegrateShip.nextDisintegrateShipStartTime = os.time() + settings.disintegrateShipInterval
       return makeAction('DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK'), state
 
     elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK' then
 
+      state.disintegrateShip.nextStartTime = os.time() + settings.disintegrateShipInterval
       stepLabel.setStepLabelContent('8-8.点击返回')
       map.disintegrateShip.selectAllShipClickCancel()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
@@ -229,7 +229,7 @@ end
 
 return function(state)
   state.disintegrateShip = {
-    nextDisintegrateShipStartTime = os.time(),
+    nextStartTime = os.time(),
   }
   return disintegrateShip
 end

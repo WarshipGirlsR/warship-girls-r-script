@@ -741,7 +741,7 @@ return function()
           ['id'] = 'disintegrateShipFastMode',
           ['type'] = 'RadioGroup',
           ['list'] = '是,否',
-          ['select'] = '1',
+          ['select'] = '0',
         },
         {
           ['type'] = 'Label',
