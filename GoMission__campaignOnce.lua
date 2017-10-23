@@ -416,6 +416,7 @@ local campaignOnce = function(action, state)
         { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', map.campaign.isReadyBattlePage, 2000 },
         { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
         { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -427,6 +428,7 @@ local campaignOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage, 2000 },
         { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end

@@ -222,10 +222,10 @@ local disintegrateShip = function(action, state)
       stepLabel.setStepLabelContent('8-16.点击返回')
       map.disintegrateShip.disintegrateShipPageClickBackToHome()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { '', map.home.isHome },
         { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage, 2000 },
         { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage, 2000 },
         { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end

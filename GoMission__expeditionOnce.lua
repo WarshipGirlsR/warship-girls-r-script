@@ -33,9 +33,9 @@ local expeditionOnce = function(action, state)
       end
 
       if ((not settings.expeditionFleetToChapter[1])
-          and (not settings.expeditionFleetToChapter[2])
-          and (not settings.expeditionFleetToChapter[3])
-          and (not settings.expeditionFleetToChapter[4])) then
+        and (not settings.expeditionFleetToChapter[2])
+        and (not settings.expeditionFleetToChapter[3])
+        and (not settings.expeditionFleetToChapter[4])) then
         stepLabel.setStepLabelContent('4-18.没有远征任务！返回港口')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
         return makeAction(newstateTypes), state
@@ -446,6 +446,7 @@ local expeditionOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
         { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -456,6 +457,7 @@ local expeditionOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
         { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end

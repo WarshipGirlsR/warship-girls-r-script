@@ -26,7 +26,7 @@ local login = function(action, state)
 
       stepLabel.setStepLabelContent('1-12.输入用户名界面')
       local newstateTypes = c.yield(setScreenListeners({
-        { 'LOGIN_LOGIN', map.login.isLoginPage, 2000 },
+        { 'LOGIN_LOGIN', map.login.isLoginPage, 10000 },
         { 'LOGIN_SELECT_SERVER', map.login.isSelectServerPage, 2000 },
       }))
       return makeAction(newstateTypes), state
@@ -37,7 +37,7 @@ local login = function(action, state)
       map.login.clickLoginServerBtn()
       local newstateTypes = c.yield(setScreenListeners({
         { 'LOGIN_LOGIN', map.login.isLoginPage, 2000 },
-        { 'LOGIN_SELECT_SERVER', map.login.isSelectServerPage, 2000 },
+        { 'LOGIN_SELECT_SERVER', map.login.isSelectServerPage, 10000 },
         { '', function() return true end, 6000 },
       }))
       return makeAction(newstateTypes), state

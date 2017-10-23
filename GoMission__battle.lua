@@ -645,6 +645,7 @@ local battleOnce = function(action, state)
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', map.battle.isReadyBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattleBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattlePage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -656,6 +657,7 @@ local battleOnce = function(action, state)
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', map.battle.isReadyBattlePage, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattleBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattlePage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -667,6 +669,7 @@ local battleOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattleBattlePage, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattlePage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end

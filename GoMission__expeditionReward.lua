@@ -121,6 +121,7 @@ local expeditionReward = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'EXPEDITION_REWARD_COMPLETED_PAGE', map.expedition.isExpeditionCompletedPage, 2000 },
         { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -131,6 +132,7 @@ local expeditionReward = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'EXPEDITION_REWARD_RETURN_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end

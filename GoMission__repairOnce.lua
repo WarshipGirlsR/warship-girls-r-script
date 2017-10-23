@@ -189,6 +189,7 @@ local repairOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 2000 },
         { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -200,6 +201,7 @@ local repairOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 3000 },
         { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end

@@ -431,6 +431,7 @@ local exerciseOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
         { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage, 2000 },
         { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end
