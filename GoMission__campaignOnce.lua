@@ -23,7 +23,9 @@ local campaignOnce = function(action, state)
       -- 没有到检查演习的时间
       if state.campaign.nextStartTime > os.time() then
         stepLabel.setStepLabelContent('7-1.跳过战役，下次检查时间：' .. os.date("%Y-%m-%d %H:%M:%S", state.campaign.nextStartTime))
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+          { type = '', map.home.isHome, 1000 }
+        }))
         return makeAction(newstateTypes), state
       end
 
