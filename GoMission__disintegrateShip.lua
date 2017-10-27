@@ -20,7 +20,7 @@ local disintegrateShip = function(action, state)
       if state.disintegrateShip.nextStartTime > os.time() then
         stepLabel.setStepLabelContent('8-1.跳过解体，下次检查时间：' .. os.date("%Y-%m-%d %H:%M:%S", state.disintegrateShip.nextStartTime))
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { type = '', map.home.isHome, 1000 }
+          { '', map.home.isHome, 1000 }
         }))
         return makeAction(newstateTypes), state
       end

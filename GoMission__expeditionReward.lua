@@ -42,7 +42,7 @@ local expeditionReward = function(action, state)
       if (not res) then
         stepLabel.setStepLabelContent('4-4.没有远征奖励和任务')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'HOME_HOME', 'homeGroup', map.home.isHome },
+          { '', 'homeGroup', map.home.isHome },
         }))
         return makeAction(newstateTypes), state
       end
@@ -55,7 +55,6 @@ local expeditionReward = function(action, state)
         { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', map.home.isHome, 3000 },
         { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
       }))
-      console.log(newstateTypes)
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXPEDITION_REWARD_IS_BATTLE') then

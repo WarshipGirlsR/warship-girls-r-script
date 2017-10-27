@@ -22,8 +22,8 @@ local expeditionOnce = function(action, state)
 
       if (not state.expedition.needExpedition) then
         stepLabel.setStepLabelContent('4-18.跳过远征派遣，返回港口')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'HOME_HOME', 'homeGroup', map.home.isHome },
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', 'homeGroup', map.home.isHome },
         }))
         return makeAction(newstateTypes), state
       end

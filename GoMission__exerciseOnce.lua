@@ -22,7 +22,7 @@ local exerciseOnce = function(action, state)
       if state.exercise.nextStartTime > os.time() then
         stepLabel.setStepLabelContent('6-1.跳过演习，下次检查时间：' .. os.date("%Y-%m-%d %H:%M:%S", state.exercise.nextStartTime))
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { type = '', map.home.isHome, 1000 }
+          { '', map.home.isHome, 1000 }
         }))
         return makeAction(newstateTypes), state
       end

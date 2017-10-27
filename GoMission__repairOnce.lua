@@ -24,7 +24,9 @@ local repairOnce = function(action, state)
 
       if state.repair.nextRepairStartTime > os.time() then
         stepLabel.setStepLabelContent('5-1.跳过维修，返回港口')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener()))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener()), {
+          { '', map.home.isHome }
+        })
         return makeAction(newstateTypes), state
       end
 
