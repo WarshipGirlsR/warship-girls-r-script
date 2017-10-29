@@ -36,14 +36,16 @@ network.isCheckNetworkModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 517, 246, 0x0081c5 }, { 506, 331, 0xcecabd }, { 513, 781, 0xc5baa4 }, { 1407, 782, 0xc5b69c },
-    { 1408, 296, 0xd6cac5 }, { 774, 471, 0xcecabd }, { 796, 470, 0x083942 }, { 810, 473, 0x9cb2b5 },
-    { 849, 482, 0x638184 }, { 864, 476, 0x526d73 }, { 623, 261, 0x085994 }, { 652, 261, 0xf7fbf7 },
-    { 664, 259, 0xadbebd }, { 682, 260, 0xffffff }, { 709, 262, 0xbdcace }, { 738, 268, 0x7b969c },
-    { 758, 265, 0xd6e3de }, { 710, 252, 0xc5cece }, { 678, 252, 0x00558c }, { 705, 255, 0x084152 },
-    { 773, 483, 0xd6cec5 }, { 795, 483, 0xeff3f7 }, { 833, 483, 0xb5c2c5 }, { 846, 483, 0x9ca29c },
-    { 870, 485, 0x3a6163 }, { 894, 486, 0xd6cac5 }, { 931, 491, 0xf7f7f7 }, { 963, 498, 0x4a6973 },
-    { 989, 499, 0x31555a }, { 1047, 483, 0x5a797b },
+    { 521, 250, 0x0079bd }, { 1094, 294, 0x0869ad },
+    { 1407, 300, 0xcecabd }, { 1402, 777, 0xbdb69c },
+    { 512, 771, 0xbdb69c }, { 871, 679, 0x4ad2f7 },
+    { 949, 679, 0x4ad2f7 }, { 1036, 676, 0x4ad2f7 },
+    { 952, 744, 0x0092c5 }, { 926, 708, 0xffffff },
+    { 777, 478, 0xffffff }, { 808, 475, 0x29555a },
+    { 850, 480, 0x214952 }, { 889, 478, 0xf7f7f7 },
+    { 929, 471, 0x10414a }, { 975, 477, 0xeff3f7 },
+    { 1012, 478, 0x103d42 }, { 1050, 479, 0xffffff },
+    { 1075, 478, 0x08353a }, { 1117, 479, 0x31555a },
   }
   local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
