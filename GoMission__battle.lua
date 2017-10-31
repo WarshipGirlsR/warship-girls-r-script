@@ -597,7 +597,9 @@ local battleOnce = function(action, state)
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_NEXT_LEVEL_STEP_MODAL') then
-
+      console.log(state.battle.battleNum)
+      console.log(settings.battleMaxBattleNum)
+      console.log(state.battle.HPIsSafe)
       if ((state.battle.battleNum < settings.battleMaxBattleNum) and state.battle.HPIsSafe) then
         stepLabel.setStepLabelContent('2-78.点击继续下一关')
         map.battle.clickLevelStepModalContinueBtn()

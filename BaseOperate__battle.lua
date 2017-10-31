@@ -716,12 +716,12 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 682, 246, 0xc5b6a4 },
-    { 682, 390, 0xc5b6a4 },
-    { 682, 530, 0xc5b6a4 },
-    { 682, 674, 0xc5b6a4 },
-    { 682, 810, 0xc5b6a4 },
-    { 682, 950, 0xc5b6a4 },
+    { 530, 225, 0xbdb69c },
+    { 530, 365, 0xbdb69c },
+    { 530, 505, 0xbdb69c },
+    { 530, 646, 0xc5b6a4 },
+    { 530, 788, 0xc5b69c },
+    { 530, 928, 0xc5b69c },
   }
   -- 中破
   local list22 = {
@@ -754,6 +754,8 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- 有大破
     for i = 1, #list do
+      console.log(multiColorS({ list[i] }, 85))
+      console.log(multiColorS(list21[i], 85))
       if (multiColorS({ list[i] }, 85) and multiColorS(list21[i], 85)) then
         result = false
         break
