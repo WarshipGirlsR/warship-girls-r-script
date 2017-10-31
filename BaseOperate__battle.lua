@@ -490,7 +490,7 @@ battle.isEnemyShipIsCV = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theCV = ImgInfo.battle.enemyInfoPanel.CV
-  local pointList = findMultiColorInRegionFuzzyExt(theCV.basePoint[3], theCV.posandcolor, 90, theCV.leftTop[1], theCV.leftTop[2], theCV.rightBotton[1], theCV.rightBotton[2])
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theCV)))
   pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
@@ -504,7 +504,7 @@ battle.isEnemyShipIsCit = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theCit = ImgInfo.battle.enemyInfoPanel.Cit
-  local pointList = findMultiColorInRegionFuzzyExt(theCit.basePoint[3], theCit.posandcolor, 90, theCit.leftTop[1], theCit.leftTop[2], theCit.rightBotton[1], theCit.rightBotton[2])
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theCit)))
   pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
@@ -518,7 +518,7 @@ battle.isEnemyShipIsSS = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theSS = ImgInfo.battle.enemyInfoPanel.SS
-  local pointList = findMultiColorInRegionFuzzyExt(theSS.basePoint[3], theSS.posandcolor, 90, theSS.leftTop[1], theSS.leftTop[2], theSS.rightBotton[1], theSS.rightBotton[2])
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theSS)))
   pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
@@ -532,8 +532,7 @@ battle.isEnemyShipIsAP = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theAP = ImgInfo.battle.enemyInfoPanel.AP
-  local pointList = findMultiColorInRegionFuzzyExt(theAP.basePoint[3], theAP.posandcolor, 90, theAP.leftTop[1], theAP.leftTop[2], theAP.rightBotton[1], theAP.rightBotton[2])
-  pointList = ImgInfo.toPoint(pointList)
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theAP)))
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
     return true
@@ -714,55 +713,36 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   -- '有中破,有大破'
   -- checkLevel == 2 or 1
   local __keepScreenState = keepScreenState
-  if (not __keepScreenState) then keepScreen(true) end
-  local list = {
-    { 530, 225, 0xbdb69c },
-    { 530, 365, 0xbdb69c },
-    { 530, 505, 0xbdb69c },
-    { 530, 646, 0xc5b6a4 },
-    { 530, 788, 0xc5b69c },
-    { 530, 928, 0xc5b69c },
+  keepScreen(false)
+  keepScreen(true)
+  local bigBreak = ImgInfo.battle.victoryPanel.bigBreak
+  local middleBreak = ImgInfo.battle.victoryPanel.middleBreak
+  local positionList = {
+    { 443, 209, 0x3a517b },
+    { 443, 347, 0x4a5d84 },
+    { 443, 488, 0x425573 },
+    { 443, 628, 0x42597b },
+    { 443, 769, 0x425573 },
+    { 443, 910, 0x3a5173 },
+    { 443, 1049, 0x42557b },
   }
-  -- 中破
-  local list22 = {
-    { { 474, 289, 0xf7ca6b }, { 481, 283, 0xe6be63 }, { 471, 329, 0xcea242 }, },
-    { { 474, 430, 0xf7ca6b }, { 481, 424, 0xe6be63 }, { 471, 470, 0xcea242 }, },
-    { { 474, 570, 0xf7ca6b }, { 481, 564, 0xe6be63 }, { 471, 610, 0xcea242 }, },
-    { { 474, 711, 0xf7ca6b }, { 481, 705, 0xe6be63 }, { 471, 751, 0xcea242 }, },
-    { { 474, 852, 0xf7ca6b }, { 481, 846, 0xe6be63 }, { 471, 892, 0xcea242 }, },
-    { { 474, 992, 0xf7ca6b }, { 481, 986, 0xe6be63 }, { 471, 1032, 0xcea242 }, },
-  }
-  -- 大破
-  local list21 = {
-    { { 474, 289, 0xffb6b5 }, { 481, 283, 0xffbabd }, { 471, 329, 0xff7d7b }, },
-    { { 474, 430, 0xffb6b5 }, { 481, 424, 0xffbabd }, { 471, 470, 0xff7d7b }, },
-    { { 474, 570, 0xffb6b5 }, { 481, 564, 0xffbabd }, { 471, 610, 0xff7d7b }, },
-    { { 474, 711, 0xffb6b5 }, { 481, 705, 0xffbabd }, { 471, 751, 0xff7d7b }, },
-    { { 474, 852, 0xffb6b5 }, { 481, 846, 0xffbabd }, { 471, 892, 0xff7d7b }, },
-    { { 474, 992, 0xffb6b5 }, { 481, 986, 0xffbabd }, { 471, 1032, 0xff7d7b }, },
-  }
-  local result = true
-  if (checkLevel == 2) then
-    -- 有中破或者大破
-    for i = 1, #list do
-      if (multiColorS({ list[i] }, 85) and (multiColorS(list22[i], 85) or multiColorS(list21[i], 85))) then
-        result = false
-        break
-      end
-    end
 
-  elseif (checkLevel == 1) then
+  local result = true
+  if checkLevel == 2 then
+    -- 有中破或者大破
+    local bigBreakList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(bigBreak)))
+    local middleBreakList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(middleBreak)))
+    if #bigBreakList > 0 or #middleBreakList > 0 then
+      result = false
+    end
+  elseif checkLevel == 1 then
     -- 有大破
-    for i = 1, #list do
-      console.log(multiColorS({ list[i] }, 85))
-      console.log(multiColorS(list21[i], 85))
-      if (multiColorS({ list[i] }, 85) and multiColorS(list21[i], 85)) then
-        result = false
-        break
-      end
+    local bigBreakList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(bigBreak)))
+    if #bigBreakList > 0 then
+      result = false
     end
   end
-  if (not __keepScreenState) then keepScreen(false) end
+  if not __keepScreenState then keepScreen(false) end
   return result
 end
 
