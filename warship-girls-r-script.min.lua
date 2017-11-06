@@ -14,6 +14,7 @@ local expedition = require 'BaseOperate__expedition'
 local repair = require 'BaseOperate__repair'
 local exercise = require 'BaseOperate__exercise'
 local campaign = require 'BaseOperate__campaign'
+local disintegrateShip = require 'BaseOperate__disintegrateShip'
 
 
 -- åŸå­æ“ä½œåˆ—è¡¨
@@ -28,6 +29,7 @@ local map = {
   repair = repair, -- ä¿®ç†
   exercise = exercise, -- æ¼”ä¹ 
   campaign = campaign, -- æˆ˜å½¹
+  disintegrateShip = disintegrateShip, -- è§£ä½“èˆ°èˆ¹
 }
 
 
@@ -43,27 +45,30 @@ package.preload[ "BaseOperate__ImgInfo" ] = function( ... ) local arg = _G.arg;
 require 'TableLib'
 
 local function transRelativePoint(tab, base)
+  if not base then
+    base = tab[1]
+    table.remove(tab, 1)
+  end
   local newTab = {}
   for key, value in ipairs(tab) do
     newTab[key] = table.assign(value, { value[1] - base[1], value[2] - base[2] })
   end
-  return newTab
-end
 
-local function transColorListToString(tab)
   local tmp = {}
-  for key, value in ipairs(tab) do
+  for _, value in ipairs(newTab) do
     value[3] = string.format('0x%06X', value[3])
     table.insert(tmp, table.concat(value, '|'))
   end
-  return table.concat(tmp, ',')
+
+  return base, table.concat(tmp, ',')
 end
 
 return {
   -- åŸºæœ¬æ–¹æ³•
   toPoint = function(tab)
     local newTab = {}
-    for _, value in ipairs(tab) do
+    for key = 1, #tab do
+      local value = tab[key]
       table.insert(newTab, { value.x, value.y })
     end
     return newTab
@@ -76,8 +81,8 @@ return {
       Cit = (function()
         local leftTop = { 192, 304 }
         local rightBotton = { 943, 797 }
-        local basePoint = { 596, 507, 0xf7f7f7 }
-        local posandcolor = transColorListToString(transRelativePoint({
+        local basePoint, posandcolor = transRelativePoint({
+          { 596, 507, 0xf7f7f7 },
           { 619, 508, 0xdee3de }, { 633, 510, 0xe6e7e6 },
           { 667, 517, 0x3ab2ce }, { 678, 520, 0xcecece },
           { 675, 530, 0x00cade }, { 651, 531, 0x42555a },
@@ -90,15 +95,15 @@ return {
           { 671, 554, 0x42454a }, { 643, 563, 0x21bade },
           { 633, 557, 0x52b2ce }, { 614, 574, 0xcecace },
           { 641, 594, 0xcecace }, { 637, 584, 0x00c2e6 },
-        }, basePoint))
-        return { leftTop = leftTop, rightBotton = rightBotton, basePoint = basePoint, posandcolor = posandcolor, }
+        })
+        return { basePoint[3], posandcolor, 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2] }
       end)(),
       -- èˆªæ¯
       CV = (function()
         local leftTop = { 192, 304 }
         local rightBotton = { 943, 797 }
-        local basePoint = { 213, 325, 0xefebef }
-        local posandcolor = transColorListToString(transRelativePoint({
+        local basePoint, posandcolor = transRelativePoint({
+          { 213, 325, 0xefebef },
           { 242, 323, 0xcecace }, { 254, 323, 0xcecace },
           { 264, 323, 0x296573 }, { 273, 328, 0x7b797b },
           { 266, 328, 0x94e7ef }, { 254, 328, 0x5a595a },
@@ -111,15 +116,15 @@ return {
           { 260, 393, 0xe6ebe6 }, { 281, 386, 0x424542 },
           { 288, 372, 0x008aa4 }, { 284, 390, 0xa4a6a4 },
           { 244, 403, 0x00bede }, { 237, 407, 0xcecece },
-        }, basePoint))
-        return { leftTop = leftTop, rightBotton = rightBotton, basePoint = basePoint, posandcolor = posandcolor, }
+        })
+        return { basePoint[3], posandcolor, 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2] }
       end)(),
       -- æ½œè‰‡
       SS = (function()
         local leftTop = { 192, 304 }
         local rightBotton = { 943, 797 }
-        local basePoint = { 207, 328, 0xefefef }
-        local posandcolor = transColorListToString(transRelativePoint({
+        local basePoint, posandcolor = transRelativePoint({
+          { 207, 328, 0xefefef },
           { 222, 328, 0xdedfde }, { 231, 327, 0xd6d2d6 },
           { 258, 319, 0xc5cac5 }, { 250, 326, 0x524d52 },
           { 234, 329, 0x424542 }, { 236, 337, 0x31393a },
@@ -132,15 +137,15 @@ return {
           { 287, 387, 0x525152 }, { 250, 375, 0x42a2b5 },
           { 258, 403, 0x00a6bd }, { 265, 398, 0xf7fbf7 },
           { 278, 399, 0xefefef }, { 285, 391, 0x525152 },
-        }, basePoint))
-        return { leftTop = leftTop, rightBotton = rightBotton, basePoint = basePoint, posandcolor = posandcolor, }
+        })
+        return { basePoint[3], posandcolor, 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2] }
       end)(),
       -- è¡¥ç»™ï¼ˆææˆ˜åˆ©å“ï¼‰
       AP = (function()
         local leftTop = { 192, 304 }
         local rightBotton = { 943, 797 }
-        local basePoint = { 206, 509, 0xefefef }
-        local posandcolor = transColorListToString(transRelativePoint({
+        local basePoint, posandcolor = transRelativePoint({
+          { 206, 509, 0xefefef },
           { 222, 507, 0xdedfde }, { 230, 508, 0x737573 },
           { 231, 522, 0x3a494a }, { 222, 517, 0xf7f7f7 },
           { 241, 509, 0xdedbde }, { 250, 503, 0x6b797b },
@@ -151,8 +156,36 @@ return {
           { 257, 556, 0x4abed6 }, { 252, 568, 0x108eb5 },
           { 256, 580, 0x00799c }, { 268, 573, 0x636163 },
           { 283, 575, 0x424142 }, { 288, 554, 0x08798c },
-        }, basePoint))
-        return { leftTop = leftTop, rightBotton = rightBotton, basePoint = basePoint, posandcolor = posandcolor, }
+        })
+        return { basePoint[3], posandcolor, 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2] }
+      end)(),
+    },
+    victoryPanel = {
+      -- å¤§ç ´
+      bigBreak = (function()
+        local leftTop = { 344, 218 }
+        local rightBotton = { 543, 1046 }
+        local basePoint, posandcolor = transRelativePoint({
+          { 430, 431, 0x292421 }, { 445, 431, 0x313131 },
+          { 431, 459, 0xff695a }, { 439, 465, 0xff6563 },
+          { 458, 466, 0xf75142 }, { 480, 465, 0xf75142 },
+          { 498, 446, 0xffcabd }, { 501, 463, 0x3a3142 },
+          { 409, 470, 0xff6563 }, { 443, 465, 0xff9294 },
+        })
+        return { basePoint[3], posandcolor, 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2] }
+      end)(),
+      -- ä¸­ç ´
+      middleBreak = (function()
+        local leftTop = { 344, 218 }
+        local rightBotton = { 543, 1046 }
+        local basePoint, posandcolor = transRelativePoint({
+          { 436, 291, 0xffefbd }, { 456, 312, 0xe6ba63 },
+          { 469, 327, 0xdeae52 }, { 475, 309, 0xffeba4 },
+          { 488, 292, 0x4a4531 }, { 482, 282, 0xf7ca6b },
+          { 426, 311, 0x212019 }, { 415, 323, 0x312d29 },
+          { 406, 331, 0xad8621 }, { 429, 332, 0xb58a31 },
+        })
+        return { basePoint[3], posandcolor, 90, leftTop[1], leftTop[2], rightBotton[1], rightBotton[2] }
       end)(),
     },
   },
@@ -186,10 +219,9 @@ battle.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and (not multiColorS(list2))
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 
 -- ç‚¹å‡»å›æ¸¯
@@ -219,10 +251,9 @@ battle.isBattleBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 -- ç‚¹å‡»å‡ºå¾
@@ -233,30 +264,36 @@ end
 
 -- ç§»åŠ¨åˆ°m-nç« èŠ‚
 battle.moveToChapter = function(chapter)
-  local chapterArr = strSplit(chapter, "-")
+  local chapterArr = strSplit(chapter, '-')
   local m = tonumber(chapterArr[1]) or 1
   local n = tonumber(chapterArr[2]) or 1
+
+  local leftSissionButton = {
+    { 246, 463, 0x3a92a4 }, { 249, 510, 0x218a9c },
+    { 250, 489, 0x21dbd6 }, { 272, 488, 0x29fbf7 },
+    { 281, 488, 0x217594 },
+  }
+
   -- å…ˆç§»åˆ°ç¬¬ä¸€ç« 
-  for i = 1, 8 do
+  for i = 1, 12 do
     tap(360, 958, 100)
-    mSleep(200)
+    mSleep(80)
   end
   -- å†ç§»åˆ°ç¬¬mç« 
   for i = 2, m do
     tap(1827, 961, 100)
-    mSleep(200)
+    mSleep(500)
   end
   -- å…ˆç§»åˆ°ç¬¬ä¸€èŠ‚
   for i = 1, 8 do
     tap(256, 493, 100)
-    mSleep(200)
+    mSleep(80)
   end
   -- å†ç§»åˆ°ç¬¬nç« 
   for i = 2, n do
     tap(1889, 485, 100)
-    mSleep(200)
+    mSleep(500)
   end
-  return true
 end
 
 -- ç‚¹å‡»å‡†å¤‡å‡ºå¾
@@ -369,9 +406,7 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   if (checkLevel == 3) then
     -- æœ‰ä¸æ»¡è¡€
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList23 = multiColorS({ list23[i] }, 80)
-      if (theList and (not theList23)) then
+      if (multiColorS({ list[i] }, 80) and (not multiColorS({ list23[i] }, 80))) then
         result = false
         break
       end
@@ -379,10 +414,7 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 2) then
     -- æœ‰ä¸­ç ´æˆ–å¤§ç ´
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList22 = multiColorS({ list22[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and (theList22 or theList21)) then
+      if (multiColorS({ list[i] }, 80) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80))) then
         result = false
         break
       end
@@ -390,9 +422,7 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- æœ‰å¤§ç ´
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and theList21) then
+      if (multiColorS({ list[i] }, 80) and multiColorS({ list21[i] }, 80)) then
         result = false
         break
       end
@@ -418,11 +448,14 @@ battle.isQuickSupplyModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 1817, 483, 0x423510 },
-    { 1292, 224, 0xd6cac5 },
-    { 315, 835, 0xd6cec5 },
-    { 842, 189, 0x004d84 },
-    { 1785, 541, 0x423510 },
+    { 264, 173, 0x0079bd }, { 1012, 214, 0x08619c },
+    { 1412, 226, 0xd6cabd }, { 1439, 842, 0xc5b69c },
+    { 285, 835, 0xd6cec5 }, { 1144, 764, 0x42ceef },
+    { 1398, 806, 0x0096c5 }, { 1258, 779, 0xffffff },
+    { 477, 187, 0x08518c }, { 555, 200, 0x10598c },
+    { 514, 201, 0x08598c }, { 516, 170, 0x005d9c },
+    { 554, 184, 0xffffff }, { 547, 209, 0xffffff },
+    { 505, 205, 0xfffbff },
   }
   local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
@@ -444,11 +477,14 @@ battle.isQuickRepairModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 1817, 483, 0x423510 },
-    { 1292, 224, 0xd6cac5 },
-    { 315, 835, 0xd6cec5 },
-    { 842, 189, 0x004d84 },
-    { 1785, 541, 0x423510 },
+    { 254, 168, 0x008ace }, { 1023, 207, 0x1061a4 },
+    { 1417, 228, 0xd6cabd }, { 1443, 841, 0xc5baa4 },
+    { 268, 841, 0xcecabd }, { 1402, 761, 0x42caef },
+    { 1142, 806, 0x0096c5 }, { 1189, 793, 0xffffff },
+    { 481, 181, 0xffffff }, { 523, 196, 0x08558c },
+    { 532, 186, 0xffffff }, { 555, 179, 0xffffff },
+    { 554, 208, 0xffffff }, { 576, 192, 0x19619c },
+    { 521, 196, 0x08558c }, { 491, 202, 0xf7f7f7 },
   }
   local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
@@ -506,28 +542,21 @@ battle.isQuickRepairModalShipNeedRepair = function(checkLevel)
   if (checkLevel == 3) then
     -- ä¸æ»¡è¡€
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList23 = multiColorS({ list23[i] }, 80)
-      if (theList and (not theList23)) then
+      if (multiColorS({ list[i] }, 80) and (not multiColorS({ list23[i] }, 80))) then
         table.insert(result, i)
       end
     end
   elseif (checkLevel == 2) then
     -- æœ‰ä¸­ç ´æˆ–å¤§ç ´
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList22 = multiColorS({ list22[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and (theList22 or theList21)) then
+      if (multiColorS({ list[i] }, 80) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80))) then
         table.insert(result, i)
       end
     end
   elseif (checkLevel == 1) then
     -- æœ‰å¤§ç ´
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if (theList and theList21) then
+      if (multiColorS({ list[i] }, 80) and multiColorS({ list21[i] }, 80)) then
         table.insert(result, i)
       end
     end
@@ -541,7 +570,8 @@ battle.clickQuickRepairModalSingleShip = function(shipList)
   if (type(shipList) ~= 'table') then
     shipList = { shipList }
   end
-  for key, value in ipairs(shipList) do
+  for key = 1, #shipList do
+    local value = shipList[key]
     if (value == 1) then
       tap(360, 397, 100)
     elseif (value == 2) then
@@ -658,7 +688,7 @@ battle.isEnemyShipIsCV = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theCV = ImgInfo.battle.enemyInfoPanel.CV
-  local pointList = findMultiColorInRegionFuzzyExt(theCV.basePoint[3], theCV.posandcolor, 90, theCV.leftTop[1], theCV.leftTop[2], theCV.rightBotton[1], theCV.rightBotton[2])
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theCV)))
   pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
@@ -672,7 +702,7 @@ battle.isEnemyShipIsCit = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theCit = ImgInfo.battle.enemyInfoPanel.Cit
-  local pointList = findMultiColorInRegionFuzzyExt(theCit.basePoint[3], theCit.posandcolor, 90, theCit.leftTop[1], theCit.leftTop[2], theCit.rightBotton[1], theCit.rightBotton[2])
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theCit)))
   pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
@@ -686,7 +716,7 @@ battle.isEnemyShipIsSS = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theSS = ImgInfo.battle.enemyInfoPanel.SS
-  local pointList = findMultiColorInRegionFuzzyExt(theSS.basePoint[3], theSS.posandcolor, 90, theSS.leftTop[1], theSS.leftTop[2], theSS.rightBotton[1], theSS.rightBotton[2])
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theSS)))
   pointList = ImgInfo.toPoint(pointList)
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
@@ -700,8 +730,7 @@ battle.isEnemyShipIsAP = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local theAP = ImgInfo.battle.enemyInfoPanel.AP
-  local pointList = findMultiColorInRegionFuzzyExt(theAP.basePoint[3], theAP.posandcolor, 90, theAP.leftTop[1], theAP.leftTop[2], theAP.rightBotton[1], theAP.rightBotton[2])
-  pointList = ImgInfo.toPoint(pointList)
+  local pointList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(theAP)))
   if (not __keepScreenState) then keepScreen(false) end
   if (#pointList > 0) then
     return true
@@ -882,58 +911,36 @@ battle.isVictoryPageShipHPSafe = function(checkLevel)
   -- 'æœ‰ä¸­ç ´,æœ‰å¤§ç ´'
   -- checkLevel == 2 or 1
   local __keepScreenState = keepScreenState
-  if (not __keepScreenState) then keepScreen(true) end
-  local list = {
-    { 682, 246, 0xc5b6a4 },
-    { 682, 390, 0xc5b6a4 },
-    { 682, 530, 0xc5b6a4 },
-    { 682, 674, 0xc5b6a4 },
-    { 682, 810, 0xc5b6a4 },
-    { 682, 950, 0xc5b6a4 },
+  keepScreen(false)
+  keepScreen(true)
+  local bigBreak = ImgInfo.battle.victoryPanel.bigBreak
+  local middleBreak = ImgInfo.battle.victoryPanel.middleBreak
+  local positionList = {
+    { 443, 209, 0x3a517b },
+    { 443, 347, 0x4a5d84 },
+    { 443, 488, 0x425573 },
+    { 443, 628, 0x42597b },
+    { 443, 769, 0x425573 },
+    { 443, 910, 0x3a5173 },
+    { 443, 1049, 0x42557b },
   }
-  -- ä¸­ç ´
-  local list22 = {
-    { { 474, 289, 0xf7ca6b }, { 481, 283, 0xe6be63 }, { 471, 329, 0xcea242 }, },
-    { { 474, 430, 0xf7ca6b }, { 481, 424, 0xe6be63 }, { 471, 470, 0xcea242 }, },
-    { { 474, 570, 0xf7ca6b }, { 481, 564, 0xe6be63 }, { 471, 610, 0xcea242 }, },
-    { { 474, 711, 0xf7ca6b }, { 481, 705, 0xe6be63 }, { 471, 751, 0xcea242 }, },
-    { { 474, 852, 0xf7ca6b }, { 481, 846, 0xe6be63 }, { 471, 892, 0xcea242 }, },
-    { { 474, 992, 0xf7ca6b }, { 481, 986, 0xe6be63 }, { 471, 1032, 0xcea242 }, },
-  }
-  -- å¤§ç ´
-  local list21 = {
-    { { 474, 289, 0xffb6b5 }, { 481, 283, 0xffbabd }, { 471, 329, 0xff7d7b }, },
-    { { 474, 430, 0xffb6b5 }, { 481, 424, 0xffbabd }, { 471, 470, 0xff7d7b }, },
-    { { 474, 570, 0xffb6b5 }, { 481, 564, 0xffbabd }, { 471, 610, 0xff7d7b }, },
-    { { 474, 711, 0xffb6b5 }, { 481, 705, 0xffbabd }, { 471, 751, 0xff7d7b }, },
-    { { 474, 852, 0xffb6b5 }, { 481, 846, 0xffbabd }, { 471, 892, 0xff7d7b }, },
-    { { 474, 992, 0xffb6b5 }, { 481, 986, 0xffbabd }, { 471, 1032, 0xff7d7b }, },
-  }
-  local result = true
-  if (checkLevel == 2) then
-    -- æœ‰ä¸­ç ´æˆ–è€…å¤§ç ´
-    for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 85)
-      local theList22 = multiColorS(list22[i], 85)
-      local theList21 = multiColorS(list21[i], 85)
-      if (theList and (theList22 or theList21)) then
-        result = false
-        break
-      end
-    end
 
-  elseif (checkLevel == 1) then
+  local result = true
+  if checkLevel == 2 then
+    -- æœ‰ä¸­ç ´æˆ–è€…å¤§ç ´
+    local bigBreakList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(bigBreak)))
+    local middleBreakList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(middleBreak)))
+    if #bigBreakList > 0 or #middleBreakList > 0 then
+      result = false
+    end
+  elseif checkLevel == 1 then
     -- æœ‰å¤§ç ´
-    for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 85)
-      local theList21 = multiColorS(list21[i], 85)
-      if (theList and theList21) then
-        result = false
-        break
-      end
+    local bigBreakList = ImgInfo.toPoint(findMultiColorInRegionFuzzyExt(table.unpack(bigBreak)))
+    if #bigBreakList > 0 then
+      result = false
     end
   end
-  if (not __keepScreenState) then keepScreen(false) end
+  if not __keepScreenState then keepScreen(false) end
   return result
 end
 
@@ -1174,10 +1181,9 @@ campaign.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0xad4900 },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and (not multiColorS(list2))
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 
 -- ç‚¹å‡»æˆ˜å½¹æŒ‰é’®
@@ -1205,10 +1211,9 @@ campaign.isCampaignPage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0xad4900 },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 -- ç§»åŠ¨åˆ°æˆ˜å½¹
@@ -1368,9 +1373,7 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   if (checkLevel == 3) then
     -- æœ‰ä¸æ»¡è¡€
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList23 = multiColorS({ list23[i] }, 80)
-      if ((not theList) and (not theList23)) then
+      if ((not multiColorS({ list[i] }, 80)) and (not multiColorS({ list23[i] }, 80))) then
         result = false
         break
       end
@@ -1378,10 +1381,7 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 2) then
     -- æœ‰ä¸­ç ´æˆ–è€…å¤§ç ´
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList22 = multiColorS({ list22[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if ((not theList) and (theList22 or theList21)) then
+      if ((not multiColorS({ list[i] }, 80)) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80))) then
         result = false
         break
       end
@@ -1390,9 +1390,7 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 1) then
     -- æœ‰å¤§ç ´
     for i = 1, #list do
-      local theList = multiColorS({ list[i] }, 80)
-      local theList21 = multiColorS({ list21[i] }, 80)
-      if ((not theList) and theList21) then
+      if ((not multiColorS({ list[i] }, 80)) and multiColorS({ list21[i] }, 80)) then
         result = false
         break
       end
@@ -1540,6 +1538,205 @@ end
 
 do
 local _ENV = _ENV
+package.preload[ "BaseOperate__disintegrateShip" ] = function( ... ) local arg = _G.arg;
+local ImgInfo = require 'BaseOperate__ImgInfo'
+local battle = require 'BaseOperate__battle';
+
+local disintegrateShip = {}
+
+
+-- ç‚¹å‡»å»ºé€ æŒ‰é’®
+disintegrateShip.clickBuildPageBtn = function()
+  tap(1235, 546, 100)
+  return true
+end
+
+--  æ˜¯å¦åœ¨å»ºé€ ç•Œé¢
+disintegrateShip.isBuildPage = function()
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+  local list = {
+    { 28, 29, 0x08456b }, { 170, 182, 0x105584 },
+    { 34, 324, 0x104d73 }, { 178, 462, 0x105984 },
+    { 178, 714, 0x085584 }, { 226, 557, 0xc5cac5 },
+    { 251, 394, 0x5a758c }, { 252, 616, 0x5a7594 },
+    { 252, 776, 0x4a6584 }, { 249, 956, 0x4a617b },
+    { 269, 146, 0x0065a4 },
+  }
+  -- å››ä¸ªæŒ‰é’®çš„é¢œè‰²
+  local list2 = {
+    { 163, 151, 0x008ec5 },
+    { 164, 289, 0xad4900 },
+    { 166, 432, 0x008ebd },
+    { 162, 573, 0x008ebd },
+  }
+  local result = multiColorS(list) and not multiColorS(list2)
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
+
+-- ç‚¹å‡»è§£ä½“æŒ‰é’®
+disintegrateShip.clickDisintegratePageBtn = function()
+  tap(102, 257, 100)
+  return true
+end
+
+--  æ˜¯å¦åœ¨è§£ä½“ç•Œé¢
+disintegrateShip.isDisintegrateShipPage = function()
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+  local list = {
+    { 28, 29, 0x08456b }, { 170, 182, 0x105584 },
+    { 34, 324, 0x104d73 }, { 178, 462, 0x105984 },
+    { 178, 714, 0x085584 }, { 226, 557, 0xc5cac5 },
+    { 251, 394, 0x5a758c }, { 252, 616, 0x5a7594 },
+    { 252, 776, 0x4a6584 }, { 249, 956, 0x4a617b },
+    { 269, 146, 0x0065a4 },
+
+    { 1884, 721, 0xcecabd }, { 1874, 209, 0xbdb69c },
+    { 1293, 204, 0xd6cabd }, { 1818, 952, 0xc5b69c },
+    { 1079, 928, 0xbdb69c },
+
+    { 1176, 747, 0xbdb69c }, { 748, 725, 0xcecabd },
+  }
+  -- å››ä¸ªæŒ‰é’®çš„é¢œè‰²
+  local list2 = {
+    { 163, 151, 0x008ec5 },
+    { 164, 289, 0xad4900 },
+    { 166, 432, 0x008ebd },
+    { 162, 573, 0x008ebd },
+  }
+  local result = multiColorS(list) and multiColorS(list2)
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
+
+-- ç‚¹å‡»æ·»åŠ æŒ‰é’®
+disintegrateShip.clickAddShipBtn = function()
+  tap(392, 408, 100)
+  return true
+end
+
+--  æ˜¯å¦åœ¨è§£ä½“æ·»åŠ ç•Œé¢
+disintegrateShip.addShipPage = function()
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+  local list = {
+    { 77, 136, 0x085994 }, { 1159, 80, 0xcecace },
+    { 1320, 122, 0xcecace }, { 1645, 148, 0xcecace },
+    { 1714, 12, 0x0069ce }, { 1737, 653, 0x109aef },
+    { 1804, 852, 0xad4908 }, { 1811, 1010, 0x008abd },
+    { 1620, 1051, 0x00558c }, { 85, 1066, 0x087dbd },
+  }
+  local result = multiColorS(list)
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
+
+--  æ˜¯å¦æœ‰èˆ¹éœ€è¦è§£ä½“
+disintegrateShip.hasShip = function()
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+  local list = {
+    { 74, 241, 0x425d7b }, { 76, 287, 0x42617b },
+    { 72, 371, 0x526d8c }, { 159, 369, 0x5a7594 },
+    { 159, 292, 0x52718c }, { 164, 219, 0x42617b },
+  }
+  local result = not multiColorS(list)
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
+
+--  ç‚¹å‡»è¦è§£ä½“çš„èˆ¹
+disintegrateShip.clickAllShip = function()
+  local list = {
+    { 130, 388, 0x31313a }, { 338, 396, 0x7b8694 },
+    { 545, 397, 0xded7bd }, { 748, 386, 0x5a2431 },
+    { 956, 386, 0x734d29 }, { 1160, 385, 0xf7f3f7 },
+    { 1374, 390, 0xefdbf7 }, { 1577, 387, 0xd6b6de },
+
+    { 130, 840, 0xffffff }, { 330, 835, 0xd6dbd6 },
+    { 547, 848, 0x8c7d7b }, { 757, 840, 0xd6cece },
+    { 958, 842, 0xd6d2ce }, { 1164, 844, 0xadaead },
+    { 1367, 853, 0xbdaeb5 }, { 1576, 855, 0xefe7de },
+  }
+  for key, value in ipairs(list) do
+    tap(value[1], value[2], 80)
+  end
+end
+
+--  ç‚¹å‡»ç¡®å®š
+disintegrateShip.selectAllShipClickOk = function()
+  tap(1812, 804, 100)
+end
+
+--  ç‚¹å‡»è¿”å›
+disintegrateShip.selectAllShipClickCancel = function()
+  tap(1810, 979, 100)
+end
+
+--  ç‚¹å‡»è§£ä½“
+disintegrateShip.clickDisintegrateShipBtn = function()
+  tap(1623, 869, 100)
+end
+
+--  æ£€æŸ¥æ˜¯å¦é€‰ä¸­å¸ä¸‹æ‰€æœ‰è£…å¤‡
+disintegrateShip.checkIsRemoveAllEquipmentEnable = function()
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+  local list = {
+    { 1017, 776, 0xde7d6b }, { 1030, 786, 0xe69284 },
+    { 1048, 773, 0xd65131 }, { 1064, 753, 0xce4931 },
+  }
+  local result = multiColorS(list)
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
+
+--  ç‚¹å‡»å¸ä¸‹æ‰€æœ‰è£…å¤‡
+disintegrateShip.clickRemoveAllEquipmentCheckbox = function()
+  tap(1031, 774, 100)
+end
+
+--  ç¨€æœ‰è§£ä½“ç¡®è®¤çª—å£
+disintegrateShip.disintegrateSRPanel = function()
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+  local list = {
+    { 516, 244, 0x0886ce }, { 1404, 303, 0xcecabd },
+    { 1401, 771, 0xc5baa4 }, { 516, 763, 0xbdb69c },
+    { 1069, 292, 0x08659c }, { 740, 681, 0x42ceef },
+    { 1174, 679, 0xce493a }, { 1204, 709, 0xffffff },
+    { 789, 717, 0xffffff }, { 1070, 796, 0xd6cabd },
+
+    { 565, 449, 0xffffff }, { 610, 445, 0x7b6921 },
+    { 734, 441, 0x6b5910 }, { 830, 456, 0xfffbff },
+    { 1002, 447, 0xf7f7f7 }, { 1107, 441, 0x846d29 },
+    { 1248, 450, 0xf7f7f7 }, { 1315, 452, 0x7b6521 },
+    { 940, 508, 0x735d19 }, { 986, 508, 0xffffff },
+  }
+  local result = multiColorS(list)
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
+
+--  ç‚¹å‡»è§£ä½“ç¡®è®¤çª—å£ç¡®å®š
+disintegrateShip.clickDisintegratePanelOkBtn = function()
+  tap(745, 713, 100)
+end
+
+--  è¿”å›home
+disintegrateShip.disintegrateShipPageClickBackToHome = function()
+  tap(103, 1007, 100)
+end
+
+return disintegrateShip
+
+end
+end
+
+do
+local _ENV = _ENV
 package.preload[ "BaseOperate__exercise" ] = function( ... ) local arg = _G.arg;
 local battle = require 'BaseOperate__battle';
 
@@ -1567,10 +1764,9 @@ exercise.isBattlePage = function()
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and not multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 -- ç‚¹å‡»æ¼”ä¹ 
 exercise.clickExerciseBtn = function()
@@ -1590,29 +1786,31 @@ exercise.isExercisePage = function()
     { 169, 1014, 0xffffff },
     { 195, 1033, 0xb58a5a },
   }
-  -- å››ä¸ªæŒ‰é’®çš„é¢œè‰²
   local list2 = {
+    { 687, 33, 0x0875b5 },
+  }
+  -- å››ä¸ªæŒ‰é’®çš„é¢œè‰²
+  local list3 = {
     { 110, 148, 0x008ebd },
     { 111, 290, 0xad4900 },
     { 107, 429, 0x0092c5 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2) and multiColorS(list3)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 --  æ£€æµ‹æ˜¯å¦æœ‰æ¼”ä¹ 
 exercise.isExercisePageHaveExercise = function()
   local __keepScreenState = keepScreenState
-  if (not __keepScreenState) then keepScreen(true) end
+  keepScreen(true)
   local list = {
-    { 1799, 186, 0xc55100 },
-    { 1799, 362, 0xc55100 },
-    { 1799, 538, 0xc55100 },
-    { 1799, 714, 0xc55100 },
-    { 1799, 890, 0xc55100 },
+    { 1688, 147, 0xef8a42 },
+    { 1688, 327, 0xe6863a },
+    { 1687, 497, 0xf78e4a },
+    { 1684, 672, 0xf78e4a },
+    { 1687, 851, 0xf78e4a },
   }
   local result = false
   local resList = {}
@@ -1838,10 +2036,9 @@ expedition.isBattlePage = function()
     { 107, 429, 0xb54d08 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and (not multiColorS(list2))
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and (not result2))
+  return result
 end
 
 -- ç‚¹å‡»è¿œå¾
@@ -1869,25 +2066,32 @@ expedition.isBattleExpedition = function()
     { 107, 429, 0xb54d08 },
     { 111, 572, 0x008ebd },
   }
-  local result = multiColorS(list)
-  local result2 = multiColorS(list2)
+  local result = multiColorS(list) and multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
-  return (result and result2)
+  return result
 end
 
 -- ä»ç¬¬mç« ç§»åŠ¨åˆ°ç¬¬nç« 
 expedition.moveToChapter = function(n, m)
   n = tonumber(n) or 1
+  local oneChapter = {
+    { 523, 848, 0xffffff }, { 568, 848, 0xffffe6 },
+    { 534, 890, 0xffffff }, { 528, 930, 0xffffff },
+    { 540, 948, 0xef7131 }, { 613, 961, 0x5ae7ad },
+    { 680, 973, 0x52e3a4 }, { 753, 1005, 0xced7de },
+    { 791, 1004, 0xeff3ef }, { 735, 960, 0x8cceef },
+  }
+
   if (type(m) == "nil") then
     -- å…ˆç§»åŠ¨åˆ°ç¬¬1ç« 
-    for i = 1, 7 do
+    for i = 1, 12 do
       tap(358, 962, 100)
-      mSleep(200)
+      mSleep(80)
     end
     -- å†ç§»åŠ¨åˆ°ç¬¬nç« 
     for i = 2, n do
       tap(1835, 963, 100)
-      mSleep(200)
+      mSleep(500)
     end
   else
     m = tonumber(m) or 1
@@ -1897,13 +2101,13 @@ expedition.moveToChapter = function(n, m)
       -- å³ç§»
       for i = 1, diff do
         tap(1835, 963, 100)
-        mSleep(200)
+        mSleep(300)
       end
     elseif (diff < 0) then
       -- å·¦ç§»
       for i = 1, (0 - diff) do
         tap(358, 962, 100)
-        mSleep(200)
+        mSleep(300)
       end
     end
   end
@@ -1930,13 +2134,9 @@ expedition.isThisExpeditionPageHasReward = function()
     { 821, 747, 0x9c5921 },
     { 1539, 819, 0xbd4d08 },
   }
-  mSleep(50)
   local result1 = multiColorS(list1)
-  mSleep(50)
   local result2 = multiColorS(list2)
-  mSleep(50)
   local result3 = multiColorS(list3)
-  mSleep(50)
   local result4 = multiColorS(list4)
   local result = false
   if (result1 or result2 or result3 or result4) then
@@ -2305,38 +2505,18 @@ login.isAppNotRun = function()
   return true
 end
 
--- æ˜¯å¦åœ¨é€‰æ‹©æœåŠ¡å™¨ç•Œé¢
-login.isSelectServerPage = function()
+-- æ˜¯å¦åœ¨ç™»å½•ç•Œé¢
+login.isLoginPage = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 443, 759, 0x0896d6 },
-    { 480, 829, 0xc5cac5 },
-    { 538, 842, 0x109ad6 },
-    { 833, 847, 0x1075b5 },
-    { 865, 758, 0x0871ad },
-    { 1130, 846, 0x1071b5 },
-    { 1232, 758, 0x086dad },
-    { 1387, 761, 0x086db5 },
-    { 1470, 847, 0x0879bd },
-    { 1442, 781, 0xc5cac5 },
-    { 668, 907, 0xadeff7 },
-    { 757, 910, 0xbdf3f7 },
-    { 843, 907, 0xcef7ff },
-    { 1104, 912, 0x8cd7de },
-    { 1158, 906, 0x9cd7e6 },
-    { 1248, 906, 0x9cd7de },
-    { 1172, 970, 0x8cbed6 },
-    { 1129, 1022, 0x6b96c5 },
-    { 800, 1023, 0xa4c6e6 },
-    { 769, 1001, 0xadceef },
-    { 831, 942, 0xfffbff },
-    { 869, 966, 0xf7fbff },
-    { 925, 957, 0xffffff },
-    { 1017, 973, 0xffffff },
-    { 1076, 953, 0xf7fbff },
-    { 991, 946, 0xfffbff },
-    { 1093, 990, 0xf7fbff },
+    { 370, 242, 0x0886ce }, { 1507, 293, 0xd6cec5 },
+    { 1533, 772, 0xcec6bd }, { 390, 759, 0xcecabd },
+    { 477, 679, 0x42caef }, { 1240, 672, 0xef863a },
+    { 443, 405, 0xc5baa4 }, { 539, 397, 0xc5baa4 },
+    { 596, 403, 0xffffff }, { 599, 417, 0xc5baa4 },
+    { 468, 536, 0xc5b6a4 }, { 524, 545, 0xbdb29c },
+    { 552, 531, 0xffffff }, { 607, 535, 0xc5baa4 },
   }
   local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
@@ -2345,6 +2525,37 @@ end
 
 -- ç‚¹å‡»ç™»å½•
 login.clickLoginBtn = function()
+  tap(1343, 701, 100)
+  return true
+end
+
+-- æ˜¯å¦åœ¨é€‰æ‹©æœåŠ¡å™¨ç•Œé¢
+login.isSelectServerPage = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local list = {
+    { 443, 759, 0x0896d6 }, { 480, 829, 0xc5cac5 },
+    { 538, 842, 0x109ad6 }, { 833, 847, 0x1075b5 },
+    { 865, 758, 0x0871ad }, { 1130, 846, 0x1071b5 },
+    { 1232, 758, 0x086dad }, { 1387, 761, 0x086db5 },
+    { 1470, 847, 0x0879bd }, { 1442, 781, 0xc5cac5 },
+    { 668, 907, 0xadeff7 }, { 757, 910, 0xbdf3f7 },
+    { 843, 907, 0xcef7ff }, { 1104, 912, 0x8cd7de },
+    { 1158, 906, 0x9cd7e6 }, { 1248, 906, 0x9cd7de },
+    { 1172, 970, 0x8cbed6 }, { 1129, 1022, 0x6b96c5 },
+    { 800, 1023, 0xa4c6e6 }, { 769, 1001, 0xadceef },
+    { 831, 942, 0xfffbff }, { 869, 966, 0xf7fbff },
+    { 925, 957, 0xffffff }, { 1017, 973, 0xffffff },
+    { 1076, 953, 0xf7fbff }, { 991, 946, 0xfffbff },
+    { 1093, 990, 0xf7fbff },
+  }
+  local result = multiColorS(list)
+  if (not __keepScreenState) then keepScreen(false) end
+  return result
+end
+
+-- ç‚¹å‡»ç™»å½•æœåŠ¡å™¨
+login.clickLoginServerBtn = function()
   tap(953, 965, 100)
   return true
 end
@@ -2406,7 +2617,7 @@ mission.isMission = function()
 end
 
 -- ç‚¹å‡»å…¨éƒ¨ä»»åŠ¡æŒ‰é’®
-missionClickAllMission = function()
+mission.clickAllMission = function()
   tap(785, 1016, 100)
 end
 
@@ -2544,13 +2755,14 @@ network.isNetworkFailureModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 505, 275, 0xcecece }, { 636, 260, 0xffffff }, { 658, 260, 0xffffff }, { 682, 262, 0xffffff },
-    { 717, 258, 0xffffff }, { 755, 266, 0xffffff }, { 1035, 271, 0x105d94 }, { 524, 349, 0xcecabd },
-    { 1390, 356, 0xd6cabd }, { 1390, 608, 0xd6cabd }, { 522, 671, 0xbdb69c }, { 1398, 772, 0xc5b69c },
-    { 668, 731, 0x0096c5 }, { 1094, 730, 0xad1400 }, { 573, 435, 0xffffff }, { 636, 446, 0xffffff },
-    { 825, 459, 0xffffff }, { 1053, 435, 0xffffff }, { 1254, 440, 0xffffff }, { 1331, 443, 0xffffff },
-    { 836, 513, 0xffffff }, { 923, 509, 0xffffff }, { 1091, 503, 0xffffff }, { 555, 444, 0xcecabd },
-    { 1292, 445, 0xcecabd }, { 1117, 516, 0xd6cabd }, { 781, 509, 0xd6cec5 },
+    { 518, 242, 0x088ece }, { 1105, 291, 0x0875bd }, { 1408, 293, 0xcecabd }, { 1401, 774, 0xbdb69c },
+    { 518, 777, 0xbdb69c }, { 828, 679, 0x42ceef }, { 1088, 733, 0xa41000 },
+
+    { 564, 451, 0xcecabd }, { 1356, 451, 0xcecabd },
+    { 804, 512, 0xd6cac5 }, { 1116, 512, 0xd6cac5 },
+    { 594, 447, 0xf7fbf7 }, { 743, 515, 0xd6cec5 },
+    { 1176, 513, 0xcecabd }, { 1203, 443, 0xffffff },
+    { 1022, 450, 0xd6cac5 }, { 844, 455, 0xcecabd },
   }
   local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
@@ -2574,14 +2786,16 @@ network.isCheckNetworkModal = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 517, 246, 0x0081c5 }, { 506, 331, 0xcecabd }, { 513, 781, 0xc5baa4 }, { 1407, 782, 0xc5b69c },
-    { 1408, 296, 0xd6cac5 }, { 774, 471, 0xcecabd }, { 796, 470, 0x083942 }, { 810, 473, 0x9cb2b5 },
-    { 849, 482, 0x638184 }, { 864, 476, 0x526d73 }, { 623, 261, 0x085994 }, { 652, 261, 0xf7fbf7 },
-    { 664, 259, 0xadbebd }, { 682, 260, 0xffffff }, { 709, 262, 0xbdcace }, { 738, 268, 0x7b969c },
-    { 758, 265, 0xd6e3de }, { 710, 252, 0xc5cece }, { 678, 252, 0x00558c }, { 705, 255, 0x084152 },
-    { 773, 483, 0xd6cec5 }, { 795, 483, 0xeff3f7 }, { 833, 483, 0xb5c2c5 }, { 846, 483, 0x9ca29c },
-    { 870, 485, 0x3a6163 }, { 894, 486, 0xd6cac5 }, { 931, 491, 0xf7f7f7 }, { 963, 498, 0x4a6973 },
-    { 989, 499, 0x31555a }, { 1047, 483, 0x5a797b },
+    { 521, 250, 0x0079bd }, { 1094, 294, 0x0869ad },
+    { 1407, 300, 0xcecabd }, { 1402, 777, 0xbdb69c },
+    { 512, 771, 0xbdb69c }, { 871, 679, 0x4ad2f7 },
+    { 949, 679, 0x4ad2f7 }, { 1036, 676, 0x4ad2f7 },
+    { 952, 744, 0x0092c5 }, { 926, 708, 0xffffff },
+    { 777, 478, 0xffffff }, { 808, 475, 0x29555a },
+    { 850, 480, 0x214952 }, { 889, 478, 0xf7f7f7 },
+    { 929, 471, 0x10414a }, { 975, 477, 0xeff3f7 },
+    { 1012, 478, 0x103d42 }, { 1050, 479, 0xffffff },
+    { 1075, 478, 0x08353a }, { 1117, 479, 0x31555a },
   }
   local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
@@ -2679,13 +2893,9 @@ repair.hasEmptyRepairSlot = function()
     { 952, 1035, 0x6baade },
   }
 
-  mSleep(50)
   local result1 = multiColorS(list1)
-  mSleep(50)
   local result2 = multiColorS(list2)
-  mSleep(50)
   local result3 = multiColorS(list3)
-  mSleep(50)
   local result4 = multiColorS(list4)
   local result = false
   if (result1 or result2 or result3 or result4) then
@@ -2809,7 +3019,8 @@ end
 -- å¯»æ‰¾ä¸€ä¸ªä¸åœ¨èˆ°é˜Ÿé‡Œçš„èˆ¹
 local function transColorListToString(tab)
   local tmp = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     value[3] = string.format('0x%06X', value[3])
     table.insert(tmp, table.concat(value, '|'))
   end
@@ -2818,7 +3029,8 @@ end
 
 local function transRelativePoint(tab, basePoint)
   local newTab = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     newTab[key] = { value[1] - basePoint[1], value[2] - basePoint[2], value[3] }
   end
   return newTab
@@ -2826,7 +3038,8 @@ end
 
 local function transPointList(tab)
   local newTab = {}
-  for key, value in ipairs(tab) do
+  for key = 1, #tab do
+    local value = tab[key]
     table.insert(newTab, { value.x, value.y })
   end
   return newTab
@@ -2836,12 +3049,15 @@ local function subtractionList(target, ...)
   local sources = { ... }
   local sourcesMap = {}
   local newTab = {}
-  for _, source in ipairs(sources) do
-    for _, value in ipairs(source) do
+  for key = 1, #sources do
+    local source = sources[key]
+    for key2 = 1, #source do
+      local value = source[key2]
       sourcesMap[value[1] .. ',' .. value[2]] = value
     end
   end
-  for key, value in ipairs(target) do
+  for key = 1, #target do
+    local value = target[key]
     if (not sourcesMap[value[1] .. ',' .. value[2]]) then
       table.insert(newTab, value)
     end
@@ -2924,6 +3140,20 @@ repair.moveToNextPage = function()
   moveTo(point[1][1], point[1][2], point[2][1], point[2][2], 100)
 end
 
+-- æ£€æµ‹ä¿®ç†é¡µé¢æ˜¯å¦è¿˜éœ€è¦æ»‘åŠ¨åˆ°ä¸‹ä¸€é¡µ
+repair.isNeedMoveToNextPage = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local list = {
+    { 1557, 278, 0x4a6984 },
+    { 1544, 505, 0x426584 },
+    { 1542, 781, 0x3a516b },
+  }
+  local result = not multiColorS(list)
+  if (not __keepScreenState) then keepScreen(false) end
+  return result
+end
+
 -- ç‚¹å‡»è¿”å›æ¸¯å£
 repair.clickSelectShipPageBackBtn = function()
   tap(1819, 974, 100)
@@ -2936,52 +3166,6 @@ repair.clickBackToHomeBtn = function()
 end
 
 return repair
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "CheckColor" ] = function( ... ) local arg = _G.arg;
-init(1)
-require 'console'
-mSleep(6000)
-
-keepScreen(false)
-keepScreen(true)
-local sideLength = 1080
-
-local list = {
-  { 77, 125, 0x105d9c },
-  { 51, 237, 0xd6cec5 },
-  { 50, 842, 0xd6cac5 },
-  { 1631, 823, 0xc5baa4 },
-  { 1647, 243, 0xd6cec5 },
-  { 517, 703, 0xd6cec5 },
-  { 1837, 445, 0xdeaa3a },
-  { 1828, 648, 0xd6a631 },
-  { 1220, 86, 0xcecace },
-  { 1647, 136, 0xcecace },
-}
-
-local resultStr = ''
-
-for key, value in ipairs(list) do
-  local color = getColor(value[1], value[2])
-  local oldColor = value[3]
-  local colorStr = string.format('0x%06x', color)
-  local oldColorStr = string.format('0x%06x', oldColor)
-  value[3] = oldColorStr
-  if (color == oldColor) then
-    resultStr = resultStr .. '\n' .. console.getJsStr(value)
-  else
-    value[3] = colorStr
-    resultStr = resultStr .. '\n' .. console.getJsStr(value) .. '  old Color: ' .. oldColorStr
-  end
-end
-
-console.log(resultStr)
-mSleep(6000)
-keepScreen(false)
 end
 end
 
@@ -3016,12 +3200,12 @@ local Promise = Promise or require 'Promise'
 
 local unpack = unpack or table.unpack
 local isArray = table.isArray or function(tab)
-  if (type(tab) ~= "table") then
+  if (type(tab) ~= 'table') then
     return false
   end
   local length = #tab
   for k, v in pairs(tab) do
-    if ((type(k) ~= "number") or (k > length)) then
+    if ((type(k) ~= 'number') or (k > length)) then
       return false
     end
   end
@@ -3156,7 +3340,7 @@ function thunkToPromise(fn)
   end)
 end
 
--- Convert an array of "yieldables" to a promise.
+-- Convert an array of 'yieldables' to a promise.
 -- Uses `Promise.all()` internally.
 --
 -- @param {Array} obj
@@ -3164,13 +3348,14 @@ end
 -- @api private
 function arrayToPromise(obj)
   local newArr = {}
-  for k, v in ipairs(obj) do
+  for k = 1, #obj do
+    local v = obj[k]
     table.insert(newArr, toPromise(v))
   end
   return Promise.all(newArr);
 end
 
--- Convert an object of "yieldables" to a promise.
+-- Convert an object of 'yieldables' to a promise.
 -- Uses `Promise.all()` internally.
 --
 -- @param {Object} obj
@@ -3267,7 +3452,8 @@ function calOrient(_orient)
     return _orient
   end
   -- å¦‚æœæ–¹å‘å˜äº†åˆ™æ—‹è½¬
-  for k, v in ipairs(checkOrder) do
+  for k = 1, #checkOrder do
+    local v = checkOrder[k]
     __init(v)
     if (multiColorS(checkPointList)) then
       return v
@@ -3285,10 +3471,10 @@ getDeviceOrient = function()
   local newOrient = orient
   if (os.time() > nextUpdateTime) then
     local _keepScreenState = keepScreenState
-    if (not _keepScreenState) then keepScreen(true) end
+    keepScreen(true)
     newOrient = calOrient(orient)
     nextUpdateTime = os.time() + 1
-    if (not _keepScreenState) then keepScreen(false) end
+    keepScreen(false)
   end
   return newOrient
 end
@@ -3383,7 +3569,6 @@ local eventQuery = {}
 -- sub query
 local screenListenerQuery = {}
 local screenListenerQueryIndex = {}
-local screenListenerQueryGroup = {}
 local buttonListenerQuery = {}
 local buttonListenerQueryIndex = {}
 local timerQuery = {}
@@ -3401,10 +3586,9 @@ function getEventObj(func, time, isInterval, ms)
   }
 end
 
-function getScreenEventObj(tags, checker, func)
+function getScreenEventObj(checker, func)
   return {
     id = getEventId() or 0,
-    tags = tags,
     checker = checker,
     func = func,
     drop = false,
@@ -3426,7 +3610,7 @@ end
 function setImmediate(func)
   if (type(func) ~= 'function') then return 0 end
   local eventObj = getEventObj(func)
-  table.insert(eventQuery, eventObj)
+  table.insert(timerQuery, eventObj)
   return eventObj.id
 end
 
@@ -3458,28 +3642,17 @@ function setInterval(func, ms)
   return eventObj.id
 end
 
--- param: tags, checker, func
+-- param: checker, func
 function setScreenListener(...)
   local args = { ... }
-  local tags = {}
-  if (type(args[1]) == 'table') then
-    tags = table.remove(args, 1)
-  elseif (type(args[1]) == 'string') then
-    tags = { table.remove(args, 1) }
-  end
   local checker = table.remove(args, 1)
   local func = table.remove(args, 1)
 
-
   if (type(checker) ~= 'function') then return 0 end
   if (type(func) ~= 'function') then return 0 end
-  local screenEventObj = getScreenEventObj(tags, checker, func)
+  local screenEventObj = getScreenEventObj(checker, func)
   table.insert(screenListenerQuery, screenEventObj)
   screenListenerQueryIndex[screenEventObj.id] = screenEventObj
-  for _, tag in ipairs(tags) do
-    screenListenerQueryGroup[tag] = screenListenerQueryGroup[tag] or {}
-    screenListenerQueryGroup[tag][screenEventObj.id] = screenEventObj
-  end
   return screenEventObj.id
 end
 
@@ -3487,31 +3660,6 @@ function clearScreenListener(id)
   local theEventObj = screenListenerQueryIndex[id]
   if (theEventObj) then
     theEventObj.drop = true
-    screenListenerQueryIndex[id] = nil
-    for _, tag in ipairs(theEventObj.tags) do
-      if (type(screenListenerQueryGroup[tag]) == 'table') then
-        screenListenerQueryGroup[tag][theEventObj.id] = nil
-        if (isEmpty(screenListenerQueryGroup[tag])) then
-          screenListenerQueryGroup[tag] = nil
-        end
-      end
-    end
-  end
-end
-
-function clearScreenListenerByTags(tags)
-  if (type(tags) ~= 'table') then
-    tags = { tags }
-  end
-  for _, tag in pairs(tags) do
-    local tagsEventObj = screenListenerQueryGroup[tag]
-    if (type(tagsEventObj) == 'table') then
-      for _, eventObj in pairs(tagsEventObj) do
-        eventObj.drop = true
-        screenListenerQueryIndex[eventObj.id] = nil
-      end
-    end
-    screenListenerQueryGroup[tag] = nil
   end
 end
 
@@ -3527,15 +3675,14 @@ function clearButotnListener(id)
   local theEventObj = buttonListenerQueryIndex[id]
   if (theEventObj) then
     theEventObj.drop = true
-    buttonListenerQueryIndex[id] = nil
   end
 end
 
 function clearListenersOnButton(btnId)
-  for key, value in ipairs(buttonListenerQuery) do
+  for key = 1, #buttonListenerQuery do
+    local value = buttonListenerQuery[key]
     if (value.btnId ~= btnId) then
       value.drop = true
-      buttonListenerQueryIndex[value.id] = nil
     end
   end
 end
@@ -3551,11 +3698,13 @@ function run()
     sleepTime = 3600000
 
     -- run eventQuery
-    for key, value in ipairs(eventQuery) do
-      value.func()
-      -- setInterval event
+    if #eventQuery > 0 then
+      for key = 1, #eventQuery do
+        local value = eventQuery[key]
+        value.func()
+      end
+      eventQuery = {}
     end
-    eventQuery = {}
 
 
     -- read event from other Query
@@ -3564,39 +3713,58 @@ function run()
     -- timeQuery
     if (#timerQuery > 0) then
       continue = continue + 1
-      local newTimeQuery = {}
-      for key, value in ipairs(timerQuery) do
+      local hasDropEvent = false
+      for key = 1, #timerQuery do
+        local value = timerQuery[key]
         if (not value.drop) then
           if (value.time <= thisTime) then
             table.insert(eventQuery, value)
 
             -- setInterval event
             if (value.isInterval) then
+              value.drop = false
               repeat
                 value.time = value.time + value.ms
               until (value.time > thisTime)
-              sleepTime = math.min(sleepTime, value.time)
-              table.insert(newTimeQuery, value)
+              sleepTime = math.min(sleepTime, value.time - thisTime)
+            else
+              value.drop = true
+              hasDropEvent = true
             end
           else
-            sleepTime = math.min(sleepTime, value.time)
-            table.insert(newTimeQuery, value)
+            sleepTime = math.min(sleepTime, value.time - thisTime)
           end
+        else
+          hasDropEvent = true
+          timerQueryIndex[value.id] = nil
         end
       end
-      timerQuery = newTimeQuery
-      newTimeQuery = nil
+
+      if hasDropEvent then
+        local newTimeQuery = {}
+        for key = 1, #timerQuery do
+          local value = timerQuery[key]
+          if not value.drop then
+            table.insert(newTimeQuery, value)
+          else
+            timerQueryIndex[value.id] = nil
+          end
+        end
+        timerQuery = newTimeQuery
+      end
     end
 
     -- screenListenerQuery
-    if (#screenListenerQuery > 0) then
-      if (type(getDeviceOrient) == 'function') then getDeviceOrient() end
+    if #screenListenerQuery > 0 then
+      if type(getDeviceOrient) == 'function' then getDeviceOrient() end
       local hasDropEvent = false
       continue = continue + 1
       sleepTime = math.min(sleepTime, 200)
+      keepScreen(false);
       keepScreen(true);
-      for key, value in ipairs(screenListenerQuery) do
-        if (not value.drop) then
+      for key = 1, #screenListenerQuery do
+        local value = screenListenerQuery[key]
+        if not value.drop then
           if (value.checker()) then
             table.insert(eventQuery, value)
             if (value.isOnce) then
@@ -3608,17 +3776,20 @@ function run()
           hasDropEvent = true
         end
       end
+      keepScreen(false);
 
       if (hasDropEvent) then
         local newScreenListenerQuery = {}
-        for key, value in ipairs(screenListenerQuery) do
+        for key = 1, #screenListenerQuery do
+          local value = screenListenerQuery[key]
           if (not value.drop) then
             table.insert(newScreenListenerQuery, value)
+          else
+            screenListenerQueryIndex[value.id] = nil
           end
         end
         screenListenerQuery = newScreenListenerQuery
       end
-      keepScreen(false);
     end
 
     -- buttonListenerQuery
@@ -3635,7 +3806,8 @@ function run()
         hasBtnClick = true
       end
       if (hasBtnClick) then
-        for key, value in ipairs(buttonListenerQuery) do
+        for key = 1, #buttonListenerQuery do
+          local value = buttonListenerQuery[key]
           if (not value.drop) then
             if (btnIdList[value.btnId] == value.btnId) then
               table.insert(eventQuery, value)
@@ -3647,9 +3819,12 @@ function run()
 
         if (hasDropEvent) then
           local newButtonListenerQuery = {}
-          for key, value in ipairs(buttonListenerQuery) do
+          for key = 1, #buttonListenerQuery do
+            local value = buttonListenerQuery[key]
             if (not value.drop) then
               table.insert(newButtonListenerQuery, value)
+            else
+              buttonListenerQueryIndex[value.id] = nil
             end
           end
           buttonListenerQuery = newButtonListenerQuery
@@ -3660,7 +3835,6 @@ function run()
     if (luaExisted) then
       break
     end
-
     if (#eventQuery <= 0) then
       mSleep(sleepTime)
     end
@@ -3675,7 +3849,6 @@ return {
   clearInterval = clearTimeout,
   setScreenListener = setScreenListener,
   clearScreenListener = clearScreenListener,
-  clearScreenListenerByTags = clearScreenListenerByTags,
   setButotnListener = setButotnListener,
   clearListenersOnButton = clearListenersOnButton,
   clearButotnListener = clearButotnListener,
@@ -3686,53 +3859,41 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "GetColor" ] = function( ... ) local arg = _G.arg;
-init(1)
-require 'console'
-mSleep(6000)
+package.preload[ "GetTime" ] = function( ... ) local arg = _G.arg;
+local sz
+local socket
 
-keepScreen(false)
-keepScreen(true)
-local sideLength = 1080
-local list = {
-  -- å‰è¿›
-  { 659, 723, 0xe68131 },
-  { 671, 725, 0x5a3d29 },
-  { 714, 750, 0xffffff },
-  { 698, 765, 0x4a2410 },
-  { 677, 765, 0x633d29 },
-  { 740, 733, 0xde7521 },
-  { 779, 726, 0x633110 },
-  { 780, 739, 0x4a2408 },
-  { 787, 748, 0xf7fbff },
-  { 798, 760, 0xbd5100 },
-  -- å›æ¸¯
-  { 1109, 729, 0x4acaf7 },
-  { 1122, 729, 0xf7f7f7 },
-  { 1143, 732, 0x000c21 },
-  { 1144, 747, 0x08313a },
-  { 1163, 749, 0xffffff },
-  { 1188, 748, 0x29b6de },
-  { 1213, 729, 0xffffff },
-  { 1240, 725, 0x31414a },
-  { 1225, 755, 0x082031 },
-  { 1236, 771, 0xffffff },
-}
-
-local resultStr = ''
-
-for key, value in ipairs(list) do
-  local color = getColor(value[1], value[2])
-  local oldColor = value[3]
-  local colorStr = string.format('0x%06x', color)
-  local oldColorStr = string.format('0x%06x', oldColor)
-  value[3] = oldColorStr
-  resultStr = resultStr .. '\n' .. '{ ' .. value[1] .. ', ' .. value[2] .. ', ' .. colorStr .. ' },'
+-- get the time
+local gettimeFunc = function()
+  return os.time() * 1000
 end
-resultStr = resultStr .. '\n'
-console.log(resultStr)
-mSleep(6000)
-keepScreen(false)
+
+-- for touchsprite socket
+local _ = (function()
+  local pcallRes = pcall(function()
+    sz = require 'sz'
+    socket = require 'szocket.core'
+    gettimeFunc = function()
+      return socket.gettime() * 1000
+    end
+    mSleep = mSleep or function(n)
+      socket.select(nil, nil, n / 1000)
+    end
+  end)
+  if (pcallRes) then return end
+  local pcallRes2 = pcall(function()
+    socket = require 'socket'
+    gettimeFunc = function()
+      return socket.gettime() * 1000
+    end
+    mSleep = mSleep or function(n)
+      socket.select(nil, nil, n / 1000)
+    end
+  end)
+end)()
+
+return gettimeFunc
+
 end
 end
 
@@ -3744,8 +3905,9 @@ local homeFactory = require 'GoMission__home'
 local networkFactory = require 'GoMission__network'
 local pauseFactory = require 'GoMission__pause'
 local loginFactory = require 'GoMission__login'
-local battleOnceFactory = require 'GoMission__battleOnce'
+local battleFactory = require 'GoMission__battle'
 local missionFactory = require 'GoMission__mission'
+local disintegrateShipFactory = require 'GoMission__disintegrateShip'
 local expeditionRewardFactory = require 'GoMission__expeditionReward'
 local expeditionOnceFactory = require 'GoMission__expeditionOnce'
 local repairOnceFactory = require 'GoMission__repairOnce'
@@ -3770,8 +3932,9 @@ local missions = {
   network = networkFactory(stateTree),
   pause = pauseFactory(stateTree),
   login = loginFactory(stateTree),
-  battleOnce = battleOnceFactory(stateTree),
+  battle = battleFactory(stateTree),
   mission = missionFactory(stateTree),
+  disintegrateShip = disintegrateShipFactory(stateTree),
   expeditionReward = expeditionRewardFactory(stateTree),
   expeditionOnce = expeditionOnceFactory(stateTree),
   repairOnce = repairOnceFactory(stateTree),
@@ -3790,11 +3953,14 @@ return {
   next = function(action, state)
     state = table.assign(stateTree, state)
     return co(c.create(function()
-      for key, item in pairs(missions) do
-        local newAction, newState = c.yield(item(action, state))
-        if (newAction) then
-          return newAction, newState
+      if action.type and action.type ~= '' then
+        for key, item in pairs(missions) do
+          local newAction, newState = c.yield(item(action, state))
+          if (newAction) then
+            return newAction, newState
+          end
         end
+        error('Action "' .. action.type .. '" not found')
       end
     end))
   end
@@ -3804,7 +3970,7 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "GoMission__battleOnce" ] = function( ... ) local arg = _G.arg;
+package.preload[ "GoMission__battle" ] = function( ... ) local arg = _G.arg;
 local co = require 'Co'
 local c = coroutine
 local stepLabel = require 'StepLabel'
@@ -3816,13 +3982,15 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
+local sendToPushBullet = require 'ajax__sentToPushBullet'
+
 
 local battleOnce = function(action, state)
   local map = allOptions.map
   local settings = allOptions.settings
 
   return co(c.create(function()
-    if (action.type == 'BATTLE_START') then
+    if (action.type == 'BATTLE_INIT') then
 
       state.battle.quickSupplyCount = 0
       state.battle.quickRepairCount = 0
@@ -3832,15 +4000,21 @@ local battleOnce = function(action, state)
       state.battle.battleNum = 1
       state.battle.cantBattle = true
       state.battle.battleRebootAt6_1AMeetCVFlag = false
-      state.battle.battleChapter = nil
       state.battle.passBattleStartPage = false
-
       -- å‡ºå¾åå°±åº”è¯¥éœ€è¦ç»´ä¿®
-      state.repair.needRepair = true
+      state.repair.nextRepairStartTime = os.time()
+
+
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'BATTLE_START', map.home.isHome },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'BATTLE_START') then
 
       stepLabel.setStepLabelContent('2-1.ç­‰å¾…HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome },
+        { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -3851,9 +4025,9 @@ local battleOnce = function(action, state)
       stepLabel.setStepLabelContent('2-3.ç­‰å¾…å‡ºå¾é¡µé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattleBattlePage },
-        { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage },
+        { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE', map.battle.isBattleBattlePage },
+        { 'BATTLE_BATTLE_PAGE', map.battle.isBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -3865,35 +4039,39 @@ local battleOnce = function(action, state)
       stepLabel.setStepLabelContent('2-6.ç­‰å¾…å‡ºå¾çš„å‡ºå¾ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattleBattlePage },
-        { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage },
+        { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE', map.battle.isBattleBattlePage, 2000 },
+        { 'BATTLE_BATTLE_PAGE', map.battle.isBattlePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE') then
 
-      if (#settings.battleChapter > 1) then
-        state.battle.battleChapter = table.remove(settings.battleChapter, 1)
-        table.insert(settings.battleChapter, state.battle.battleChapter)
-      else
-        state.battle.battleChapter = settings.battleChapter[1]
-      end
       stepLabel.setStepLabelContent('2-7.å‡ºå¾çš„å‡ºå¾é¡µé¢')
-      stepLabel.setStepLabelContent('2-8.ç§»åŠ¨åˆ°ç« èŠ‚' .. state.battle.battleChapter)
+      stepLabel.setStepLabelContent('2-8.ç§»åŠ¨åˆ°ç« èŠ‚' .. settings.battleChapter)
       c.yield(sleepPromise(300))
-      map.battle.moveToChapter(state.battle.battleChapter)
+      map.battle.moveToChapter(settings.battleChapter)
+
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+        { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', map.battle.isBattleBattlePage, 1000 },
+        { 'BATTLE_BATTLE_PAGE', map.battle.isBattlePage, 3000 },
+        { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER') then
+
       stepLabel.setStepLabelContent('2-9.è¿›å…¥ç« èŠ‚')
-      c.yield(sleepPromise(300))
+      c.yield(sleepPromise(100))
       map.battle.clickReadyBattleBtn()
       c.yield(sleepPromise(100))
       stepLabel.setStepLabelContent('2-10.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
-
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_HOME_CLICK_BATTLE', 'missionsGroup', map.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattleBattlePage, 2000 },
-        { 'BATTLE_BATTLE_PAGE', 'missionsGroup', map.battle.isBattlePage, 2000 },
-        { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
+        { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', map.battle.isBattleBattlePage, 1000 },
+        { 'BATTLE_BATTLE_PAGE', map.battle.isBattlePage, 3000 },
+        { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -3914,82 +4092,82 @@ local battleOnce = function(action, state)
         else
           stepLabel.setStepLabelContent('2-14.çŠ¶æ€ä¸æ­£å¸¸')
           map.battle.clickReadyBattlePageQuickSupplyBtn()
-          stepLabel.setStepLabelContent('6-12.ç­‰å¾…å¿«é€Ÿè¡¥ç»™ç•Œé¢')
+          stepLabel.setStepLabelContent('2-15.ç­‰å¾…å¿«é€Ÿè¡¥ç»™ç•Œé¢')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage, 2000 },
-            { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.isQuickSupplyModal },
+            { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage, 2000 },
+            { 'BATTLE_QUICK_SUPPLY_MODAL', map.battle.isQuickSupplyModal },
           }))
           return makeAction(newstateTypes), state
         end
       elseif (state.battle.quickRepairCount <= 0) then
         -- å·²ç»å¿«é€Ÿè¡¥ç»™ï¼Œè¿˜æ²¡ç»´ä¿®
-        stepLabel.setStepLabelContent('2-15.æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
+        stepLabel.setStepLabelContent('2-16.æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
         c.yield(sleepPromise(1000))
         local res = map.battle.isReadyBattlePageShipHPSafe(math.max(1, settings.battleQuickRepair))
         if (res) then
-          stepLabel.setStepLabelContent('2-16.è¡€é‡å®‰å…¨')
+          stepLabel.setStepLabelContent('2-17.è¡€é‡å®‰å…¨')
           state.battle.quickRepairCount = 1
           return { type = 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
         else
           if (settings.battleQuickRepair > 0) then
-            stepLabel.setStepLabelContent('2-17.è¡€é‡ä¸å®‰å…¨ï¼Œå¿«ä¿®')
+            stepLabel.setStepLabelContent('2-18.è¡€é‡ä¸å®‰å…¨ï¼Œå¿«ä¿®')
             map.battle.clickQuickRepairBtn()
 
             state.battle.quickRepairSingleLastShip = 0
             state.battle.quickRepairSingleCount = 0
 
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage, 2000 },
-              { 'BATTLE_QUICK_REPAIR_MODAL', 'missionsGroup', map.battle.isQuickRepairModal },
+              { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage, 2000 },
+              { 'BATTLE_QUICK_REPAIR_MODAL', map.battle.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
-            stepLabel.setStepLabelContent('2-18.è¡€é‡ä¸å®‰å…¨')
+            stepLabel.setStepLabelContent('2-19.è¡€é‡ä¸å®‰å…¨')
             state.battle.quickRepairCount = 1
             return { type = 'BATTLE_READY_BATTLE_PAGE' }, state
           end
         end
       else
         -- å·²ç»å¿«é€Ÿè¡¥ç»™ï¼Œå·²ç»ç»´ä¿®
-        stepLabel.setStepLabelContent('2-19.å†æ¬¡æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
+        stepLabel.setStepLabelContent('2-20.å†æ¬¡æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
         c.yield(sleepPromise(500))
         -- ä¸å…è®¸å¤§ç ´å‡ºå¾
         local res = map.battle.isReadyBattlePageShipHPSafe(math.max(1, settings.battleQuickRepair))
         if (res) then
-          stepLabel.setStepLabelContent('2-20.è¡€é‡å®‰å…¨ï¼Œç»§ç»­')
+          stepLabel.setStepLabelContent('2-21.è¡€é‡å®‰å…¨ï¼Œç»§ç»­')
           return { type = 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
         else
-          stepLabel.setStepLabelContent('2-21.è¡€é‡ä¸å®‰å…¨ï¼Œè¿”å›')
+          stepLabel.setStepLabelContent('2-22.è¡€é‡ä¸å®‰å…¨ï¼Œè¿”å›')
           return makeAction('BATTLE_READY_BATTLE_PAGE_CANT_GO'), state
         end
       end
 
     elseif (action.type == 'BATTLE_QUICK_SUPPLY_MODAL') then
 
-      stepLabel.setStepLabelContent('2-22.å¿«é€Ÿè¡¥ç»™ç•Œé¢ç‚¹å‡»ç¡®å®š')
+      stepLabel.setStepLabelContent('2-23.å¿«é€Ÿè¡¥ç»™ç•Œé¢ç‚¹å‡»ç¡®å®š')
       map.battle.clickReadyBattlePageQuickSupplyModalOkBtn()
-      stepLabel.setStepLabelContent('2-23.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+      stepLabel.setStepLabelContent('2-24.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
       state.battle.quickSupplyCount = state.battle.quickSupplyCount + 1
       if (state.battle.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-          { 'BATTLE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.battle.isQuickSupplyModal, 2000 },
+          { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage, 1000 },
+          { 'BATTLE_QUICK_SUPPLY_MODAL', map.battle.isQuickSupplyModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       else
-        stepLabel.setStepLabelContent('2-24.èµ„æºæ•°é‡ä¸è¶³')
+        stepLabel.setStepLabelContent('2-25.èµ„æºæ•°é‡ä¸è¶³')
         return { type = 'BATTLE_QUICK_SUPPLY_MODAL_CLOSE' }, state
       end
 
     elseif (action.type == 'BATTLE_QUICK_SUPPLY_MODAL_CLOSE') then
 
-      stepLabel.setStepLabelContent('2-25.ç‚¹å‡»å¿«é€Ÿè¡¥ç»™å…³é—­')
+      stepLabel.setStepLabelContent('2-26.ç‚¹å‡»å¿«é€Ÿè¡¥ç»™å…³é—­')
       c.yield(sleepPromise(100))
       map.battle.clickQuickSupplyModalCloseBtn()
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickSupplyModal, 2000 },
-        { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
+        { 'BATTLE_QUICK_SUPPLY_MODAL_CLOSE', map.battle.isQuickSupplyModal, 2000 },
+        { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -3997,29 +4175,29 @@ local battleOnce = function(action, state)
 
       if (settings.battleQuickRepair == 3) then
         -- ä¸æ»¡è¡€åˆ™å¿«ä¿®
-        stepLabel.setStepLabelContent('2-26.ç‚¹å‡»å¿«é€Ÿä¿®ç†ç¡®å®š')
+        stepLabel.setStepLabelContent('2-27.ç‚¹å‡»å¿«é€Ÿä¿®ç†ç¡®å®š')
         c.yield(sleepPromise(500))
         map.battle.clickQuickRepairModalOkBtn()
         state.battle.quickRepairCount = state.battle.quickRepairCount + 1
-        stepLabel.setStepLabelContent('2-27.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+        stepLabel.setStepLabelContent('2-28.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
         if (state.battle.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-            { 'BATTLE_QUICK_REPAIR_MODAL', 'missionsGroup', map.battle.isQuickRepairModal, 2000 },
+            { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage, 1000 },
+            { 'BATTLE_QUICK_REPAIR_MODAL', map.battle.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         else
-          stepLabel.setStepLabelContent('2-28.å¿«ä¿®æ•°é‡ä¸è¶³')
+          stepLabel.setStepLabelContent('2-29.å¿«ä¿®æ•°é‡ä¸è¶³')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickRepairModal },
+            { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.battle.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
 
       elseif (settings.battleQuickRepair == 2) then
         -- ä¸­ç ´æˆ–å¤§ç ´å¿«ä¿®
-        stepLabel.setStepLabelContent('2-29.å¯»æ‰¾ä¸­ç ´æˆ–å¤§ç ´çš„èˆ¹')
+        stepLabel.setStepLabelContent('2-30.å¯»æ‰¾ä¸­ç ´æˆ–å¤§ç ´çš„èˆ¹')
         c.yield(sleepPromise(1000))
         local res = map.battle.isQuickRepairModalShipNeedRepair(settings.battleQuickRepair)
         if (#res > 0) then
@@ -4028,37 +4206,37 @@ local battleOnce = function(action, state)
             state.battle.quickRepairSingleLastShip = res[1]
             state.battle.quickRepairSingleCount = state.battle.quickRepairSingleCount + 1
 
-            stepLabel.setStepLabelContent('2-30.ä¸­ç ´æˆ–å¤§ç ´:' .. table.concat(res, ','))
+            stepLabel.setStepLabelContent('2-31.ä¸­ç ´æˆ–å¤§ç ´:' .. table.concat(res, ','))
             map.battle.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL', 'missionsGroup', map.battle.isQuickRepairModal, 500 },
+              { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL', map.battle.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
             state.battle.quickRepairSingleLastShip = 0
             state.battle.quickRepairSingleCount = 0
             state.battle.quickRepairCount = state.battle.quickRepairCount + 1
-            stepLabel.setStepLabelContent('2-31.å¿«ä¿®æ•°é‡ä¸è¶³')
+            stepLabel.setStepLabelContent('2-32å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickRepairModal },
+              { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.battle.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
         else
-          stepLabel.setStepLabelContent('2-32.ä¿®ç†å®Œæˆ')
+          stepLabel.setStepLabelContent('2-33.ä¿®ç†å®Œæˆ')
           state.battle.quickRepairCount = state.battle.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickRepairModal },
+            { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.battle.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
 
       elseif (settings.battleQuickRepair == 1) then
         -- å¤§ç ´å¿«ä¿®
-        stepLabel.setStepLabelContent('2-33.å¯»æ‰¾å¤§ç ´çš„èˆ¹')
+        stepLabel.setStepLabelContent('2-34.å¯»æ‰¾å¤§ç ´çš„èˆ¹')
         c.yield(sleepPromise(1000))
         local res = map.battle.isQuickRepairModalShipNeedRepair(settings.battleQuickRepair)
         if (#res > 0) then
@@ -4066,30 +4244,30 @@ local battleOnce = function(action, state)
             state.battle.quickRepairSingleLastShip = res[1]
             state.battle.quickRepairSingleCount = state.battle.quickRepairSingleCount + 1
 
-            stepLabel.setStepLabelContent('2-34.å¤§ç ´:' .. table.concat(res, ','))
+            stepLabel.setStepLabelContent('2-35.å¤§ç ´:' .. table.concat(res, ','))
             map.battle.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL', 'missionsGroup', map.battle.isQuickRepairModal, 500 },
+              { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL', map.battle.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
             state.battle.quickRepairSingleLastShip = 0
             state.battle.quickRepairSingleCount = 0
             state.battle.quickRepairCount = state.battle.quickRepairCount + 1
-            stepLabel.setStepLabelContent('2-35.å¿«ä¿®æ•°é‡ä¸è¶³')
+            stepLabel.setStepLabelContent('2-36.å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickRepairModal },
+              { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.battle.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
         else
-          stepLabel.setStepLabelContent('2-36.ä¿®ç†å®Œæˆ')
+          stepLabel.setStepLabelContent('2-37.ä¿®ç†å®Œæˆ')
           state.battle.quickRepairCount = state.battle.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
-            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickRepairModal },
+            { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage },
+            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.battle.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -4097,36 +4275,38 @@ local battleOnce = function(action, state)
 
     elseif (action.type == 'BATTLE_QUICK_REPAIR_MODAL_CLOSE') then
 
-      stepLabel.setStepLabelContent('2-37.ç‚¹å‡»å¿«é€Ÿä¿®ç†å…³é—­')
+      stepLabel.setStepLabelContent('2-38.ç‚¹å‡»å¿«é€Ÿä¿®ç†å…³é—­')
       c.yield(sleepPromise(500))
       map.battle.clickQuickRepairModalCloseBtn()
       c.yield(sleepPromise(300))
-      stepLabel.setStepLabelContent('2-38.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+      stepLabel.setStepLabelContent('2-39.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.battle.isQuickRepairModal, 2000 },
-        { 'BATTLE_READY_BATTLE_PAGE', 'missionsGroup', map.battle.isReadyBattlePage },
+        { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.battle.isQuickRepairModal, 2000 },
+        { 'BATTLE_READY_BATTLE_PAGE', map.battle.isReadyBattlePage, 1000 },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO') then
 
-      stepLabel.setStepLabelContent('2-39.æ£€æµ‹èˆ°é˜Ÿå¯ä»¥å‡ºå¾')
+      stepLabel.setStepLabelContent('2-40.æ£€æµ‹èˆ°é˜Ÿå¯ä»¥å‡ºå¾')
       c.yield(sleepPromise(500))
       local fleetCanBattle = map.battle.isFleetsCanBattle()
       if (fleetCanBattle) then
-        stepLabel.setStepLabelContent('2-40.å¯ä»¥å‡ºå¾')
+        stepLabel.setStepLabelContent('2-41.å¯ä»¥å‡ºå¾')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.battle.isReadyBattlePage },
+          { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', map.battle.isReadyBattlePage },
         }))
         return makeAction(newstateTypes), state
       else
-        stepLabel.setStepLabelContent('2-41.è¿”å›HOME')
+        -- ä¸èƒ½å‡ºå¾ï¼Œéœ€è¦å¼€å¯è§£ä½“èˆ°èˆ¹åŠŸèƒ½
+        state.disintegrateShip.nextStartTime = os.time()
+        stepLabel.setStepLabelContent('2-42.è¿”å›HOME')
         return makeAction('BATTLE_READY_BATTLE_PAGE_CANT_GO'), state
       end
 
     elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CAN_GO') then
 
-      stepLabel.setStepLabelContent('2-42.å‡ºå¾å‡†å¤‡ç•Œé¢ï¼Œç‚¹å‡»å‡ºå¾å¼€å§‹')
+      stepLabel.setStepLabelContent('2-43.å‡ºå¾å‡†å¤‡ç•Œé¢ï¼Œç‚¹å‡»å‡ºå¾å¼€å§‹')
       c.yield(sleepPromise(100))
       map.battle.clickBattleStartBtn()
       return { type = 'BATTLE_GO_A_BATTLE' }, state
@@ -4136,43 +4316,43 @@ local battleOnce = function(action, state)
       state.battle.passBattleStartPage = false
 
       if (state.battle.battleNum < settings.battleMaxBattleNum) then
-        stepLabel.setStepLabelContent('2-43.ç¬¬' .. state.battle.battleNum .. 'æˆ˜å¼€å§‹')
+        stepLabel.setStepLabelContent('2-44.ç¬¬' .. state.battle.battleNum .. 'æˆ˜å¼€å§‹')
       else
-        stepLabel.setStepLabelContent('2-44.ç¬¬' .. state.battle.battleNum .. 'æˆ˜Bossæˆ˜å¼€å§‹')
+        stepLabel.setStepLabelContent('2-45.ç¬¬' .. state.battle.battleNum .. 'æˆ˜Bossæˆ˜å¼€å§‹')
       end
-      stepLabel.setStepLabelContent('2-45.ç­‰å¾…é¢å¤–è·å¾—é¢æ¿ï¼Œå¼€å§‹é¢æ¿ï¼Œé˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhomeï¼Œèƒœåˆ©ç•Œé¢')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.battle.isReadyBattlePage, 2000 },
-        { 'BATTLE_EXTRA_RECEIVE_MODAL', 'missionsGroup', map.battle.isExtraReceiveModal },
-        { 'BATTLE_BATTLE_START_PAGE', 'missionsGroup', map.battle.isBattleStartPage },
-        { 'BATTLE_FORMATION_PAGE', 'missionsGroup', map.battle.isFormationPage },
-        { 'BATTLE_PURSUE_PAGE', 'missionsGroup', map.battle.isPursueModal },
-        { 'BATTLE_VICTORY_PAGE', 'missionsGroup', map.battle.isVictoryPage },
-        { 'BATTLE_VICTORY_NEXT_PAGE', 'missionsGroup', map.battle.isVictoryPage2 },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.battle.isNewShipPageLockModal },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+      stepLabel.setStepLabelContent('2-46.ç­‰å¾…é¢å¤–è·å¾—é¢æ¿ï¼Œå¼€å§‹é¢æ¿ï¼Œé˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhomeï¼Œèƒœåˆ©ç•Œé¢')
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), getLoginListener(), {
+        { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', map.battle.isReadyBattlePage, 2000 },
+        { 'BATTLE_EXTRA_RECEIVE_MODAL', map.battle.isExtraReceiveModal },
+        { 'BATTLE_BATTLE_START_PAGE', map.battle.isBattleStartPage },
+        { 'BATTLE_FORMATION_PAGE', map.battle.isFormationPage },
+        { 'BATTLE_PURSUE_PAGE', map.battle.isPursueModal },
+        { 'BATTLE_VICTORY_PAGE', map.battle.isVictoryPage },
+        { 'BATTLE_VICTORY_NEXT_PAGE', map.battle.isVictoryPage2 },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL',  map.battle.isNewShipPageLockModal },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_EXTRA_RECEIVE_MODAL') then
 
-      stepLabel.setStepLabelContent('2-46.é¢å¤–è·å¾—é¢æ¿ï¼Œç‚¹å‡»ç¡®å®š')
+      stepLabel.setStepLabelContent('2-47.é¢å¤–è·å¾—é¢æ¿ï¼Œç‚¹å‡»ç¡®å®š')
       map.battle.clickExtraReceiveModalOk()
-      stepLabel.setStepLabelContent('2-47.ç­‰å¾…é¢å¤–è·å¾—é¢æ¿ï¼Œå¼€å§‹é¢æ¿ï¼Œé˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhomeï¼Œèƒœåˆ©ç•Œé¢')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_EXTRA_RECEIVE_MODAL', 'missionsGroup', map.battle.isExtraReceiveModal, 2000 },
-        { 'BATTLE_BATTLE_START_PAGE', 'missionsGroup', map.battle.isBattleStartPage },
-        { 'BATTLE_FORMATION_PAGE', 'missionsGroup', map.battle.isFormationPage },
-        { 'BATTLE_PURSUE_PAGE', 'missionsGroup', map.battle.isPursueModal },
-        { 'BATTLE_VICTORY_PAGE', 'missionsGroup', map.battle.isVictoryPage },
-        { 'BATTLE_VICTORY_NEXT_PAGE', 'missionsGroup', map.battle.isVictoryPage2 },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+      stepLabel.setStepLabelContent('2-48.ç­‰å¾…é¢å¤–è·å¾—é¢æ¿ï¼Œå¼€å§‹é¢æ¿ï¼Œé˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhomeï¼Œèƒœåˆ©ç•Œé¢')
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'BATTLE_EXTRA_RECEIVE_MODAL', map.battle.isExtraReceiveModal, 2000 },
+        { 'BATTLE_BATTLE_START_PAGE', map.battle.isBattleStartPage },
+        { 'BATTLE_FORMATION_PAGE', map.battle.isFormationPage },
+        { 'BATTLE_PURSUE_PAGE', map.battle.isPursueModal },
+        { 'BATTLE_VICTORY_PAGE', map.battle.isVictoryPage },
+        { 'BATTLE_VICTORY_NEXT_PAGE', map.battle.isVictoryPage2 },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
@@ -4181,8 +4361,8 @@ local battleOnce = function(action, state)
       -- 6-1ç¬¬ä¸€æˆ˜ï¼Œé‡åˆ°2èˆªæ¯ï¼Œè¿”å›æ¸¯å£
       state.battle.passBattleStartPage = true
       if (settings.battleRebootAt6_1AMeetCV) then
-        stepLabel.setStepLabelContent('2-48.å¼€å§‹æ£€æµ‹èˆªæ¯')
-        if (state.battle.battleChapter == '6-1') then
+        stepLabel.setStepLabelContent('2-49.å¼€å§‹æ£€æµ‹èˆªæ¯')
+        if (settings.battleChapter == '6-1') then
           if (state.battle.battleNum == 1) then
             c.yield(sleepPromise(500))
             if (map.battle.isEnemyShipIsCV()) then
@@ -4194,12 +4374,12 @@ local battleOnce = function(action, state)
       end
       -- 6-1ç¬¬ä¸€æˆ˜ï¼Œé‡åˆ°2é›·å·¡ï¼Œè¿”å›æ¸¯å£
       if (settings.battleRebootAt6_1AMeetCit) then
-        stepLabel.setStepLabelContent('2-48.å¼€å§‹æ£€æµ‹é›·å·¡')
-        if (state.battle.battleChapter == '6-1') then
+        stepLabel.setStepLabelContent('2-50.å¼€å§‹æ£€æµ‹é›·å·¡')
+        if (settings.battleChapter == '6-1') then
           if (state.battle.battleNum == 1) then
             c.yield(sleepPromise(500))
             if (map.battle.isEnemyShipIsCit()) then
-              stepLabel.setStepLabelContent('2-49.é‡åˆ°é›·å·¡ï¼Œè¿”å›æ¸¯å£')
+              stepLabel.setStepLabelContent('2-51.é‡åˆ°é›·å·¡ï¼Œè¿”å›æ¸¯å£')
               return makeAction({ type = 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME' }), state
             end
           end
@@ -4207,32 +4387,31 @@ local battleOnce = function(action, state)
       end
       -- æ‰€æœ‰å…³å¡ï¼Œé‡åˆ°è¡¥ç»™èˆ¹å°±ç»§ç»­ï¼Œæ²¡é‡åˆ°å°±è¿”å›æ¸¯å£
       if (settings.battleRebootAtNotMeetAP) then
-        stepLabel.setStepLabelContent('2-48.å¼€å§‹æ£€æµ‹è¡¥ç»™')
+        stepLabel.setStepLabelContent('2-52.å¼€å§‹æ£€æµ‹è¡¥ç»™')
         c.yield(sleepPromise(500))
         if (not map.battle.isEnemyShipIsAP()) then
-          stepLabel.setStepLabelContent('2-49.æ²¡é‡åˆ°è¡¥ç»™ï¼Œè¿”å›æ¸¯å£')
+          stepLabel.setStepLabelContent('2-53.æ²¡é‡åˆ°è¡¥ç»™ï¼Œè¿”å›æ¸¯å£')
           return makeAction({ type = 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME' }), state
         end
       end
 
-
-      stepLabel.setStepLabelContent('2-50.å¼€å§‹é¢æ¿ï¼Œç‚¹å‡»å¼€å§‹')
+      stepLabel.setStepLabelContent('2-54.å¼€å§‹é¢æ¿ï¼Œç‚¹å‡»å¼€å§‹')
       c.yield(sleepPromise(200))
       if (settings.battleRoundabout and map.battle.isBattleStartPageCanRoundabout()) then
         map.battle.clickBattleStartModalRoundaboutBtn()
       else
         map.battle.clickBattleStartModalStartBtn()
       end
-      stepLabel.setStepLabelContent('2-51.ç­‰å¾…é˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
+      stepLabel.setStepLabelContent('2-55.ç­‰å¾…é˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_BATTLE_START_PAGE', 'missionsGroup', map.battle.isBattleStartPage, 2000 },
-        { 'BATTLE_FORMATION_PAGE', 'missionsGroup', map.battle.isFormationPage },
-        { 'BATTLE_PURSUE_PAGE', 'missionsGroup', map.battle.isPursueModal },
-        { 'BATTLE_VICTORY_PAGE', 'missionsGroup', map.battle.isVictoryPage },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_BATTLE_START_PAGE', map.battle.isBattleStartPage, 2000 },
+        { 'BATTLE_FORMATION_PAGE', map.battle.isFormationPage },
+        { 'BATTLE_PURSUE_PAGE', map.battle.isPursueModal },
+        { 'BATTLE_VICTORY_PAGE', map.battle.isVictoryPage },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
@@ -4241,185 +4420,192 @@ local battleOnce = function(action, state)
       -- 6-1æœªå‘ç°æ•Œèˆ°
       if (settings.battleRebootAt6_1AMeetCV) then
         if (not state.battle.passBattleStartPage) then
-          if (state.battle.battleChapter == '6-1') then
+          if (settings.battleChapter == '6-1') then
             if (state.battle.battleNum == 1) then
               c.yield(sleepPromise(500))
-              stepLabel.setStepLabelContent('2-52.æœªå‘ç°æ•Œèˆ°ï¼ŒSLå¤§æ³•')
+              stepLabel.setStepLabelContent('2-56.æœªå‘ç°æ•Œèˆ°ï¼ŒSLå¤§æ³•')
               return makeAction({ type = 'LOGIN_START_APP' }), state
             end
           end
         end
       end
 
-      stepLabel.setStepLabelContent('2-53.é˜µå‹é¢æ¿')
+      stepLabel.setStepLabelContent('2-57.é˜µå‹é¢æ¿')
       c.yield(sleepPromise(100))
       map.battle.clickFormationPageStartBtn(settings.battleFormation)
-      stepLabel.setStepLabelContent('2-54.ç­‰å¾…è¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
+      stepLabel.setStepLabelContent('2-58.ç­‰å¾…è¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'BATTLE_BATTLE_START_PAGE', 'missionsGroup', map.battle.isBattleStartPage, 2000 },
-        { 'BATTLE_FORMATION_PAGE', 'missionsGroup', map.battle.isFormationPage, 2000 },
-        { 'BATTLE_PURSUE_PAGE', 'missionsGroup', map.battle.isPursueModal },
-        { 'BATTLE_VICTORY_PAGE', 'missionsGroup', map.battle.isVictoryPage },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_BATTLE_START_PAGE', map.battle.isBattleStartPage, 2000 },
+        { 'BATTLE_FORMATION_PAGE', map.battle.isFormationPage, 2000 },
+        { 'BATTLE_PURSUE_PAGE', map.battle.isPursueModal },
+        { 'BATTLE_VICTORY_PAGE', map.battle.isVictoryPage },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_PURSUE_PAGE') then
 
-      stepLabel.setStepLabelContent('2-55.è¿½å‡»é¢æ¿')
+      stepLabel.setStepLabelContent('2-59.è¿½å‡»é¢æ¿')
       if ((settings.battlePursue and (state.battle.battleNum < settings.battleMaxBattleNum))
         or (settings.battlePursueBoss and (state.battle.battleNum == settings.battleMaxBattleNum))) then
-        stepLabel.setStepLabelContent('2-56.è¿½å‡»')
+        stepLabel.setStepLabelContent('2-60.è¿½å‡»')
         map.battle.clickPursueModalOk()
       else
-        stepLabel.setStepLabelContent('2-57.æ”¾å¼ƒè¿½å‡»')
+        stepLabel.setStepLabelContent('2-61.æ”¾å¼ƒè¿½å‡»')
         map.battle.clickPursuePageCancel()
       end
-      stepLabel.setStepLabelContent('2-58.ç­‰å¾…èƒœåˆ©ç•Œé¢')
+      stepLabel.setStepLabelContent('2-62.ç­‰å¾…èƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_FORMATION_PAGE', 'missionsGroup', map.battle.isFormationPage, 2000 },
-        { 'BATTLE_PURSUE_PAGE', 'missionsGroup', map.battle.isPursueModal, 2000 },
-        { 'BATTLE_VICTORY_PAGE', 'missionsGroup', map.battle.isVictoryPage },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_FORMATION_PAGE', map.battle.isFormationPage, 2000 },
+        { 'BATTLE_PURSUE_PAGE', map.battle.isPursueModal, 2000 },
+        { 'BATTLE_VICTORY_PAGE', map.battle.isVictoryPage },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_VICTORY_PAGE') then
 
       c.yield(sleepPromise(1000))
-      stepLabel.setStepLabelContent('2-59.èƒœåˆ©ç•Œé¢æ£€æµ‹HPæ˜¯å¦å®‰å…¨')
+      stepLabel.setStepLabelContent('2-63.èƒœåˆ©ç•Œé¢æ£€æµ‹HPæ˜¯å¦å®‰å…¨')
       c.yield(sleepPromise(300))
       -- æœ‰å¤§ç ´å°±å›æ¸¯
       state.battle.HPIsSafe = map.battle.isVictoryPageShipHPSafe(1)
       if (state.battle.HPIsSafe) then
-        stepLabel.setStepLabelContent('2-60.HPå®‰å…¨')
+        stepLabel.setStepLabelContent('2-64.HPå®‰å…¨')
       else
-        stepLabel.setStepLabelContent('2-61.HPä¸å®‰å…¨')
+        stepLabel.setStepLabelContent('2-65.HPä¸å®‰å…¨')
       end
       c.yield(sleepPromise(200))
-      stepLabel.setStepLabelContent('2-62.ç‚¹å‡»èƒœåˆ©ç»§ç»­')
+      stepLabel.setStepLabelContent('2-66.ç‚¹å‡»èƒœåˆ©ç»§ç»­')
       map.battle.clickVictoryPageContinueBtn()
-      stepLabel.setStepLabelContent('2-63.ç­‰å¾…èƒœåˆ©ç»§ç»­ç•Œé¢')
+      stepLabel.setStepLabelContent('2-67.ç­‰å¾…èƒœåˆ©ç»§ç»­ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_PURSUE_PAGE', 'missionsGroup', map.battle.isPursueModal, 2000 },
-        { 'BATTLE_VICTORY_PAGE', 'missionsGroup', map.battle.isVictoryPage, 2000 },
-        { 'BATTLE_VICTORY_NEXT_PAGE', 'missionsGroup', map.battle.isVictoryPage2 },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_PURSUE_PAGE', map.battle.isPursueModal, 2000 },
+        { 'BATTLE_VICTORY_PAGE', map.battle.isVictoryPage, 2000 },
+        { 'BATTLE_VICTORY_NEXT_PAGE', map.battle.isVictoryPage2 },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_VICTORY_NEXT_PAGE') then
 
-      stepLabel.setStepLabelContent('2-64.ç‚¹å‡»èƒœåˆ©ç»§ç»­')
+      stepLabel.setStepLabelContent('2-68.ç‚¹å‡»èƒœåˆ©ç»§ç»­')
       map.battle.clickVictoryPageContinueBtn2()
-      stepLabel.setStepLabelContent('2-65.ç­‰å¾…å¤§ç ´è­¦å‘Šï¼Œæ–°èˆ¹ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
+      stepLabel.setStepLabelContent('2-69.ç­‰å¾…å¤§ç ´è­¦å‘Šï¼Œæ–°èˆ¹ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_VICTORY_PAGE', 'missionsGroup', map.battle.isVictoryPage, 2000 },
-        { 'BATTLE_VICTORY_NEXT_PAGE', 'missionsGroup', map.battle.isVictoryPage2, 2000 },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_VICTORY_PAGE', map.battle.isVictoryPage, 2000 },
+        { 'BATTLE_VICTORY_NEXT_PAGE', map.battle.isVictoryPage2, 2000 },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_SHIP_SERVER_DAMAGE_MODAL') then
 
-      stepLabel.setStepLabelContent('2-66.å¤§ç ´è­¦å‘Šæ¡†ç‚¹å‡»è¿”å›')
+      stepLabel.setStepLabelContent('2-70.å¤§ç ´è­¦å‘Šæ¡†ç‚¹å‡»è¿”å›')
       map.battle.clickShipSevereDamageModalBack()
-      stepLabel.setStepLabelContent('2-67.ç­‰å¾…æ–°èˆ¹ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
+      stepLabel.setStepLabelContent('2-71.ç­‰å¾…æ–°èˆ¹ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
       state.battle.HPIsSafe = false
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_VICTORY_NEXT_PAGE', 'missionsGroup', map.battle.isVictoryPage2, 2000 },
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal, 2000 },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_VICTORY_NEXT_PAGE', map.battle.isVictoryPage2, 2000 },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal, 2000 },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_SHIP_CANT_GO_ON_MODAL') then
 
-      stepLabel.setStepLabelContent('2-68.æ— æ³•å‰è¿›è­¦å‘Šæ¡†ç‚¹å‡»è¿”å›')
+      stepLabel.setStepLabelContent('2-72.æ— æ³•å‰è¿›è­¦å‘Šæ¡†ç‚¹å‡»è¿”å›')
       map.battle.clickShipCantGoOnModalBackBtn()
-      stepLabel.setStepLabelContent('2-69.ç­‰å¾…æ–°èˆ¹ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
+      stepLabel.setStepLabelContent('2-73.ç­‰å¾…æ–°èˆ¹ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
       state.battle.HPIsSafe = false
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal, 2000 },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal, 2000 },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal, 2000 },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal, 2000 },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_NEW_SHIP_PAGE') then
 
-      stepLabel.setStepLabelContent('2-70.è·å–æ–°èˆ¹')
+      stepLabel.setStepLabelContent('2-74.è·å–æ–°èˆ¹')
       c.yield(sleepPromise(500))
       map.battle.clickNewShip()
-      stepLabel.setStepLabelContent('2-71.ç­‰å¾…æ–°èˆ¹é”å®šçª—å£ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
+      stepLabel.setStepLabelContent('2-75.ç­‰å¾…æ–°èˆ¹é”å®šçª—å£ï¼Œä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal, 2000 },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal, 2000 },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage, 2000 },
-        { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.battle.isNewShipPageLockModal },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal, 2000 },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal, 2000 },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage, 2000 },
+        { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL', map.battle.isNewShipPageLockModal },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL') then
 
-      stepLabel.setStepLabelContent('2-72.æ–°èˆ¹é”å®šçª—å£ç‚¹å‡»ç¡®è®¤')
+      stepLabel.setStepLabelContent('2-76.æ–°èˆ¹é”å®šçª—å£ç‚¹å‡»ç¡®è®¤')
       map.battle.clickNewShipPageLockModalOkBtn()
-      stepLabel.setStepLabelContent('2-73.ç­‰å¾…ä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
+      stepLabel.setStepLabelContent('2-77.ç­‰å¾…ä¸‹å›åˆçª—å£ï¼Œå‹‹ç« å¯¹è¯æ¡†ï¼Œhome')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', 'missionsGroup', map.battle.isShipSevereDamageModal, 2000 },
-        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', 'missionsGroup', map.battle.isShipCantGoOnModal, 2000 },
-        { 'BATTLE_NEW_SHIP_PAGE', 'missionsGroup', map.battle.isNewShipPage, 2000 },
-        { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.battle.isNewShipPageLockModal, 2000 },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal },
+        { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', map.battle.isShipSevereDamageModal, 2000 },
+        { 'BATTLE_SHIP_CANT_GO_ON_MODAL', map.battle.isShipCantGoOnModal, 2000 },
+        { 'BATTLE_NEW_SHIP_PAGE', map.battle.isNewShipPage, 2000 },
+        { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL', map.battle.isNewShipPageLockModal, 2000 },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_NEXT_LEVEL_STEP_MODAL') then
-
       if ((state.battle.battleNum < settings.battleMaxBattleNum) and state.battle.HPIsSafe) then
-        stepLabel.setStepLabelContent('2-74.ç‚¹å‡»ç»§ç»­ä¸‹ä¸€å…³')
+        stepLabel.setStepLabelContent('2-78.ç‚¹å‡»ç»§ç»­ä¸‹ä¸€å…³')
         map.battle.clickLevelStepModalContinueBtn()
         state.battle.battleNum = state.battle.battleNum + 1
         return { type = 'BATTLE_GO_A_BATTLE' }, state
       else
-        stepLabel.setStepLabelContent('2-75.ç‚¹å‡»å›æ¸¯')
+        stepLabel.setStepLabelContent('2-79.ç‚¹å‡»å›æ¸¯')
         map.battle.clickLevelStepModalBackBtn()
-        stepLabel.setStepLabelContent('2-76.ç­‰å¾…ä¸»ç•Œé¢')
+        stepLabel.setStepLabelContent('2-80.ç­‰å¾…ä¸»ç•Œé¢')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'BATTLE_NEXT_LEVEL_STEP_MODAL', 'missionsGroup', map.battle.isNextLevelStepModal, 2000 },
+          { 'BATTLE_NEXT_LEVEL_STEP_MODAL', map.battle.isNextLevelStepModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       end
 
     elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_CANT_GO') then
 
-      -- éœ‡åŠ¨æç¤ºä¸èƒ½æˆ˜æ–—
+      -- æç¤ºä¸èƒ½æˆ˜æ–—
       if (settings.battleAlertWhenNoHp) then
-        vibrator(500)
-        mSleep(500)
-        vibrator(500)
+        if settings.alertUseVibrate then
+          vibrator(500)
+          mSleep(500)
+          vibrator(500)
+        end
+        if settings.alertUsePushbullet then
+          local datestr = os.date('%Y-%m-%d %X')
+          sendToPushBullet(settings.pushbulletsToken,
+            datestr .. ' ' .. settings.pushbulletNickname,
+            datestr .. '  ' .. getDeviceModel() .. '  ' .. 'ä¸èƒ½å‡ºå¾')
+        end
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleBattlePage },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattlePage },
+        { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', map.battle.isReadyBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattleBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -4427,32 +4613,35 @@ local battleOnce = function(action, state)
 
       map.battle.clickBattleStartModalBackToHomeBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleStartPage },
-        { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleBattlePage },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattlePage },
+        { 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME', map.battle.isBattleStartPage },
+        { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', map.battle.isReadyBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattleBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattlePage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME') then
 
       map.battle.clickReadyBattlePageBackBtn()
-      stepLabel.setStepLabelContent('2-77.ç­‰å¾…å‡ºå¾ç•Œé¢')
+      stepLabel.setStepLabelContent('2-81.ç­‰å¾…å‡ºå¾ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isReadyBattlePage, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleBattlePage },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattlePage },
+        { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', map.battle.isReadyBattlePage, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattleBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattlePage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME') then
 
       map.battle.clickBackToHomeBtn()
-      stepLabel.setStepLabelContent('2-78.ç­‰å¾…ä¸»ç•Œé¢')
+      stepLabel.setStepLabelContent('2-82.ç­‰å¾…ä¸»ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattleBattlePage, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.battle.isBattlePage, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattleBattlePage, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', map.battle.isBattlePage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end
@@ -4484,6 +4673,8 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
+local sendToPushBullet = require 'ajax__sentToPushBullet'
+
 local campaignOnce = function(action, state)
   local map = allOptions.map
   local settings = allOptions.settings
@@ -4491,9 +4682,18 @@ local campaignOnce = function(action, state)
   return co(c.create(function()
     if (action.type == 'CAMPAIGN_START') then
 
-      stepLabel.setStepLabelContent('7-1.ç­‰å¾…home')
+      -- æ²¡æœ‰åˆ°æ£€æŸ¥æ¼”ä¹ çš„æ—¶é—´
+      if state.campaign.nextStartTime > os.time() then
+        stepLabel.setStepLabelContent('7-1.è·³è¿‡æˆ˜å½¹ï¼Œä¸‹æ¬¡æ£€æŸ¥æ—¶é—´ï¼š' .. os.date("%Y-%m-%d %H:%M:%S", state.campaign.nextStartTime))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome }
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+      stepLabel.setStepLabelContent('7-2.ç­‰å¾…home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome },
+        { 'CAMPAIGN_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -4506,62 +4706,62 @@ local campaignOnce = function(action, state)
       state.campaign.battleNum = 1
       state.campaign.HPIsSafe = true
       -- å‡ºå¾åå°±åº”è¯¥éœ€è¦ç»´ä¿®
-      state.repair.needRepair = true
+      state.repair.nextRepairStartTime = os.time()
 
-      stepLabel.setStepLabelContent('7-2.ç‚¹å‡»å‡ºå¾')
+      stepLabel.setStepLabelContent('7-3.ç‚¹å‡»å‡ºå¾')
       map.home.clickBattleBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome, 2000 },
-        { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_INIT', map.home.isHome, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage },
+        { 'CAMPAIGN_CAMPAIGN_PAGE', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'CAMPAIGN_BATTLE_PAGE') then
 
-      stepLabel.setStepLabelContent('7-3.ç‚¹å‡»æˆ˜å½¹')
+      stepLabel.setStepLabelContent('7-4.ç‚¹å‡»æˆ˜å½¹')
       map.campaign.clickCampaignBtn()
-      stepLabel.setStepLabelContent('7-4.ç­‰å¾…æˆ˜å½¹é¡µé¢')
+      stepLabel.setStepLabelContent('7-5.ç­‰å¾…æˆ˜å½¹é¡µé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_INIT', 'missionsGroup', map.home.isHome },
-        { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage, 2000 },
-        { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_INIT', map.home.isHome },
+        { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage, 2000 },
+        { 'CAMPAIGN_CAMPAIGN_PAGE', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'CAMPAIGN_CAMPAIGN_PAGE') then
 
       c.yield(sleepPromise(100))
-      stepLabel.setStepLabelContent('7-5.ç§»åŠ¨åˆ°æˆ˜å½¹' .. settings.campaignChapter)
+      stepLabel.setStepLabelContent('7-6.ç§»åŠ¨åˆ°æˆ˜å½¹' .. settings.campaignChapter)
       map.campaign.moveToCampaignMission(settings.campaignChapter)
       c.yield(sleepPromise(300))
-      stepLabel.setStepLabelContent('7-6.ç‚¹å‡»æˆ˜å½¹')
+      stepLabel.setStepLabelContent('7-7.ç‚¹å‡»æˆ˜å½¹')
       map.campaign.clickCampainReadyBtn(settings.campaignDifficulty)
-      stepLabel.setStepLabelContent('7-7.ç­‰å¾…æˆ˜å½¹å‡†å¤‡ç•Œé¢')
+      stepLabel.setStepLabelContent('7-8.ç­‰å¾…æˆ˜å½¹å‡†å¤‡ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_BATTLE_PAGE', 'missionsGroup', map.campaign.isBattlePage, 2000 },
-        { 'CAMPAIGN_CAMPAIGN_PAGE', 'missionsGroup', map.campaign.isCampaignPage, 2000 },
-        { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE', map.campaign.isBattlePage, 2000 },
+        { 'CAMPAIGN_CAMPAIGN_PAGE', map.campaign.isCampaignPage, 2000 },
+        { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE') then
 
       if ((state.campaign.quickSupplyCount <= 0) and (state.campaign.quickRepairCount <= 0)) then
-        stepLabel.setStepLabelContent('7-10.æ£€æµ‹æ‰€æœ‰çŠ¶æ€')
+        stepLabel.setStepLabelContent('7-9.æ£€æµ‹æ‰€æœ‰çŠ¶æ€')
         c.yield(sleepPromise(1000))
         local res = map.campaign.isReadyBattlePageShipStatusAllRight()
         if (not res) then
-          stepLabel.setStepLabelContent('7-11.çŠ¶æ€ä¸æ­£å¸¸')
+          stepLabel.setStepLabelContent('7-10.çŠ¶æ€ä¸æ­£å¸¸')
           map.campaign.clickReadyBattlePageQuickSupplyBtn()
-          stepLabel.setStepLabelContent('7-12.ç­‰å¾…å¿«é€Ÿè¡¥ç»™ç•Œé¢')
+          stepLabel.setStepLabelContent('7-11.ç­‰å¾…å¿«é€Ÿè¡¥ç»™ç•Œé¢')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
-            { 'CAMPAIGN_QUICK_SUPPLY_MODAL', 'missionsGroup', map.campaign.isQuickSupplyModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage, 2000 },
+            { 'CAMPAIGN_QUICK_SUPPLY_MODAL', map.campaign.isQuickSupplyModal },
           }))
           return makeAction(newstateTypes), state
         else
-          stepLabel.setStepLabelContent('7-11.çŠ¶æ€æ­£å¸¸')
+          stepLabel.setStepLabelContent('7-12.çŠ¶æ€æ­£å¸¸')
           state.campaign.quickSupplyCount = state.campaign.quickSupplyCount + 1
           return { type = 'CAMPAIGN_READY_BATTLE_PAGE' }, state
         end
@@ -4579,8 +4779,8 @@ local campaignOnce = function(action, state)
             map.campaign.clickQuickRepairBtn()
             stepLabel.setStepLabelContent('7-16.ç­‰å¾…å¿«ä¿®ç•Œé¢')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage, 2000 },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
@@ -4610,8 +4810,8 @@ local campaignOnce = function(action, state)
       state.campaign.quickSupplyCount = state.campaign.quickSupplyCount + 1
       if (state.campaign.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-          { 'CAMPAIGN_QUICK_SUPPLY_MODAL', 'missionsGroup', map.campaign.isQuickSupplyModal, 2000 },
+          { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+          { 'CAMPAIGN_QUICK_SUPPLY_MODAL', map.campaign.isQuickSupplyModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       else
@@ -4627,8 +4827,8 @@ local campaignOnce = function(action, state)
       stepLabel.setStepLabelContent('7-26.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-        { 'CAMPAIGN_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickSupplyModal, 2000 },
+        { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_QUICK_SUPPLY_MODAL_CLOSE', map.campaign.isQuickSupplyModal, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -4641,15 +4841,15 @@ local campaignOnce = function(action, state)
         stepLabel.setStepLabelContent('7-28.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
         if (state.campaign.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal, 2000 },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('7-29.å¿«ä¿®æ•°é‡ä¸è¶³')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -4667,8 +4867,8 @@ local campaignOnce = function(action, state)
             stepLabel.setStepLabelContent('7-31.ä¸­ç ´æˆ–å¤§ç ´:' .. table.concat(res, ','))
             map.campaign.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal, 500 },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
@@ -4677,8 +4877,8 @@ local campaignOnce = function(action, state)
             state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
             stepLabel.setStepLabelContent('7-32.å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -4686,8 +4886,8 @@ local campaignOnce = function(action, state)
           stepLabel.setStepLabelContent('7-33.ä¿®ç†å®Œæˆ')
           state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -4707,8 +4907,8 @@ local campaignOnce = function(action, state)
             map.campaign.clickQuickRepairModalSingleShip(res[1])
             c.yield(sleepPromise(500))
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
@@ -4717,8 +4917,8 @@ local campaignOnce = function(action, state)
             state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
             stepLabel.setStepLabelContent('7-36.å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+              { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+              { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -4726,8 +4926,8 @@ local campaignOnce = function(action, state)
           stepLabel.setStepLabelContent('7-37.ä¿®ç†å®Œæˆ')
           state.campaign.quickRepairCount = state.campaign.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'CAMPAIGN_READY_BATTLE_PAGE', 'missionsGroup', map.campaign.isReadyBattlePage },
-            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal },
+            { 'CAMPAIGN_READY_BATTLE_PAGE', map.campaign.isReadyBattlePage },
+            { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -4740,8 +4940,8 @@ local campaignOnce = function(action, state)
       map.campaign.clickQuickRepairModalCloseBtn()
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.campaign.isQuickRepairModal, 2000 },
-        { 'CAMPAIGN_QUICK_REPAIR_MODAL', 'missionsGroup', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_QUICK_REPAIR_MODAL_CLOSE', map.campaign.isQuickRepairModal, 2000 },
+        { 'CAMPAIGN_QUICK_REPAIR_MODAL', map.campaign.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -4750,19 +4950,22 @@ local campaignOnce = function(action, state)
       stepLabel.setStepLabelContent('7-39.å‡ºå¾å‡†å¤‡ç•Œé¢å‡ºå¾å¼€å§‹')
       c.yield(sleepPromise(100))
       map.campaign.clickBattleStartBtn()
-      -- å¦‚æœæ²¡æœ‰å¼€å§‹è¯´æ˜æ— æ³•è¿œå¾
+      -- å¦‚æœæ²¡æœ‰å¼€å§‹è¯´æ˜æ— æ³•æˆ˜å½¹
+      -- è®¾ç½®ä¸‹ä¸€æ¬¡æ£€æŸ¥æˆ˜å½¹çš„æ—¶é—´
+      state.campaign.nextStartTime = os.time() + settings.campaignInterval
+
       return { type = 'CAMPAIGN_GO_A_EXERCISE' }, state
 
     elseif (action.type == 'CAMPAIGN_GO_A_EXERCISE') then
 
       stepLabel.setStepLabelContent('7-40.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢ï¼Œ...')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.campaign.isReadyBattlePage, 3000 },
-        { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage },
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
+        { 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO', map.campaign.isReadyBattlePage, 3000 },
+        { 'CAMPAIGN_START_PAGE', map.campaign.isBattleStartPage },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
@@ -4773,11 +4976,11 @@ local campaignOnce = function(action, state)
       map.campaign.clickBattleStartModalStartBtn()
       stepLabel.setStepLabelContent('7-42.ç­‰å¾…é˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_GO_A_EXERCISE', 'missionsGroup', map.campaign.isReadyBattlePage },
-        { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage, 2000 },
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_GO_A_EXERCISE', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_START_PAGE', map.campaign.isBattleStartPage, 2000 },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -4788,10 +4991,10 @@ local campaignOnce = function(action, state)
       map.campaign.clickFormationPageStartBtn(settings.exerciseFormation)
       stepLabel.setStepLabelContent('7-44.ç­‰å¾…è¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_START_PAGE', 'missionsGroup', map.campaign.isBattleStartPage },
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage, 2000 },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_START_PAGE', map.campaign.isBattleStartPage },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage, 2000 },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -4808,10 +5011,10 @@ local campaignOnce = function(action, state)
       end
       stepLabel.setStepLabelContent('7-48.ç­‰å¾…èƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal, 2000 },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal, 2000 },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
@@ -4821,12 +5024,12 @@ local campaignOnce = function(action, state)
       map.campaign.clickVictoryPageContinueBtn()
       stepLabel.setStepLabelContent('7-50.ç­‰å¾…èƒœåˆ©ç»§ç»­ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_FORMATION_PAGE', 'missionsGroup', map.campaign.isFormationPage },
-        { 'CAMPAIGN_PURSUE_MODAL', 'missionsGroup', map.campaign.isPursueModal },
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage, 2000 },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2 },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_FORMATION_PAGE', map.campaign.isFormationPage },
+        { 'CAMPAIGN_PURSUE_MODAL', map.campaign.isPursueModal },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage, 2000 },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -4836,26 +5039,34 @@ local campaignOnce = function(action, state)
       map.campaign.clickVictoryPageContinueBtn2()
       stepLabel.setStepLabelContent('7-52.ç­‰å¾…æ¼”ä¹ ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_VICTORY_PAGE', 'missionsGroup', map.campaign.isVictoryPage },
-        { 'CAMPAIGN_VICTORY_NEXT_PAGE', 'missionsGroup', map.campaign.isVictoryPage2, 2000 },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_VICTORY_PAGE', map.campaign.isVictoryPage },
+        { 'CAMPAIGN_VICTORY_NEXT_PAGE', map.campaign.isVictoryPage2, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'CAMPAIGN_READY_BATTLE_PAGE_CANT_GO') then
 
-      -- éœ‡åŠ¨æç¤ºä¸èƒ½æˆ˜æ–—
-      if (settings.campaignAlertWhenNoHp) then
-        vibrator(500)
-        mSleep(500)
-        vibrator(500)
+      -- æç¤ºä¸èƒ½æˆ˜å½¹
+      if (settings.campaignAlertWhenCantBattle) then
+        if settings.alertUseVibrate then
+          vibrator(500)
+          mSleep(500)
+          vibrator(500)
+        end
+        if settings.alertUsePushbullet then
+          local datestr = os.date('%Y-%m-%d %X')
+          sendToPushBullet(settings.pushbulletsToken,
+            datestr .. ' ' .. settings.pushbulletNickname,
+            datestr .. '  ' .. getDeviceModel() .. '  ' .. 'æˆ˜å½¹å¤±è´¥')
+        end
       end
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', map.campaign.isReadyBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
       }))
       return makeAction(newstateTypes), state
 
@@ -4864,9 +5075,10 @@ local campaignOnce = function(action, state)
       map.campaign.clickReadyBattlePageBackBtn()
       stepLabel.setStepLabelContent("7-53.ç­‰å¾…å‡ºå¾ç•Œé¢")
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.campaign.isReadyBattlePage, 2000 },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_READY_BATTLE_PAGE_BACK_TO_HOME', map.campaign.isReadyBattlePage, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -4876,8 +5088,9 @@ local campaignOnce = function(action, state)
       map.campaign.clickBackToHomeBtn()
       stepLabel.setStepLabelContent('7-55.ç­‰å¾…home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isBattlePage },
-        { 'CAMPAIGN_BATTLE_PAGE2', 'missionsGroup', map.campaign.isCampaignPage },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isBattlePage, 2000 },
+        { 'CAMPAIGN_BATTLE_PAGE2', map.campaign.isCampaignPage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end
@@ -4886,7 +5099,9 @@ local campaignOnce = function(action, state)
 end
 
 return function(state)
-  state.campaign = {}
+  state.campaign = {
+    nextStartTime = os.time(),
+  }
   return campaignOnce
 end
 end
@@ -4900,14 +5115,13 @@ local allOptions = require 'GoMission__options'
 local getComListener = function()
   local map = allOptions.map
   local settings = allOptions.settings
-
   return {
-    { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, 'homeGroup', map.network.isNetworkFailureModal, 6000 },
-    { { type = 'NETWORK_CHECK_NETWORK_MODAL', addToStart = true }, 'homeGroup', map.network.isCheckNetworkModal, 6000 },
-    { 'LOGIN_START_APP', 'homeGroup', map.login.isAppNotRun, 20000 },
+    { { type = 'NETWORK_NETWORK_FAILURE_MODAL', addToStart = true }, map.network.isNetworkFailureModal, 6000 },
+    { { type = 'NETWORK_CHECK_NETWORK_MODAL', addToStart = true }, map.network.isCheckNetworkModal, 6000 },
+    { 'LOGIN_START_APP', map.login.isAppNotRun, 20000 },
     -- 5åˆ†é’Ÿç•Œé¢ä¸å˜åŒ–åˆ™é‡å¯æ¸¸æˆ
-    { 'LOGIN_START_APP', 'homeGroup', function() return true end, settings.restartInterval * 1000 },
-    --        { { type = 'PAUSE_PAUSE', addToStart = true }, 'homeGroup', map.home.isPause },
+    { 'LOGIN_START_APP', function() return true end, settings.restartInterval * 1000 },
+    --        { { type = 'PAUSE_PAUSE', addToStart = true },  map.home.isPause },
   }
 end
 local getHomeListener = function()
@@ -4915,10 +5129,10 @@ local getHomeListener = function()
   local settings = allOptions.settings
 
   return {
-    { 'HOME_HOME', 'homeGroup', map.home.isHome, 2000 },
-    { { type = 'HOME_MEDAL_MODAL', addToStart = true }, 'homeGroup', map.home.isMedalModal, 6000 },
-    { { type = 'HOME_NEWS_MODAL', addToStart = true }, 'homeGroup', map.home.isNewsModal, 6000 },
-    { { type = 'HOME_SIGN_MODAL', addToStart = true }, 'homeGroup', map.home.isSignModal, 6000 },
+    { 'HOME_HOME', map.home.isHome, 2000 },
+    { { type = 'HOME_MEDAL_MODAL', addToStart = true }, map.home.isMedalModal, 6000 },
+    { { type = 'HOME_NEWS_MODAL', addToStart = true }, map.home.isNewsModal, 6000 },
+    { { type = 'HOME_SIGN_MODAL', addToStart = true }, map.home.isSignModal, 6000 },
   }
 end
 
@@ -4927,7 +5141,8 @@ local getLoginListener = function()
   local settings = allOptions.settings
 
   return {
-    { { type = 'LOGIN_SELECT_SERVER', addToStart = true }, 'loginGroup', map.login.isSelectServerPage, 6000 },
+    { { type = 'LOGIN_SELECT_SERVER' }, map.login.isSelectServerPage, 6000 },
+    { { type = 'LOGIN_SELECT_SERVER' }, map.login.isLoginPage, 6000 },
   }
 end
 
@@ -4936,6 +5151,254 @@ return {
   getHomeListener = getHomeListener,
   getLoginListener = getLoginListener,
 }
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "GoMission__disintegrateShip" ] = function( ... ) local arg = _G.arg;
+local co = require 'Co'
+local c = coroutine
+local stepLabel = require 'StepLabel'
+local makeAction = (require 'GoMission__utils').makeAction
+local sleepPromise = (require 'GoMission__utils').sleepPromise
+local setScreenListeners = (require 'GoMission__utils').setScreenListeners
+local allOptions = require 'GoMission__options'
+local getHomeListener = (require 'GoMission__commonListener').getHomeListener
+local getLoginListener = (require 'GoMission__commonListener').getLoginListener
+local getComListener = (require 'GoMission__commonListener').getComListener
+
+
+
+local disintegrateShip = function(action, state)
+  local map = allOptions.map
+  local settings = allOptions.settings
+
+  return co(c.create(function()
+    if action.type == 'DISINTEGRATE_SHIP_INIT' then
+      if state.disintegrateShip.nextStartTime > os.time() then
+        stepLabel.setStepLabelContent('8-1.è·³è¿‡è§£ä½“ï¼Œä¸‹æ¬¡æ£€æŸ¥æ—¶é—´ï¼š' .. os.date("%Y-%m-%d %H:%M:%S", state.disintegrateShip.nextStartTime))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+          { '', map.home.isHome, 1000 }
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+      state.disintegrateShip.clickDisintegrateShipBtnCount = 0
+      return makeAction('DISINTEGRATE_SHIP_START'), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_START' then
+
+      stepLabel.setStepLabelContent('8-2.ç­‰å¾…HOME')
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN' then
+
+      stepLabel.setStepLabelContent('8-3.ç‚¹å‡»å»ºé€ æŒ‰é’®')
+      map.disintegrateShip.clickBuildPageBtn()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN' then
+
+      stepLabel.setStepLabelContent('8-4.ç‚¹å‡»è§£ä½“é¡µé¢æŒ‰é’®')
+      map.disintegrateShip.clickDisintegratePageBtn()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN' then
+
+      stepLabel.setStepLabelContent('8-5.ç‚¹å‡»æ·»åŠ æŒ‰é’®')
+      map.disintegrateShip.clickAddShipBtn()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'DISINTEGRATE_SHIP_HOME_CLICK_BUILD_BTN', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP', map.disintegrateShip.addShipPage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CHECK_HAS_SHIP' then
+
+      stepLabel.setStepLabelContent('8-6.æ£€æµ‹æ˜¯å¦æœ‰èˆ¹')
+      c.yield(sleepPromise(500))
+      local hasShipRes = map.disintegrateShip.hasShip()
+
+      if hasShipRes then
+        stepLabel.setStepLabelContent('8-7.æœ‰èˆ¹ï¼Œé€‰ä¸­æ‰€æœ‰èˆ¹')
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage },
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+      stepLabel.setStepLabelContent('8-8.æ²¡èˆ¹ï¼Œè¿”å›')
+      return makeAction('DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK'), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK' then
+
+      stepLabel.setStepLabelContent('8-9.ç‚¹å‡»è¿”å›')
+      map.disintegrateShip.selectAllShipClickCancel()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP' then
+
+      stepLabel.setStepLabelContent('8-10.ç‚¹å‡»æ‰€æœ‰èˆ¹')
+      map.disintegrateShip.clickAllShip()
+      stepLabel.setStepLabelContent('8-11.ç‚¹å‡»ç¡®å®š')
+      c.yield(sleepPromise(500))
+      map.disintegrateShip.selectAllShipClickOk()
+      state.disintegrateShip.clickDisintegrateShipBtnCount = 0
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_CHECK_REMOVED_ALL_EQUIPMENT_ENABLE', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_CHECK_REMOVED_ALL_EQUIPMENT_ENABLE' then
+
+      stepLabel.setStepLabelContent('8-12.æ£€æµ‹æ˜¯å¦é€‰ä¸­å¸ä¸‹æ‰€æœ‰è£…å¤‡é€‰é¡¹')
+      local res = map.disintegrateShip.checkIsRemoveAllEquipmentEnable()
+      if res then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_SELECT_REMOVED_ALL_EQUIPMENT', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_SELECT_REMOVED_ALL_EQUIPMENT' then
+
+      stepLabel.setStepLabelContent('8-13.é€‰ä¸­å¸ä¸‹æ‰€æœ‰è£…å¤‡é€‰é¡¹')
+      map.disintegrateShip.clickRemoveAllEquipmentCheckbox()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL' then
+
+      stepLabel.setStepLabelContent('8-14.ç¨€æœ‰è§£ä½“ç¡®è®¤é¢æ¿')
+      map.disintegrateShip.clickDisintegratePanelOkBtn()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN' then
+
+      stepLabel.setStepLabelContent('8-15.ç‚¹å‡»è§£ä½“')
+      map.disintegrateShip.clickDisintegrateShipBtn()
+      state.disintegrateShip.clickDisintegrateShipBtnCount = state.disintegrateShip.clickDisintegrateShipBtnCount + 1
+      if state.disintegrateShip.clickDisintegrateShipBtnCount <= 2 then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_DISINTEGRATE_SHIP_PAGE_BTN', map.disintegrateShip.isBuildPage },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_DISINTEGRATE_BTN', map.disintegrateShip.isDisintegrateShipPage, 1000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_ALL_SHIP', map.disintegrateShip.addShipPage, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+      -- å¦‚æœæ˜¯å¿«é€Ÿè§£ä½“æ¨¡å¼ï¼Œåˆ™ä¸å†è¿›è¡Œç¬¬äºŒæ¬¡æ£€æŸ¥ï¼Œç›´æ¥é€€å‡º
+      if settings.disintegrateShipFastMode then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', map.home.isHome, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+          { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+          { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { '', map.home.isHome, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_ADD_SHIP_BTN', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SR_PANEL', map.disintegrateShip.disintegrateSRPanel, 2000 },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif action.type == 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK' then
+
+      state.disintegrateShip.nextStartTime = os.time() + settings.disintegrateShipInterval
+      stepLabel.setStepLabelContent('8-16.ç‚¹å‡»è¿”å›')
+      map.disintegrateShip.disintegrateShipPageClickBackToHome()
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isBuildPage, 2000 },
+        { 'DISINTEGRATE_SHIP_DISINTEGRATE_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.isDisintegrateShipPage, 2000 },
+        { 'DISINTEGRATE_SHIP_ADD_SHIP_PAGE_CLICK_BACK', map.disintegrateShip.addShipPage, 2000 },
+        { '', map.home.isHome },
+      }))
+      return makeAction(newstateTypes), state
+    end
+
+    return nil, state
+  end))
+end
+
+return function(state)
+  state.disintegrateShip = {
+    nextStartTime = os.time(),
+  }
+  return disintegrateShip
+end
 end
 end
 
@@ -4962,9 +5425,18 @@ local exerciseOnce = function(action, state)
   return co(c.create(function()
     if (action.type == 'EXERCISE_START') then
 
-      stepLabel.setStepLabelContent('6-1.ç­‰å¾…home')
+      -- æ²¡æœ‰åˆ°æ£€æŸ¥æ¼”ä¹ çš„æ—¶é—´
+      if state.exercise.nextStartTime > os.time() then
+        stepLabel.setStepLabelContent('6-1.è·³è¿‡æ¼”ä¹ ï¼Œä¸‹æ¬¡æ£€æŸ¥æ—¶é—´ï¼š' .. os.date("%Y-%m-%d %H:%M:%S", state.exercise.nextStartTime))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+          { '', map.home.isHome, 1000 }
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+      stepLabel.setStepLabelContent('6-2.ç­‰å¾…home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome },
+        { 'EXERCISE_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -4977,135 +5449,138 @@ local exerciseOnce = function(action, state)
       state.exercise.battleNum = 1
       state.exercise.HPIsSafe = true
 
-      stepLabel.setStepLabelContent('6-2.ç‚¹å‡»å‡ºå¾')
+      stepLabel.setStepLabelContent('6-3.ç‚¹å‡»å‡ºå¾')
       map.home.clickBattleBtn()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_INIT', map.home.isHome, 2000 },
+        { 'EXERCISE_BATTLE_PAGE', map.exercise.isBattlePage },
+        { 'EXERCISE_EXERCISE_PAGE', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_BATTLE_PAGE') then
 
-      stepLabel.setStepLabelContent('6-3.ç‚¹å‡»æ¼”ä¹ ')
+      stepLabel.setStepLabelContent('6-4.ç‚¹å‡»æ¼”ä¹ ')
       map.exercise.clickExerciseBtn()
-      stepLabel.setStepLabelContent('6-4.ç­‰å¾…æ¼”ä¹ é¡µé¢')
+      stepLabel.setStepLabelContent('6-5.ç­‰å¾…æ¼”ä¹ é¡µé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_INIT', 'missionsGroup', map.home.isHome },
-        { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage, 2000 },
-        { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_INIT', map.home.isHome },
+        { 'EXERCISE_BATTLE_PAGE', map.exercise.isBattlePage, 2000 },
+        { 'EXERCISE_EXERCISE_PAGE', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_EXERCISE_PAGE') then
 
-      c.yield(sleepPromise(100))
-      stepLabel.setStepLabelContent('6-5.å¯»æ‰¾æ¼”ä¹ å¯¹æ‰‹')
+      stepLabel.setStepLabelContent('6-6.å¯»æ‰¾æ¼”ä¹ å¯¹æ‰‹')
       local res, exeList = map.exercise.isExercisePageHaveExercise()
       local nBtn = exeList[1]
       if (type(nBtn) ~= 'nil') then
-        stepLabel.setStepLabelContent('6-6.å‘ç°æ¼”ä¹ å¯¹æ‰‹' .. nBtn)
+        stepLabel.setStepLabelContent('6-7.å‘ç°æ¼”ä¹ å¯¹æ‰‹' .. nBtn)
         map.exercise.clickToNExerciseBtn(nBtn)
-        stepLabel.setStepLabelContent('6-7.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+        stepLabel.setStepLabelContent('6-8.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXERCISE_BATTLE_PAGE', 'missionsGroup', map.exercise.isBattlePage, 2000 },
-          { 'EXERCISE_EXERCISE_PAGE', 'missionsGroup', map.exercise.isExercisePage, 2000 },
-          { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
+          { 'EXERCISE_BATTLE_PAGE', map.exercise.isBattlePage, 2000 },
+          { 'EXERCISE_EXERCISE_PAGE', map.exercise.isExercisePage, 2000 },
+          { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
         }))
         return makeAction(newstateTypes), state
       else
-        stepLabel.setStepLabelContent('6-8.æ²¡æœ‰å¯ä»¥æŒ‘æˆ˜çš„äºº')
+        stepLabel.setStepLabelContent('6-9.æ²¡æœ‰å¯ä»¥æŒ‘æˆ˜çš„äºº')
+
+        -- è®¾ç½®ä¸‹ä¸€æ¬¡æ¼”ä¹ æ£€æŸ¥æ—¶é—´
+        state.exercise.nextStartTime = os.time() + settings.exerciseInterval
+
         return { type = 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME' }, state
       end
 
     elseif (action.type == 'EXERCISE_READY_BATTLE_PAGE') then
 
       if ((state.exercise.quickSupplyCount <= 0) and (state.exercise.quickRepairCount <= 0)) then
-        stepLabel.setStepLabelContent('6-9.é€‰æ‹©èˆ°é˜Ÿ:' .. settings.exerciseFleet)
+        stepLabel.setStepLabelContent('6-10.é€‰æ‹©èˆ°é˜Ÿ:' .. settings.exerciseFleet)
         map.exercise.selectFleet(settings.exerciseFleet)
-        stepLabel.setStepLabelContent('6-10.æ£€æµ‹æ‰€æœ‰çŠ¶æ€')
+        stepLabel.setStepLabelContent('6-11æ£€æµ‹æ‰€æœ‰çŠ¶æ€')
         c.yield(sleepPromise(1000))
         local res = map.exercise.isReadyBattlePageShipStatusAllRight()
         if (res) then
-          stepLabel.setStepLabelContent('6-10.çŠ¶æ€æ­£å¸¸')
+          stepLabel.setStepLabelContent('6-12.çŠ¶æ€æ­£å¸¸')
           state.exercise.quickSupplyCount = 1
           state.exercise.quickRepairCount = 1
           return { type = 'EXERCISE_READY_BATTLE_PAGE_CAN_GO' }, state
         else
-          stepLabel.setStepLabelContent('6-11.çŠ¶æ€ä¸æ­£å¸¸')
+          stepLabel.setStepLabelContent('6-13.çŠ¶æ€ä¸æ­£å¸¸')
           map.exercise.clickReadyBattlePageQuickSupplyBtn()
-          stepLabel.setStepLabelContent('6-12.ç­‰å¾…å¿«é€Ÿè¡¥ç»™ç•Œé¢')
+          stepLabel.setStepLabelContent('6-14.ç­‰å¾…å¿«é€Ÿè¡¥ç»™ç•Œé¢')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-            { 'EXERCISE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.exercise.isQuickSupplyModal },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage, 2000 },
+            { 'EXERCISE_QUICK_SUPPLY_MODAL', map.exercise.isQuickSupplyModal },
           }))
           return makeAction(newstateTypes), state
         end
       elseif (state.exercise.quickRepairCount <= 0) then
-        stepLabel.setStepLabelContent('6-13.æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
+        stepLabel.setStepLabelContent('6-15.æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
         c.yield(sleepPromise(1000))
         local res = map.exercise.isReadyBattlePageShipHPSafe(math.max(1, settings.exerciseQuickRepair))
         if (res) then
-          stepLabel.setStepLabelContent('6-14.è¡€é‡å®‰å…¨')
+          stepLabel.setStepLabelContent('6-16.è¡€é‡å®‰å…¨')
           state.exercise.quickRepairCount = 1
           return { type = 'EXERCISE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
         else
           if (settings.exerciseQuickRepair > 0) then
-            stepLabel.setStepLabelContent('6-15.è¡€é‡ä¸å®‰å…¨ï¼Œç‚¹å‡»å¿«ä¿®')
+            stepLabel.setStepLabelContent('6-17.è¡€é‡ä¸å®‰å…¨ï¼Œç‚¹å‡»å¿«ä¿®')
             map.exercise.clickQuickRepairBtn()
-            stepLabel.setStepLabelContent('6-16.ç­‰å¾…å¿«ä¿®ç•Œé¢')
+            stepLabel.setStepLabelContent('6-18.ç­‰å¾…å¿«ä¿®ç•Œé¢')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-              { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage, 2000 },
+              { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
-            stepLabel.setStepLabelContent('6-17.è¡€é‡ä¸å®‰å…¨ï¼Œè¿”å›')
+            stepLabel.setStepLabelContent('6-19.è¡€é‡ä¸å®‰å…¨ï¼Œè¿”å›')
             return { type = 'EXERCISE_READY_BATTLE_PAGE_CANT_GO' }, state
           end
         end
       else
-        stepLabel.setStepLabelContent('6-18.å†æ¬¡æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
+        stepLabel.setStepLabelContent('6-20.å†æ¬¡æ£€æµ‹è¡€é‡æ˜¯å¦å®‰å…¨')
         c.yield(sleepPromise(1000))
         -- ä¸å…è®¸å¤§ç ´å‡ºå¾
         local res = map.exercise.isReadyBattlePageShipHPSafe(math.max(1, settings.exerciseQuickRepair))
         if (res) then
-          stepLabel.setStepLabelContent('6-19.è¡€é‡å®‰å…¨ï¼Œç»§ç»­')
+          stepLabel.setStepLabelContent('6-21.è¡€é‡å®‰å…¨ï¼Œç»§ç»­')
           return { type = 'EXERCISE_READY_BATTLE_PAGE_CAN_GO' }, state
         else
-          stepLabel.setStepLabelContent('6-20.è¡€é‡ä¸å®‰å…¨ï¼Œè¿”å›')
+          stepLabel.setStepLabelContent('6-22.è¡€é‡ä¸å®‰å…¨ï¼Œè¿”å›')
           return { type = 'EXERCISE_READY_BATTLE_PAGE_CANT_GO' }, state
         end
       end
 
     elseif (action.type == 'EXERCISE_QUICK_SUPPLY_MODAL') then
 
-      stepLabel.setStepLabelContent('6-22.å¿«é€Ÿè¡¥ç»™ç•Œé¢ç‚¹å‡»ç¡®å®š')
+      stepLabel.setStepLabelContent('6-23å¿«é€Ÿè¡¥ç»™ç•Œé¢ç‚¹å‡»ç¡®å®š')
       map.exercise.clickReadyBattlePageQuickSupplyModalOkBtn()
-      stepLabel.setStepLabelContent('6-23.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+      stepLabel.setStepLabelContent('6-24.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
       state.exercise.quickSupplyCount = state.exercise.quickSupplyCount + 1
       if (state.exercise.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-          { 'EXERCISE_QUICK_SUPPLY_MODAL', 'missionsGroup', map.exercise.isQuickSupplyModal, 2000 },
+          { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+          { 'EXERCISE_QUICK_SUPPLY_MODAL', map.exercise.isQuickSupplyModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       else
-        stepLabel.setStepLabelContent('6-24.èµ„æºæ•°é‡ä¸è¶³')
+        stepLabel.setStepLabelContent('6-25.èµ„æºæ•°é‡ä¸è¶³')
         return { type = 'EXERCISE_QUICK_SUPPLY_MODAL_CLOSE' }, state
       end
 
     elseif (action.type == 'EXERCISE_QUICK_SUPPLY_MODAL_CLOSE') then
 
-      stepLabel.setStepLabelContent('6-25.ç‚¹å‡»å¿«é€Ÿè¡¥ç»™å…³é—­')
+      stepLabel.setStepLabelContent('6-26.ç‚¹å‡»å¿«é€Ÿè¡¥ç»™å…³é—­')
       c.yield(sleepPromise(100))
       map.exercise.clickQuickSupplyModalCloseBtn()
-      stepLabel.setStepLabelContent('6-26.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+      stepLabel.setStepLabelContent('6-27.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-        { 'EXERCISE_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal, 2000 },
+        { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_QUICK_SUPPLY_MODAL_CLOSE', map.exercise.isQuickSupplyModal, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -5113,29 +5588,29 @@ local exerciseOnce = function(action, state)
 
       if (settings.exerciseQuickRepair == 3) then
         -- ä¸æ»¡è¡€åˆ™å¿«ä¿®
-        stepLabel.setStepLabelContent('6-27.ç‚¹å‡»å¿«é€Ÿä¿®ç†ç¡®å®š')
+        stepLabel.setStepLabelContent('6-28.ç‚¹å‡»å¿«é€Ÿä¿®ç†ç¡®å®š')
         c.yield(sleepPromise(500))
         map.exercise.clickQuickRepairModalOkBtn()
         state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
-        stepLabel.setStepLabelContent('6-28.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+        stepLabel.setStepLabelContent('6-29.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
         if (state.exercise.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal, 2000 },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         else
-          stepLabel.setStepLabelContent('6-29.å¿«é€Ÿä¿®ç†æ•°é‡ä¸è¶³')
+          stepLabel.setStepLabelContent('6-30.å¿«é€Ÿä¿®ç†æ•°é‡ä¸è¶³')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal, 2000 },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickSupplyModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         end
 
       elseif (settings.exerciseQuickRepair == 2) then
         -- ä¸­ç ´æˆ–å¤§ç ´å¿«ä¿®
-        stepLabel.setStepLabelContent('6-30.å¯»æ‰¾ä¸­ç ´æˆ–å¤§ç ´çš„èˆ¹')
+        stepLabel.setStepLabelContent('6-31.å¯»æ‰¾ä¸­ç ´æˆ–å¤§ç ´çš„èˆ¹')
         c.yield(sleepPromise(1000))
         local res = map.exercise.isQuickRepairModalShipNeedRepair(settings.exerciseQuickRepair)
         if (#res > 0) then
@@ -5144,37 +5619,37 @@ local exerciseOnce = function(action, state)
             state.exercise.quickRepairSingleLastShip = res[1]
             state.exercise.quickRepairSingleCount = state.exercise.quickRepairSingleCount + 1
 
-            stepLabel.setStepLabelContent('6-31.ä¸­ç ´æˆ–å¤§ç ´:' .. table.concat(res, ','))
+            stepLabel.setStepLabelContent('6-32.ä¸­ç ´æˆ–å¤§ç ´:' .. table.concat(res, ','))
             map.exercise.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal, 500 },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
             state.exercise.quickRepairSingleLastShip = 0
             state.exercise.quickRepairSingleCount = 0
             state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
-            stepLabel.setStepLabelContent('6-32.å¿«ä¿®æ•°é‡ä¸è¶³')
+            stepLabel.setStepLabelContent('6-33å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickSupplyModal },
             }))
             return makeAction(newstateTypes), state
           end
         else
-          stepLabel.setStepLabelContent('6-33.ä¿®ç†å®Œæˆ')
+          stepLabel.setStepLabelContent('6-34.ä¿®ç†å®Œæˆ')
           state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickRepairModal },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
 
       elseif (settings.exerciseQuickRepair == 1) then
         -- å¤§ç ´å¿«ä¿®
-        stepLabel.setStepLabelContent('6-34.å¯»æ‰¾å¤§ç ´çš„èˆ¹')
+        stepLabel.setStepLabelContent('6-35.å¯»æ‰¾å¤§ç ´çš„èˆ¹')
         c.yield(sleepPromise(1000))
         local res = map.exercise.isQuickRepairModalShipNeedRepair(settings.exerciseQuickRepair)
         if (#res > 0) then
@@ -5182,31 +5657,31 @@ local exerciseOnce = function(action, state)
             state.exercise.quickRepairSingleLastShip = res[1]
             state.exercise.quickRepairSingleCount = state.exercise.quickRepairSingleCount + 1
 
-            stepLabel.setStepLabelContent('6-35.å¤§ç ´:' .. table.concat(res, ','))
+            stepLabel.setStepLabelContent('6-36.å¤§ç ´:' .. table.concat(res, ','))
             map.exercise.clickQuickRepairModalSingleShip(res[1])
             c.yield(sleepPromise(500))
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL', 'missionsGroup', map.exercise.isQuickRepairModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL', map.exercise.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           else
             state.exercise.quickRepairSingleLastShip = 0
             state.exercise.quickRepairSingleCount = 0
             state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
-            stepLabel.setStepLabelContent('6-36.å¿«ä¿®æ•°é‡ä¸è¶³')
+            stepLabel.setStepLabelContent('6-37.å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickSupplyModal },
+              { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+              { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickSupplyModal },
             }))
             return makeAction(newstateTypes), state
           end
         else
-          stepLabel.setStepLabelContent('6-37.ä¿®ç†å®Œæˆ')
+          stepLabel.setStepLabelContent('6-38ä¿®ç†å®Œæˆ')
           state.exercise.quickRepairCount = state.exercise.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
-            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickRepairModal },
+            { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
+            { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -5214,25 +5689,25 @@ local exerciseOnce = function(action, state)
 
     elseif (action.type == 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE') then
 
-      stepLabel.setStepLabelContent('6-38.ç‚¹å‡»å¿«é€Ÿä¿®ç†å…³é—­')
+      stepLabel.setStepLabelContent('6-39ç‚¹å‡»å¿«é€Ÿä¿®ç†å…³é—­')
       c.yield(sleepPromise(500))
       map.exercise.clickQuickRepairModalCloseBtn()
       c.yield(sleepPromise(300))
-      stepLabel.setStepLabelContent('6-39.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
+      stepLabel.setStepLabelContent('6-40.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.exercise.isQuickRepairModal, 2000 },
-        { 'EXERCISE_READY_BATTLE_PAGE', 'missionsGroup', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_QUICK_REPAIR_MODAL_CLOSE', map.exercise.isQuickRepairModal, 2000 },
+        { 'EXERCISE_READY_BATTLE_PAGE', map.exercise.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_READY_BATTLE_PAGE_CHECK_CAN_GO') then
 
-      stepLabel.setStepLabelContent('6-40.æ£€æµ‹èˆ°é˜Ÿæ˜¯å¦å¯ä»¥å‡ºå¾')
+      stepLabel.setStepLabelContent('6-41.æ£€æµ‹èˆ°é˜Ÿæ˜¯å¦å¯ä»¥å‡ºå¾')
       c.yield(sleepPromise(300))
       local fleetCanBattle = map.exercise.isFleetsCanBattle()
       if (not fleetCanBattle) then
 
-        stepLabel.setStepLabelContent('6-41.èˆ°é˜Ÿæ— æ³•æˆ˜æ–—')
+        stepLabel.setStepLabelContent('6-42.èˆ°é˜Ÿæ— æ³•æˆ˜æ–—')
         return { type = 'EXERCISE_READY_BATTLE_PAGE_CANT_GO' }, state
       else
         return { type = 'EXERCISE_READY_BATTLE_PAGE_CAN_GO' }, state
@@ -5240,129 +5715,130 @@ local exerciseOnce = function(action, state)
 
     elseif (action.type == 'EXERCISE_READY_BATTLE_PAGE_CAN_GO') then
 
-      stepLabel.setStepLabelContent('6-42.å‡ºå¾å‡†å¤‡ç•Œé¢å‡ºå¾å¼€å§‹')
+      stepLabel.setStepLabelContent('6-43.å‡ºå¾å‡†å¤‡ç•Œé¢å‡ºå¾å¼€å§‹')
       c.yield(sleepPromise(100))
       map.exercise.clickBattleStartBtn()
       return { type = 'EXERCISE_GO_A_EXERCISE' }, state
 
     elseif (action.type == 'EXERCISE_GO_A_EXERCISE') then
 
-      stepLabel.setStepLabelContent('6-43.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢ï¼Œ...')
+      stepLabel.setStepLabelContent('6-44.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢ï¼Œ...')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_GO_A_EXERCISE', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-        { 'EXERCISE_START_PAGE', 'missionsGroup', map.exercise.isBattleStartPage },
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2 },
+        { 'EXERCISE_GO_A_EXERCISE', map.exercise.isReadyBattlePage, 2000 },
+        { 'EXERCISE_START_PAGE', map.exercise.isBattleStartPage },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_START_PAGE') then
 
-      stepLabel.setStepLabelContent('6-44.å¼€å§‹é¢æ¿ï¼Œç‚¹å‡»å¼€å§‹')
+      stepLabel.setStepLabelContent('6-45.å¼€å§‹é¢æ¿ï¼Œç‚¹å‡»å¼€å§‹')
       c.yield(sleepPromise(100))
       map.exercise.clickBattleStartModalStartBtn()
-      stepLabel.setStepLabelContent('6-45.ç­‰å¾…é˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
+      stepLabel.setStepLabelContent('6-46ç­‰å¾…é˜µå‹é¢æ¿ï¼Œè¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_GO_A_EXERCISE', 'missionsGroup', map.exercise.isReadyBattlePage },
-        { 'EXERCISE_START_PAGE', 'missionsGroup', map.exercise.isBattleStartPage, 2000 },
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
+        { 'EXERCISE_GO_A_EXERCISE', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_START_PAGE', map.exercise.isBattleStartPage, 2000 },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_FORMATION_PAGE') then
 
-      stepLabel.setStepLabelContent('6-46.é˜µå‹é¢æ¿')
+      stepLabel.setStepLabelContent('6-47.é˜µå‹é¢æ¿')
       c.yield(sleepPromise(100))
       map.exercise.clickFormationPageStartBtn(settings.exerciseFormation)
-      stepLabel.setStepLabelContent('6-47.ç­‰å¾…è¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
+      stepLabel.setStepLabelContent('6-48.ç­‰å¾…è¿½å‡»é¢æ¿ï¼Œèƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_START_PAGE', 'missionsGroup', map.exercise.isBattleStartPage },
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage, 2000 },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
+        { 'EXERCISE_START_PAGE', map.exercise.isBattleStartPage },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage, 2000 },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_PURSUE_MODAL') then
 
-      stepLabel.setStepLabelContent('6-48.è¿½å‡»é¢æ¿')
+      stepLabel.setStepLabelContent('6-49.è¿½å‡»é¢æ¿')
       c.yield(sleepPromise(100))
       if (settings.exercisePursue) then
-        stepLabel.setStepLabelContent('6-49.è¿½å‡»')
+        stepLabel.setStepLabelContent('6-50.è¿½å‡»')
         map.exercise.clickPursueModalOk()
       else
-        stepLabel.setStepLabelContent('6-50.æ”¾å¼ƒè¿½å‡»')
+        stepLabel.setStepLabelContent('6-51.æ”¾å¼ƒè¿½å‡»')
         map.exercise.clickPursuePageCancel()
       end
-      stepLabel.setStepLabelContent('6-51.ç­‰å¾…èƒœåˆ©ç•Œé¢')
+      stepLabel.setStepLabelContent('6-52.ç­‰å¾…èƒœåˆ©ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal, 2000 },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2 },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal, 2000 },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2 },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_VICTORY_PAGE') then
 
-      stepLabel.setStepLabelContent('6-52.ç‚¹å‡»èƒœåˆ©ç»§ç»­')
+      stepLabel.setStepLabelContent('6-53.ç‚¹å‡»èƒœåˆ©ç»§ç»­')
       map.exercise.clickVictoryPageContinueBtn()
-      stepLabel.setStepLabelContent('6-53.ç­‰å¾…èƒœåˆ©ç»§ç»­ç•Œé¢')
+      stepLabel.setStepLabelContent('6-54.ç­‰å¾…èƒœåˆ©ç»§ç»­ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_FORMATION_PAGE', 'missionsGroup', map.exercise.isFormationPage },
-        { 'EXERCISE_PURSUE_MODAL', 'missionsGroup', map.exercise.isPursueModal },
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage, 2000 },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_FORMATION_PAGE', map.exercise.isFormationPage },
+        { 'EXERCISE_PURSUE_MODAL', map.exercise.isPursueModal },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage, 2000 },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_VICTORY_NEXT_PAGE') then
 
-      stepLabel.setStepLabelContent('6-54.ç‚¹å‡»èƒœåˆ©ç»§ç»­')
+      stepLabel.setStepLabelContent('6-55ç‚¹å‡»èƒœåˆ©ç»§ç»­')
       map.exercise.clickVictoryPageContinueBtn2()
-      stepLabel.setStepLabelContent('6-55.ç­‰å¾…æ¼”ä¹ ç•Œé¢')
+      stepLabel.setStepLabelContent('6-56.ç­‰å¾…æ¼”ä¹ ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_VICTORY_PAGE', 'missionsGroup', map.exercise.isVictoryPage },
-        { 'EXERCISE_VICTORY_NEXT_PAGE', 'missionsGroup', map.exercise.isVictoryPage2, 2000 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_VICTORY_PAGE', map.exercise.isVictoryPage },
+        { 'EXERCISE_VICTORY_NEXT_PAGE', map.exercise.isVictoryPage2, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_READY_BATTLE_PAGE_CANT_GO') then
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isReadyBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isReadyBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME') then
 
       map.exercise.clickReadyBattlePageBackBtn()
-      stepLabel.setStepLabelContent("6-56.ç­‰å¾…å‡ºå¾ç•Œé¢")
+      stepLabel.setStepLabelContent("6-57ç­‰å¾…å‡ºå¾ç•Œé¢")
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isReadyBattlePage, 2000 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage },
+        { 'EXERCISE_READY_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isReadyBattlePage, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME') then
 
-      stepLabel.setStepLabelContent('6-57.ç‚¹å‡»å›æ¸¯')
+      stepLabel.setStepLabelContent('6-58.ç‚¹å‡»å›æ¸¯')
       map.exercise.clickBackToHomeBtn()
-      stepLabel.setStepLabelContent('6-68.ç­‰å¾…home')
+      stepLabel.setStepLabelContent('6-59.ç­‰å¾…home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isBattlePage, 2000 },
-        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.exercise.isExercisePage, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isBattlePage, 2000 },
+        { 'EXERCISE_BATTLE_PAGE_BACK_TO_HOME', map.exercise.isExercisePage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end
@@ -5371,7 +5847,9 @@ local exerciseOnce = function(action, state)
 end
 
 return function(state)
-  state.exercise = {}
+  state.exercise = {
+    nextStartTime = os.time()
+  }
   return exerciseOnce
 end
 end
@@ -5393,6 +5871,8 @@ local getHomeListener = (require 'GoMission__commonListener').getHomeListener
 local getLoginListener = (require 'GoMission__commonListener').getLoginListener
 local getComListener = (require 'GoMission__commonListener').getComListener
 
+local sendToPushBullet = require 'ajax__sentToPushBullet'
+
 local expeditionOnce = function(action, state)
   local map = allOptions.map
   local settings = allOptions.settings
@@ -5402,7 +5882,9 @@ local expeditionOnce = function(action, state)
 
       if (not state.expedition.needExpedition) then
         stepLabel.setStepLabelContent('4-18.è·³è¿‡è¿œå¾æ´¾é£ï¼Œè¿”å›æ¸¯å£')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+          { '', 'homeGroup', map.home.isHome },
+        }))
         return makeAction(newstateTypes), state
       end
 
@@ -5421,7 +5903,7 @@ local expeditionOnce = function(action, state)
 
       stepLabel.setStepLabelContent('4-16.ç­‰å¾…HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_INIT', 'missionsGroup', map.home.isHome },
+        { 'EXPEDITION_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -5431,9 +5913,10 @@ local expeditionOnce = function(action, state)
 
       -- å°†å‡ºå¾æ´¾é£åˆ—è¡¨å¤åˆ¶åˆ°ç¼“å­˜ä¸­
       state.expedition.expeditionFleetToChapter = {}
-      for i, v in ipairs(settings.expeditionFleetToChapter) do
+      for k = 1, #settings.expeditionFleetToChapter do
+        local v = settings.expeditionFleetToChapter[k]
         if (v) then
-          table.insert(state.expedition.expeditionFleetToChapter, { i, v })
+          table.insert(state.expedition.expeditionFleetToChapter, { k, v })
         end
       end
 
@@ -5454,9 +5937,9 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-20.ç­‰å¾…å‡ºå¾ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_IS_BATTLE_PAGE', 'missionsGroup', map.expedition.isBattlePage },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_INIT', map.home.isHome, 2000 },
+        { 'EXPEDITION_IS_BATTLE_PAGE', map.expedition.isBattlePage },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -5468,15 +5951,17 @@ local expeditionOnce = function(action, state)
 
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_ONCE_START', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_IS_BATTLE_PAGE', 'missionsGroup', map.expedition.isBattlePage, 2000 },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_INIT', map.home.isHome, 2000 },
+        { 'EXPEDITION_IS_BATTLE_PAGE', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXPEDITION_IS_EXPEDITION_PAGE') then
       -- è¿›å…¥è¿œå¾é¡µé¢
       if (#state.expedition.expeditionFleetToChapter > 0) then
+        c.yield(sleepPromise(500))
+
         state.expedition.quickSupplyCount = 0
         state.expedition.quickRepairCount = 0
 
@@ -5487,10 +5972,28 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-21.ç§»åŠ¨åˆ°ç¬¬' .. chapter .. 'ç« ')
           map.expedition.moveToChapter(chapter, state.expedition.lastChapter)
           state.expedition.lastChapter = chapter
-          c.yield(sleepPromise(300))
+          c.yield(sleepPromise(500))
         end
+
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          { 'EXPEDITION_EXPEDITION_PAGE_CLICK_START_EXPEDITION_BTN', map.expedition.isBattleExpedition, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+        }))
+        return makeAction(newstateTypes), state
+      else
+        stepLabel.setStepLabelContent('4-27.æ²¡æœ‰è¿œå¾')
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        }))
+        return makeAction(newstateTypes), state
+      end
+
+    elseif (action.type == 'EXPEDITION_EXPEDITION_PAGE_CLICK_START_EXPEDITION_BTN') then
+
+      if (#state.expedition.expeditionFleetToChapter > 0) then
+        local chapter, section = table.unpack(strSplit(state.expedition.chapters, '-'))
         stepLabel.setStepLabelContent('4-23.æ£€æµ‹ç¬¬' .. section .. 'èŠ‚èƒ½å¦è¿œå¾')
-        c.yield(sleepPromise(200))
         local res = map.expedition.isChapterCanExpedition(section)
         if (res) then
           stepLabel.setStepLabelContent('4-24.ç‚¹å‡»æŒ‰é’®' .. section)
@@ -5498,21 +6001,21 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-25.ç­‰å¾…è¿œå¾å‡†å¤‡ç•Œé¢')
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_EXPEDITION_PAGE_CLICK_START_EXPEDITION_BTN', map.expedition.isBattleExpedition, 2000 },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
           }))
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('4-26.æœ¬ç« ä¸èƒ½è¿œå¾')
           -- æ‰§è¡Œä¸‹ä¸€ä¸ªç« èŠ‚
           table.remove(state.expedition.expeditionFleetToChapter, 1)
-          return { type = 'EXPEDITION_IS_EXPEDITION_PAGE' }, state
+          return makeAction('EXPEDITION_IS_EXPEDITION_PAGE'), state
         end
       else
         stepLabel.setStepLabelContent('4-27.æ²¡æœ‰è¿œå¾')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
         }))
         return makeAction(newstateTypes), state
       end
@@ -5524,7 +6027,7 @@ local expeditionOnce = function(action, state)
         stepLabel.setStepLabelContent('4-28.é€‰æ‹©èˆ°é˜Ÿ' .. state.expedition.fleet)
         map.expedition.clickSelectFleet(state.expedition.fleet)
         stepLabel.setStepLabelContent('4-29.æ£€æµ‹æ‰€æœ‰çŠ¶æ€æ­£å¸¸')
-        c.yield(sleepPromise(300))
+        c.yield(sleepPromise(500))
         -- æ£€æµ‹èˆ°é˜Ÿæ˜¯å¦åœ¨æœ€ä½³çŠ¶æ€
         local res = map.expedition.isReadyBattlePageShipStatusAllRight()
         if (res) then
@@ -5537,8 +6040,8 @@ local expeditionOnce = function(action, state)
           map.expedition.clickReadyBattlePageQuickSupplyBtn()
           stepLabel.setStepLabelContent('4-32.ç­‰å¾…å¿«é€Ÿè¡¥ç»™ç•Œé¢')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_QUICK_SUPPLY_MODAL', 'missionsGroup', map.expedition.isQuickSupplyModal },
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+            { 'EXPEDITION_QUICK_SUPPLY_MODAL', map.expedition.isQuickSupplyModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage, 2000 },
           }))
           return makeAction(newstateTypes), state
         end
@@ -5558,8 +6061,8 @@ local expeditionOnce = function(action, state)
             stepLabel.setStepLabelContent('4-36.ç­‰å¾…å¿«é€Ÿä¿®ç†ç•Œé¢')
 
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal },
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
+              { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage, 2000 },
             }))
 
             return makeAction(newstateTypes), state
@@ -5592,8 +6095,8 @@ local expeditionOnce = function(action, state)
       state.expedition.quickSupplyCount = state.expedition.quickSupplyCount + 1
       if (state.expedition.quickSupplyCount < 3) then
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_QUICK_SUPPLY_MODAL', 'missionsGroup', map.expedition.isQuickSupplyModal, 2000 },
-          { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
+          { 'EXPEDITION_QUICK_SUPPLY_MODAL', map.expedition.isQuickSupplyModal, 2000 },
+          { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
         }))
         return makeAction(newstateTypes), state
       else
@@ -5608,8 +6111,8 @@ local expeditionOnce = function(action, state)
       map.expedition.clickQuickSupplyModalCloseBtn()
       c.yield(sleepPromise(300))
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_QUICK_SUPPLY_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickSupplyModal, 2000 },
-        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.expedition.isReadyBattlePage },
+        { 'EXPEDITION_QUICK_SUPPLY_MODAL_CLOSE', map.expedition.isQuickSupplyModal, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', map.expedition.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -5625,15 +6128,15 @@ local expeditionOnce = function(action, state)
         stepLabel.setStepLabelContent('4-46.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
         if (state.expedition.quickRepairCount < 3) then
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal, 2000 },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('4-47.å¿«ä¿®æ•°é‡ä¸è¶³')
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -5651,8 +6154,8 @@ local expeditionOnce = function(action, state)
             stepLabel.setStepLabelContent('4-49.ä¸­ç ´æˆ–å¤§ç ´:' .. table.concat(res, ','))
             map.expedition.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal, 500 },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
@@ -5661,8 +6164,8 @@ local expeditionOnce = function(action, state)
             state.expedition.quickRepairCount = state.battle.quickRepairCount + 1
             stepLabel.setStepLabelContent('4-50.å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -5670,8 +6173,8 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-51.ä¿®ç†å®Œæˆ')
           state.expedition.quickRepairCount = state.expedition.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -5689,8 +6192,8 @@ local expeditionOnce = function(action, state)
             stepLabel.setStepLabelContent('4-53.å¤§ç ´:' .. table.concat(res, ','))
             map.expedition.clickQuickRepairModalSingleShip(res[1])
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'EXPEDITION_QUICK_REPAIR_MODAL', 'missionsGroup', map.expedition.isQuickRepairModal, 500 },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'EXPEDITION_QUICK_REPAIR_MODAL', map.expedition.isQuickRepairModal, 500 },
             }))
             return makeAction(newstateTypes), state
           else
@@ -5699,8 +6202,8 @@ local expeditionOnce = function(action, state)
             state.expedition.quickRepairCount = state.battle.quickRepairCount + 1
             stepLabel.setStepLabelContent('4-54.å¿«ä¿®æ•°é‡ä¸è¶³')
             local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+              { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+              { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
             }))
             return makeAction(newstateTypes), state
           end
@@ -5708,8 +6211,8 @@ local expeditionOnce = function(action, state)
           stepLabel.setStepLabelContent('4-55.ä¿®ç†å®Œæˆ')
           state.expedition.quickRepairCount = state.expedition.quickRepairCount + 1
           local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-            { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
-            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal },
+            { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
+            { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal },
           }))
           return makeAction(newstateTypes), state
         end
@@ -5723,8 +6226,8 @@ local expeditionOnce = function(action, state)
       c.yield(sleepPromise(300))
       stepLabel.setStepLabelContent('4-57.ç­‰å¾…å‡ºå¾å‡†å¤‡ç•Œé¢')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', 'missionsGroup', map.expedition.isQuickRepairModal, 2000 },
-        { 'EXPEDITION_READY_BATTLE_PAGE', 'missionsGroup', map.expedition.isReadyBattlePage },
+        { 'EXPEDITION_QUICK_REPAIR_MODAL_CLOSE', map.expedition.isQuickRepairModal, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE', map.expedition.isReadyBattlePage },
       }))
       return makeAction(newstateTypes), state
 
@@ -5736,7 +6239,7 @@ local expeditionOnce = function(action, state)
       if (fleetCanBattle) then
         stepLabel.setStepLabelContent('4-59.å¯ä»¥å‡ºå¾')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_READY_BATTLE_PAGE_CAN_GO', 'missionsGroup', map.expedition.isReadyBattlePage },
+          { 'EXPEDITION_READY_BATTLE_PAGE_CAN_GO', map.expedition.isReadyBattlePage },
         }))
         return makeAction(newstateTypes), state
       else
@@ -5753,8 +6256,8 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-63.ç­‰å¾…æˆ˜æ–—å¼€å§‹')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_CHECK_CAN_GO', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_READY_BATTLE_PAGE_CHECK_CAN_GO', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition },
       }))
       return makeAction(newstateTypes), state
 
@@ -5764,17 +6267,25 @@ local expeditionOnce = function(action, state)
 
       -- éœ‡åŠ¨æç¤ºä¸èƒ½è¿œå¾
       if (settings.expeditionAlertWhenNoHp) then
-        vibrator(500)
-        mSleep(500)
-        vibrator(500)
+        if settings.alertUseVibrate then
+          vibrator(500)
+          mSleep(500)
+          vibrator(500)
+        end
+        if settings.alertUsePushbullet then
+          local datestr = os.date('%Y-%m-%d %X')
+          sendToPushBullet(settings.pushbulletsToken,
+            datestr .. ' ' .. settings.pushbulletNickname,
+            datestr .. '  ' .. getDeviceModel() .. '  ' .. 'è¿œå¾å¤±è´¥')
+        end
       end
 
       stepLabel.setStepLabelContent('4-64.ç‚¹å‡»è¿”å›è¿œå¾ç•Œé¢')
       map.expedition.clickBackToExpedition()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_IS_EXPEDITION_PAGE', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_READY_BATTLE_PAGE_CANT_GO', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_IS_EXPEDITION_PAGE', map.expedition.isBattleExpedition },
       }))
 
       -- å¦‚æœç¦»å¼€è¿™ä¸€é¡µï¼Œåˆ™ä»è¿œå¾é˜Ÿåˆ—é‡Œé€€å‡ºä¸€ä¸ªé˜Ÿä¼
@@ -5793,8 +6304,9 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-66.è¿”å›è¿œå¾é¡µ')
       map.expedition.clickBackToExpedition()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -5803,8 +6315,9 @@ local expeditionOnce = function(action, state)
       stepLabel.setStepLabelContent('4-67.è¿”å›æ¸¯å£')
       map.expedition.clickBackToHome()
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isReadyBattlePage, 2000 },
-        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_READY_BATTLE_PAGE_BACK_TO_HOME', map.expedition.isReadyBattlePage, 2000 },
+        { 'EXPEDITION_EXPEDITION_PAGE_BACK_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end
@@ -5812,7 +6325,9 @@ local expeditionOnce = function(action, state)
 end
 
 return function(state)
-  state.expedition = {}
+  state.expedition = {
+    needExpedition = true,
+  }
   return expeditionOnce
 end
 end
@@ -5843,7 +6358,7 @@ local expeditionReward = function(action, state)
 
       stepLabel.setStepLabelContent('4-1.ç­‰å¾…HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'EXPEDITION_REWARD_INIT', 'missionsGroup', map.home.isHome },
+        { 'EXPEDITION_REWARD_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -5851,6 +6366,9 @@ local expeditionReward = function(action, state)
 
       -- è¿œå¾ç« èŠ‚
       state.expeditionReward.enableChapter = { 1, 2, 3, 4, 5, 6, 7 }
+
+      -- æ­¤ä»»åŠ¡ä½¿ç”¨çš„å˜é‡æ¢å¤é»˜è®¤å€¼
+      state.expedition.lastChapter = nil
 
       return makeAction('EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED'), state
 
@@ -5861,7 +6379,9 @@ local expeditionReward = function(action, state)
       local res = map.expedition.isExpeditionCompleted()
       if (not res) then
         stepLabel.setStepLabelContent('4-4.æ²¡æœ‰è¿œå¾å¥–åŠ±å’Œä»»åŠ¡')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener()))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+          { '', 'homeGroup', map.home.isHome },
+        }))
         return makeAction(newstateTypes), state
       end
       stepLabel.setStepLabelContent('4-5.ç‚¹å‡»å‡ºå¾')
@@ -5869,9 +6389,9 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-6.ç­‰å¾…å‡ºå¾ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', 'missionsGroup', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', map.home.isHome, 3000 },
+        { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
@@ -5882,22 +6402,26 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-8.ç­‰å¾…è¿œå¾ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', 'missionsGroup', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_HOME', 'missionsGroup', map.home.isHome, 2000 },
-        { 'EXPEDITION_REWARD_IS_BATTLE', 'missionsGroup', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', map.home.isHome, 3000 },
+        { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER') then
 
+      c.yield(sleepPromise(500))
       if (#state.expeditionReward.enableChapter > 0) then
         local chapter = state.expeditionReward.enableChapter[1]
         stepLabel.setStepLabelContent('4-9.ç§»åŠ¨åˆ°ç¬¬' .. chapter .. 'ç« ')
-        c.yield(sleepPromise(300))
+        c.yield(sleepPromise(500))
         map.expedition.moveToChapter(chapter, state.expedition.lastChapter)
         state.expedition.lastChapter = chapter
         stepLabel.setStepLabelContent('4-10.æ£€æµ‹æœ¬é¡µæœ‰å¯æ”¶è·å¥–åŠ±')
-        return { type = 'EXPEDITION_REWARD_CHECK_HAS_REWARD' }, state
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition, 1000 },
+        }))
+        return makeAction(newstateTypes), state
       else
         return { type = 'EXPEDITION_REWARD_RETURN_TO_HOME' }, state
       end
@@ -5916,8 +6440,8 @@ local expeditionReward = function(action, state)
         stepLabel.setStepLabelContent('4-12.ç­‰å¾…è¿œå¾å®Œæˆé¡µé¢')
 
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
-          { 'EXPEDITION_REWARD_COMPLETED_PAGE', 'missionsGroup', map.expedition.isExpeditionCompletedPage },
+          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition, 2000 },
+          { 'EXPEDITION_REWARD_COMPLETED_PAGE', map.expedition.isExpeditionCompletedPage },
         }))
         return makeAction(newstateTypes), state
       end
@@ -5932,8 +6456,9 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-14.ç­‰å¾…è¿œå¾ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_COMPLETED_PAGE', 'missionsGroup', map.expedition.isExpeditionCompletedPage, 2000 },
-        { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', 'missionsGroup', map.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_COMPLETED_PAGE', map.expedition.isExpeditionCompletedPage, 2000 },
+        { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -5943,7 +6468,8 @@ local expeditionReward = function(action, state)
       stepLabel.setStepLabelContent('4-15.è¿”å›HOME')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXPEDITION_REWARD_RETURN_TO_HOME', 'missionsGroup', map.expedition.isBattleExpedition, 2000 },
+        { 'EXPEDITION_REWARD_RETURN_TO_HOME', map.expedition.isBattleExpedition, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end
@@ -5978,7 +6504,7 @@ local home = function(action, state)
   return co(c.create(function()
     if (action.type == 'HOME_HOME') then
 
-      return nil, state
+      return '', state
 
     elseif (action.type == 'HOME_MEDAL_MODAL') then
 
@@ -5989,7 +6515,7 @@ local home = function(action, state)
       if (res) then
         return makeAction('HOME_MEDAL_MODAL'), state
       end
-      return nil, state
+      return '', state
 
     elseif (action.type == 'HOME_NEWS_MODAL') then
 
@@ -6000,7 +6526,7 @@ local home = function(action, state)
       if (res) then
         return makeAction('HOME_NEWS_MODAL'), state
       end
-      return nil, state
+      return '', state
 
     elseif (action.type == 'HOME_SIGN_MODAL') then
 
@@ -6011,8 +6537,8 @@ local home = function(action, state)
         map.home.clickSignModalGetReward()
         stepLabel.setStepLabelContent('1-6.ç­‰å¾…è·å–ç¡®è®¤')
         local newstateTypes = c.yield(setScreenListeners({
-          { 'HOME_SIGN_CONFIRM_MODAL', 'missionsGroup', map.home.isSignConfirmModal },
-          { 'HOME_SIGN_MODAL', 'missionsGroup', map.home.isSignModal, 2000 },
+          { 'HOME_SIGN_CONFIRM_MODAL', map.home.isSignConfirmModal },
+          { 'HOME_SIGN_MODAL', map.home.isSignModal, 2000 },
         }))
         return makeAction(newstateTypes), state
       else
@@ -6023,7 +6549,7 @@ local home = function(action, state)
         if (res) then
           return makeAction('HOME_SIGN_MODAL'), state
         end
-        return nil, state
+        return '', state
       end
 
     elseif (action.type == 'HOME_SIGN_CONFIRM_MODAL') then
@@ -6033,8 +6559,8 @@ local home = function(action, state)
       stepLabel.setStepLabelContent('1-9.ç­‰å¾…è·å–ç­¾åˆ°å¥–åŠ±é¢æ¿')
       c.yield(sleepPromise(2000))
       local newstateTypes = c.yield(setScreenListeners({
-        { 'HOME_SIGN_CONFIRM_MODAL', 'missionsGroup', map.home.isSignConfirmModal, 2000 },
-        { 'HOME_SIGN_MODAL', 'missionsGroup', map.home.isSignModal },
+        { 'HOME_SIGN_CONFIRM_MODAL', map.home.isSignConfirmModal, 2000 },
+        { 'HOME_SIGN_MODAL', map.home.isSignModal },
       }))
       return makeAction(newstateTypes), state
     end
@@ -6073,20 +6599,30 @@ local login = function(action, state)
       stepLabel.setStepLabelContent('1-11.å¯åŠ¨æ¸¸æˆ')
       map.login.restartApp()
       local newstateTypes = c.yield(setScreenListeners({
-        { 'LOGIN_SELECT_SERVER', 'missionsGroup', map.login.isSelectServerPage, 2000 },
+        { 'LOGIN_LOGIN', map.login.isLoginPage, 2000 },
+        { 'LOGIN_SELECT_SERVER', map.login.isSelectServerPage, 2000 },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'LOGIN_LOGIN') then
+
+      stepLabel.setStepLabelContent('1-12.è¾“å…¥ç”¨æˆ·åç•Œé¢')
+      local newstateTypes = c.yield(setScreenListeners({
+        { 'LOGIN_LOGIN', map.login.isLoginPage, 10000 },
+        { 'LOGIN_SELECT_SERVER', map.login.isSelectServerPage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'LOGIN_SELECT_SERVER') then
 
-      stepLabel.setStepLabelContent('1-12.ç™»å½•ç•Œé¢')
-      map.login.clickLoginBtn()
-      c.yield(sleepPromise(2000))
-      local res = map.login.isSelectServerPage()
-      if (res) then
-        return makeAction('LOGIN_SELECT_SERVER'), state
-      end
-      return nil, state
+      stepLabel.setStepLabelContent('1-13.ç™»å½•ç•Œé¢')
+      map.login.clickLoginServerBtn()
+      local newstateTypes = c.yield(setScreenListeners({
+        { 'LOGIN_LOGIN', map.login.isLoginPage, 2000 },
+        { 'LOGIN_SELECT_SERVER', map.login.isSelectServerPage, 10000 },
+        { '', function() return true end, 6000 },
+      }))
+      return makeAction(newstateTypes), state
     end
 
     return nil, state
@@ -6124,7 +6660,7 @@ local mission = function(action, state)
 
       stepLabel.setStepLabelContent('3-1.ç­‰å¾…HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'MISSION_IS_UNRECEIVED_MISSION', 'missionsGroup', map.home.isHome },
+        { 'MISSION_IS_UNRECEIVED_MISSION', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
@@ -6148,20 +6684,20 @@ local mission = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'MISSION_INIT', 'homeGroup', map.home.isHome, 2000 },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
-        { 'MISSION_PAGE', 'missionsGroup', map.mission.isMission },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission },
+        { 'MISSION_PAGE', map.mission.isMission },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'MISSION_PAGE') then
 
       stepLabel.setStepLabelContent('3-6.ç‚¹å‡»å…¨éƒ¨ä»»åŠ¡')
-      map.missionClickAllMission()
+      map.mission.clickAllMission()
       stepLabel.setStepLabelContent('3-7.ç­‰å¾…ä»»åŠ¡å…¨éƒ¨ä»»åŠ¡ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
-        { 'MISSION_PAGE', 'missionsGroup', map.mission.isMission, 2000 },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission },
+        { 'MISSION_PAGE', map.mission.isMission, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -6179,8 +6715,8 @@ local mission = function(action, state)
         stepLabel.setStepLabelContent('3-10.ç­‰å¾…è·å¾—é¢æ¿')
 
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 2000 },
-          { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel },
+          { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission, 2000 },
+          { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel },
         }))
 
         return makeAction(newstateTypes), state
@@ -6193,10 +6729,10 @@ local mission = function(action, state)
       stepLabel.setStepLabelContent('3-12.ç­‰å¾…æ–°èˆ¹ï¼Œä»»åŠ¡å…¨éƒ¨ä»»åŠ¡')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
-        { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 1000 },
-        { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel, 2000 },
+        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', map.mission.isNewShipPageLockModal },
+        { 'MISSION_IS_NEW_SHIP', map.mission.isNewShipPage },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission, 1000 },
+        { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -6208,10 +6744,10 @@ local mission = function(action, state)
       stepLabel.setStepLabelContent('3-14.ç­‰å¾…æ–°èˆ¹é”å®šï¼Œä»»åŠ¡å…¨éƒ¨ä»»åŠ¡')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
-        { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission, 2000 },
-        { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel, 2000 },
+        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', map.mission.isNewShipPageLockModal },
+        { 'MISSION_IS_NEW_SHIP', map.mission.isNewShipPage },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission, 2000 },
+        { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -6223,10 +6759,10 @@ local mission = function(action, state)
       stepLabel.setStepLabelContent('3-16.ç­‰å¾…ä»»åŠ¡å…¨éƒ¨ä»»åŠ¡')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_IS_NEW_SHIP', 'missionsGroup', map.mission.isNewShipPage },
-        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', 'missionsGroup', map.mission.isNewShipPageLockModal },
-        { 'MISSION_IS_MISSION_ALL_MISSION', 'missionsGroup', map.mission.isMissionAllMission },
-        { 'MISSION_REWAR_PANNEL', 'missionsGroup', map.mission.isRewardPannel, 2000 },
+        { 'MISSION_IS_NEW_SHIP', map.mission.isNewShipPage },
+        { 'MISSION_IS_NEW_SHIP_PAGE_LOCK_MODAL', map.mission.isNewShipPageLockModal },
+        { 'MISSION_IS_MISSION_ALL_MISSION', map.mission.isMissionAllMission },
+        { 'MISSION_REWAR_PANNEL', map.mission.isRewardPannel, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -6237,7 +6773,7 @@ local mission = function(action, state)
       map.mission.clickBackToHome()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'MISSION_PAGE_NO_REWAR', 'missionsGroup', map.mission.isMission, 2000 },
+        { 'MISSION_PAGE_NO_REWAR', map.mission.isMission, 2000 },
       }))
       return makeAction(newstateTypes), state
     end
@@ -6283,7 +6819,7 @@ local network = function(action, state)
       if (res) then
         return makeAction('NETWORK_NETWORK_FAILURE_MODAL'), state
       end
-      return nil, state
+      return '', state
 
     elseif (action.type == 'NETWORK_CHECK_NETWORK_MODAL') then
 
@@ -6299,7 +6835,7 @@ local network = function(action, state)
       if (res) then
         return makeAction('NETWORK_CHECK_NETWORK_MODAL'), state
       end
-      return nil, state
+      return '', state
     end
 
     return nil, state
@@ -6398,19 +6934,22 @@ local repairOnce = function(action, state)
       -- ç»´ä¿®æ»‘åŠ¨ç•Œé¢æ¬¡æ•°
       state.repair.moveCount = 4
 
-      if (not state.repair.needRepair) then
+      if state.repair.nextRepairStartTime > os.time() then
         stepLabel.setStepLabelContent('5-1.è·³è¿‡ç»´ä¿®ï¼Œè¿”å›æ¸¯å£')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener()))
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener()), {
+          { '', map.home.isHome }
+        })
         return makeAction(newstateTypes), state
       end
 
       stepLabel.setStepLabelContent('5-1.ç­‰å¾…HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'REPAIR_INIT', 'missionsGroup', map.home.isHome },
+        { 'REPAIR_INIT', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'REPAIR_INIT') then
+
       state.repair.slot = nil
 
       stepLabel.setStepLabelContent('5-2.ç‚¹å‡»å‡ºå¾')
@@ -6419,8 +6958,9 @@ local repairOnce = function(action, state)
       stepLabel.setStepLabelContent('5-3.ç­‰å¾…èˆ¹åç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-        { 'REPAIR_DOCK_PAGE', 'missionsGroup', map.repair.isDockPage },
+        { 'REPAIR_INIT', map.home.isHome, 2000 },
+        { 'REPAIR_REPAIR_PAGE', map.repair.isRepairPage },
+        { 'REPAIR_DOCK_PAGE', map.repair.isDockPage },
       }))
 
       return makeAction(newstateTypes), state
@@ -6433,8 +6973,8 @@ local repairOnce = function(action, state)
       stepLabel.setStepLabelContent('5-5.ç­‰å¾…ä¿®ç†ç•Œé¢')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-        { 'REPAIR_DOCK_PAGE', 'missionsGroup', map.repair.isDockPage, 2000 },
+        { 'REPAIR_REPAIR_PAGE', map.repair.isRepairPage },
+        { 'REPAIR_DOCK_PAGE', map.repair.isDockPage, 2000 },
       }))
 
       return makeAction(newstateTypes), state
@@ -6456,29 +6996,29 @@ local repairOnce = function(action, state)
 
           -- å¦‚æœä¸€æ²¡è¿›å…¥ä¿®èˆ¹é€‰èˆ¹é¡µé¢è¯´æ˜æ²¡æœ‰éœ€è¦ç»´ä¿®çš„èˆ¹
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-            { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage },
-            { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 3000 },
+            { 'REPAIR_SELECT_SHIP_PAGE', map.repair.isSelectShipPage },
+            { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage, 3000 },
           }))
 
           if (newstateTypes == 'REPAIR_REPAIR_FINISH') then
-            state.repair.needRepair = false
+            state.repair.nextRepairStartTime = os.time() + 1800
             stepLabel.setStepLabelContent('5-10.æ²¡æœ‰èˆ¹éœ€è¦ç»´ä¿®')
           end
 
           return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('5-11.æ²¡æœ‰ç©ºä½')
-          state.repair.needRepair = true
+          state.repair.nextRepairStartTime = os.time()
 
           local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-            { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
+            { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
           }))
           return makeAction(newstateTypes), state
         end
       else
         stepLabel.setStepLabelContent('5-12.ç»´ä¿®å‡ºç°æ„å¤–')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
+          { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
         }))
         return makeAction(newstateTypes), state
       end
@@ -6494,8 +7034,8 @@ local repairOnce = function(action, state)
         stepLabel.setStepLabelContent('5-14.ç­‰å¾…è¿”å›ä¿®ç†ç•Œé¢')
 
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-          { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
+          { 'REPAIR_RETURN_TO_REPAIR_PAGE', map.repair.isRepairPage },
+          { 'REPAIR_SELECT_SHIP_PAGE', map.repair.isSelectShipPage, 2000 },
         }))
 
         return makeAction(newstateTypes), state
@@ -6510,28 +7050,35 @@ local repairOnce = function(action, state)
             state.repair.repairNum = state.repair.repairNum + 1
           else
             -- æ²¡æ‰¾åˆ°ç‚¹ï¼Œç§»åŠ¨ä¸€æ¬¡
-            stepLabel.setStepLabelContent('5-17.æ²¡æ‰¾åˆ°ï¼Œå‘å·¦æ»‘ä¸€æ¬¡')
-            map.repair.moveToNextPage()
-            state.repair.moveCount = state.repair.moveCount - 1
+            stepLabel.setStepLabelContent('5-17.æ£€æµ‹æ˜¯å¦éœ€è¦å‘å·¦æ»‘åŠ¨')
+            local needMove = map.repair.isNeedMoveToNextPage();
+            if needMove then
+              stepLabel.setStepLabelContent('5-18.å‘å·¦æ»‘ä¸€æ¬¡')
+              map.repair.moveToNextPage()
+              state.repair.moveCount = state.repair.moveCount - 1
 
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-              { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-              { 'REPAIR_SELECT_SHIP_PAGE', 'missionsGroup', map.repair.isSelectShipPage },
-            }))
+              local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+                { 'REPAIR_RETURN_TO_REPAIR_PAGE', map.repair.isRepairPage },
+                { 'REPAIR_SELECT_SHIP_PAGE', map.repair.isSelectShipPage },
+              }))
 
-            return makeAction(newstateTypes), state
+              return makeAction(newstateTypes), state
+            else
+              stepLabel.setStepLabelContent('5-19.ä¸éœ€è¦å‘å·¦æ»‘')
+              state.repair.moveCount = 0
+            end
           end
         end
 
-        stepLabel.setStepLabelContent('5-18.ç­‰å¾…è¿”å›ä¿®ç†ç•Œé¢')
+        stepLabel.setStepLabelContent('5-20.ç­‰å¾…è¿”å›ä¿®ç†ç•Œé¢')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { 'REPAIR_RETURN_TO_REPAIR_PAGE', 'missionsGroup', map.repair.isRepairPage },
-          { 'REPAIR_SELECT_SHIP_PAGE_RETURN', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
+          { 'REPAIR_RETURN_TO_REPAIR_PAGE', map.repair.isRepairPage },
+          { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 2000 },
         }))
 
         if (newstateTypes == 'REPAIR_SELECT_SHIP_PAGE_RETURN') then
-          state.repair.needRepair = false
-          stepLabel.setStepLabelContent('5-19.æ²¡æœ‰éœ€è¦ä¿®ç†çš„èˆ¹')
+          state.repair.nextRepairStartTime = os.time() + 1800
+          stepLabel.setStepLabelContent('5-21.æ²¡æœ‰éœ€è¦ä¿®ç†çš„èˆ¹')
         end
 
         return makeAction(newstateTypes), state
@@ -6539,33 +7086,36 @@ local repairOnce = function(action, state)
 
     elseif (action.type == 'REPAIR_RETURN_TO_REPAIR_PAGE') then
 
-      stepLabel.setStepLabelContent('5-20.ç­‰å¾…ç¬¬' .. state.repair.slot .. 'ä¸ªæ§½ä½å˜æˆä¿®ç†çŠ¶æ€')
+      stepLabel.setStepLabelContent('5-22.ç­‰å¾…ç¬¬' .. state.repair.slot .. 'ä¸ªæ§½ä½å˜æˆä¿®ç†çŠ¶æ€')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_REPAIR_PAGE', 'missionsGroup', map.repair.isSlotNotEmpty(state.repair.slot) },
-        { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 3000 },
+        { 'REPAIR_REPAIR_PAGE', map.repair.isSlotNotEmpty(state.repair.slot) },
+        { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage, 3000 },
       }))
 
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'REPAIR_SELECT_SHIP_PAGE_RETURN') then
 
-      stepLabel.setStepLabelContent('5-21.æ²¡æœ‰å¯ä»¥ä¿®çš„èˆ¹ï¼Œè¿”å›ç»´ä¿®é¡µé¢')
+      stepLabel.setStepLabelContent('5-23.æ²¡æœ‰å¯ä»¥ä¿®çš„èˆ¹ï¼Œè¿”å›ç»´ä¿®é¡µé¢')
       map.repair.clickSelectShipPageBackBtn()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', 'missionsGroup', map.repair.isSelectShipPage, 2000 },
-        { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage },
+        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 2000 },
+        { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
 
     elseif (action.type == 'REPAIR_REPAIR_FINISH') then
 
-      stepLabel.setStepLabelContent('5-22.å®Œæˆç»´ä¿®')
+      stepLabel.setStepLabelContent('5-24.å®Œæˆç»´ä¿®')
       map.repair.clickBackToHomeBtn()
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'REPAIR_REPAIR_FINISH', 'missionsGroup', map.repair.isRepairPage, 2000 },
+        { 'REPAIR_SELECT_SHIP_PAGE_RETURN', map.repair.isSelectShipPage, 3000 },
+        { 'REPAIR_REPAIR_FINISH', map.repair.isRepairPage, 2000 },
+        { '', map.home.isHome },
       }))
       return makeAction(newstateTypes), state
     end
@@ -6575,7 +7125,9 @@ local repairOnce = function(action, state)
 end
 
 return function(state)
-  state.repair = {}
+  state.repair = {
+    nextRepairStartTime = os.time(),
+  }
   return repairOnce
 end
 end
@@ -6594,20 +7146,24 @@ package.preload[ "GoMission__utils" ] = function( ... ) local arg = _G.arg;
 local eq = require 'EventQuery'
 local co = require 'Co'
 local Promise = require 'Promise'
+local gettimeFunc = require 'GetTime'
 local c = coroutine
 
 local combineListener = function(target, ...)
   local sources = { ... }
   if (type(target) ~= 'table') then target = {} end
-  for _, source in ipairs(sources) do
-    for key, value in ipairs(source) do
+  for k = 1, #sources do
+    local source = sources[k]
+    for key = 1, #source do
+      local value = source[key]
       table.insert(target, value)
     end
   end
   local targetReverse = table.reverse(target)
   local resultIndex = {}
   local result = {}
-  for key, value in ipairs(targetReverse) do
+  for key = 1, #targetReverse do
+    local value = targetReverse[key]
     if (not resultIndex[value[3]]) then
       resultIndex[value[3]] = value
       table.insert(result, value)
@@ -6624,12 +7180,6 @@ local sleepPromise = function(ms)
   end)
 end
 
-local setScreenListenerPromise = function(actionType, tags, checker)
-  return Promise.new(function(resolve)
-    eq.setScreenListener(tags, checker, function() resolve(actionType) end)
-  end)
-end
-
 local setScreenListeners = function(theArr, ...)
 
   if ((type(theArr) ~= 'table') or (#theArr == 0)) then
@@ -6637,40 +7187,52 @@ local setScreenListeners = function(theArr, ...)
   end
 
   theArr = table.merge(theArr, ...)
+  for key = 1, #theArr do
+    if not theArr[2] then
+      error('listener ' .. theArr[1] .. ' is nil.')
+      return
+    end
+  end
 
-  local theArrUnique = table.uniqueLast(theArr, 3)
-  for key, value in ipairs(theArrUnique) do
+  local theArrUnique = table.uniqueLast(theArr, 2)
+  for key = 1, #theArrUnique do
+    local value = theArrUnique[key]
     value.isOnce = true
   end
   return co(c.create(function()
     local newArr = {}
-    local tags = {}
+    local ids = {}
     local done = false
-    for key, listenerEvent in ipairs(theArrUnique) do
-      if (type(listenerEvent[2]) == 'table') then
-        tags = table.merge(tags, listenerEvent[2])
-      else
-        table.insert(tags, listenerEvent[2])
-      end
+    for key = 1, #theArrUnique do
+      local listenerEvent = theArrUnique[key]
 
-      if ((type(listenerEvent[4]) == 'number') and (listenerEvent[4] > 0)) then
-        table.insert(newArr, co(c.create(function()
-          c.yield(sleepPromise(listenerEvent[4]))
+      if ((type(listenerEvent[3]) == 'number') and (listenerEvent[3] > 0)) then
+        table.insert(newArr, Promise.new(function(resolve)
+          local id = eq.setTimeout(resolve, listenerEvent[3])
+          table.insert(ids, id)
+        end).andThen(function()
           if (not done) then
-            return c.yield(setScreenListenerPromise(listenerEvent[1], listenerEvent[2], listenerEvent[3]))
+            return Promise.new(function(resolve)
+              local id = eq.setScreenListener(listenerEvent[2], function() resolve(listenerEvent[1]) end)
+              table.insert(ids, id)
+            end)
           end
-          return
-        end)))
+        end))
       else
         table.insert(newArr, co(c.create(function()
-          local res = c.yield(setScreenListenerPromise(listenerEvent[1], listenerEvent[2], listenerEvent[3]))
-          done = true
-          return res
+          return Promise.new(function(resolve)
+            local id = eq.setScreenListener(listenerEvent[2], function() resolve(listenerEvent[1]) end)
+            table.insert(ids, id)
+          end)
         end)))
       end
     end
     local res = c.yield(Promise.race(newArr))
-    eq.clearScreenListenerByTags(tags)
+    done = true
+    for key = 1, #ids do
+      eq.clearScreenListener(ids[key])
+      eq.clearTimeout(ids[key])
+    end
     return res
   end))
 end
@@ -6683,7 +7245,6 @@ end
 return {
   combineListener = combineListener,
   sleepPromise = sleepPromise,
-  setScreenListenerPromise = setScreenListenerPromise,
   setScreenListeners = setScreenListeners,
   makeAction = makeAction,
 }
@@ -6695,15 +7256,51 @@ local _ENV = _ENV
 package.preload[ "KeepScreenHock" ] = function( ... ) local arg = _G.arg;
 -- å…¨å±€å‡½æ•°ç”Ÿæˆï¼Œç”±äºéƒ¨åˆ†è®¡ç®—è¿‡ç¨‹ä¸æƒ³æš´éœ²æ‰€ä»¥ç”¨äº†é—­åŒ…
 
-local __tmp = (function()
-  local __keepScreen = keepScreen
-  keepScreen = nil
-  keepScreenState = false
-  keepScreen = function(...)
-    keepScreenState = select(1, ...)
-    return __keepScreen(...)
+if (type(keepScreenState) == 'nil') then
+  local __tmp = (function()
+    local __keepScreen = keepScreen
+    keepScreen = nil
+    keepScreenState = false
+    keepScreen = function(...)
+      local arr = { ... }
+      keepScreenState = arr[1] or false
+      return __keepScreen(...)
+    end
+  end)()
+end
+
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "MultiColorHock" ] = function( ... ) local arg = _G.arg;
+require 'KeepScreenHock'
+
+
+--multiColorS = multiColorS or multiColor
+
+multiColorS = multiColorS or function(array, s)
+  s = s or 90
+
+  local __keepScreenState = keepScreenState
+  if not __keepScreenState then keepScreen(true) end
+
+  local result = true
+  for var = 1, #array do
+    local lr, lg, lb = getColorRGB(array[var][1], array[var][2])
+    local r = math.floor(array[var][3] / 0x10000)
+    local g = math.floor(array[var][3] % 0x10000 / 0x100)
+    local b = math.floor(array[var][3] % 0x100)
+    if math.abs(lr - r) > s or math.abs(lg - g) > s or math.abs(lb - b) > s then
+      result = false
+      break
+    end
   end
-end)()
+
+  if not __keepScreenState then keepScreen(false) end
+  return result
+end
 
 end
 end
@@ -6716,13 +7313,27 @@ package.preload[ "Promise" ] = function( ... ) local arg = _G.arg;
 
 --------------------------------------------------------------------------------------
 
+-- å­—ç¬¦ä¸²åˆ†å‰²
+string.split = string.split or function(str, delimiter)
+  if str == nil or str == '' or delimiter == nil then
+    return nil
+  end
+
+  local result = {}
+  for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
+    table.insert(result, match)
+  end
+  return result
+end
+
+
 local PENDING = 0
 local RESOLVED = 1
 local REJECTED = 2
 
 -- æ˜¯å¦éœ€è¦æ˜¾ç¤ºstack tracebacké‡Œçš„é”™è¯¯ä¿¡æ¯
 -- stack tracebacké”™è¯¯ä¿¡æ¯å¾ˆé•¿ï¼Œæ‰€ä»¥è¿™ä¸ªåŠŸèƒ½ä½œä¸ºå¯é€‰é¡¹
-local stackTraceback = true
+local stackTraceback = false
 -- å°è£…äº†xpcallæ–¹æ³•
 function tryCatch(cb)
   return xpcall(cb, function(e)
@@ -6814,8 +7425,8 @@ function Promise.all(args)
       end
     end
 
-    for k, value in ipairs(args) do
-      getRes(k, value)
+    for k = 1, #args do
+      getRes(k, args[k])
     end
   end)
 end
@@ -6823,8 +7434,9 @@ end
 function Promise.race(args)
   if (type(args) ~= 'table') then args = {} end
   return Promise.new(function(resolve, reject)
-    for k, v in ipairs(args) do
-      Promise.resolve(v).andThen(resolve, reject)
+    for k = 1, #args do
+      local value = args[k]
+      Promise.resolve(value).andThen(resolve, reject)
     end
   end)
 end
@@ -6881,6 +7493,7 @@ function handle(self, deferred)
     table.insert(self.deferreds, deferred)
     return
   end
+
   asap(function()
     local cb
     if (self.PromiseStatus == RESOLVED) then
@@ -6937,12 +7550,21 @@ end
 -- ç§»åŠ¨åˆ°é“¾è¡¨çš„ä¸‹ä¸€ä¸ªpromise
 function finale(self)
   local theDef = self.deferreds
-  for k, v in ipairs(self.deferreds) do
-    handle(self, v);
+  for k = 1, #theDef do
+    handle(self, theDef[k]);
   end
   self.deferreds = {};
-  if ((self.PromiseStatus == REJECTED) and (#theDef == 0)) then
-    error('Uncatch error in Promise \n' .. tostring(self.PromiseValue))
+  if self.PromiseStatus == REJECTED and #theDef == 0 then
+    local errStr = 'Uncatch error in Promise '
+    local resErr = tostring(self.PromiseValue)
+    local errStrTab = string.split(resErr, '\n')
+    if errStrTab and #errStrTab > 1 then
+      if string.sub(errStrTab[1], 0 - #errStr) == errStr then
+        error(resErr)
+      end
+    else
+      error(errStr .. '\n' .. resErr)
+    end
   end
 end
 
@@ -6967,6 +7589,14 @@ local StepLable = {
   prefix = '',
 }
 
+local fontSize = 16
+local tsver = getTSVer(); --è·å–è§¦åŠ¨ç²¾çµå¼•æ“ç‰ˆæœ¬
+local tsint = tonumber(string.sub(tsver, 1, 1) .. string.sub(tsver, 3, 3) .. string.sub(tsver, 5, 5));
+--è½¬åŒ–ä¸ºæ•°å­—ç‰ˆæœ¬å·
+if tsint >= 224 then
+  fontSize = 7
+end
+
 fwShowWnd('steplabel', 300, 50, 300, 100, 0)
 
 StepLable.init = function(labelId)
@@ -6977,7 +7607,7 @@ end
 StepLable.setPrefix = function(prefix)
   StepLable.prefix = prefix
   local finalText = StepLable.prefix .. StepLable.text
-  fwShowButton('steplabel', StepLable.labelId, finalText, '90333333', '90FFFFFF', '', 7, 0, 0, 300, 100)
+  fwShowButton('steplabel', StepLable.labelId, finalText, '90333333', '90FFFFFF', '', fontSize, 0, 0, 300, 100)
   return StepLable
 end
 
@@ -6988,10 +7618,12 @@ StepLable.setStepLabelContent = function(text, noNLog)
   end
   StepLable.text = text
   local finalText = StepLable.prefix .. text
-  fwShowButton('steplabel', StepLable.labelId, finalText, '90333333', '90FFFFFF', '', 7, 0, 0, 300, 100)
+  fwShowButton('steplabel', StepLable.labelId, finalText, '90333333', '90FFFFFF', '', fontSize, 0, 0, 300, 100)
+  local dateStr = os.date('%Y-%m-%d %X')
   if (not noNLog) then
-    local dateStr = os.date('%Y-%m-%d %X')
     wLog('warship-girls-r-script', '[DATE] ' .. finalText);
+  end
+  if useNlog then
     nLog(dateStr .. ' ' .. finalText)
   end
 end
@@ -7004,6 +7636,570 @@ end
 return StepLable
 end
 end
+
+do
+local _ENV = _ENV
+package.preload[ "StringLib" ] = function( ... ) local arg = _G.arg;
+-- å­—ç¬¦ä¸²åˆ†å‰²
+string.split = string.split or function(str, delimiter)
+  if str == nil or str == '' or delimiter == nil then
+    return nil
+  end
+
+  local result = {}
+  for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
+    table.insert(result, match)
+  end
+  return result
+end
+
+string.startWith = string.startWith or function(str, pattern)
+  if (type(str) ~= 'string') then
+    return false
+  end
+  if (type(pattern) ~= 'string') then
+    return false
+  end
+  if (string.sub(str, 1, string.len(pattern)) == pattern) then
+    return true
+  end
+  return false
+end
+
+string.endWith = string.endWith or function(str, pattern)
+  if (type(str) ~= 'string') then
+    return false
+  end
+  if (type(pattern) ~= 'string') then
+    return false
+  end
+  if (string.sub(str, 1, (0 - string.len(pattern))) == pattern) then
+    return true
+  end
+  return false
+end
+end
+end
+
+package.preload[ "TSLib" ] = assert( (loadstring or load)(
+"\27TS1R\000\1\4\4\4\8\000\25“\r\
+\26\
+\14\9\20 6\30ø\11Fo<'Qé\30gIW.XŒqqCè»\2\24AcÉ2V\8\9\20 ìkV80\8t\25:\8t\25i\19á.hzN!bÂ g%ô®]=vSùŸÔWšK({¢Ó5,Öß\\Ò`h$\24\9v\25\30\9v\25r©6)àÕÑb\24ÕAtß\"]}R·\25C ›Ô\7\1!\8\6 |aÉ<ğ\15¨6\23†\5+ÂĞ\5dBùÆ\29aİ3\3NBw'*µÉ5\000\11\8\8 ı7\16@RÁ§F¬Sn‚pV4\18ö&¢\0151ÿ\\!àÈ7S3·\24c*Ÿ1yncƒ{®Yì\24Vu\17Vg\000\000\000§‚‚‚Â‚‚‚ß\2\2‚\5‚B‚EÂB‚§Ã‚‚Š‚ƒ\3§\3‚‚Š‚\3\3§C‚‚Š‚ƒ\000§ƒƒ‚Š‚\3\000§Ãƒ‚Š‚ƒ\1§\3ƒ‚Š‚\3\1§Cƒ‚Š‚ƒ\6§ƒ€‚Š‚\3\6§Ã€‚Š‚ƒ\7§\3€‚Š‚\3\7§C€\000\8\000\1†%\1\3\000\8\000†%A\3\000\8\000\1‡%\3\000\8\000‡%Á\3\000\8\000\1ˆ%\1\4\000\8\000ˆ%A\4\000\8\000\1‰%\4\000\8\000‰%Á\4\000\8\000\1Š%\1\5\000\8\000Š%A\5\000\8\000\1‹%\5\000\8\000‹%Á\5\000\8\000\1Œ%\1\6\000\8\000Œ%A\6\000\8\000\1%\6\000\8\000%Á\6\000\8\000\1%\1\7\000\8\000%A\7\000\8\000\1%\7\000\8\000%Á\7\000\8\000\1%\1\8\000\8\000%A\8\000\8\000\1‘%\8\000\8\000‘%Á\8\000\8\000\1’\6\1I\000\8\000’%\1\9\000\8\000\1“%A\9\000\8\000“%\9\000F\1J\000J\1”eÁ\9\000\8@\1•e\1\
+\000\8@•eA\
+\000\8@\1–e\
+\000\8@–eÁ\
+\000\8@\1—e\1\11\000\8@—eA\11\000\8@\1˜e\11\000\8@˜eÁ\11\000\8@\1™\31\000€\000\5\7\21 uá\16\2É\30H\127!š½\2¶Rv¨A¥|sQ×E®Q'~\6\3\16I\25ï² \2aÏ4\1\000\000\000\1\000\6\7!\25±ƒ¦fàZ–R\1\rìI\000Æ\29\14\
+\16`\8£Mé\127ıı-N3\000\000\000\4\8\000\000\000\2%\21>35=V\4\
+\000\000\0009&\"\9 7:#3V\4\11\000\000\000\2\5\0003$%?98%V\4\4\000\000\000\"7&V\4\
+\000\000\000$7829;\0027&V\4\11\000\000\000$7829;%\0027&V\4\7\000\000\000;9 3\0029V\4\12\000\000\000;9 3\0029!7$2%V\4\12\000\000\000;9 3\01299;\25#\"V\4\11\000\000\000;9 3\01299;\0318V\4\17\000\000\000;9 3\21?$5:3\02138\"3$V\4\17\000\000\000;9 3\21?$5:3\00698?\"%V\4\9\000\000\000?8\"\0029\00414V\4\9\000\000\000$14\0029\0318\"V\4\8\000\000\000?%\0219:9$V\4\11\000\000\000;#:\"?\0219:9$V\4\12\000\000\000;#:\"?\0219:\0027&V\4\9\000\000\000%\"$\5&:?\"V\4\12\000\000\000?%\16?:3\19.?%\"V\4\15\000\000\000$372\16?:3\5\"$?81V\4\9\000\000\000$372\16?:3V\4\
+\000\000\000!$?\"3\16?:3V\4\16\000\000\000!$?\"3\16?:3\5\"$?81V\4\8\000\000\00023:\16?:3V\4\15\000\000\000%3\"\0183 ?53\23:?7%V\4\8\000\000\000:#7\19.?\"V\4\9\000\000\00013\"\0243\"\31\6V\4\4\000\000\000:91V\4\11\000\000\00013\"\23&&\0247;3V\4\11\000\000\00013\"\3%3$\23&&V\4\9\000\000\000>\"\"&\0069%\"V\4\8\000\000\000>\"\"&\0173\"V\4\9\000\000\000?8&#\"\5\"$V\4\16\000\000\0005:37$\0067%\"3497$2V\4\r\000\000\0005:37$\02199=?3%V\4\11\000\000\0005:37$\31\18\16\23\000V\4\15\000\000\0005:37$\23::\6>9\"9%V\4\12\000\000\000\0183:\23::\6>9\"9V\4\18\000\000\0005:37$\23::\0293/\21>7?8%V\4\
+\000\000\00013\"\5\"$\24#;V\4\3\000\000\000\9\17V\4\
+\000\000\00013\"\00482\24#;V\4\6\000\000\000\3\31\0243!V\4\12\000\000\000%87&\02382\0057 3V\4\14\000\000\000233&\0219&/\00274:3V\4\
+\000\000\00013\"\0043823$V\4\6\000\000\000?%\0187/V\4\11\000\000\0005>35=\00274:3V\4#\000\000\0000?82\27#:\"?\0219:9$\0318\00431?98\16#,,/\20/\00274:3V\4\7\000\000\000839%\3\31V\4\8\000\000\00095$\031809V0\000\000\000\11\9\20 ‹\22D_l\25Fm\3\9\20 4¶âfwò+=ÌÓ…L\16÷²\20€§½+9í»\"²oâE\8\r®;| !lMË\23'}\8t\0254\8t\25ëY{n&\25$\11óƒ\7ìímu\25\9v\25\18\9v\25¯ãÙZ©>D3¦\20æ\11UÂY\30¨5N fßç0\25SZbgc«[\
+Õ&)À©\22O\000(\8\6 –b=m\000\000\8\8 \6¼Ş('Av\7SÌ\18|}®\
+fó\20üScÃÅ\16ıUÈ\17,\2¸vHyV4\18¨\"Ùb\31\000\000\000CÈIH\14H\8HB\8HÈ\14\8\8HB\8ÈÈ\14È\8HB\8HÉ\14ˆ\8\000\
+@€K€\000\000†\000A\000‡@A\1J€€‚†\000A\000‡€A\1J€\000ƒ\
+@\000‚K@\000\000†ÀA\000‡\000B\1J€\000„\
+@€ƒe\000\000\000¥@\000\000å€\000\000\11Á\000\000\
+€„\
+Á\000…\
+A€…\31\1\000\1\31\000€\000\8\7\21 \127M•*“À2^Ñ$Ù!‹@\0252\127® S[&»h:$ó\12(íä\6\1;¡tæL+\5\2\16I\25h\26‰%©9§\r8†Ş\2\1\000\000\000\000\000\6\7!\25iã½\\ä'ò}\8Rí;ˆùíqëãĞ&/“cCÜÅ\000n\12\000\000\000\4\9\000\000\000\25\2\3\24\000\15\8\31m\4\5\000\000\000\25\20\29\8m\4\6\000\000\000\8\31\31\2\31m\4\7\000\000\000\30\8\1\8\14\25m\4\7\000\000\000\30\25\31\4\3\
+m\4\7\000\000\000\11\2\31\000\12\25m\4\5\000\000\000\11\4\3\9m\4\6\000\000\000\9\8\15\24\
+m\4\8\000\000\000\
+\8\25\4\3\11\2m\4\8\000\000\0009\30.\5\8\14\6m\4\
+\000\000\000\2\29\0252\27\12\1\24\8m\4\8\000\000\000\15\12\0092\12\31\
+m\3\000\000\000\11\9\20 Êµ'JÙa¯kö\12\9\20 ½¢wÃ1…d×WŠFèı\12B \25ÚL(\8t\0258\8t\25eĞù<ÚÿÇc±24\\\1\20ãXH0]I\30Ù&O5\15é;ü]0\24\23\9v\25\18\9v\25¼½çTkpùl\16;š\21\24›ë\27]‰u^ÿ<­\24ÿ˜O<e ‡En(¤\14¡&B@\000 \8\6 ?#ıSlÜi\
+ÿ§\16g·­è\\ÖFa\31e³^zßmA­ëevcÀ \6\11\8\8 şQ#\16Û3º]tø\15r÷{V4\18½(m;Í]~;\18W†r:\000\000\000qö·÷7öwõjv÷ö«¶÷ôà÷÷w¶¶÷÷qv·÷p6·ô:¶öujv÷ö1¶¶÷ğu¶ô*v÷öï76ôàw\000€ÇA\3ÛA\000\000\23\000\000€Á\1\2\000\6BA\000GBB\3\29‚\000\1\24ÀA\4\23€\000€\7BB\3\27B\000\000\23À\1€\6BA\000@\2\000\000\29‚\000\1\24ÀA\4\23@\000€\28B\000\000\23\000\000€\1‚\2\000X\000B\2\23@\1€FÂA\000GÂÂ\4\2\3\000À\2\000\2]‚€\1\000\1€\4FBC\000†ÂA\000‡ÂB\5Á‚\3\000\000\3€\000@\3\000\1€\3€\3À\3\000\4\000\4€\1@\4\000\2‚\000\4ÍB‡^\2€\1_\2\000\000\31\000€\000\8\7\21 ^…r~Î\20nG$÷–@oÀ\12\20æ¯Yc€\12\31nı¹,åH©\31æ ”dİ%^;\18\3\16I\25\12gõ_\28I[\15\1\000\000\000\1\000\11\7!\25\12\15\6GÔöClÉ’¶\9št¹%NÖ±-v1¢o\17ØyFéÎù;tƒÅ\127ì\0114$\16\000\000\000\4\9\000\000\000‚™˜ƒ›”“„ö\3\000\000\000\000\000\000\000\000\4\6\000\000\000’“”ƒ‘ö\4\8\000\000\000‘“‚Ÿ˜™ö\3\000\000\000\000\000\000\000@\4\5\000\000\000‚†“ö\4\9\000\000\000˜—›“—‚ö\4\7\000\000\000…‚„Ÿ˜‘ö\4\1\000\000\000ö\4\5\000\000\000˜—›“ö\4\2\000\000\000Éö\4\7\000\000\000™„›—‚ö\4\12\000\000\000ÚÖ\19Ha\19~FÖÓ…ö\4\6\000\000\000“„„™„ö\4D\000\000\000\16j\\\30uK\16~f\19|i\30If\30WzÚ\19yt\16cF\19Ly\19yAÌÕÓ’Ó…Ö\19qK\16cFÌÓ…ÖÑÓ…ÑÖŞ\31jv\30PwÖÓ…ÖÓ…ßö\3\000\000\000\000\000\000\8@\000\000\000\000\26pi\23#\8\29lÉSÑZ\26ğviğe›'ÛªWMÓv\20=Oë\r&©¿Å\20\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 yóBÁ\5¼^½\000 sè\5“]¿Æ´\1ñC¯\3üÎ—-U§şpÛBX1u\15\9\20 ¹0{\28\\§\25i_Œö+ŠFªli­Ğn½*„)\30\8t\0251\8t\25ç%\28G\2\9v\25\31\9v\25³¯ıh³AØQ,y4t\000d%,çFÆ\22­‘&ÔmØ\8\1.\8\6 Y&Ä[¸ığ<°Š¤~éŸ·\30y\3­\27m‹DrÑ¥J|\2\r\8\8 _ÏóuÍtâ)q`\14:\18L'ìó´/á~V4\18H›Î\24[\20D=}‰q0±HŸ\7\24?Èf†u†cV\000\000\000gá¡á!ááá|aáà¹¡¡àöáãadáaá aááà áá ààá` áá'à¡ááãáá<àáà|¡áágá¡á!áaá|aáà¹¡ àöáãadáaá aááà`\1\000AÁ\1\000A\1\000Æ\1@\000\000\2€\000İ\1\000\1@\000\000†\000B\000Á@\2\000&\1\000\000€\000\000\25\000\000\1\23\000\2€Å\000€\000\1\2\000@\1\000\000\2\000À\1€\000\1Â\2\000Ş\000\000\3ß\000\000\000\23@\
+€Æ\000B\000\000\1\000\000f\1\000\000İ€\000\000\6AA\000\7\1C\2@\1€\000A\000\000\29€\1\27\1\000\000\23@\2€\6AC\000@\1€\1\29\000\1\27\1\000\000\23\000\1€\6AC\000@\1€\1\30\1\000\1\31\1\000\000\23\000\5€\6AA\000\7\1C\2@\1€\000†\1@\000À\1€\1\1\000\1\29\000\000\27A\000\000\23€\2€\5\1€\000A\2\000€\1\000\000Á\2\000\000\2€\000F\2@\000€\2€\1]\2\000\1\30\1\000\000\31\1\000\000\23\000\000€ß\000\000\1\31\000€\000\1\7\21 ¡\28È\0099%„LK°“ \11\3\16I\25:‰©x3÷Y7\2\000\000\000\1\000\1\1\5\7!\25\14÷\1)aN\4ÔMP\000Æôr>\14\000\000\000\4\5\000\000\000\1\12\5\16u\4\7\000\000\000\27\000\24\23\16\7u\4\8\000\000\000!\0066\29\16\22\30u\3\000\000\000\000\000\000ğ?\4\12\000\000\000]\20\7\18*\22\26\000\27\1\\u\4\7\000\000\000\6\1\7\28\27\18u\3\000\000\000\000\000\000\000@\4\16\000\000\000]\16\r\5\16\22\1\16\17*\1\12\5\16\\u\4\7\000\000\000\6\16\25\16\22\1u\4\2\000\000\000Vu\4\1\000\000\000u\4\9\000\000\000\27\26U\3\20\25\000\16u\4\5\000\000\000\19\28\27\17u\4\9\000\000\000\1\26\27\000\24\23\16\7u\000\000\000\000\17pi\23½í\7\31@ø\31ZGw7u\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 j}P|oåî\26ˆ×\26+•(;iI\
+\9\20 Å\24|\3t:â\25úËiXw\8t\0251\8t\25Ô\25&(\9v\25\18\9v\25\22±›\17/>ºB½4Æe\000*fZšØL\\{RfeúÜ\"bãVmI·Êa¨ÃÏR\1,\8\6 õ3\31I¦Ö¥Xş\8yH«-9\rs²±6\3\1\8\8 y\rº\25 ²\25Q\2Ô\6éò¨4¨XÍDæ*\15p£³ø2Ét…\29«C‹s-~V4\18×ô\24ë{ôr g¾\31£ˆ*\26º®5Ş›„\5h\000\000\000ë-m--,--ğ­-,umí,:-/­è-­-,¬--lì--¬,,-ìl--+/m-m/--0/-,ğm--ë-m--,­-ğ­-,umì,:-/­è-­-,¬--l¬,-¬ì,-ìl,-+/m-m/­-\29\2\000\1İ@\000\000Æ@A\000Ç\000Â\1\000\1€\000F\1@\000€\1\000\1]\1\000\1İ€\000\000Û@\000\000\23@\3€Æ\000@\000\000\1\000\1İ€\000\1X@Â\1\23\000\2€Å\000€\000\1\000\000A\2\000Á\2\000À\1€\000\6\2@\000@\2\000\1\29\2\000\1İ@\000\000Æ\000C\000\1A\3\000f\1\000\000İ€\000\000\25\000€\1\23@\000€Ÿ\000\000\1\23À\
+€\6\1C\000@\1\000\000¦\1\000\000\29\000\000FAA\000G\1Â\2€\1€\000ÁA\000\000]€\1[\1\000\000\23@\2€FC\000€\1\000\2]\000\1[\1\000\000\23\000\1€FC\000€\1\000\2^\1\000\1_\1\000\000\23€\5€FAA\000G\1Â\2€\1€\000Æ\1@\000\000\2\000\2İ\1\000\1]\000\000[A\000\000\23\000\3€E\1€\000Á\3\000À\1\000\000\1Â\3\000A\2\4\000€\2€\000V‚‚\4†\2@\000À\2\000\2\2\000\1^\1\000\000_\1\000\000\23\000\000€\31\1\000\1\31\000€\000\1\7\21 ´’û\17Yîêj\25g\12\8\16I\25£¥µLFSé9üĞ²\26˜ÙÔ\21ì)\18úÙ+cC\7\14#_Ü@Ià^¯m\2\000\000\000\1\000\1\1\11\7!\25\127]ób1aƒt¦\7qq(¶À'\23Œ’dI»i$ñ*FEÂÏ\29Xa©Dq´k5;\17\000\000\000\4\5\000\000\000=09,I\4\7\000\000\000'<$+,;I\4\
+\000\000\000&9=\22?(%<,I\3\000\000\000\000\000\000ğ?\4\12\000\000\000a(;.\22*&<'=`I\4\7\000\000\000:=; '.I\3\000\000\000\000\000\000\000@\4\16\000\000\000a,19,*=,-\22=09,`I\4\5\000\000\000/ '-I\4\4\000\000\000' %I\3\000\000\000\000\000\000\8@\4\14\000\000\000a-,/(<%=\22?(%`I\4\7\000\000\000:,%,*=I\4\2\000\000\000jI\4\9\000\000\000=&'<$+,;I\4\1\000\000\000I\4\5\000\000\000&9=gI\000\000\000\000\27pi\23L%9dÔÒóZó/£\27gßç\25²nx`—â™ \27rã+\12]cK5r³\7\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\16pi\23¯\2\25\24|ÅœA\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 79\8c1\15\9\20 \20?\0058,Îÿ\15õÛ7TìnãM*a.x¾~‰%e\8t\0256\8t\25\26ñBg½Š¶Y\22É\26Dòâ7\0003­§3_³ê\31K\9v\25\25\9v\25}\1&d\000+\8\6 \29ÚÎO©ÁÌ\26\000\15\8\8 Q\0193û\9¸\18zâÄ*\30ùSİ\rUV\22Sõ\17ÚOX-5{V4\18\17‰`\16‘\15+\26 ¶\5,\3\000\000\000455\000\31\000\000\1\31\000€\000\4\7\21 ¾İ**\21’=\000\0177I\22è>Y\"Ó\16Ç%ì\4:'\2\000\16I\25‘›}\127\000\000\000\000\7\7!\25ô\18Ô\9ÄH%3b?\11å\3\21eAJK\0233z÷/\1\000\000\000\4\6\000\000\000\000\31\3\31\0011\000\000\000\000\27pi\23ë\11\0242¡ÅÿiS|÷gæ\21ĞD\27¨Ä\20quˆ;Ã#%\0271û¹&KÅàh\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 \5çĞx˜z¶Lş\12\9\20 NŸãRxg¹_Xr9\0282ÈÇ<ê\3/fR\8t\0251\8t\25½àù'O\9v\25\26\9v\25òî€Gİ =l\1 \8\6 ;!Swu\15{\17\20}F9£ù#vzòx|Àö\9Ñ«ƒ\2,…l\27ÚÔ.\000\
+\8\8 7d…S½ÒÜ`ĞpV4\18\15\20˜\3‡ïQğ\"\6y§NP\9WŸU²\23d3õ-2#¾X54\000\000\000ÖĞĞ×Ğ–PĞĞPĞÍĞĞÕĞPĞ‘\16ĞĞQĞÑĞ6ĞĞĞÍPĞĞ•ĞPĞQÑĞ\17ĞÑĞ&\1\000\000]€\000\000…\000\000\1Á€\1\000\1\1\1\000F\1@\000GÁÁ\2\1\2\000ÁA\2\000]€\1¦\1\000\000€\000\000Æ\000@\000ÇÀÁ\1\1Á\000\000A\2\000İ€€\1\6ÁB\000@\1€\1€\1\000\000À\1€\000\29A\000\2\6\1C\000AÁ\000\000\29A\000\1\6AC\000@\1€\1€\1\000\000À\1€\000\29A\000\2\6\1C\000@\1\000\1\29A\000\1\6C\000@\1€\1€\1\000\000À\1€\000\29A\000\2\31\000€\000\7\7\21 'öù_lÂ‡\27v”±\3åÖó\7uY½}\8\000\16I\25Âw1t\3\000\000\000\000\000\1\2\1\3\7\7!\25£¤…B7‡¬\5ßöˆ7ÜG\127f­\1Ÿ~[·\127A\15\000\000\000\4\5\000\000\000“ŸŠ–ş\4\11\000\000\000ŒŸš‘“››šş\4\
+\000\000\000™›Š¬š°‹“ş\3\000\000\000\000\000\000ğ?\4\7\000\000\000‹“œ›Œş\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\4\7\000\000\000ŒŸš‘“ş\3\000\000\000\000\000\000>@\3\000\000\000\000\000\000I@\3\000\000\000\000\000\000\"@\4\
+\000\000\000Š‘‹–º‘‰ş\4\7\000\000\000“­’››ş\4\
+\000\000\000Š‘‹–³‘ˆ›ş\4\8\000\000\000Š‘‹–«ş\000\000\000\000\22pi\23;.$kv‘Tp\6ÀR)r’©>\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 ÎMB şşß}]„'z\30%\0055'\22p\127N³“xæ\19coú\000\9\20 ¨/@Zf%êj²Ú\17\27ıØ¬\21×8š\11!ÈµS\27\26ÙH…6ğ*˜>\9\6^\8t\0254\8t\25f \31Y`zLB\r\16¬(s¾h.{\9v\25\27\9v\25óQá/T$nU\24`*\1/\8\6 jÄe\31_\16\18D\22_\0178\18¨?œ^ğ\15¡š†\11\000\9\8\8 Ãt`\15\\\127V4\18\rKÂ\8æÀ¥:äzP>sp¬s˜›·UâSıSJ©F\1278\000\000\000Y\\\\\\\29\\\\\\İ\28\\\\º\\\\\\AÜ\\\\\25\\\\\\İÜ\\\\\28\\\\z]\\\\\1Ü\\\\Ù\\Ü\\œ\\\\]\29\\\\\29]]\\¦\1\000\000€\000\000Æ@A\1Ç€Á\1\6ÁA\1\29\1€\000İ@\000\000Æ@A\1Ç\000Â\1\19\1\000\1@\1\000\1İ€€\1\rÀ\000\000Æ@A\1Ç\000Â\1\19\1\000\1@\1\000\1İ€€\1MÀ€\000Æ@B\1\1\1\000\000@\1\000\000€\1€\000İ@\000\2Æ€B\1\1\1\000\000@\1\000\000€\1€\000İ@\000\2ÆÀB\1\6AA\1\7\1B\2A\1\3\000A\3\000\29\1€\1İ@\000\000Æ€C\1\1\1\000\000@\1\000\000€\1€\000İ@\000\2\31\000€\000\3\7\21 ımÖ\28\7\3\16I\25R¢v/—ï\31\4\3\000\000\000\1\2\1\3\000\000\7\7!\25²\28Ãq¤ÿË,©>¿1L\16\0221—Q­\\ıb-\7\15\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000”—˜Ÿˆú\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\20@\4\5\000\000\000—›’ú\4\11\000\000\000ˆ›”•—‰ŸŸú\4\
+\000\000\000Ÿ¨”´—ú\4\7\000\000\000ˆ›”•—ú\4\
+\000\000\000•™’¾•”ú\4\
+\000\000\000•™’·•ŒŸú\4\7\000\000\000—©–ŸŸŠú\3\000\000\000\000\000\000D@\3\000\000\000\000\000\000N@\4\8\000\000\000•™’¯Šú\000\000\000\000\24pi\23'Ó\9hg'“&\2\14‡mkéhyŸ9;flw}\12„ï\4õpèZbá×\12üÑ\9\9\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 ¿´Ë\20Õ\15VaH<\31xıó\4t£{sO#Ê›eè¥y#Ø£(]\
+\
+\9\20 5Š’aké¾K¢İÑL¼\8t\0259\8t\25Ô2ëTØâ0\rOò\127sñ·Iï¸\18!ˆ&úQÍÒGBwè‡,iR²hw\9v\25\30\9v\25ó\12Ó1»'y‡y›GÚ\6W\20\21\3·:\0080\23\1-\8\6 Õ·‚Oİ?äxc*§UÒ«‡C\000\r\8\8 †ôB;ºQ\1gX_€%¬}G\18\21 \12`zV4\18·ıİ,·øhpu\000\000\000•Ñ\17Ğv\16Õ\17\16QĞ¶‘Í\16\21\16QP‘ÑÑ‘‘6‘\r\16u‘\16‘Ñ‘\17Ñ‘\17\16‘ÌÑ‘‡\16Ñ\17‘\16‘\16‘C‘\16’’\16’\r\17\16‘\29\17‘P\1€\1\19\2€\2@\2€\2İ€\1ÍÁ\000\6ÂA\1@\2\000\2€\2\000\3À\2€\3\29B\000\2\000\2€\1A\2\2\000‚\1\000\29‚€\1A\2\000\000€\2\000\4Á\2\000\000a\2\
+€\26€@\4\23À\4€FCB\1€\3€\1Áƒ\2\000\1Ä\2\000\3€\1]C\000\000F\3C\1€\3\000\2À\3€\1\19\4€\2@\4€\2İƒ€\1ÍÃ\3\3\000\4€\1S\4€\2€\4€\2\29„€\1\r\4„\3]C\000\2\23€\4€FCB\1€\3€\1Áƒ\2\000\1\4\1\000\3€\1]C\000\000F\3C\1€\3\000\2À\3€\1\19\4€\2@\4€\2İƒ€\1ÍÃ\3\3\000\4€\1S\4€\2€\4€\2\29„€\1\r\4„\3]C\000\2`Bõ\127FBB\1€\2€\1ÁB\3\000\1Ã\2\000\2€\1]B\000\000\24\000B\4\23@\1€F‚C\1€\2\000\2À\2\000\3\000\3€\3]B\000\2\23\000\3€F‚C\1€\2\000\2À\2€\1\19\3€\2@\3€\2İ‚€\1ÍÂ\2\3\000\3€\1S\3€\2€\3€\2\29ƒ€\1\r\3ƒ\3]B\000\2\31\000€\000\8\7\21 à{]ÅG[p^‹©|~™~MnUB,^ñ>ö\22+·À\7+cg³Zéé\\\19\000\16I\25êàN\"\3\000\000\000\1\2\1\3\000\000\3\7!\25Y\127æ^ò\16İ9\15\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000d\127ghox\
+\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\0004@\3\000\000\000\000\000\000\"@\3\000\000\000\000\000\000\20@\4\
+\000\000\000~e\127ibNe}d\
+\3\000\000\000\000\000\000\000\000\4\7\000\000\000gYfooz\
+\3\000\000\000\000\000\000$@\3\000\000\000\000\000\000Y@\4\
+\000\000\000~e\127ibGe|o\
+\3\000\000\000\000\000\000>@\4\8\000\000\000~e\127ib_z\
+\1\000\000\000\r\9\20 ;š½*@ëƒ'í°¢.ãíï\12Û\14\9\20 ËƒÒ\11FOZuöÚ&{¿Zé\"c]`ê´Kên†\1F\8t\0255\8t\25x\\¯\23?¢‰\0147H \25¿oi0Q†˜Kk\9v\25\17\9v\25çÕ\21QŞÏè\21Bõ–\0247î‘\25:s\7\22†š×k€P)\rˆŠ:˜8¯\23\1-\8\6 ØH¼\4ÓÒlB5i>\4Åù^3\000\9\8\8 ğ\02255~V4\18\0317f\15¡Å×cıÓî5\8ZÉl\2°Œ/çBu7\11\000\000\00035u52uu5sµu\000]\000€\000\29@\000\000\6\000@\000\7À@\000f\000\000\000\30\000\000\000\31\000\000\000\31\000€\000\11\7\21 z\12<G&åşE\17¾!A9|¥wxk—\17oûçd R»HV;€'²ğ~}\2\2\16I\25®‡=8‹ViÙÀ\11\1\000\000\000\000\2\11\7!\25ĞÃ\5\1Î>Xhv\127Î|£–rC\4¨–l;y-0YWÏ\18…˜­!gH*mÛ›şm\4\000\000\000\4\5\000\000\000¶º¯³Û\4\11\000\000\000©ºµ¿´¶¨¾¾¿Û\4\
+\000\000\000¼¾¯‰µ¿•®¶Û\4\7\000\000\000©ºµ¿´¶Û\000\000\000\000\23pi\23\9\14\2QØoí#¬)İ\29\11¾\000¿²b[\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\26pi\23…ÊÊGæ—a!˜]€\6¾Fp?^\3ù2\8Yhkß˜+\8´>yZ\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 jIX:¹Ğ3V6œ\2¬Sˆb\\»·\2hØ¬\11?¿únI]½bI\3\9\20 ¬s!d¾·dg¬<]Uh>\r\30Ü·ÂY†ÜP2$E¦\1¼…\31;Q«¾\31”;íb™\8t\0259\8t\0257|F._ş\
+\"Ìİü@µÜ-gÉ¤I`W\28r$\6ùÚ\20\18\2ÖwølÆ:•\9v\25\30\9v\25|K.2±=ú\16›âg%(Ÿ¶\20\rù±\19\4»\0201\1 \8\6 WVovö¥#\14v?k\3ÊZ´]ˆu.³œ@k\8x‘\21KO´ír\000\14\8\8 M›j\
+\5;¬\18#‰1]JÇÆ\21<·ò@‚‡<\127Õ~V4\18L,†_mÁ5{÷Œû<^.\\We.ü5\\îÆ_j\000\000\000ĞÕÕÕ”ÕÕÕT•ÕÕ3ÕÕÕÈUÕÕÕÕÕTUÕÕ\20•ÕÕóÔÕÕˆUÕÕPÕÕÕ\20\21ÕÕÔ”ÕÕ³ÔÕÕHUÕÕ\16ÕÕÕÔÔÔÕ””ÕÕsÔÕÕ\8UÕÕĞÔUÕ””ÔÕT”ÕÕ\20TÔÕó×ÕÕÈTÕÕÔ€\000Á\1\000ÁA\000\000\1\2\2\000f\2\000\000]\000\000†AB\1‡B\3Î\000\000\000\1ÆAB\1ÇÂ\3\14Â€\000İ\000\1\4\2\000\1\25€\3\23À\000€\16\2\1\3@\2\000\2\2‚\3\23€\000€\16\2\3P\2\2\3€\2\000\2\25\000\000\1\23€\000€Ó\2€\4ˆÀ‚…\23\000\000€ˆ@‚…\25@€\1\23€\000€Ó\2\000\5ˆÀ\2†\23\000\000€ˆ€\2†ÆBB\1ÇBÃ\5\6ƒC\1\29\3€\000İB\000\000ÆBB\1ÇÂÃ\5\1\3\000\000A\3\4\000İ‚€\1\6CD\1@\3€\5€\3\000\000À\3€\000\29C\000\2\6ƒD\1AÃ\4\000\29C\000\1\1\3\000\000@\3\000\4\3\000\000!Ã\2€\6ÄB\1\r\000\4\000\6\4C\1M\000„\000\6\4E\1@\4€\5€\4\000\000À\4€\000\29D\000\2\6„D\1A„\1\000\29D\000\1 ƒü\127\6ƒD\1@\3€\2\29C\000\1\6CE\1@\3€\5€\3\000\1À\3€\1\29C\000\2\31\000€\000\5\7\21 \22löFøĞ.\5\3\25A\30#e¨Zü‹C6kwò!z»\23Q\20\2\16I\25ìí1\r~…¨+¦ï9\3\000\000\000\1\2\1\3\000\000\000\7!\25éF$\22\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000'<$+,;I\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000$@\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000I@\4\5\000\000\000$(=!I\4\4\000\000\000(+:I\4\3\000\000\0001zI\4\3\000\000\0000zI\4\11\000\000\000;('-&$:,,-I\4\
+\000\000\000.,=\27'-\7<$I\4\7\000\000\000;('-&$I\3\000\000\000\000\000\000\"@\4\
+\000\000\000=&<*!\r&>'I\4\7\000\000\000$\26%,,9I\3\000\000\000\000\000\000Y@\4\
+\000\000\000=&<*!\4&?,I\4\8\000\000\000=&<*!\0289I\000\000\000\000\26pi\23Î0¼@yÛŠ\30…@¥\19ÓkhSœd¼{Ï\7l)\15#[\20\31ìøz\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 ïqÄ4¡ÿÔ&â¡TnqŒ&}j\
+\9\20 ›e\26tÿá£w&Ğ\27_\8t\0257\8t\25ck\28>·ÄO2kê$z|·\16o»®\27^/X\9Êæ\16W²\9v\25\26\9v\25Ï‰{\24”»ƒQ\1+\8\6 îÿ\7fšDv[\000\
+\8\8 JÈ¶\7\28Í!\12\127V4\18¸,%Y`…”,p\19ÖW§é\r\1…iSRµ*F\24+\16\11\\\000\000\000\9\12\12\12M\12\12\12L\12\12ê\12\12\12\17Œ\12\12I\12\12\12Œ\12\12ÍL\12\12*\r\12\12QŒ\12\12‰\12\12\12ÍÌ\12\12\rM\12\12j\r\12\12‘Œ\12\12É\12\12\12\r\r\r\12MM\12\12ª\r\12\12ÑŒ\12\12\9\rŒ\12MM\r\12M\12\12Á\1\000&\2\000\000\29\000\000“\000\000\1P\1\1†ÁA\1‡\1B\3ÆÁA\1ÇAÂ\3\000\2\000\1İ\1\000\1\000\000\1\2ÆÁA\1ÇÂ\3\6ÂA\1\7BB\4@\2\000\1\29\2\000\1İ\000\000ÏÁ\1\2\6ÂB\1A\2\3\000€\2\000\000À\2€\000\29B\000\2\6BC\1A‚\3\000\29B\000\1\1\2\000\000@\2€\2\2\000\000!B\2€\r€\1\000MÀ\000\6ÃC\1A\3\3\000€\3\000\000À\3€\000\29C\000\2\6CC\1Aƒ\1\000\29C\000\1 \2ı\127\6BC\1A\2\4\000\29B\000\1\6BD\1A\2\3\000†ÂA\1‡\2B\5ÆÂA\1ÇBÂ\5\000\3\000\1İ\2\000\1‚\000\000‚‚\1‚\2\000ÆÂA\1Ç‚Â\5\6ÃA\1\7CB\6@\3\000\1\29\3\000\1İ‚\000\000ÏÂ‚\1ÍÂ‚\000\29B\000\2\31\000€\000\11\7\21 ê\1c<³*\127¡|«`\16Ò~\27ç\31A5/à\22}O‰Ck\26‹+Z©\\Î\r\16\6\16I\25xºƒctCßd07ÇjGDÿ{\8ÿb6\rïU\0095D\7b\3\000\000\000\1\2\1\3\000\000\8\7!\25(JÓ*\127\12¾i¾Ä¦3kˆM;Ò@ MvñË\12Ì\râgBTö$\30µ\26\18\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000\4\31\7\8\15\24j\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000$@\4\5\000\000\000\7\11\30\2j\4\4\000\000\000\9\5\25j\4\4\000\000\000\24\11\14j\4\4\000\000\000\25\3\4j\4\
+\000\000\000\30\5\31\9\2.\5\29\4j\3\000\000\000\000\000\000\000\000\4\7\000\000\000\0079\6\15\15\26j\3\000\000\000\000\000\000Y@\4\
+\000\000\000\30\5\31\9\2'\5\28\15j\3\000\000\000\000\000\000I@\4\8\000\000\000\30\5\31\9\2?\26j\000\000\000\000\20pi\23”\9!k6»Å%p-S$\127\11„'êKğ$\17ªş\4\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 Ê7w\\<M?IŸi\14p}Z\24qø\14\9\20 !pØ4gdº>\22\29z\27ÛûÊo+©¶uPíK!\127EJ|Ğ\8t\0256\8t\25)Ğ\12\24°ŸØ^ÑÜ5\15Ksæ\14.½Zq±²q¦\9v\25\18\9v\25ÌUÖK\\iğ+>·á\31Œ4#\1ŒïF!‰¡H\27¬6–FÀ‚\26Mptâ>“}’&\1+\8\6 ¬Á!\0083ç \22\000\9\8\8 C÷ìhU|V4\18ª[§'ç.Ò5\5M?Ö\4^\29p\000\000\000PUUU\20UUUÔ\21UU³UUUHÕUU\16UUUÔÕUU”\21UUsTUU\8ÕUUĞUUU”•UUT\20UU3TUUÈÕUUUUUTTTU\20\20UUóTUUˆÕUUPTÕU\20\20TUÔ\20UU”ÔTUsWUUHÔUU\19”\20T\18T—W\000\000]\000\1PÀ\2†ÁA\1‡\1B\3ÎÁ€\000\000\1@\3Ä\1\000\2\25@\1\3\23À\000€Ğ\1\2\000\2\000\2PÂ\1\3\23€\000€Ğ\1\1\3\16Â\2@\2\000\2\6CB\1Aƒ\2\000\29C\000\1\25\000\000\1\23@\000€“\2\000\4\23\000\000€€\2\000\4\25@€\1\23@\000€Ó\2€\4\23\000\000€À\2€\4\6ÃB\1A\3\000\000€\3\000\000À\3€\000\29C\000\2\6ÃB\1Aƒ\000\000€\3\000\1À\3€\1\29C\000\2\6CB\1Aƒ\2\000\29C\000\1\1\3\000\000@\3€\3\3\000\000!\3\4€\r€\2\000MÀ‚\000€\2\1ÎÀ‚\1\6\4C\1A\4\000\000€\4\000\000À\4€\000\29D\000\2\6\4C\1A„\000\000€\4\000\1À\4€\1\29D\000\2\6DB\1A„\1\000\29D\000\1 Cû\127\6CB\1AC\3\000\29C\000\1\6ƒC\1A\3\000\000ƒ\000\000ƒ@\7ÍÃ€\000ĞƒÀ\7\29C\000\2\6ƒC\1Aƒ\000\000ƒ\000\000ƒ@\7ÍÃ€\000ĞƒÀ\7\29C\000\2\31\000€\000\4\7\21 „Æ—;i«à\3`ì*o4fp\26;ˆ\22\19¬_\17~\20\2\16I\25ì:¥\4÷[{U/y¡W\3\000\000\000\1\2\1\3\000\000\8\7!\0255\19]u»­ÄXÕ“ÜQ¾´¥\16gäZ\31•\22÷\30.)ˆOúaíE ÑˆH\15\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000–•šŠø\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000$@\4\5\000\000\000•™Œø\4\4\000\000\000™š‹ø\4\7\000\000\000•«”ˆø\3\000\000\000\000\000\000Y@\4\
+\000\000\000Œ—›¼—–ø\4\
+\000\000\000Œ—›µ—ø\3\000\000\000\000\000\000I@\4\8\000\000\000Œ—›­ˆø\000\000\000\000\27pi\23-I\\)æ2c\29â–@şZævRkµ2È=>hå‰¸,Wì\2rBœ\5\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 ñ²”\11UöK\30Íy<|\21œ\25g\30\8\9\20 O§\7\0258\9t\0255\8t\25ì\16ü\12‡,ée1qÖ\14a\9e¹áËaù\9v\25\18\9v\25ÑÏA)í €?|\20eBñ™hj˜\25{LÆû$ ğ 2P9ÂXæcØ`,~\r\1#\8\6 Y¾\16'ì\5p\9ôğW¨Åu\19\16°ÓOŒãƒ>™x\
+\31e¦\31nY]À:¯\20$\6\000\9\8\8 Ø¥¿5\5}V4\18Ä¶»B†è\20\5ÍY Ub\24Å'?Êàf…\000\000\000\000\5\5\5D\5\5\5„E\5\5ã\5\5\5\24…\5\5@\5\5\5„…\5\5ÄE\5\5#\4\5\5X…\5\5€\5\5\5ÄÅ\5\5\4D\5\5c\4\5\5˜…\5\5À\5\5\5\4\4\4\5DD\5\5£\4\5\5Ø…\5\5\000\4…\5DD\4\5„D\5\5Ä„\4\5#\7\5\5\24„\5\5CÄD\4B\4Ç\7‹„\5\5X„\5\4U„Å\7ƒÄD\4‚\4G\6ËÁ€\000\000\1@\3Ä\1\000\2\25@\1\3\23À\000€Ğ\1\2\000\2\000\2PÂ\1\3\23€\000€Ğ\1\1\3\16Â\2@\2\000\2\6CB\1Aƒ\2\000\29C\000\1\1\3\000\000\25\000\000\1\23@\000€“\2\000\4\23\000\000€€\2\000\4\25@€\1\23@\000€Ó\2€\4\23\000\000€À\2€\4FÃB\1\3\000\000Íƒ\000\000ĞƒÀ\7\15„\2\6Î\3„\7\rÄ€\000\16„@\8OÄ\2\6\14D\4\8]C\000\2FÃB\1ƒ\000\000Íƒ\000\000ĞƒÀ\7\15„\2\6Í\3„\7\rÄ€\000\16„@\8OÄ\2\6\rD\4\8]C\000\2Mƒ\000\000PƒÀ\6ƒ\000\000€@\7\000\000€\6MÃ€\000PƒÀ\6Ã€\000Ğ€@\7@\000€\6FCB\1ƒ\2\000]C\000\1A\3\000\000€\3€\3Á\3\000\000aƒ\4€\14€\2\000NÀ‚\000€\2\1ÍÀ‚\1\26\000\4\6\23@\2€F\4C\1\4\000\000À\4\000\000\000\5€\000]D\000\2F\4C\1„\000\000À\4\000\1\000\5€\1]D\000\2FDB\1„\1\000]D\000\1`Ãú\127FCB\1C\3\000]C\000\1FƒC\1\3\000\000À\3\000\000\000\4€\000]C\000\2FƒC\1ƒ\000\000À\3\000\1\000\4€\1]C\000\2\31\000€\000\3\7\21 4è\6Q\21\9\16I\25£—,)vÙ 9—\3{!ï](N–ÉÁkç<=zÕÁ\000/$ö?y\3\000\000\000\1\2\1\3\000\000\3\7!\25.€\17VÁâEi\15\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000pks|{l\30\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000$@\4\5\000\000\000s\127jv\30\4\4\000\000\000\127|m\30\4\7\000\000\000sMr{{n\30\3\000\000\000\000\000\000Y@\4\
+\000\000\000jqk}vZqip\30\4\
+\000\000\000jqk}vSqh{\30\3\000\000\000\000\000\000I@\4\8\000\000\000jqk}vKn\30\000\000\000\000\27pi\23ÖE‡iÑ’\0259\20Å5\15o¾‘\008699'n\"öI\30Óµ\14`ŒÙ@FÈµ\127\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 3\15’hğ+—\15Ş\000\9\20 Ûô¶O\4gˆ[\127·$\30Â;*sK\14ş-d\20İtB&°[â)»@Ñ\8+\11\29\9t\0253\8t\25½HÀCu)\0024\20ŒÉX\17\8v\25\26\9v\25@SPRÆD,\19\1*\8\6 ©Ê¶S­ŒÎEd;0Y\000\1\8\8 Œ\22ı`'µb\19PìP\26^¨k\19\2CøvCh^:’·ı{òn\6/gû\16Œ\127V4\0183Îƒl(ƒÿ[ŸpI~Ü\26Œ—ÜPÒÅ %a\6=[™\000\000\000‰ŒŒŒÍŒŒŒ\rÌŒŒjŒŒŒ‘\12ŒŒÉŒŒŒ\r\12ŒŒMÌŒŒªŒŒÑ\12ŒŒ\9ŒŒŒMLŒŒÍŒŒêŒŒ\17\12ŒŒIŒŒŒŒÍÍŒŒ*ŒŒQ\12ŒŒ‰\12ŒÍÍŒ\rÍŒŒM\rŒªŒŒ‘\rŒŒÉ\12Œ\rMŒMÍŒŒŒêŒŒÑ\rŒŒ\9\12ŒMÍŒÎŒŒÍŒŒ*ŒŒ\17\rŒŒJB\1ÇÁÂ\3\6‚B\1\7\2C\4F‚B\1GBÃ\4Â€\000]‚\000\1†‚B\1‡BC\5Î‚\000\000‚\000\1P‚‚\4\29\2\000\1İ\000\000\6‚B\1\7‚C\4F‚B\1GÂÃ\4‚\000\000Á‚\000\000]‚€\1†‚B\1‡ÂC\5ÎÂ€\000\1ƒ\000\000‚€\1M‚‚\4\29‚\000\1N\2\000\1B€\1O‚‚\4„\2€\000\24\000D\3\23\000\000€S\2€\4\6CD\1Aƒ\4\000€\3\000\1À\3€\1\29C\000\2\6ÃD\1A\3\5\000\29C\000\1\1ƒ\4\000@\3\000\2\3\000\000!\3\14€\25@\2‰\23€\000€\14Äƒ\3ˆ\000„Š\23@\000€\rÄƒ\3ˆ\000„Š\25\000\000\1\23@\2€\6„B\1\7„E\8F„B\1GÄÅ\8†DE\1]\4\000\1\29„\000\000\15\4\4\4\2\4\000\23\000\2€\6„B\1\7„E\8F„B\1GÄÅ\8†DE\1]\4\000\1\29„\000\000\15\4\4\4\2\4\000\25@€\1\23@\2€\6„B\1\7\4F\8F„B\1GÄÅ\8†DE\1]\4\000\1\29„\000\000\15\4\4\4Î\2„\000\23\000\2€\6„B\1\7\4F\8F„B\1GÄÅ\8†DE\1]\4\000\1\29„\000\000\15\4\4\4Í\2„\000\6DF\1A„\4\000€\4\000\5À\4€\5\29D\000\2\6ÄD\1@\4€\2\29D\000\1 Cñ\127\6ÃD\1Aƒ\6\000\29C\000\1\6ÃF\1Aƒ\4\000€\3\000\1À\3€\1\29C\000\2\31\000€\000\11\7\21 A\11“\18\30Oı\30ÓÉ\9\16U—\\k±W\11g\20\29Zb\28Üˆ~}\4[*½ç\0166\20\7\16I\25á?‹\3D\15º*V\127T%\9õí\22”û\
+E´'À8\3\000\000\000\1\2\1\3\000\000\7\7!\25×ci\127Fß½4ı¦u\20\6Ëd\16ïª˜rË\
+¼j\28\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000°«³¼»¬Ş\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\3\000\000\000\000\000€v@\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000$@\3\000\000\000\000\000\000\28@\4\5\000\000\000³¿ª¶Ş\4\4\000\000\000º»¹Ş\4\5\000\000\000¿ª¿°Ş\4\4\000\000\000¿¼­Ş\4\5\000\000\000­¯¬ªŞ\4\4\000\000\000®±©Ş\3\000\000\000\000\000\000ğ¿\4\
+\000\000\000ª±«½¶š±©°Ş\3\000\000\000\000\000\000\000\000\4\7\000\000\000³²»»®Ş\3\000\000\000\000\000\000Y@\4\
+\000\000\000¿°¹²»³±¨»Ş\4\4\000\000\000½±­Ş\4\4\000\000\000¬¿ºŞ\4\4\000\000\000­·°Ş\4\
+\000\000\000ª±«½¶“±¨»Ş\3\000\000\000\000\000\000I@\4\8\000\000\000ª±«½¶‹®Ş\000\000\000\000\17pi\23\23.˜N\\ª,4¸uj\23\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 ¾#2I¨÷Õ<¥\
+\9\20 .kÀ\rÇ½¢K©\8r\19m\9t\25:\8t\25Ù›wµX\22\6¦¬z*\28®¾*;\\Ù\9ªÑga‘X< 6ŠÇkˆè\18øJ?\\6\8v\25\28\9v\25kçxã0\8~ñ ®\9Ü…YD\1#\8\6 xÍìbL¢<Kl>÷uÄ¤é1Ísyig®\24çwñMŒ´¥B\17_„U‚’n@\000\9\8\8 @ÊDc¶~V4\18×¼Wf\"î¬\3\16àMZ~iÒ\16>œk.K<'dÈ\000\000\000³¶¶¶÷¶¶¶7ö¶¶P¶¶¶«6¶¶ó¶¶¶76¶¶wö¶¶·¶¶ë6¶¶3¶¶¶wv¶¶·÷¶¶Ğ·¶¶+6¶¶s¶¶¶···¶÷÷¶¶\16·¶¶k6¶¶³·¶¶÷÷·¶7÷¶¶P·¶¶«7¶¶ó·¶¶77·¶w÷¶¶´¶¶ë7¶¶3·6¶ww·¶·ô¶¶÷´´¶\16´¶¶+7¶¶s·6¶·ô´¶÷ô¶¶74´¶P´¶¶k7¶¶³´6¶÷t´¶7ô¶¶w´¶¶µ¶¶«4¶¶ø´¶·ùô´7B€\1‚\2Ï‚\000\1\15Ã€\1Í\2ƒ\5\15\3\000\000Î\2ƒ\5\15C€\000Î\2ƒ\5\14ƒ\000\2\15\3\3NÃ€\2OC\3\3\1\2ÏC\2Ã\3\7Ïƒ\000\1Ã\3\7ÏÃ€\1Ã\3\7Ïƒ\3\5\15Ä‚\6Î\3„\7\15\4\3\5OD‚\6\14D\4\8Ğ\3„\7\15Ä\2\6O„ƒ\4\14D\4\8O\4\3\5D‚\6N„„\8\16D\4\8F\4C\1GDÃ\8†\4C\1‡„C\9Æ\4C\1ÇÄÃ\9\14E\000\8İ„\000\1\6\5C\1\7ÅC\
+N\5€\7\29…\000\1Ğ\4…\9\4\000\1]„\000\000†\4C\1‡\4D\9Î\4€\7\14\5€\7Ï\4…\9\14E\000\8NE\000\8\15E\5\
+Í\4…\9„\000\1ÎÄ\3\000\14\5„\000Ï\4…\9\4\5\000\000ÛA\000\000\23\000\000€Á\1\000\000\24@D\4\23\000\000€Ó\4€\9F…D\1Å\4\000À\5\000\000\000\6€\000]E\000\2F\5E\1E\5\000]E\000\1AÅ\4\000€\5\000\3Á\5\000\000a…\14€\25À„‰\23@\000€\14\5†\8\23\000\000€\r\5†\8\25À\3\000\23€\2€F\6C\1GÆÅ\12†\6C\1‡\6F\rÀ\6\000\
+\6\000\1]†\000\000OF\6\9NF†\7ˆ@\6‹\23@\2€F\6C\1GÆÅ\12†\6C\1‡\6F\rÀ\6\000\
+\6\000\1]†\000\000OF\6\9MF†\7ˆ@\6‹\25\000„\000\23€\2€F\6C\1G†Æ\12†\6C\1‡\6F\rÀ\6\000\
+\6\000\1]†\000\000OF\6\9NF\6\8ˆ@†Œ\23@\2€F\6C\1G†Æ\12†\6C\1‡\6F\rÀ\6\000\
+\6\000\1]†\000\000OF\6\9MF\6\8ˆ@†ŒFÆF\1Æ\4\000Æ†E\1\6GF\1]F\000\2F\6E\1†\2\000]F\000\1`Åğ\127F\5E\1\5\7\000]E\000\1FEG\1Å\4\000À\5\000\000\000\6€\000]E\000\2\31\000€\000\5\7\21 Ğô§NÆîO°É\"\5È?ç*ÜhY|\27±À}«pï(\29\5\16I\25ø6\26BL¬.fF×ôhDÙV\r\3\000\000\000\1\2\1\3\000\000\5\7!\25\
+|Ş\26\18jÊ\6\"RÔtñóÏh\30\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000ËĞÈÇÀ×¥\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000\28@\3\000\000\000\000\000€v@\3\000\000\000\000\000\000 @\3\000\000\000\000\000\000$@\3\000\000\000\000\000\000\"@\4\5\000\000\000ÈÄÑÍ¥\4\4\000\000\000ÁÀÂ¥\4\5\000\000\000ÄÑÄË¥\4\4\000\000\000ÄÇÖ¥\4\5\000\000\000ÖÔ×Ñ¥\3\000\000\000\000\000\000ğ¿\4\
+\000\000\000ÑÊĞÆÍáÊÒË¥\3\000\000\000\000\000\000\000\000\4\7\000\000\000ÈöÉÀÀÕ¥\3\000\000\000\000\000\000Y@\4\2\000\000\000İ¥\4\4\000\000\000ÆÊÖ¥\4\4\000\000\000×ÄÁ¥\4\2\000\000\000Ü¥\4\4\000\000\000ÖÌË¥\4\
+\000\000\000ÑÊĞÆÍèÊÓÀ¥\3\000\000\000\000\000\000I@\4\8\000\000\000ÑÊĞÆÍğÕ¥\000\000\000\000\27pi\0233±XJs†>)P5\
+s{-¼ÖO5«$m^K8õ\19ßÄü8¼\4»8\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 \1ğ8sÎ\8\9\20 âC“YT\9t\0254\8t\0250•\ra¡G\2F\11¢(\15¾ğC;G\8v\25\28\9v\25‹-ê.‹”J_dJ¹s›õ`'\1.\8\6 –@6@Èw\
+\6ÕÓLoë“a2Jò°næ:˜#\15œk8\000\r\8\8 \15>¶\22Ù\rE\22\18<q$Ë:\24PKú\14ß}V4\18‰ÓK+\0172­\12dAD'=$po¤\11\22\000\000\000Úßßßßßß^Ÿßß9ßßßÂ_ßß™_À\000GÀÀ\000€\000€\000Ğ\000A\000€\000\1À\000€\000\17\1A\000\16AA\2İ€\000\1\000\1€\000QAA\000\29\000\1@\1\000\1€\1€\1À\1\000\2_\1\000\2\31\000€\000\8\7\21 t¼J\5\18·¦Qf\22Îf2­@£y\1~ñC¸\21½AÙ\31\7ÄºqŒ9\25=ãğÇ%\8\3\16I\25T±#C¹Ä\20\21\2\000\000\000\1\2\000\000\000\7!\25Ÿ£Ô1\6\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000 »£¬«¼Î\4\5\000\000\000£¯º¦Î\4\6\000\000\000¨¢¡¡¼Î\3\000\000\000\000\000\000ğ@\3\000\000\000\000\000\000p@\000\000\000\000\26pi\23˜4¾\28³ã†>¯=cOqB\0033Æ\31øbzx{\31½ĞıAS[Ğ!\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 M’ÊNĞ\"\19\29ß¼”(Õ‰#C‚\8ÒIC\3\9\20 !yß<\16i¶1lĞ6-ÕR\27\18ü]SF\"ıSuÖ¼îN~&f\31ø\27\28ÔĞ‘\2Z\9t\0259\8t\25†92=\
+¸îv°ŞçF`rocİUÍ\24„ƒ±sS|Ó{¹–\9\r¤ÿ\20}}\8v\25\26\9v\25yîúk\1È9\1/\8\6 Ç€Å:ÑÀÛVW¿=eœ\
+é}SÉ­ éèr7\000\14\8\8 uB]ùQ)iE¢<1J•¨oö¯|/hŸ&H}V4\18÷—¬Bô\")A¤mƒg}ÑŞ\127ÿÚ\0238\21\000\000\000MHHH\9HHHÉ\8HH®HHHUÈHH\r\000\000\000€\000\000Á@\000\000&\1\000\000]€\000\000…\000\000\000ÁÀ\000\000\1A\000\000f\1\000\000€\000\000Ï\000A\000\15AÁ\000Í\000\1Í€€\1ß\000\000\1\31\000€\000\11\7\21 ŞCNcÜ0åPØÏ\28\"1À!_•Çî]}Ï1\31ÜÓÑ\22\15¶éI~múX\6\9\16I\25Ö6¯\4P.Ö/ª•¸8rA˜\2£÷ƒP”~+pL\19\6\24:\17.\1\000\000\000\1\2\9\7!\25‘µÚ7cÏ¹\29ƒ€Ñ\8ùTk^ƒ!Q\\øV´Wñì\23!xDz\29\6\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000-6.!&1C\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000ğ@\3\000\000\000\000\000\000p@\000\000\000\000\19pi\23n¾ö \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 \31<A À\3\9\20 Å¨Msİe\\ˆçæ2\27Ká?9\0176”éBW#rg? ü\"Xo\9Ş\19‘x\18\9H\9t\0253\8t\25\21+/S\9\11–6’´Mis\8v\25\30\9v\25¢ò\18åá˜\r\26y-Ò4÷D4œE~Œ\30f[\1+\8\6 í”€!ÜŒTF\000\12\8\8 Ú=…uõø\15\4õd„júyÆ\21Ã}V4\18¿\
+ocú¹RO\7÷›gÚUP#3Hd\5A\000\000\000ÆÃÃÃ‚ÃÃÃBƒÃÃ%ÃÃÃŞCÃÃ†ÃÃÃBCÃÃ\2ƒÃÃåÂÃÃCÃÃFÃÃÃ\2\3ÃÃÂ‚ÃÃ¥ÂÃÃ^CÃÃ\6ÃCÃÂ\1\1\000AA\000\000A\1\000æ\1\000\000İ€\000\000\6A\1\7ÁA\2FA\1G\1Â\2€\1\000\2ÎÁ€„ÏÁ\1…ÏÁÂ\3\000\1À\000\000\3€\1\000\2Ğ\1C\1\000\1À\1\000\2\17\2C\1\16BC\4İ\000\1\000\2\000\2QBC\1\29‚\000\1F‚C\1€\2\000\000À\2€\000]\2\1\000\3€\2NC\2\3\29ƒ\000\1\26À\000\6\23À\2€\000\3€\2Nƒ‚\3\29ƒ\000\1\26À\000\6\23€\1€\000\3€\2NÃ\2\4\29ƒ\000\1\26À\000\6\23@\000€\3\3€\000\31\3\000\1\3\3\000\000\31\3\000\1\31\000€\000\6\7\21 ıÇ·bSD‡]\
+ê¼R@Êk\14\4\16I\25\31\21ì%—K`\"êZc=ÔM±\26%îR5\3\000\000\000\1\2\1\3\000\000\5\7!\25ïÆAH÷\"Jz\3ÙAI{å§#\15\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000®µ­¢¥²À\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000€V@\4\5\000\000\000­¡´¨À\4\6\000\000\000¦¬¯¯²À\4\4\000\000\000¡¢³À\3\000\000\000\000\000\000Y@\3\000\000\000\000\000ào@\3{\20®Gáz„?\3\000\000\000\000\000\000ğ@\3\000\000\000\000\000\000p@\4\12\000\000\000§¥´ƒ¯¬¯²’‡‚À\000\000\000\000\19pi\23ğmÂj\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 Vb\23n¼\000\26PHD\0046êY·A|½14BeIcó„¸$:º¶-¢¹hvş\3\9\20 \18¬µC‹|QcD\
+\0123\28p¿\17uA$W\7uŒ\25£_/1…äœVç\15ÂJÄp\7\27º\9t\0254\8t\25èv<>¯²ŒxÊÀ“\rv3Ä`a\8v\25\25\9v\25úšg\4\1+\8\6 \15Ô\27Rñ\127c\000\15\8\8 ÌÔ›kš5„\25LlE^H’Í\31İšÍ|?ñı\2‚L„M}rV4\18\"3ªi’\000ì6†kK0f=¶\28®p«Hû¬o\7m²B6QĞÚy€‘\12^TÂ\4\1P\000\000\000x}}}<}}}ü=}}›}}}`ı}}8}ı}üı}}¼½}}|||}\27|}} ı}}û=<|úı<|³=ış²½}ù²=¿|àı}|=}}|ûı?|¾}ı}@\000\1\000\000\000Õ\000\000\000\1\1\000\000¡À\11€†ÁB\1ÇA\1\000Ç\1À\3\7B\1\000\7‚@\4\1\1FBA\1G‚Á\4‡B\1\000‡\2C\5BC\5]‚\000\1†BA\1‡‚A\5ÇB\1\000Ç\2Ã\5ÑBÃ\5Ğ‚Ã\5‚\000\1ÆBA\1Ç‚Á\5\7C\1\000\7\3C\6\17ƒC\6İ‚\000\1\6CA\1\7ÃC\6NC\2\3\29ƒ\000\1Y\000ƒ\000\23À\2€\6CA\1\7ÃC\6Nƒ‚\3\29ƒ\000\1Y\000ƒ\000\23@\1€\6CA\1\7ÃC\6NÃ\2\4\29ƒ\000\1\25\000ƒ\000\23\000\1€\6ƒB\1C\3\000\000\29C\000\1\3\3\000\000\31\3\000\1 €ó\127†€B\1Ã\000\000\000@\000\1ƒ\000€\000Ÿ\000\000\1\31\000€\000\11\7\21 gğĞ+=9A?Åón\r1±d9³l\5 ­,4\"+LÌ=¾\28|N¼\000¶=\14\7\16I\25 /\
+kˆÕQ)\24sĞ:l›OIĞg\31Iõ\r7\3\000\000\000\1\2\1\3\000\000\000\7!\25S´£\22\16\000\000\000\3\000\000\000\000\000\000ğ?\4\6\000\000\000ŠŸœ’›ş\3\000\000\000\000\000\000\000@\4\7\000\000\000‹“œ›Œş\3\000\000\000\000\000€V@\4\5\000\000\000“ŸŠ–ş\4\6\000\000\000˜’‘‘Œş\3\000\000\000\000\000\000Y@\3\000\000\000\000\000ào@\3{\20®Gáz„?\4\11\000\000\000•››­Œ››ş\4\12\000\000\000™›Š½‘’‘Œ¬¹¼ş\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000ğ@\3\000\000\000\000\000\000p@\4\4\000\000\000Ÿœş\000\000\000\000\27pi\23§{G\25uçM\000\6cÀa-ç’IÛ$\4\29´Ók*(”\2QI×FS\6¤F$\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 ü\18ú\1:±}v\15\9\20 *\5Ó?úóP9Šš\21\4K\15h\22:Îdúšö\8™\9t\0257\8t\25*7é\25\22aë\24ÃU\
+PÒçUO“«y?J€£z|›T“\8v\25\16\9v\25T\3×,éÌÂ5ËW»3·à\"eßÚt\31i†\31 ú¦\1\31¿µ8\1(\8\6 u¿äI\000\
+\8\8 Yş‹6qÒŞKn~V4\18véHWA\31öZñnş*\1„^[Şj\5C\8©Ì\15˜\000\000\000knnn/nnnï.nnˆnnnsînn+nînïînn¯®nnooon\8onn3înnè./oéî/o .îí¡®nê¡.¬oóîno.nnoèî,o­nînó.noûnnnwî.oy.nîínnnñnnoïnnn»nnn n®ooonnÏ®eîè¯,o©/on©o®mi,oniì.jóoïo(,/oG‚Á\4‡B\1\000‡\2C\5BC\5]‚\000\1†BA\1‡‚A\5ÇB\1\000Ç\2Ã\5ÑBÃ\5Ğ‚Ã\5‚\000\1ÆBA\1Ç‚Á\5\7C\1\000\7\3C\6\17ƒC\6İ‚\000\1\6CA\1\7ÃC\6NC\2\3\29ƒ\000\1Y\000ƒ\000\23À\2€\6CA\1\7ÃC\6Nƒ‚\3\29ƒ\000\1Y\000ƒ\000\23@\1€\6CA\1\7ÃC\6NÃ\2\4\29ƒ\000\1\25\000ƒ\000\23\000\1€\6ƒB\1C\3\000\000\29C\000\1\3\3\000\000\31\3\000\1 €ó\127†@A\1‡\000D\1Æ@D\1İ\000€\000@\000\000†@A\1‡€D\1ÁÀ\4\000\1\1\5\000€€\1Æ@A\1Ç€Ä\1\1A\5\000A\5\000İ€€\1\6AA\1\7D\2A\1\000\000Á\5\000\29€\1F\1F\1€\1\000\2Õ\1\000\000ÇÁ\1\000Ç\1À\3Í€\3\21\2\000\000\7\2\2\000\7‚@\4\r‚\000\4]A\000\2FAF\1\1\000\000]A\000\1FF\1€\1\000\2Õ\1\000\000ÇÁ\1\000Ç\1À\3Í€\3\21\2\000\000\7\2\2\000\7‚@\4\r‚\000\4]A\000\2FAF\1†AA\1‡D\3ÁÁ\6\000\1\2\7\000\1€\1]A\000\000FAG\1€\1\000\2Õ\1\000\000ÇÁ\1\000Ç\1À\3Í€\3\21\2\000\000\7\2\2\000\7‚@\4\r‚\000\4]A\000\2FB\1ƒ\1\000\000]A\000\1FAF\1€\1€\1]A\000\1C\1€\000_\1\000\1\31\000€\000\000\7\21 »’_32àµ)\14\000\16I\25~èi\3\3\000\000\000\1\2\1\3\000\000\9\7!\25¥+º<Èh\r~W§MFr3&\28lä*j$j\3\17ÊîYÔL\7\16\30\000\000\000\3\000\000\000\000\000\000ğ?\4\6\000\000\000\2\23\20\26\19v\3\000\000\000\000\000\000\000@\4\7\000\000\000\24\3\27\20\19\4v\3\000\000\000\000\000€V@\4\5\000\000\000\27\23\2\30v\4\6\000\000\000\16\26\25\25\4v\3\000\000\000\000\000\000Y@\3\000\000\000\000\000ào@\3{\20®Gáz„?\4\11\000\000\000\29\19\19\6%\21\4\19\19\24v\4\12\000\000\000\17\19\0025\25\26\25\4$14v\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000ğ@\3\000\000\000\000\000\000p@\4\4\000\000\000\23\20\5v\4\11\000\000\000\4\23\24\18\25\27\5\19\19\18v\4\
+\000\000\000\17\19\2$\24\0188\3\27v\4\7\000\000\000\4\23\24\18\25\27v\3\000\000\000\000\000\000\20À\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000y@\3\000\000\000\000\000À‚@\3\000\000\000\000\000\000\"@\4\
+\000\000\000\2\25\3\21\0302\25\1\24v\4\7\000\000\000\27%\26\19\19\6v\4\
+\000\000\000\2\25\3\21\30;\25\000\19v\3\000\000\000\000\000\000D@\3\000\000\000\000\000\000N@\4\8\000\000\000\2\25\3\21\30#\6v\000\000\000\000\19pi\02313uy\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 °\3Ä)\19K1\5·ã \11âÉvrSG@9\15\9\20 s³ëemğ?h)¸h4}£DU½Û“o÷ê4\17÷\9t\0257\8t\25P&\3\2sq(\22×x¥u{‰¼f7\17\24œş`ÓŒ«J³\8v\25\31\9v\25¹@\7\127\27Óú1§&­C\26e<H£¿[kù)›F§iêq\1*\8\6 8tdWm®\27‘sõ(\000\11\8\8 :7%\14å\2=işòİ^\24}V4\18kã\29G5n…nÖYm$)¿±6,Yº\127X\000\000\000\29\24\24\24Y\24\24\24™X\24\24ş\24\24\24\5˜\24\24]\24˜\24™˜\24\24ÙX\24\24\25Ù\24\24~\25\24\24E˜\24\24\24˜\24Ù\24\25\24\25Y\25\24Y\25\24\24¾\25\24\24…˜\24\24ÄX\24\25\15\24\24˜Ù\24\24\24\4Y˜\24\15\24\24˜\1Á\000\000A\1\000\000‹\1\000\000Á\1\000\1\2\000\000U\2\000\2\2\000\000!B\7€\6C@\1\7ÃA\6A\3\2\000†C@\1‡CB\7À\3\000\2\000\4€\5@\4€\5\3\000\2\29ƒ\000\000\27\3\000\000\23@\2€@\3€\3ƒ\2\000ÆC@\1ÇCÂ\7\000\4\000\2@\4€\5€\4€\5İƒ\000\2ÖÁƒ\6\23À\1€@\3€\3†C@\1‡CB\7À\3\000\2\000\4€\5@\4€\5ƒ\000\2Öƒ\6 \2ø\127\6B@\1\7ÂA\4@\2\000\000€\2€\3À\2€\1\29Â\000\2\27B\000\000\23€\1€†B@\1‡BB\5À\2\000\000\000\3€\1‚€\1Š‚\2\23@\2€†B@\1‡BB\5À\2\000\000\000\3€\1N\3@\4‚\000\2Š‚\2Í\000À\4M\1À\2\23€ù\127Ÿ\1\000\1\31\000€\000\7\7\21 yå´8 Êâ\21³ç¤'õnq\31/\2ô-\19\11\16I\25Èû\28jwhA+\9'K\7ãÎ\23\28\31în#Œ‡O†s\7\24¹‰5ÊõqA\5·7+\3\000\000\000\1\2\1\3\000\000\7\7!\25\"c ]–*-T\9\14“\9\\šEk{-j=\7\1qh\11\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000JMKPW^9\3\000\000\000\000\000\000\000@\4\2\000\000\000y9\3\000\000\000\000\000\000\8@\4\7\000\000\000WLT[\\K9\4\1\000\000\0009\4\5\000\000\000_PW]9\4\12\000\000\000\17\16\23\28\18\20\19\6bg\0299\4\4\000\000\000JL[9\4\2\000\000\000\0289\000\000\000\000\22pi\23Ôã’\12rä/œ¾ç\19ª=\0001\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 NçLvÿ-¹Qîd¥BD¢JW\18ëo\1O\11\17\
+½˜G!,\12\9\20 \26\19¹\15ª?¥\3Û\r4\4 Ï\14D\16\000ˆ-ı\9t\0258\8t\25«yã\
+<\29€\24slÊGœ=™÷ÖxSR\29\0037ß\14ä’t+Ñ\8v\25\30\9v\25¨¹\127\127|‹ &6ÿj\17…µŸ~7aÏv\30b>e\1 \8\6 …H\28m\30÷6Væ„EÉêfD0{g8¦ñ•O‡ƒ®e\127Æˆ)*_à{\000\
+\8\8 )\6.-\5m\20\000×~V4\18\25ãœwmßYDu#6]¦\23\16d7'ö\1\14\27\rV\19\000\000\000Ò×××–×××V—××1×××ÊW×\000F€À\000GÀÀ\000€\000\000\000Á\000\1\000]€€\1X@Á\000\23€\000€Œ€Á\000€\000\1\23@\000€ƒ@\000\000ƒ\000€\000Ÿ\000\000\1\31\000€\000\7\7\21 :^Õ\16ó­\1\3\2p\12â\23U\16o9\"(\4\3\16I\25gÍô\14¦šñ\30\2\000\000\000\1\2\000\000\11\7!\25ÏNÔ\17+ã\r\12uó\16:&5YWõÍtP¦nxrÌ&ï&|Q#6%5\1\28ö…Ï\"\7\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000_X^EBK,\4\3\000\000\000EC,\4\5\000\000\000C\\IB,\4\2\000\000\000^,\000\4\6\000\000\000O@C_I,\000\000\000\000\26pi\23N;/Iüòã\"ßM\1e‡Aå#\21Ö€\26L-[)üd\27\1»í~\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 `üÕ\21^(õ}qvkm_œ\14\29Yßrf\26eÆ\26s\14\9\20 Õ\
+h\23\29yö?a\7PO³’»+À-ÏTÅŸ\8txq>1è\9t\0252\8t\25J~}Ekuó\30Ö\8v\25\25\9v\25bJv&\1-\8\6 ÈN\9\0004É“m{~»iaÄs\000\000\11\8\8 Ä´e\0058?­S\\â\25 |~V4\18¼Şï5•‘Ã\11;Æ\1k\28{şRîp6rU+È\5\22\000\000\000y|||=|||ı<||š|||aü||:üÀ\000GÀÀ\000€\000\000\000Á\000\1\000]€€\1[\000\000\000\23€\1€Œ@Á\000\1\1\000€€\1ÌÀÁ\000İ@\000\1Ÿ\000\000\1\23@\000€ƒ\000\000\000Ÿ\000\000\1\31\000€\000\8\7\21 1xĞ-*60\29¬\14˜U’\127 }İÈëHl<g*W\31)qU:*zËü“H¡¦6\5\9\16I\25\000œ?[\4è\28]è?(\7ÈêH[8±°Jc¾ãp)¯¼[f0\18@\2\000\000\000\1\2\000\000\7\7!\25aîi/Â\18,`_Ü\23\4*>\000-\127ñ\27\22ômÛ\15\8\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000\000\7\1\26\29\20s\4\3\000\000\000\26\28s\4\5\000\000\000\28\3\22\29s\4\2\000\000\000\1s\4\5\000\000\000\1\22\18\23s\4\5\000\000\000Y\18\31\31s\4\6\000\000\000\16\31\28\000\22s\000\000\000\000\16pi\23›l\26iãŞ\17\2\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 \16ì\4My\14Œ5/ds<’¶Âanª“'±¥Ù\"\1\
+\9\20 N\26AC¤¤W!\000o˜0Ø\9t\0259\8t\25ù\22«\000É\\)&²\22›^ßD8a+\20›\29¬—Wg#sÍ*æ\2KfbÚÚ\16Á\8v\25\29\9v\25~İ6\27ŞÃ\31?ohIP(Ån´o©!\1(\8\6 —\4ª{\000\12\8\8 ëë+a¨ğ®H-´ø\1\27PŸ\29}~V4\18Ìõx@­8*nù{ÿ\22\26\16º\3Rİ\15ùê—G\28\000\000\000x}}}<}}}ü=}}›}}}`ı}};ı½}:½½}€\000\000\000Á\000\1\000]€€\1‹\000\000\000Á\000\000\000[\000\000\000\23@\2€\12AÁ\000\29\1\1\1\23@\000€ŠÀ\1Í\000À\1\"A\000\000£Áş\127\12Á\000\29A\000\1\23@\000€\3\1\000\000\31\1\000\1Ÿ\000\000\1\31\000€\000\7\7\21 Kô,\16ÂGÁms\27,\25*9eqí[\\\11\
+\3\16I\25M¬2\28Ó^§q\2\000\000\000\1\2\000\000\3\7!\25\9`\31xQ<Ş\12\7\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000rushof\1\4\3\000\000\000hn\1\4\5\000\000\000nqdo\1\4\2\000\000\000s\1\4\6\000\000\000mhodr\1\4\6\000\000\000bmnrd\1\000\000\000\000\26pi\23xÈhHy½£{\19Á'r‘õgc\17ÂMwÇf”>|á“D¹²ü?\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 ÎŠ?\7¾\12ÿ;P>D›vwwªŞz\14±\14\9\20 w©ØHL\19[w¡@ìf‡0İ!Gj˜YÑÎ?\000Ê\24\19'1\
+t\0255\8t\25Õ\29£$²\25¢\6CŒbA…0v[\16\27q>ñ\8v\25\25\9v\25#üÄ<\1*\8\6 ÊG}g\\÷Çu‰†\2\000\12\8\8 UmøH\20Ú¶S_Ÿ)¤Nq3˜~V4\18ôŒ\1x}ÛmRÇŠûs'\15£R×¾Ë#>4Ô<$\000\000\000˜˜˜Ù˜˜˜\25Ø˜˜~˜˜˜…\24˜˜İ˜˜˜\25\24˜˜YX˜˜¾™˜˜]€\000\000…\000€\000Á\000\1\000\1A\000\000AA\1\000¦\1\000\000€\000\000Æ€A\1ÇÀÁ\1\000\1\000\000@\1\000\1İ€€\1Û\000\000\000\23@\2€%\1\000\000@\1\000\2€\1€\000]A\000\1L\1Â\1]A\000\1C\1€\000_\1\000\1W\000€\23@\000€\3\1\000\000\31\1\000\1\31\000€\000\1\7\21 yÿ·\
+Æd±^»Œ–#\7\2\16I\25}Ä\5%Óå\21\31ìš/\3\000\000\000\1\2\1\3\000\000\9\7!\25i_HW¤\28\17\11S²×J-}:Ç\24ÖGïªúg÷åú!$\16=\9\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000ÂÅÃØßÖ±\3\000\000\000\000\000\000\000@\4\6\000\000\000ÅĞÓİÔ±\3\000\000\000\000\000\000\8@\4\2\000\000\000Æ±\4\3\000\000\000ØŞ±\4\5\000\000\000ŞÁÔß±\4\6\000\000\000ÒİŞÂÔ±\1\000\000\000\8\9\20 Ñ]hØ\1\9\20 \20d\24*\16£\127\15éÛš\9\16\23¦<eë\000sóîÏ&…–*S\17Ø÷pÊ\9t\0251\8t\25)\11Cn÷\8v\25\30\9v\25%­+@\17øÇ\5®L&¿}ªvÌ¤jsß·Ñ,\000+\8\6 -)h/bÔš\12\1\r\8\8 ìa(WÇÃ\23\12:âß\0045Bg7–=\24>\22pV4\18gÍu&\6‘½\25]\18\16q{1P\0224=)Fîªz‹H4\r|\31>\28\26\000\000\000W\22\22\22ƒ\22\22\22×\22\22\22wÖ\18–PWV\22‘\23\23\22K—\000\1\24€À\2\23À\000€E\1€\000‡\1\1\000]A\000\1\23€\2€E\1\000\1LÁÀ\2Ç\1\1\000]A€\1U\1\000\000X@\1\2\23À\000€E\1\000\1LÁÀ\2Á\1\1\000]A€\1`€ú\127\31\000€\000\6\7\21 \17ß^`÷5\rûhæl:ê¡N\8\4\16I\25!\22\18-KâiT%H'Eà“¼#\24‡ÔG\3\000\000\000\000\2\1\4\1\3\6\7!\25\23ˆg\25E°<wfÔ“~\28†ii1\18eN-˜«\
+VhIn\5\000\000\000\3\000\000\000\000\000\000ğ?\4\5\000\000\000¬¡¨½Ø\4\6\000\000\000¬¹º´½Ø\4\6\000\000\000¯ª±¬½Ø\4\3\000\000\000ÕÒØ\000\000\000\000\19pi\23ÃÕÃH\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\17pi\23L?ge*£9o×„¹e\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 'tu\30\7$,o\r\1\9\20 âÂ\1\3IYç\14t½ôJSŞñ\31´>\\&g4È\16áK\\r\\>€\17\"\
+t\0256\8t\25F\6D`\12\14\0261_ŒSWıê]/Mu¤&Í‘ .\26\11v\25\28\9v\25šè€-«Ú\0302s’Â\1\5‚ª_\1*\8\6 êD\
+ÄŸ®_ùÔ/7\000\2\8\8 ìÙDLBâOÂ¦Öfóıp;€Î\rD~6,\\ÖÀr>É'õRòó ')Ÿd^¯qV4\18\
+ëÀPÚ¤Ñ\
+\1Rç@Pñ\0041æ²ë;aŞ:\24NÜb`3(b.p[F-\000\000\000ª¯¯¯î¯¯¯.ï¯¯I¯¯¯²/¯¯ê¯¯¯./¯¯nï¯¯‰®¯¯ò/¯¯*¯/¯nÀ\000\000\1A\000\000A\1\1\000¦\1\000\000€\000\000Å\000€\000\1A\1\000A\1\000Á\1\000æ\1\000\000İ€\000\000\6\1B\1\7AB\2@\1\000\000€\1\000\1\29€\1\27\1\000\000\23\000\3€LB\2À\1€\000]A€\1\24\000À\1\23€\000€LB\2ÁÁ\2\000]A€\1L\1C\2]A\000\1C\1€\000_\1\000\1\23@\000€C\1\000\000_\1\000\1\31\000€\000\4\7\21 Î\16\17\16ÙJzx”ë‘{Ó’»o—ÓE`~0\"\6\8\2\16I\25‘¨u\23\25cƒN„\12¯\27\3\000\000\000\1\2\1\3\000\000\9\7!\25Ü\9Z5x\
+ WS\21f+Z@†\17NË’\21\29=[~L4§8wj÷s\r\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000~y\127dcj\r\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\4\2\000\000\000z\r\3\000\000\000\000\000\000\16@\4\7\000\000\000cx`oh\127\r\3\000\000\000\000\000\000\000\000\4\3\000\000\000db\r\4\5\000\000\000b}hc\r\4\6\000\000\000z\127dyh\r\4\3\000\000\000\000\7\r\4\6\000\000\000nab~h\r\000\000\000\000\24pi\23¦\\pU¸DuH~\2¨®w1ÑF½u[ûi>\9²I\31# V#ú 7ı\r\16\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 gk\19\2.rNBët\25PbÍ\27»\3\9\20 MPg\7—‡Ê0.Á\27aY\23\
+LĞ‚g8I™=\127GT\14\rbÊ\"?„Ë©OÕÜj\30&\
+t\0259\8t\25Î@v\25Ş/êd¤†]\2\15º~-€ÄÓ}álÒ\000 [~.W\25|\6¦Àf5\11\11v\25\25\9v\25nÉ\7\1.\8\6 /T\5:e<~h©^„/^Æ’\8§'ó\1ùÀQK—'¦\22\000\r\8\8 G\17¹R/¯pG!á \\ (Ã\30ÿ1Ø\127\31qV4\18aüú>îEˆ+½Y<J®)o\11¼†şD›‰&/R°Ì\rÌ@}r\27Nú,\
+\000\000\000\26\31\31\31^\31\31\31_\000\000æ\000\000\000\29€\000\000F€À\000GÀÀ\000€\000\000\000]@\000\1\31\000€\000\7\7\21 lœû rgv3Úİ\5D~~N4ôÕ?;\4\8\16I\25®ÒSnY\18¾#Å/û \12™æv\000:±%¾ğLl£ÀŒ\róY6!\5\2\6?\2\000\000\000\1\2\000\000\8\7!\25\20;×}¦*É]Ò¡ÕT~µµY§š\0093Ğ\19lû=\5K\1×SáÇ?\31\4\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000ÈÏÉÒÕÜ»\4\3\000\000\000ÔÈ»\4\7\000\000\000ÉŞÖÔÍŞ»\000\000\000\000\23pi\23æŠı\0024x\12-ôÂ¹<\1Ù÷/h•«;\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 »»’f!\23\18\30LÆ÷!«²Û^e\r\9\20 =\30E^Ü®\30ê‹Q$\11o0\23\
+t\25:\8t\25ş–r&¯–Ş2èÙ‘f\000›\"S‹—'uÍ\4¥\000‰^5?(\28ãÇ\12\4©ş{N\15\11v\25\17\9v\25\18è§(>Õ\0237\5.¤*Ll\28+kN/2Ç)Ô\0309Kã4·uö\12à\20­\30\000(\8\6 ÙŒ\8+\1\15\8\8  ¹Qz[ÜccüaZ5İ×î?¹¸\18\2æí«Yjã]p”yV4\18\25z<#%\000\000\000Ò”Ô”É\20\20”\16”””RÔÔ”I\20\20”Œ\20T”ƒ”–\20’UÔ”“•Õ–Ô\1€\1A\1\000V\2\1\000\29€\1€\000\000\2\23À\1€\6Á@\000\7\1A\2@\1€\1Á\1\000V\2\1\000\29€\1€\000\000\2›\000\000\000\23À\1€\12\1B\1€\1\000\000\29A€\1\12AB\1\29A\000\1\3\1€\000\31\1\000\1\23@\000€\3\1\000\000\31\1\000\1\31\000€\000\
+\7\21 ä!º\"m\5ÔJ0ÒS^Š\"C\1¢Düf\19š`b3!¿O¸ãrO\7\3\16I\25qöÖ\6½\17\23z\1\000\000\000\000\000\2\7!\25ÜD\0069„;ë\24«9\8k\
+\000\000\000\4\
+\000\000\000\2\000\17*61\28\21\000e\4\9\000\000\000\16\22\000\0235\4\17\re\4\8\000\000\000\4\11\1\23\
+\12\1e\4\3\000\000\000\12\
+e\4\5\000\000\000\
+\21\000\11e\4\17\000\000\000J\9\16\4J\17\22:\000\000:\4\9\12\4\22e\4\2\000\000\000\18e\4\18\000\000\000J\6\
+\11\3\12\2J\4\9\12\4\22K\6\3\2e\4\6\000\000\000\18\23\12\17\000e\4\6\000\000\000\6\9\
+\22\000e\000\000\000\000\19pi\23dP˜7\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 \18\6b[Y•\18vû,\23E¸\22\20æm\
+\21Ó¶z€\8\9\20 ¥\16|\\\27\
+t\25:\8t\25.±‘R3B+\5PK\0254\19*‚K\22)¦gÚãY\25\000A°\25k\22^\30¹\11\17L6şœz1\11v\25\29\9v\25š¬8{4À5bË\17\25\0030ñ\0150ç\19fZ\000+\8\6 ®\3ÙJ\27-ÂS\000\r\8\8 SÍ#\12-3$/O\127Y\16ÊÈP#rë:C$~V4\18k¹æPô°^\4„¬ƒz£W\25\"bğV·î®\127\4\000\000\000\"$d$A@\000\000\29@\000\1\31\000€\000\000\7\21 5Œr\"Î\23Ug\2\6\16I\0256Í\"<9.³\5‡¼Û2lË¿6š~øE!i\20. ‹õ\24\1\000\000\000\000\000\7\7!\25RZ$^‡Ÿ[sZşI|\000^ı(¢Ì\29G($\14z\2\000\000\000\4\6\000\000\000åòòïò€\4\11\000\000\000Õóåò Åøéô®€\000\000\000\000\26pi\23ÏÿAvw£g\
+\29ôqXAë|9S\9/%ıyv­¤c\
+Gº)\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 Ë\25\\ÎÉ+'åÖOK9n*c\0208í '\r\9\20 Â\30ÜU.­Y7í×zw>G\1(v\
+t\0251\8t\25+Å7[4\11v\25\30\9v\25–\3\\0.O×D'\20Ì|\2ú­\20TFÈ)ao7_\1#\8\6 a/ö1äÓV5zW¥FÆò›\14;{Ç:V…û\26«`q/r56G¬$\3\19qp×e\000\000\8\8 {î.:VG'1v½ï\6&\28[‰\14DA•äò\3QEø0·»x(~V4\18øİ·X­¥V‡\5Ç@á\19\9ÛĞ|\27®\25“=C\000\000\000.(h(ih((5¨()n(h(©¨((u¨()b(é©¯hé(é¨)(µè()0èé)?h+¨.)j(/ij*h)()©©*(5é¨\1\27\1\000\000\23€\1€†\1B\000‡ÁB\3À\1\000\1\000\2\000\2@\2€\2\1\000\2Ÿ\1\000\000\7AÁ\000A\1\3\000\29Á\000\1\24ÀÁ\2\23@\3€†\1B\000‡AB\3À\1\000\2\1‚\2\000Á€\1›\1\000\000\23€\1€\6\2B\000\7ÂB\4@\2\000\2€\2\000\3À\2€\3\30\2\000\2\31\2\000\000‡AÁ\000ÁA\3\000Á\000\1\24ÀÁ\3\23@\3€\6\2B\000\7BB\4@\2\000\3‚\2\000\29Â€\1\27\2\000\000\23€\1€†\2B\000‡ÂB\5À\2\000\3\000\3\000\4@\3€\4\2\000\2Ÿ\2\000\000\3\2\000\000\31\2\000\1\31\000€\000\000\7\21 0\23EE\15‰Ê\28\14\000\16I\25‘F;w\1\000\000\000\000\000\6\7!\25\24\31\8?X9×\5/Øè\12o¤\3Z\3šH5¡\r\31T\27É\6m\14\000\000\000\4\8\000\000\000UBVRNUB'\4\3\000\000\000T]'\4\r\000\000\000T]HDLBS\9OSSW'\4\8\000\000\000snjbhrs'\3\000\000\000\000\000\000\8@\4\8\000\000\000UBVRBTS'\4 \000\000\000OSSW\29\8\8NW\9DONIF]\9DHJ\8@BSNW\9FTW_'\3\000\000\000\000\000\000i@\4\7\000\000\000TSUNI@'\4\5\000\000\000ANIC'\4\19\000\000\000\2C\12\2\9\2C\12\2\9\2C\12\2\9\2C\12'\4\4\000\000\000TRE'\4\18\000\000\000OSSW\29\8\8PPP\9NW\9DI\8'\0041\000\000\000OSSW\29\8\8PPP\9IBS\9DI\8TSFSND\8DRTSHJBUDFUB\8^HRUNW\9FTW'\000\000\000\000\19pi\23Ş\\äw\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\3\9\20 ­Œ¤\14ú’\23S˜^æ\2ï\0239\127\6nJ\27£c”\3L\17½H‰-MjÍL\7\25õ{×Pg\3\9\20 R$âA\6ƒgp“‘­\19»&Š!\22âZ\16,®aM(ë-/‡¯\127':L\6i<»vZa\
+t\0251\8t\25\18·à0_\11v\25\30\9v\25\20ó\21\16|É`gc´£V7Ã\18Eãth\0065_\000\1#\8\6 Ş1Œ;Ÿ“E\3ÔgğRäŸÖVB÷Ù\6 y­\27nÍ#A\15Dá\31\22õ„l87$t\000\1\8\8 h\25g.>º‹d<èW$@ñOTœæth–ã$L+\31\127ÜKf\28¢âé\r^yV4\18´™Ê>\"\000\000\000[^^^\31^^^ß\30^^¸^^^CŞ^^\27^Ş^ßŞ^^Ÿ\30^^_Ÿ\000\000f\1\000\000]€\000\000†\000A\1À\000€\000\1A\1\000@€\1†€A\1€€\000\24ÀA\1\23€\1€†\000B\1À\000€\000\1A\2\000@\1\000\000\22A\1\2@€\1\23À\000€†\000B\1À\000€\000\000\1\000\000@€\1†€B\1À\000€\000@\000\1\31\000€\000\000\7\21 aªük0c+&\6\6\16I\25˜m\0151\20\2 \14¿Ãs\5}½Æ\4ò3,J^W¹\8R%·W\3\000\000\000\1\2\1\3\000\000\000\7!\25 N“\15\11\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000\20\19\21\14\9\000g\3\000\000\000\000\000\000\000@\4\r\000\000\000ãıûËğÂ‚Øğg\4\8\000\000\000\14\9\14\19+\8\000g\3\000\000\000\000\000\000\000\000\4\
+\000\000\000\000\2\19(43\30\23\2g\4\4\000\000\000\14\8\20g\4\5\000\000\000\16+\8\000g\4\8\000\000\000<#&3\":]g\4\9\000\000\000\4\11\8\20\2+\8\000g\000\000\000\000\17pi\23D¡&b¯’t/ˆ“é_\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\3\9\20 \17x‚{÷&hA•F6hÑ\11L\5ØM×>`Uëµ;^m75Nø¬¶\11»]‚:û\r\9\20 º{Õ;q\6´\11 \r\21~„–\12X¯\
+t\0257\8t\25q·ª7 Ám3hÒ±H@r-rT?\000\\ÇUÃ)0r›KJ\11v\25\18\9v\25\00175tşøÇjä_›^”©7\20Oì\
+}¥ @n¥!º\15F\19s>3¶†$\14óÅ[\1#\8\6 \
+õæyù¨\1:¸\"GZ\2¢\5´\6„t.ĞŞ\26\
+\6f>n‚Y0 Ö’&*\19{<\000\15\8\8 Îı2UœÊ%t“ÚÓ;6Ğä\29Ü<Sfç\25Ô\23ş%¨GÜyV4\18ÿ\\İ;Å\000\000\000ÙÜÜÜÜÜÜ]œÜÜ:ÜÜÜÁ\\ÜÜ¹ÜÜÜZ\\\28Ü\29\28ÜÜA\\Üİ\27ÜİÚ\29ÜœİÜÜÁ]Üİœİ\\Ü\\İÜŞ\29]İÜJ\29İß]Üİ‡İÜÜË\\Ö\\›\29\29İ\\İÜŞ\29]İÜJ\29İß]Üİ[İ\30ŞGİÜÜË\\Ü\\[İ\30ŞCİÜİËÜõ\\\\İ\\Ü\28İÜŞİŞÜ\
+İ^ßA]ÜİGİÜÜËœû\\[\29\29İ\28İÜŞİŞÜ\
+İ^ßA]Üİ\27İß\7İÜÜË\\Ü\\\27İß\3İÜİË\\ø\\\27B\3Û\1\000\000\23€\000€ÇB\3ß\1\000\1\23\000#€ÇÁB\3Û\1\000\000\23€\000€ÇÁB\3ß\1\000\1\23€!€\31\000\000\1\23\000!€@\1€\000€\1\000\2Á\1\3\000–Á\1\3]\000\1[\1\000\000\23€\
+€GÁÁ\1€\1\000\2Á\1\3\000–Á\1\3]\000\1‡\1Â\2›\1\000\000\23€\000€‡\1Â\2Ÿ\1\000\1\23€\28€€\1€\000À\1\000\2\1B\2\000Ö\1‚\3\000\1›\1\000\000\23À\26€‡ÁÁ\1À\1\000\2\1B\2\000Ö\1‚\3\000\1Ç\1B\3Û\1\000\000\23€\000€Ç\1B\3ß\1\000\1\23\000\24€ÇB\3Û\1\000\000\23€\000€ÇB\3ß\1\000\1\23€\22€ÇÁB\3Û\1\000\000\23€\000€ÇÁB\3ß\1\000\1\23\000\21€\31\000\000\1\23€\20€@\1€\000€\1\000\2ÁA\3\000–Á\1\3]\000\1[\1\000\000\23€\
+€GÁÁ\1€\1\000\2ÁA\3\000–Á\1\3]\000\1‡\1Â\2›\1\000\000\23€\000€‡\1Â\2Ÿ\1\000\1\23\000\16€€\1€\000À\1\000\2\1B\2\000Ö\1‚\3\000\1›\1\000\000\23@\14€‡ÁÁ\1À\1\000\2\1B\2\000Ö\1‚\3\000\1Ç\1B\3Û\1\000\000\23€\000€Ç\1B\3ß\1\000\1\23€\11€ÇB\3Û\1\000\000\23€\000€ÇB\3ß\1\000\1\23\000\
+€ÇÁB\3Û\1\000\000\23€\000€ÇÁB\3ß\1\000\1\23€\8€\31\000\000\1\23\000\8€@\1€\000€\1\000\2ÁA\2\000–Á\1\3]\000\1[\1\000\000\23\000\6€GÁÁ\1€\1\000\2ÁA\2\000–Á\1\3]\000\1‡\1Â\2›\1\000\000\23€\000€‡\1Â\2Ÿ\1\000\1\23€\3€‡Â\2›\1\000\000\23€\000€‡Â\2Ÿ\1\000\1\23\000\2€‡ÁÂ\2›\1\000\000\23€\000€‡ÁÂ\2Ÿ\1\000\1\23€\000€\31\000\000\1\23\000\000€\31\000\000\1\31\000€\000\8\7\21 \12ùa)“\6\21PZ”Á\25²\25¢\0239(Ï_¡§4XåÏ(<G\27•;ì’FdğÄ\0156\9\2\16I\25¥µ>òf­;ôÊ\26j\2\000\000\000\1\2\000\000\3\7!\25ül\19zbMt\26\14\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000ˆ‰’•œû\4\8\000\000\000‰Š’‰û\4\3\000\000\000ˆû\4\6\000\000\000‹—’ˆû\4\14\000\000\000š‹‹¹•Ÿ—«š“û\4\31\000\000\000Ô“¤¸µÕ—‹‰”‘Ô²•”«—’ˆÕˆ‰’•œˆû\4\5\000\000\000‰šŸû\4\20\000\000\000¸½¹•Ÿ—¿’ˆ‹—š‚µš–û\4\12\000\000\000Ô²•”Õ‹—’ˆû\4\r\000\000\000¸½¹•Ÿ—µš–û\4\19\000\000\000¸½¹•Ÿ—¾ƒ˜š™—û\4!\000\000\000Ô“Ö³š•ˆÕ—‹‰”‘Ô²•”«—’ˆÕˆ‰’•œˆû\4!\000\000\000Ô“Ö³š•Õ—‹‰”‘Ô²•”«—’ˆÕˆ‰’•œˆû\1\000\000\000\14\9\20 \2p''\\¨\25OWg±Vxìöq¹ğ%—\25Ól¸Q8iN\12\9\20 Ì§+b)éÆ<SÔ‡S`\9¯JËŠ?rg\
+t\0257\8t\25a.¿(¼^\5|X{ÆO\14Çp~bã»\21#s29Æ\14WL\11v\25\17\9v\25ËI”:\3¤×\5]¶¹aĞÿÑ\127_Ì¬/\2\127k\9¦6h\127uU\26\5ï’0\000*\8\6 Í¼Oq}Û‰\"¼}rt\1\11\8\8 5-Â\0117\5š\24¨2(\0303yV4\18û\6°q\14\000\000\000u3s3tsó3³333ò³\000\000]€€\1XÀÀ\000\23€\000€Œ\000Á\000€\000\1\23@\000€ƒ@\000\000ƒ\000€\000Ÿ\000\000\1\31\000€\000\1\7\21 +y G™Â¨JÄ\12\\a\4\5\16I\25ò=o\26ÒÓÌ_I»aY\21ÎâL\1\000\000\000\000\1\5\7!\25<9'\16à\23w\7\14>³<™ïàq\5\000\000\000\4\3\000\000\000'!N\4\5\000\000\000!>+ N\4\2\000\000\000<N\000\4\6\000\000\000-\"!=+N\000\000\000\000\23pi\23n\
+`l›nL{WN±\6ã_ş\6 ]ß+\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\20pi\23°\28Nx\0299iN\21«¥I\20ópVSf+ZL°?b\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 ö\11¤e?­¨jK\11\9\20 ²tjk=¨&Qö\
+t\0254\8t\25„7ls%æ\23E 6ÕWzÊ;S¸\11v\25\29\9v\25Zƒr\22è\21a?d,uN<ée*qÙ‡U\000-\8\6 j½­K\19#W\"T\1áÉÁ;\000\12\8\8 øy“PZbúh,\25ä\
+mÏá0(zV4\18Ù^Q\24\
+kfXW\000\000\000\r(((n(h(®hh(¯¨h)îèh(õ¨¨()))(µ(¨)u¨((¬(((2h¨ª?h(¨©¨)(?()¨2h¨«?h(¨©(*(?((¨©h*(è(((()()õ¨(\1\11\1\000\000FB\000€\1€\1]\1\1\1\23À\r€†ÂB\000‡\2C\5ÁB\3\000\000\3\000\1Aƒ\3\000€\3€\4Ö‚ƒ\5‚\000\1ÌÂC\5İ\2\1\1\23€\
+€ÆC@\000Ç\3Ä\7\000\4\000\7AD\4\000İƒ€\1\24€Ä\7\23À\8€ÆÃB\000ÇÃÄ\7\000\4\000\1A„\3\000€\4€\4Á„\3\000\000\5\000\7A\5\5\000\22D\5\8AD\5\000İƒ€\1Û\3\000\000\23€\5€\12„Å\7\29D\000\1\6ÄE\000A\4\6\000\29„\000\1GDF\8‡„Æ\8À\4\000\1\1…\3\000@\5€\4…\3\000À\5\000\7\1\6\5\000Ö\4†\9„\000\1ÇÄF\9Û\4\000\000\23\000\1€Æ\4G\000ÇDÇ\9\000\5\000\2GÅF\9İD€\1âB\000\000cƒô\127b\000\000ãAñ\127\31\1\000\1\31\000€\000\5\7\21 \24\12ú\2à‹ˆ\
+©P\15\
+Ê€dn\0294¯[ B\7TN¸Ğa\25\11\16I\25ÀxÜ+È‚\0125­İ+Q\26üNB±˜mt\17\
+¡\31Vå´l\"rõIy¢5fÀ¢b8\1\000\000\000\000\000\9\7!\25ĞÄ‰g¢l$tF¨Ö\30É>\0298üÎ\30]rÁº)6\14ÿh”¾™\2\30\000\000\000\4\9\000\000\000?$%>&).9K\4\7\000\000\0008?9\"%,K\4\6\000\000\000&*?(#K\4\9\000\000\000,.?\4\24\29.9K\4\8\000\000\000n/`en/`K\3š™™™™™\"@\4+\000\000\000d;9\"=*?.d=*9d($%?*\"%.98d\9>%/'.d\
+;;'\"(*?\"$%K\3\000\000\000\000\000\000 @\0042\000\000\000d;9\"=*?.d=*9d&$)\"'.d\8$%?*\"%.98d\9>%/'.d\
+;;'\"(*?\"$%K\4!\000\000\000d;9\"=*?.d=*9d&$)\"'.d\
+;;'\"(*?\"$%8K\4\7\000\000\000\";*\"98K\4\3\000\000\000\"$K\4\6\000\000\000;$;.%K\4\4\000\000\000'8kK\4\2\000\000\000dK\4\6\000\000\000'\"%.8K\4\4\000\000\0008>)K\3\000\000\000\000\000\000\16À\4\5\000\000\000e*;;K\4\5\000\000\000$;.%K\4\12\000\000\000d\2%-$e;'\"8?K\4\3\000\000\0009`K\4\6\000\000\000('$8.K\4\8\000\000\0009.:>\"9.K\4\3\000\000\00081K\4\6\000\000\000;'\"8?K\4\5\000\000\0009.*/K\4\19\000\000\000\8\r\9>%/'.\2/.%?\"-\".9K\4\6\000\000\000?*)'.K\4\7\000\000\000\"%8.9?K\1\000\000\000\3\9\20 5\29 ,F)ôX\7ì\r]¥bJ$çŠ:]u<+Z0`\23}™\\ÖW¢Ä?w°K$\"W\14\9\20 HKšZ\25ôôVı…\1!\20Ô\22\17—\21¹\"¨ë,\000ñ\28¼p˜\
+t\0252\8t\25\6s:C\18ô†<¹\11v\25\30\9v\25\31_ßZd\"×{\5™¿Wî©‚k®yõG\23»¡r\000 \8\6 É3M\8MØA\31€¦ÂqÑ\31[eò:ŒCg1ıNF\\†?\"›£@\1Ó&\1\15\8\8 ÒæÇbyÚí\30€\29\30\0262b=’Îâu}#\31?/\6yNÁzV4\18 #5?ºß*\19\000\000\000‡ÁÁ†\1Á@AÁÁ\1ÁÁÁW\1Á\1]€\000\1‹\000\000\000ÌÀÀ\000İ\000\1\1\23\000\1€Æ\1A\000ÇAÁ\3\000\2\000\1@\2\000\3İA€\1â@\000\000c\1ş\127Ÿ\000\000\1\31\000€\000\3\7\21 3\23¼{\
+\11\16I\25Káe]—9“w\4\23M59‹èHE³ˆ?\28Òî's\8·a\15çÕGiª0Gó®yS\1\000\000\000\000\000\4\7!\25[å¼\
+Zàv\"&c·l}€`K[nJI\6\000\000\000\4\3\000\000\000>8W\4\6\000\000\000'8'29W\4\4\000\000\000;$wW\4\6\000\000\000;>92$W\4\6\000\000\000#65;2W\4\7\000\000\000>9$2%#W\000\000\000\000\21pi\23Og(.ÔH8h!›Aj™Škf\23\27^\11Eº\000™Ÿ\3:\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\24pi\0231T\6@¹Â8yJ‹–!]ÖŒBìÙôtI\9$\127¨·ò\31ƒ\19ˆlN q4áBÛh\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 ê6²\4\26÷Ì\27`3 n±Tª\2€d1\6ÂQ—z?).\6‹ Xz\r±v6­\14\9\20 Àqğyİ±ŞM5\23<\30\4íg>ÿÛç%4\6N\3Wu\127Ğ\
+t\0257\8t\25ß\000;›¸k\0173\24\31\22\000Îï-ÂÅ+J%hÉ$NÃ÷nß\11v\25\29\9v\25Æ€®'BL)5õ±Ñi,3Ù ,ƒÛ9\1!\8\6 fù\14İ×…<\rĞ\11O¸\9\28\1´B\27.(\6\\i\7@k|+.\000\14\8\8 \29Û÷9H.\
+|2ûgf!È_xH\
+ò!À/n4‘qV4\18Ÿ0ûoÀ×@\9I½òzŸşê\29‚lSn%¼\31íÁâ\12çÃgw4¦jG>\000\000\000”‘‘‘Ğ‘‘‘\16Ñ‘‘w‘‘‘Œ\17‘‘Ô‘‘‘\16\17‘‘PÑ‘‘·‘‘Ì\17‘‘\20‘\17‘PQ‘‘‘ĞĞ‘7‘‘\12\17\000\000Æ€A\1\1Á\1\000İ€\000\1\6A\1A\1\2\000\29\000\1K\1\000\000€\1€\000ÇÁB\2\11‚\1\000\
+\2\000†\
+‚Ã†\
+‚€‡K‚\000\000J‚Äˆ•\2\000\3J‚‚‰\
+B\2ˆFBE\1G\2Å\4GBÀ\4€\2\000\3]‚\000\1\
+B\2ŠFBE\1G‚Å\4GÂÅ\4€\2€\2]‚\000\1\
+B\2‹İÁ\000\1ˆ\000\2…ˆÀ„ÆB\1\24\000Æ\3\23€\1€ÆÁE\1ÇAÆ\3\000\2€\2A‚\6\000Ş\1€\1ß\1\000\000\23@\000€Ã\1\000\000ß\1\000\1\31\000€\000\8\7\21 Üu9aaÙCh[‘ç{ì\30Øfî?=w8im8{,¨r=øÍ\000Tj!{–ZĞx\11\8\16I\25ÀæL)”>ü@·<Íz\8\21W%Æ9d'Ø\4-sP\31IG†iÒ[ı#\2k\3\000\000\000\1\2\1\3\000\000\000\7!\25%šÍK\27\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000ŞÙßÄÃÊ­\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\4\7\000\000\000ÃØÀÏÈß­\3\000\000\000\000\000\000\20@\4\8\000\000\000ßÈÜØÄßÈ­\4\3\000\000\000Ş×­\4\r\000\000\000Ş×ÂÎÆÈÙƒÅÙÙİ­\4\4\000\000\000ßÈŞ­\4\5\000\000\000ÎÂÉÈ­\4\8\000\000\000ßÈÜØÈŞÙ­\4\4\000\000\000ØßÁ­\4\7\000\000\000ÀÈÙÅÂÉ­\4\5\000\000\000ıâşù­\4\8\000\000\000ÙÄÀÈÂØÙ­\4\8\000\000\000ÅÈÌÉÈßŞ­\4\r\000\000\000îÂÃÙÈÃÙ€ùÔİÈ­\4\"\000\000\000ÌİİÁÄÎÌÙÄÂÃ‚Õ€ÚÚÚ€ËÂßÀ€ØßÁÈÃÎÂÉÈÉ­\4\15\000\000\000îÂÃÙÈÃÙ€áÈÃÊÙÅ­\4\7\000\000\000ŞÂØßÎÈ­\4\6\000\000\000ÁÙÃœŸ­\4\5\000\000\000ŞÄÃÆ­\4\6\000\000\000ÙÌÏÁÈ­\3\000\000\000\000\000\000i@\4\7\000\000\000ÎÂÃÎÌÙ­\4\1\000\000\000­\000\000\000\000\27pi\23¯\15'Å˜¸i@™¯G\29§ËF²Z›v']\23?RM6\14âh§8\4ÓP \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 RkZ\
+…:\\á\15Ò>Ï\8hwU\1\9\20 ô\
+èf3DÚ\20µ:^©öš!\9yá/¸gèiíÿ,h\19\8qİ\
+t\25:\8t\25­R¬T€‰Æ$•\28\4oÀÌÌg\27¨aDá‹\127*:cà+\21bR\25R,æg<¼`ù\11v\25\18\9v\25ÑëûLW²\12\17ÑN\27¨\127¿>„§\22t#º,v²\4ú\26f·è2òÂ”mŞNd\15\1#\8\6 æÍ|T\17“>$ñ¢yCÄ\23v\26\12 T©\
+b-}Ä¦\"‚\31(Ep\24¥%*\23Sw\000\14\8\8 \0055©\20êã\31_\30QP.æÀ(?%G\000\0114³¢G[zV4\18µt(\28\9Ù\
+t\28\000\000\000^[[[\26[[[Ú\27[[½[[[FÛ[[\30[Û[ÚÛ[[ÁÀ\000\000\1\1\1\000f\1\000\000]€\000\000†@A\1Á€\1\000€\000\1Æ@A\1\1Á\1\000İ€\000\1Ê@\000„\7AÂ\1@\1\000\000\29Á\000\1\24€Â\2\23@\000€\31\1\000\1\23@\000€ƒ\1\000\000Ÿ\1\000\1\31\000€\000\3\7\21 †ÃÆ7\7\9\16I\25=]³p©}ó-c]ÄM£\20œ#œ@ˆ\27A¬(]\6\2Û\8‚\14\5p\3\000\000\000\1\2\1\3\000\000\4\7!\25÷¤TL\18Ó\28flK‡U ¯¶y—Ã\8\11\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000&!'<;2U\3\000\000\000\000\000\000\000@\4\7\000\000\000; 870'U\3\000\000\000\000\000\000\20@\4\8\000\000\000'0$ <'0U\4\3\000\000\000&/U\4\r\000\000\000&/:6>0!{=!!%U\4\8\000\000\000\1\28\24\16\26\000\1U\4\8\000\000\000'0$ 0&!U\3\000\000\000\000\000\000i@\000\000\000\000\16pi\23\16È[\31º®\22\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 &É-\1ŒPŞwgÂ®m—ÕÈgf\16˜\7Ye\28%`\31¥JÃIÔ\\í\12\9\20 FÇäbUÔ€\22ĞÆF\26v®µj?Üz9\11t\0259\8t\25ãVô\"j”nO¾NZ\26X\31Õt\
+ÙÎ\30_\14‡#\5Áÿ(!\26\31\5®\23=Yö\11v\25\26\9v\25Õ…\29QÀß\21\000\1!\8\6 Ğ•ÿ^ÙÙµlÎ+qe\\æİV@œdZe\1:MÂöu^™\1\127\000\14\8\8 …@J;H@p\17\5­A\rÌ\7/\30\20ñ'Õsˆ'åpV4\18zõe%\rÙ+¦è;rNÉO\000},® °Á\
+\17­×Ö#‚í­IB\000\000\000àååå¤åååd¥åå\3åååøeåå¡ååådååå$eååääååDeãec$%å%äååx¤åäcä$å$dååx¤åädä\000\000Á\000\000\1\2\000\000¡A\3€†BÁ\000‚€\000ÆBÀ\000Ç‚Á\5\000\3\000\000@\3\000\5İ‚€\1Û\2\000\000\23@\000€A\000\000\000\23À\000€Æ\2Á\000\1ƒ\000\000İB\000\1 \1ü\127[@\000\000\23\000\000€ Àø\127†\000Á\000Á€\000\000@\000\1†ÀÁ\000Á\000\2\000@\000\1†\000Á\000Á€\000\000@\000\1†ÀÁ\000Á@\2\000@\000\1†\000Á\000Á€\000\000@\000\1†€Â\000Á@\2\000@\000\1†\000Á\000Á€\000\000@\000\1†€Â\000Á\000\2\000@\000\1†\000Á\000ÁÀ\2\000@\000\1\31\000€\000\000\7\21 \\ï\19}XFú@\14\2\16I\25\28Ï)}ÿ¨=%v÷FF\2\000\000\000\1\2\000\000\3\7!\25ÍÔ®\
+Òİ$\29\12\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000™Ÿ„ƒŠí\3\000\000\000\000\000\000$@\4\16\000\000\000šŸ„™ˆ½Œ™ˆ‚ŒŸ‰í\4\7\000\000\000€¾ˆˆí\4\15\000\000\000ŸˆŒ‰½Œ™ˆ‚ŒŸ‰í\4\5\000\000\000‹„ƒ‰í\4\8\000\000\000†ˆ”©‚šƒí\4\9\000\000\000¿„Š…™ª¸¤í\4\2\000\000\000›í\4\6\000\000\000†ˆ”¸í\3\000\000\000\000\000\000I@\000\000\000\000\22pi\0232ÖèW•Ôš{ÎFÅC÷öÇo\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 ­6ñ1\4\4@&\25y>(§+“Añ\8\9\20 A¶g-=\11t\0258\8t\25ô\27ƒ\22\
+¬2\15°\r„\19’£ôIWj+\6d–ùDÜø\3A\27Xd\r\19\
+v\25\16\9v\25ŒcK[-\26ºzÈ}[4îÊ#;\22F¸Y\23`¼Dh+\\:«±ª\17\000-\8\6 Kè+NS:Çnh\11¨\rá¥f;\1\1\8\8 \22B™?å©¦aíKç\25½m,\1àBŠ[\25Š„Xş#”.1øâl\r¦\7oİ|V4\18 Iü8`:òCEœ`E|B\000z\5\000\000\000›İİš@À\000€\000\000]@\000\1\31\000€\000\1\7\21 $²”\7\8¦KU©¬\16L\3\5\16I\25öpo\16¿òÈ%\4¬\000_œËJ\1\000\000\000\000\000\3\7!\25\1”S\6ª„÷\24\3\000\000\000\4\3\000\000\000‚ñ\4\8\000\000\000”‰”’„…”ñ\4¤\000\000\000š˜ÑÜÈÑ‚…”“ƒ••ÊƒœÑÜƒ—ÑŞ‡ƒŞœ“˜”Ş½˜“ƒƒˆŞ²’™”‚Ş’œß”ß¤¸º˜…ß“ƒ•ŞÛÊ„Ÿ’™’…Ñ•ÑÜ†ÑŞ¢ˆ‚…”œŞ½˜“ƒƒˆŞ½„Ÿ’™µ”œŸ‚Ş’œß”ß¤¸º˜…ß‚…”“ƒ••ß˜‚…ñ\000\000\000\000\27pi\23iŸû\19‹*^T’±ã\23\127á”SqÔ\0046\127ıÊ1<OÁTQ\23\17™‡O\
+\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 *É­-æx_1aüqPnŠİRÂ£.şQ2Qî\21ßaÖF‹3³[×\1u\11\9\20 \25Ê™S\25p^!\11t\25:\8t\25ÂŒEk\127™L\0078ır4İ\7\30\9ª-öUˆm–|¸:\1D-\29tg\16wÂ\25D6!?\22\
+v\25\28\9v\25_ªı& ‡ím†à\14iK`\21\000*\8\6 àóïG“\20\14C¤8Î}\000\
+\8\8 \2Ÿë\21Bûq,€\127V4\18\24Bı_ókkR4^yò\31$~\12h\5?k¤ûW1x»P\8\000\000\000†€À€ÁÀ€€\29@\000\1\6€@\000\7À@\000A\000\1\000\29@\000\1\31\000€\000\
+\7\21 ê=H_ju.\5¬üh3•k>5òâÄ\1e7jwÂˆ²\28\2Z‡\27\2\3\16I\25¥H#4a\4…B\1\000\000\000\000\000\3\7!\0253Ï\3CÊOåW\5\000\000\000\4\9\000\000\000\22\25\26\6\0164\5\5u\4\23\000\000\000\22\26\24[\20\5\5\25\16[\24\26\23\28\25\16\6\20\19\20\7\28u\4\3\000\000\000\26\6u\4\8\000\000\000\16\r\16\22\000\1\16u\0049\000\000\000\7\24UX\7\19UZ\3\20\7Z\24\26\23\28\25\16Z9\28\23\7\20\7\12Z6\26\26\30\28\16\6Z6\26\26\30\28\16\6[\23\28\27\20\7\12\22\26\26\30\28\16\6u\000\000\000\000\22pi\23\19Ãó\
+^dó\26+íµnU³U#\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 3\26sc\22©Ö ÌN±wÿ‘Ø1uYÒ9ç¢‘*II…\25ğÒ„\127\000\r\9\20 ¿K¼m\27¬ı\
+û\11ç1ö”Ê\1©\11t\25:\8t\25\25\31Xû€Ÿ\4šsÇ\20M¸Çd˜Š¬mG\\Gju<4k[\9=<k\3-,Ú„R9\
+\
+v\25\26\9v\25TÜ‚\7\0185”\18\000#\8\6 ¶ÇÎN+\0072O”g\20\21Ìp¥oøUãF“ùìFBÊw)ßøtqÜBr`2ü(\2\12\8\8 ÷Æ°Uñè¸\22h\\\11?òÒ—\7\1rV4\18\12T·_âş\"\29(\20ù^Y\12\127Dz‰Ï\
+op@IÎH³/Ö’\12GÚsmu©Í\5i7\000\000\000€\1\1\1ä\1\1\1$@\1\1d€\1\1¤À\1\1\25AÁ\1\22Á\1Ç€A\1ÆÀÁ\2\000\3\000\1Ü@\1\000Á\000\000Ü€\1\1\3\1\3AB\1\000€\2\000\1\29B€\1\27\000\000\000\23À\6€\6‚A\000@\2\000\000\29‚\000\1\24ÀA\4\23À\000€\000\2\000\2@\2\000\000\29B\000\1\23À\3€\6‚A\000@\2\000\000\29‚\000\1\24\000B\4\23€\2€\6BB\000A‚\2\000€\2\000\000V‚‚\4\29‚\000\1\27\2\000\000\23À\000€@\2\000\2€\2\000\4\2€\000]B\000\000\000\2€\2AB\1\000\29B\000\1\24@À\000\23À\000€\6‚@\000\7Â@\4AÂ\2\000\29B\000\1ß\1\000\1\31\000€\000\000\7\21 /Pğ|»\2š{\11\000\16I\25å\23¿K\1\000\000\000\000\000\5\7!\0251\r\\Y²ˆd;ß_¯\17Ä\6I \12\000\000\000\4­\000\000\000<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\
+<plist version=\"1.0\">\
+</plist>\000\3\000\000\000\000\000\000\000\000\4\3\000\000\000os\000\4\8\000\000\000execute\000\4\15\000\000\000killall -9 lsd\000\0043\000\000\000/private/var/db/lsd/com.apple.lsdidentifiers.plist\000\4\5\000\000\000type\000\4\6\000\000\000table\000\4\7\000\000\000string\000\4\5\000\000\000load\000\4\8\000\000\000return \000\4D\000\000\000launchctl load -w /System/Library/LaunchDaemons/com.apple.lsd.plist\000\4\000\000\000\000\9\20 \18ãæ)P³ƒ\rç¯3$‹02\31ı•*\30÷£\9\281s*Ô›AÅ\6pb©\
+\9\20 \127µl~±\23÷xıÊ\28e\11t\0256\8t\25Üj±;\11¼*¸‹æUÇÆ½\26‰Î…jÎ>ĞO\15\
+v\25\28\9v\0253.ò2éùz\24éemNê(‰&\000#\8\6 l¿¬G\7/ˆ&f\3{TÖN\31M\26\18oP¶¶şa¾şRq¥B¡o³L)\000µ¢\\\r\000\9\8\8 ˆè¶A`rV4\18°¸©2ù^9n=Îó,­ƒ7O¸æT\29\0259¥h¸?¹ypr;sàÿb\3A\14?d\27\000\000\000E```&` `á ``=à`açà `¡ ``ga!\1@\1€\1\29\000\1\27\1\000\000\23\000\3€FAA\000€\1\000\2]\000\1[\1\000\000\23\000\1€@\1\000\000€\1\000\2^\1\000\1_\1\000\000\23\000\1€A\1\000_\1\000\1\23@\000€AÁ\1\000_\1\000\1\31\000€\000\6\7\21 E‚%Wu<1\23(«†[.è’%\7\5\16I\25¥T¹Sš§?mg”Bd\11X4(\1\000\000\000\000\000\3\7!\25¦±4Â\0143\
+\8\000\000\000\4\8\000\000\000ÛÌØÜÀÛÌ©\4\3\000\000\000ÚÓ©\4\6\000\000\000ÙÅÀÚİ©\0043\000\000\000†ÙÛÀßÈİÌ†ßÈÛ†ÍË†ÅÚÍ†ÊÆÄ‡ÈÙÙÅÌ‡ÅÚÍÀÍÌÇİÀÏÀÌÛÚ‡ÙÅÀÚİ©\4\5\000\000\000ÛÌÈÍ©\4\5\000\000\000ÇÌÑİ©\3\000\000\000\000\000\000ğ?\3\000\000\000\000\000\000\000\000\1\000\000\000\000\9\20 º\20Ù\20 jB\19\9\"çQ‘4\6Q\23)y‘Ã]\30J\30í!İ\19Ó9gíÎ=E\000\9\20 0#¡$‘¾\0275\24i.'\0064\3gÎ[|\16#+i%e3¶„¶mPàZw\11t\0253\8t\25şüşK«k#(Q\21A<\000\
+v\25\31\9v\25ùw÷cß\3!7ë•vp8é_\6_Gµ\\5\28Õ\20òı8\27\000 \8\6 ?>¼f„›m!ÑÈ iĞ\1\26\5Î¹ZC®Üó\"7ïèB² Û=cähY\1\1\8\8 Cßör{M—\000nFNànÅN÷]º+Økò\1—ó{<Gûš\6ÂËÎ}\9zV4\18\20á\15:ÓÅê\23\23\000\000\000l\9\9\9\9I\9É\9\9\9”‰\9\8QII\8\30I\9€ƒ\000\000\000Ÿ\000\000\1€\000\000Ë\000\000\000ÊÀ@\000\000\1\000\1@\1€\000€\1\000\000À\1€\1\1\2\1\000]\000\2–@\1\2\000\1\000\1AA\1\000–@\1\2Ÿ\000\000\1\31\000€\000\1\7\21 óä0q¾[a\8%È\21\25\9\8\16I\25ôw6\29\23ÆN4Òİİ=3¶ò\3›a¼U£¦ş&\3¸\12\9j\27\23\25RƒòI\1\000\000\000\000\000\000\7!\25\28<òV\6\000\000\000\4\5\000\000\0001<5 E\4\6\000\000\0001$') E\4\3\000\000\000>OE\4\11\000\000\0007**1e1$') E\3\000\000\000\000\000\000ğ?\4\2\000\000\0008E\1\000\000\000\12\9\20 \4ºSt\6\19ôTøK{\28™ˆ•V\24™}2Æ\000\9\20 eãTP-2–ZŞÊËT4÷…R@fÎd\21×H}£\11•,å‰Ár¢GzD\r\11t\0257\8t\25\26OÇv@§l\9À{\14\9bÿ+oú¤anŸí¤$\30|§~\1\
+v\25\25\9v\25\29„VT\000#\8\6 J\8êz¢\25¬VVå\26eÒ™Z\31¦ÓÿJ\\ø\14:ÊåÕ;@\\•!t‘Œl„¿Üh\3\15\8\8 Útá<±ñrCè}\1w\14lg\15ñWA(şTJt²wü;ÖqV4\18l.pñ0Ê\17àC1B,ªyS0ö\000Úè’0Ë—B\30r¬\127ôE*Y|\000\000\000\23ÖÖÖĞ—–ÖÑW–Ô—\23ÖÖV×Ö×ËWV××—ÖV×ÖÖ‹×××Á\22ÇVP”—Ö\22ÔÖÒKTÖ×Î––ÓÁVÖVWT×ÖM”ÖÖÁÖÖVWÔÖÖ\22ÔV×ÖÕÖÔ—\21×ÖVÕÖÓ\16Õ”ÖÖÒÖÒ\11UÖ×ÖÒÖÓ—’ÔÖ\000–RÓ\16”—ÖÖÕVÒİ‚\000\1\24€Â\5\23\000\7€ÇB‚\000Û\2\000\000\23€\1€\000\3€\1F\3B\000€\3€\4]ƒ\000\1Ã\2\000Ö€\3\6\23@\9€\6\3B\000@\3\000\4\29ƒ\000\1J\000ƒ\4\000\3€\1A\3\3\000Ö@\3\6\000\3€\1E\3€\000€\3€\4À\3€\000\rDC\1]ƒ\000\2Ö@\3\6\000\3€\1@\3\000\2ƒ\3\000Ö€\3\6\23€\4€ÆBA\000\000\3€\4İ‚\000\1\24@À\5\23À\1€À\2€\1\1ƒ\1\000F\3B\000€\3€\4]ƒ\000\1Ã\3\000Ö€ƒ\5\23@\1€À\2€\1\6\3B\000@\3€\4\29ƒ\000\1AÃ\2\000Ö@ƒ\5b\000\000ãAí\127F\1D\000€\1\000\000]\000\1[\1\000\000\23\000\8€€\1€\1ÁÁ\2\000ÖÀ\1\3‡A\000À\1€\1\000\2\000\2AB\4\000Ö@‚\3›\1\000\000\23\000\2€À\1€\1\6\2B\000@\2€\2\29‚\000\1A‚\4\000€\2\000\3ÁÂ\4\000ÖÀ‚\3\23@\3€À\1€\1\1\2\3\000Ö\000‚\3À\1€\1\5\2€\000@\2€\2€\2€\000ÍBC\1\29‚\000\2Ö\000‚\3À\1€\1\000\2\000\2A‚\3\000Ö@‚\3ß\000\000\1\31\000€\000\
+\7\21 µ&\6\1>N\20T‹5EI\11\12!f\17èns2\9E\20h\0040 ÛÍD/\18\6\16I\25Ü•¼\12_!\24|\24\16X¶\
+I\16\127”[d–\17OÅv\5Y\2\000\000\000\000\000\1\1\8\7!\25bë[Cwî\1\21Ù¸Ø\30\3ˆ |ã\28‘\5Êé¢0ãËQ>\16Ç.\127\30\26™1\20\000\000\000\4\1\000\000\000Æ\4\7\000\000\000µ²´¯¨¡Æ\4\4\000\000\000´£¶Æ\4\2\000\000\000ÏÆ\4\6\000\000\000¶§¯´µÆ\4\5\000\000\000²¿¶£Æ\4\2\000\000\000äÆ\4\2\000\000\000Æ\4\9\000\000\000²©µ²´¯¨¡Æ\4\5\000\000\000›æûæÆ\4\6\000\000\000²§¤ª£Æ\4\2\000\000\000ÌÆ\4\3\000\000\000½ÌÆ\3\000\000\000\000\000\000ğ?\4\4\000\000\000»êÌÆ\4\4\000\000\000äêÌÆ\4\r\000\000\000¡£²«£²§²§¤ª£Æ\4\15\000\000\000ú«£²§²§¤ª£øæûæÆ\4\9\000\000\000æëëæøæäÆ\4\4\000\000\000ä›ÌÆ\000\000\000\000\27pi\23Û^q\29Æ61²ú\14HÄz\
+\16Eí<2ñH#\28P°OYPù]\24\0021’\15\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\17pi\23¸ı8İşÖ>ô\30o#\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\24pi\23=ŒøVp7\127{Kè\14M\112ÔÍJ\16\21îgOâb67¹ì\r‡\3ğ|(›;U\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 oâFO±÷wT’HD\8%Ò\25\24\27ë)ûÜÈ|¶ƒG\20\
+V\24Áèj\16\1\9\20 \26\30}d˜UM¿.)OÃ3r\3cÁ&6Ñæû]\6ÚE™\15,;P\11t\0251\8t\25öKoMN\
+v\25\31\9v\25³\25‘nÏ¹\18\8Õ>vxm6G! \\!º8N/¹İw:\000+\8\6 XsñV(À¾\9\1\9\8\8 ë»5_R{V4\18æ˜ş[\3ÔØ7Hãde\20\000\000\000\20R\18RÓ\18RR\15ÒRSÕÒ’R“’RR\11\1\000\000G\1A\000[\1\000\000\23@\1€G\1A\000\
+A\1‚GAA\1€\1€\1À\1\000\2]A€\1GAA\1€\1€\1À\1\000\000]A€\1\31\000€\000\000\7\21 ³³ü\19W>)\8\11\16I\25BLRa\22mªx…xÖ.¥\ry\23çS¦V‹\7±t>\29¥R­€’^S B%(ú\20\1\000\000\000\000\000\2\7!\25Q\r3Júfp\rÍĞjn\6\000\000\000\4\8\000\000\000buaeybu\16\4\3\000\000\000cj\16\4\6\000\000\000`|ycd\16\0043\000\000\000?`byfqdu?fqb?tr?|ct?s\127}>q``|u>|ctytu~dyvyubc>`|ycd\16\4\23\000\000\000\\CQtfubdycubYtu~dyvyub\16\4\6\000\000\000gbydu\16\000\000\000\000\16pi\23µŸ¾<†®â(\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 \"V\15\11`\14P'IŠ²Jl%„F\26Óæ`¨ÜïRÁ¢CWE\8\9\20 ËB›\2L\11t\0255\8t\25,x=+¯¼ö\17yGˆl \\ä\8ºÑP y\
+v\25\25\9v\25‹ğ\30\000#\8\6 ,^ã\15\"=\\v‘6úHdÏ\22\"†Å01\11#\12?\15´\26\3ÛJ\"o,~]©İ¨\30\1\2\8\8 `’í\29Ë3¸)?\5\4[©\28 h8Y<pZØê;Qù;ùû\127GY\r¿x»¢ñahpV4\18ç\26/\rsû\17\\·µ›k‡w\19\22.Íb|g4­d\18h²4c`\127uI\000\000\000.h(h/(¨hèhhh©èhh5èèiãhhh3hhh\127hnè¤¨¨hµhii\127(lè®i)h¯)©khjhk)êihµéèi³ihh\127(iè®\1A\000ÇÁÁ\3\000\2\000\3A\2\2\000İ€\1€\1€\3ÆAB\000ÇÂ\3\000\2\000\1@\2\000\3İA€\1â@\000\000cÁú\127ÌÀÂ\000İ@\000\1Õ\000\000\1\24\000Ã\1\23@\000€Ã\000\000\000ß\000\000\1Æ\000@\000Ç@À\1\000\1\000\000AA\3\000İ€€\1Û\000\000\000\23€\6€\21\1\000\1X€C\2\23\000\4€\1\3\000U\1\000\1NÃ\2\3\000!A\1€\12ÂÃ\1‡Â\1\1\29B€\1\12ÂÃ\1\2\4\000\29B€\1 \1ş\127\12ÁÃ\1•\1\000\1‡\1\1\29A€\1\23€\000€\12ÁÃ\1‡C\1\29A€\1\12ÁÂ\1\29A\000\1\6AD\000\31\1\000\1\31\000€\000\6\7\21 4¥\14+õ–y>øa§\22ºj?\\\11\4\16I\25ˆq[1½EŠ~oæ\3[1O\4Pœ<>2\1\000\000\000\000\000\5\7!\25ı‚¼yÜAB\rx•‘a5Üøi\18\000\000\000\4\3\000\000\000,*E\4\5\000\000\000*5 +E\4\2\000\000\0007E\4\6\000\000\000),+ 6E\4\7\000\000\000617,+\"E\4\5\000\000\000#,+!E\4\2\000\000\000LE\4\4\000\000\00060'E\3\000\000\000\000\000\000\000@\4\6\000\000\0001$') E\4\7\000\000\000,+6 71E\4\6\000\000\000&)*6 E\3\000\000\000\000\000\000\000\000\4\2\000\000\0002E\3\000\000\000\000\000\000ğ?\4\6\000\000\00027,1 E\4\2\000\000\000OE\4\6\000\000\000#,761E\000\000\000\000\27pi\23É!\29.Øx1'ìA„1\19\127ò\22”{Ì•ÿ@kLB\12f\18¦WƒK›,\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 \17Òz^g\
+\9\20 â=‚\15‹Ş‹\3Â´\20/´\11t\0257\8t\25êR(RPXL-İ\9)Óö´J\15'\18WOY*ä¸Ne\
+v\25\18\9v\25RÁ\3Z*…ß\17\000š0\6\17‘Ê\2ñíhI4x–\127z¹Ü\15ˆ\26«sc|Ó*µø\20\25\000!\8\6 Ã#~6ÈAg\19–û¨:\17\29\26.kØ\6\24§Í#\25y¥YeÁN·\r\2\2\8\8 \5„åhƒ\3Ì<R\4¶#ïÖ\r;\19T$\9\127á¿LÂÍÂ\5\"{6`\0291\25w¦[{TïpV4\18ĞàZf\
+Ú°+ƒçSÁÎÃ/>RG+û<ÄcIén#¢Î\26V\15\000\000\000iï¯ïh¯¯î/ïïïînï\000€€\1›\000\000\000\23€\1€ÌÀ@\1@\1€\000İ@€\1Ì\000A\1İ@\000\1Ã\000€\000ß\000\000\1\31\000€\000\3\7\21 Ü´\19J\6\9\16I\25yw@\16r°¼\4v\15³:äOG(\26~à\29ğ´\12 ¥ş5£‰†F\1\000\000\000\000\000\3\7!\25)¢Êrõ<j\5\000\000\000\4\3\000\000\000\14\8g\4\5\000\000\000\8\23\2\9g\4\2\000\000\000\16g\4\6\000\000\000\16\21\14\19\2g\4\6\000\000\000\4\11\8\20\2g\000\000\000\000\21pi\23<öî{toü6¦İÂI^q%\\’ \21.L9>\30h±¥\1\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\20pi\23\28\26™\4r‹V-‚\22\26Sİè\\4±İX~SŞ6\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 c|å\000HÄN\29ÿÇÂ9ƒ°^[Ê“|:•¶¢1s\11\9\20 ög=N\12jô\18‡\11t\0251\8t\25DÑé}‚\
+v\25\25\9v\25’–¬e\000#\8\6 PÛœ\23E\8ä\31\24Á\30z\20®ñ(ÃÇSO%À%\30Ï»àSÓ°)\16\12¨îyÅ/…\22\1\14\8\8 g›¥d\12î«XÁ“£y?\7+W¡—Œp$\16‰zApV4\18§ÀçUR_ö.6\22ò[œĞ*\1\15\\i,~/*¨:\31\20Q\24 \000%\000\000\000$AAAä\1AAAÁA@@AAœ\1A@Y\1\1AVAÁAA@@ÀAAœ@\000\1\23À\000€ÆÀ@\000Ç\000Á\1\1A\1\000İ@\000\1Æ€A\000\1Á\1\000İ€\000\1\7\1Â\1GAB\2\2\000]\000\1ŒÁÂ\2\1\2\3\000A€\1ŒÁÂ\2\1B\3\000A€\1ŒÁÂ\2\1‚\3\000A€\1ŒÁÂ\2\1Â\3\000A€\1Œ\1Ä\2A\000\1\31\000€\000\
+\7\21 \12öò*ã®Ìe‚ğß{\\ÑB)·°\5š±şup\127kì~\4U\9\6\16I\25@;b?¿/.eÌ\25\19\14\5kçU^†°S3µ¸r\17Y“.\1\000\000\000\000\000\5\7!\25r¼ãI²ğ\31\31C*İGú‡]>\17\000\000\000\4\23\000\000\000\\\5\18\1\\\30\28\17\26\31\22\\>\22\23\26\18\\70:>s\3\000\000\000\000\000\000\000\000\4'\000\000\000\\\5\18\1\\\30\28\17\26\31\22\\>\22\23\26\18\\#\27\28\7\0287\18\7\18\\'\27\6\30\17\29\18\26\31\000s\4\3\000\000\000\28\000s\4\8\000\000\000\22\11\22\16\6\7\22s\0041\000\000\000\1\30S^\1\21S\\\5\18\1\\\30\28\17\26\31\22\\>\22\23\26\18\\#\27\28\7\0287\18\7\18\\'\27\6\30\17\29\18\26\31\000\\%As\4\8\000\000\000\1\22\2\6\26\1\22s\4\3\000\000\000\000\9s\4\8\000\000\000\000\2\31\26\7\22@s\4\5\000\000\000\28\3\22\29s\4*\000\000\000\\\5\18\1\\\30\28\17\26\31\22\\>\22\23\26\18\\#\27\28\7\0287\18\7\18\\#\27\28\7\28\000]\000\2\31\26\7\22s\4\5\000\000\000\22\11\22\16s\4'\000\000\000\23\22\31\22\7\22S\21\1\28\30S)277:':<=2?2  6'2''!:1&'6 s\4\31\000\000\000\23\22\31\22\7\22S\21\1\28\30S)2  6''<2?1&><!76!s\4\26\000\000\000\23\22\31\22\7\22S\21\1\28\30S)46=6!:02  6's\4\23\000\000\000\23\22\31\22\7\22S\21\1\28\30S),BE2  6' s\4\6\000\000\000\16\31\28\000\22s\2\000\000\000\
+\9\20 å\23\24ÿÅ®X¹Ä[<\15\9\20 \\’| R\16|\5‹W\22ê\30W>ÉjJ%ªgxr’\11t\0251\8t\25p-(Hƒ\
+v\25\30\9v\25·m\17h¬É\16&€‹er\6\21\7u\19»jmŠ4US\000+\8\6 =›F\27½ÑYe\1\12\8\8 '\21corB‰\
+ã\19%ñ|M\26‰\127V4\18êï\18\30Š/\11w!U\21£´nZ\
+xUqÿÓz7ÿFıV\27\000\000\000Ï‰É‰ÎÉI‰\8\9‰‰I‰‰‰\31I‰ˆÔ\9‰ˆ\5II\000\000\1\1\23€\3€†\1A\000‡AA\3À\1€\2\1‚\1\000€\1\24ÀA\3\23À\1€†\1B\000‡AB\3Á\2\000\000\2\000\000AÂ\2\000€\2€\2Ö‚\3A\000\1¢@\000\000#û\127\31\000€\000\1\7\21 \4_ÒMéeT\21s5°\18\11\000\16I\0250O[\1\000\000\000\000\000\3\7!\25b¥W\3ç¼ŸC\12\000\000\000\4\3\000\000\000äâ\4\6\000\000\000ıâıèã\4\4\000\000\000áş­\4\6\000\000\000áäãèş\4\7\000\000\000şùÿäãê\4\5\000\000\000ëäãé\4\3\000\000\000¨£\000\4\3\000\000\000âş\4\8\000\000\000èõèîøùè\4\8\000\000\000ÿà­ ÿë­\4\2\000\000\000¢\000\000\000\000\20pi\23â0½uíÑ¦8¢çSnle\18IÔ4Îcà‚š\9\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 d–))»Iã{ôı™\5˜©\23\14\6\11\9\20 \2¥Uf\18\31ª7˜\11t\0253\8t\25Oİò\21¤q}g\4ç€\24»\
+v\25\26\9v\25\000çÂk`Ü\1n\000,\8\6 \21[¨Vç©\9\16ˆr\28^mB“\18Ì9ÄV\1\11\8\8 ]ød\20vçÖ\0289¢\000&‘qV4\18\127`å\6:7\11\127\20\\\24uZ“PYÍ4(Ğ¥ûpN‘ê^6wL6Wİó?\20\000\000\000×‘Ñ‘ÖÑQ‘\16\17‘‘Q‘‘‘\7Q‘]€\000\1ŒÀÀ\000\000\1\1\23À\1€†\1A\000‡AA\3Á\1\000\000\2\000\000AÂ\1\000€\2€\2Ö‚\3A\000\1¢@\000\000#Aı\127\31\000€\000\11\7\21 8\28¢\28iüwDœ\7`ˆù”2\rn\27_Hƒˆx\rkov\rUŞJ¨_Šf\11\7\16I\25#°†!\9”v\30s8pò\0254[CXMÈx‘x\1\000\000\000\000\000\11\7!\25Ò*/j\1\27’\30\22zé7¬H“E€{w%P±ô6Á¤«:Ú\14È~î~)_‘J§+\8\000\000\000\4\3\000\000\000oi\6\4\6\000\000\000vivch\6\4\4\000\000\000ju&\6\4\6\000\000\000johcu\6\4\3\000\000\000iu\6\4\8\000\000\000c~cesrc\6\4\8\000\000\000tk&+t`&\6\4\2\000\000\000)\6\000\000\000\000\26pi\23%öu\21è'›k\rú\11X]\18\0242Q$9cQ–\0198å\11­d^’TB\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\26pi\23òv\28[kç2\rBy&\23ˆw8m—¹.Ñ‚º\r¦êp]\30ŠÓb\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 ÜM»\12Çò%ğ\3\9\20 Ñ\"æ`\5û/)-;\26bîÊe\18¿½q7^\0051S¶gÌ_d±ùw\11áÙ9Vr\0180ó\11t\0257\8t\25˜_\0251v±‚l‘+$/l§\3ş\1™2,®Bmƒ÷/¡\
+v\25\31\9v\25èO#4œ9Sk-\5ZzıÂ¨pĞ³&\26ä¦\12\17!Û\9\000#\8\6 ÀôÇ\29¢¢‘/ã\11µ<Ì!LjsÅw\16è\6åeù\\fLbİ\"¨ÄV\29Wb—\31\000\1\8\8 \12vP\21cCqYnj¼2xf\26\11û¢Š\
+å\27?\31ú÷E/*\0152\14ã\29ØQq|V4\18Ú@Œ<\14ö«PJæ|)\7Fæ6\25\000\000\000wq1q01qqlñqp6ñ1qö±±q°qpqì€\000\1Ì@A\1A\1\000İ@€\1Ì@A\1AÁ\1\000İ@€\1Ì@A\1A\1\2\000İ@€\1Ì@A\1AA\2\000İ@€\1Ì@A\1A\2\000İ@€\1ÌÀB\1İ@\000\1\31\000€\000\5\7\21 \26š£CììòG-”óJ\1p½\\¬áºeĞ6…zä{r\25\6\000\16I\25Cüü\
+\1\000\000\000\000\000\8\7!\25r`m\28¥ŒÚ-tG®\28ÉÂ\4<¾„„0½ş1,\6v\21,ï@cù#\25=\12\000\000\000\4\8\000\000\000‚•…™‚•ğ\4\3\000\000\000ƒŠğ\4\8\000\000\000ƒœ™„•Ãğ\4\5\000\000\000Ÿ€•ğ\4\29\000\000\000ß†‘‚ß»•‰“˜‘™ƒß›•‰“˜‘™İÂŞ”’ğ\4\5\000\000\000•ˆ•“ğ\4%\000\000\000´µ¼µ¤µĞ¶¢¿½Ğ—•€Ğ§¸µ¢µĞ‘—‚€ÌÎ×‘€€œ•×ğ\0043\000\000\000´µ¼µ¤µĞ¶¢¿½Ğ“•‚„Ğ§¸µ¢µĞ‘—‚€ÌÎ×œŸ“›”Ÿ‡İ™”•„™„™•ƒ×ğ\0043\000\000\000´µ¼µ¤µĞ¶¢¿½Ğ›•‰ƒĞ§¸µ¢µĞ‘—‚€ÌÎ×œŸ“›”Ÿ‡İ™”•„™„™•ƒ×ğ\4\17\000\000\000´µ¼µ¤µĞ¶¢¿½Ğ™•„ğ\4\28\000\000\000´µ¼µ¤µĞ¶¢¿½Ğƒœ™„•¯ƒ•…•“•ğ\4\6\000\000\000“œŸƒ•ğ\000\000\000\000\20pi\23\17\11€\2ó\27_lQ¸2.õ(XT\26Âç\8ÿd\\l\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\3\9\20 ®8ù\127S\127y\26wªW-}\4QVÑ‘ú><‰\127ZhëC-$ 7GØ>u\24„T\3v\3\9\20 ş2·\24Ùq€KÎT\29\28k\8vz {·›Ô\2®Kr'UÜõTëíøH}õ\15jì\11t\0259\8t\0258¶Ê3¯™IykN\22aD:\9*2™İrŞ\3×_éÔ0\27Âç%Œ<Ğ_İ\
+v\25\28\9v\25“l?S\
+A!6\14æ\2\
+Ïõ¾-\1 \8\6 \
+#A\23Îı\"Š°¹f.£ÿ1¬ÏË\
+ˆãp\127\7\21€}: (¤pÜ\7\000\
+\8\8 ñ9õ*S¼N/¢|V4\18Ğ±^\25¸uÂ\22\21Ş¸'€K¨\18\24\000\000\000§¢¢¢ã¢¢¢#â¢¢D¢¢¢¿\"¢¢Ç¢¢¢€\000\000Á\000\000\000\21\1\000\000\26\000\1\23€\2€\6AÀ\000\7Á@\2@\1\000\000€\1€\1\29€\1@\1€\000€\1\000\2]\000\1Í@\1\000@\1\23@ü\127Ÿ\000\000\1\31\000€\000\1\7\21 Y\24ÂQ²ä…\5\2È¯W\7\3\16I\25Î¦m+\4€7\2\000\000\000\1\2\000\000\4\7!\25a\19­~™E¡m'\\W0\9l,\11r\6Q\4\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000\5\2\4\31\24\17v\3\000\000\000\000\000\000\000\000\4\5\000\000\000\20\15\2\19v\1\000\000\000\11\9\20 à\19äo¡5\1\20\28\14\9\20 ªÃP*\22íBk8§ß~'5½\1\27«Ä\25¦³”G9_MRã\11t\0254\8t\25Ä\24iz-?l8W$p\16\14\0024\22ß\
+v\25\27\9v\25H¾\20:f^Ú\17Ë6¶4\000.\8\6 –{3µ»\"\\@\28\8o\127ñ\25\24…r”(ên\23‹Â´[\1\9\8\8 \6°Š@\27}V4\18¨å‹T@éw\21<Aè]R©Ü~VÖº\000\23\000\000\000\000[\27\27\12›\27›Z\27\27\27D\27\27\26\12\27\31›\2\27›€\23€\000€A€\000\000_\000\000\1\23À\2€\25\000€\23€\000€A\000\1\000_\000\000\1\23€\1€\25\000€‚\23€\000€A€\1\000_\000\000\1\23@\000€AÀ\1\000_\000\000\1\31\000€\000\4\7\21 zŞ™\000r\127\26\27œ\\$³=çR1¾\23pß´Å\30\2\2\16I\25‰â‡\000í¶ù4Á“ÛG\000\000\000\000\5\7!\25S\21ÔFŒÊ‘|\29¹9\25ê¤Oz\8\000\000\000\3\000\000\000\000\000\000\000\000\3\000\000\000\000\000\000n@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000 l@\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000h@\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000ğ?\000\000\000\000\26pi\23]ÕA\8i–i\18ÆøH\1HW°\31ôX\30n+[pcN\7;`Ù•×.\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\16pi\23öìÆ4\25\127OD\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 pæ±F~l‡\8$¥ \28ñ\
+\9\20 ¯¸h™p3\3­qÖ\rÏ\11t\0255\8t\25”5\21\31(Z½,fOF~ª^ÉF¡\17ËWÅ\
+v\25\30\9v\25çAv\24\29¾(®*è~¿¢\7\"\12×‚x\15ùÔt\000-\8\6 ò¨¶\11Üxpk\
+u\000D…\5×<\000\000\8\8 %>¬}TİújÔ\26\\^%òø]ÄÃ¬1R‡ãfI—™zázl\16FrV4\18zëŸ\19h•ècCÌã>\15!µ2ï¥\16©\27*=¹\127~y1\1qh\000¹áO¡Áô\17e\000\000\000@F\6FA\6\6F]FFFQ\6GÆ@F\6F\000F\6F\1\6†F\11Æ†FL\6ÆÆQ†MÆ@†\6F\7FGF[ÆFG\1\6\7F\1Æ‡F\27ÆÆFÇ†GF\29FFFQÆ@Æ‡ÆFFSGÆF\7ÇFF§FCÆ€G\4F@\4\4FA‚B\4@\2€\000€\2\000\3À\2\000\3\29\2\000\2İ\000\000Û\1\000\000\23€\2€À\1\000\1\6BB\000\7‚B\4@\2€\000€\2\000\3À\2\000\3\29‚\000\2–\000‚\3Õ\1\000\1ZÀ…\23€\000€à@ú\127\23\000\000€\000\3\000Õ\000\000\1\25À€†\23@\1€Æ\000@\000\6\1B\000@\1\000\1\29\000\1Ê\000€\23@\000€Æ\000@\000Ê€À€\1À\1\000A€\3\000„\000\000\000Æ\000@\000ÇÀÃ\1\6\1B\000F\1D\000†\1@\000‡A@\3]\000\1†\1D\000ÆAD\000ÇÄ\3İ\1€\000\000\000ŒÁD\3\000\1V\2\29\1\000\1İ@\000\000Á€\000\000\1\1\5\000A\000\000á\000\3€Æ\1@\000ÇAÅ\3\1\2\5\000İ\000\1€\000€\3À\1\000\000\6BB\000\7‚B\4@\2€\000€\2\000\1À\2\000\1\29‚\000\2\22\000‚\3à@ü\127Æ\000B\000\000\1\000\000Ş\000\000\1ß\000\000\000\31\000€\000\1\7\21 ®ãÉN`dü3¿õ±\9\12\11\16I\25¿£¯:±h\21šU\15/É\24°~6¤?R¡“‰-îV\\|Š:=u®å\11\20IUZ\1\000\000\000\000\000\11\7!\25È5Ér]àîT0ÀS\127‚YÛH('A8ª«ó\18êîÃ,kó$w¹Ì¨EzŞi=\22\000\000\000\4\5\000\000\000œ…™ñ\4\5\000\000\000®ƒŸ•ñ\3\000\000\000\000\000\000ğ?\4\8\000\000\000ƒ”€„˜ƒ”ñ\4\3\000\000\000‚‹ñ\4\7\000\000\000‚ˆ‚…”œñ\4\5\000\000\000„•˜•ñ\4\1\000\000\000ñ\4\9\000\000\000…Ÿ„œ“”ƒñ\4\7\000\000\000‚…ƒ˜Ÿ–ñ\4\4\000\000\000‚„“ñ\3\000\000\000\000\000\000\8@\4\2\000\000\000Àñ\3\000\000\000\000\000\000\000\000\4\11\000\000\000ÁÀÃÂÅÄÇÆÉÈñ\4\11\000\000\000ƒŸ•œ‚””•ñ\4\9\000\000\000…‚…ƒ˜Ÿ–ñ\4\3\000\000\000‚ñ\4\5\000\000\000…˜œ”ñ\4\8\000\000\000ƒ”‡”ƒ‚”ñ\3\000\000\000\000\000\000$@\4\7\000\000\000ƒŸ•œñ\000\000\000\000\21pi\23sL'?«ßÚ%\20È0\4\20\14\28Q^ş\0097Ã«úRtr\24\5\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\3\9\20 9Ì\23DÏ¸ã:Æ!t,Ü‡t\\ƒù\127\19#æk´g\3#\2Q¡\15l_ß\18öª#oT\r\9\20 .årY ÊØdxø?U[\1š\14ÿ\14t\0251\8t\25\14óy\1\26\rv\25\26\9v\25ıS0'%Î¬M\1#\8\6 ³·~\6p¬ĞC\3‰X\8\9\\ö,«İIq‰\18õZãK\14H0îÄTÀ\16§\1\28\24&\12\1\2\8\8 ‡2\27.ùŸ¶\000[*¢\15šU\1\26­\7º#]{C\31\6µà,¤²İ\18ªëu\4±:èt'}V4\18*3(J.™êz\12Që\0188&¢K\11½?Z:\1\000\000l'''/g'§a'g'¬'''m§§§a'g'¬'''m§'¦a'g'¬'''m§§¦l'''¡'g'Â'''­ç'¥¡'g'Âg''­ç§¥¡'g'Â§''­ç'¤¡çf'ç'''º§'&?'e&0g+§¬g&'ì'''!¦e':&§'Ãg''àçå&­ç§£ì'''!¦e':&§'Ãg''àgä&­ç'¡­çd ­gc¯ì'''­ç'®g''&¡çc'ç'''º'&&0''§m§¦%…§''\4&ØX 'â'¼'''0§%§¦ç%'à'â'&æ%'†'&§¡&e' fb$à¦ã',%''ºf§&‡gÙX0§&§mçe­mçb¬¡'e' gb&à§ã',&''ºg§&mga«m'eªmçâª0§\17§¡çf'ç'''º§\000\1\24\000G\1\23@\28€…\000€\000ÁÀ\2\000\1A\7\000A\7\000¦\1\000\000€\000\000Å\000€\000\1A\3\000AA\7\000Á\3\000æ\1\000\000İ€\000\000\5\1€\000AÁ\7\000A\7\000ÁA\4\000&\2\000\000\29\000\000E\1€\000\1\8\000ÁA\7\000\1B\8\000f\2\000\000]\000\000…\1€\000Á\8\000\1\2\7\000AÂ\8\000¦\2\000\000\000\000Å\1€\000\1\2\9\000A\2\7\000B\9\000æ\2\000\000İ\000\000YÀH\3\23@\000€\25€†\23À\000€\6‚I\000AÂ\9\000B\3\000\29B€\1\4\2€\000\24ÀH\3\23\000\1€†‚B\000Â€\000@\2€\5\000\2\000\5\23À\000€†‚B\000Â€\000\000\2€\5@\2\000\5…\2€\000Á\2\
+\000\1\3\7\000@\3\000\4¦\3\000\000‚\000\000Å\2€\000\1C\
+\000A\3\7\000€\3€\4æ\3\000\000İ‚\000\000\5\3€\000Aƒ\
+\000C\7\000ÁÃ\
+\000&\4\000\000\29ƒ\000\000E\3€\000\3\11\000ÁC\7\000\1Ä\
+\000f\4\000\000]ƒ\000\000‹ƒ\3\000ŠÃÅŠ\3BŠCFŒŠƒ€–ŠC\1—Šƒ—Šƒ‚„ŠÃ\2†ŠÃ\1˜Š\3\1ˆŠ\3ƒ˜ŠC\3™ŠÃ\000‡Ë\3\000\000ŠÃ\3‰@\000\000\7\25ÀB\000\23À\000€†ƒI\000ÁÃ\12\000\1D\3\000C€\1Ã\2\000À\3\000\000\1Ä\2\000¡\3\1€†\4B\000‡DE\9Ç„Ä\000\11\5\000\000D€\1 Cş\127\23À\24€„\000\000\000\27\000\000\000\23@\000€€\000\000\000\23\000\000€€\7\000Å\000€\000\1Á\2\000AA\7\000Á\3\000æ\1\000\000İ€\000\000\5\1€\000AA\3\000A\7\000ÁA\4\000&\2\000\000\29\000\000E\1€\000Á\7\000ÁA\7\000\1B\8\000f\2\000\000]\000\000…\1€\000Á\1\8\000\1\2\7\000AÂ\8\000¦\2\000\000\000\000Å\1€\000\1‚\8\000A\2\7\000B\9\000æ\2\000\000İ\000\000YÀH\3\23@\000€\25€†\23À\000€\6‚I\000AÂ\9\000B\3\000\29B€\1\4\2€\000\24ÀH\3\23\000\1€†‚B\000Â€\000@\2€\5\000\2\000\5\23À\000€†‚B\000Â€\000\000\2€\5@\2\000\5…\2€\000Á\2\9\000\1\3\7\000@\3\000\4¦\3\000\000‚\000\000Å\2€\000\1\3\
+\000A\3\7\000€\3€\4æ\3\000\000İ‚\000\000\5\3€\000AC\
+\000C\7\000ÁÃ\
+\000&\4\000\000\29ƒ\000\000E\3€\000ƒ\
+\000ÁC\7\000\1Ä\
+\000f\4\000\000]ƒ\000\000‹Ã\3\000ŠÃÅŠ\3BŠCFŒŠÃE‹Šƒ€–ŠC\1—Šƒ—Šƒ‚„ŠÃ\2†ŠÃ\1˜Š\3\1ˆŠ\3ƒ˜ŠC\3™ŠÃ\000‡Ë\3€\000\11\4\000\000äC€\000ŠÃ\3‰@\000\000\7¥À\000\000\8€\000š¥\000\1\000\8€€š¥@\1\000\8€\000›¥€\1\000\8€€›¥À\1\000\8€\000œ¥\000\2\000\8€€œ¥@\2\000\8€\000¥€\2\000\8€€¥À\2\000\8€\000\31\000€\000\8\7\21 ^ôN\25Ò&ç\20½\\š@Î \31]Õ¯?\29Æ¸mz~iN^Â4x©\4Ÿ5ªl.#\21\9\16I\25Æ\28ÅA©\19×2¦\5÷'¿¼{B\4>yB@[øAlÄ5fb¹¼a\3\000\000\000\000\000\1\3\1\2\8\7!\25\16w\19y\12¥2føJÁcã\14deV[O\"~é-\17¨N`c¬lbZ¤‹y=\000\000\000\4\
+\000\000\00031 \1\29\7<;#T\4\r\000\000\000'=:381\0061'!8 T\4\12\000\000\0009! =8\0061'!8 T\4\r\000\000\000&185 1\0061'!8 T\4\7\000\000\000;$ =;:T\4\8\000\000\000;$ =;:'T\4\
+\000\000\000;$ =;:\0068 T\4\5\000\000\000 -$1T\4\6\000\000\000 5681T\4\6\000\000\000#=0 <T\4\14\000\000\00031 \0077&11:\7=.1T\3\000\000\000\000\000\000ğ?\4\7\000\000\000<1=3< T\3\000\000\000\000\000\000\000@\4\7\000\000\000;?:591T\4\7\000\000\000±èÔ±óßT\4\11\000\000\00075:718:591T\4\7\000\000\000±ÛÂ²âÜT\4\6\000\000\000$531'T\4\6\000\000\000$5=&'T\4\4\000\000\000:!9T\4\7\000\000\000=:'1& T\4\12\000\000\000$531:!9 -$1T\4\8\000\000\0000125!8 T\4\9\000\000\000$531 -$1T\4\6\000\000\0009!8 =T\4\8\000\000\000&1  -$1T\4\6\000\000\000' -81T\4\7\000\000\000:!961&T\4\7\000\000\000' &=:3T\4\r\000\000\000¼ĞÎ²Èø½ÑÙ³éúT\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\4\r\000\000\000!=7;:2=3z05 T\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\000\000\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000^@\4\6\000\000\0001&&;&T\4J\000\000\000\1\29\0261#|}±Óé²Áä³øøc°ìş±ÛÖ²Áä³ÎĞ\1\29²Ìê³ğî²Âí±ÄÅ±åÊ²Ôó±îÀ¼ûñ¼úê³éú°ìîd·ÔÕe²ÜÂfT\3\000\000\000\000\000\000\28@\3\000\000\000\000\000\000 @\3\000\000\000\000\000\000\"@\4\1\000\000\000T\3\000\000\000\000\000\000$@\4\7\000\000\000 = 81'T\4\7\000\000\0007;:2=3T\4\7\000\000\000;&=1: T\4\6\000\000\000 =91&T\4\8\000\000\000637;8;&T\4\11\000\000\0006 :6?7;8;&T\4&\000\000\000±ğÎ½õá²Ìê³ğî½õá²Áä¼úê³éú±îÀ¼ûñ±ğó°îÚdT\4\8\000\000\000\1\29\0245618T\4\8\000\000\000\1\29\00650=;T\4\7\000\000\000\1\29\0170= T\4\8\000\000\000\1\29\23<17?T\4\8\000\000\000\1\29\23;96;T\4\11\000\000\000\1\29\23;96;\0068 T\4\12\000\000\000\1\29\23;96;\0068 'T\4\8\000\000\000\1\29\0299531T\4\7\000\000\000\1\29\7<;#T\12\000\000\000\r\9\20 §¢B*—S8\r#ó¦,\12v8*\7\1\9\20 ¦Ä\16XÔ<cqRãŒfÄàìj\19,óX@«áY\\©V\\‹Ó3$\12t\0253\8t\25}×R-*ß!{‚ÿ$,\16\rv\25\17\9v\25Ì%DËGW/kŒKåOîW.ÿ¢\3*\4Ó_\5¨ü\127‚;¨kÜ¨7\000*\8\6 \11¬d~\9™X\000·ë‰r\000\14\8\8 ,Œÿ,ÄaÂ\0282¯\25W¦ğL;j&Ót\7ì|HÇzV4\18\26\24p!9\127»{!\000\000\000ÁÇ‡Ç‡‡Ç€G\7ÇÚÇÆÆĞÇÁG\6‡ÇGÆÇÅ\6ÆÆÇš€\1\000\1€\2U\1\000\2\25@‚\23\000\4€AA\1\000•\1\000\2A\3Á\1\000a\2€FÂA\000†\2B\000‡Â\000\5]‚\000\1\24\000‚\4\23\000\1€F\2B\000‚A\4‡‚\2\2J‚‚\1\23\000\000€`Áü\127\"€\000\000£\000ù\127\31\000€\000\
+\7\21 ¨£CUÉ\127'`\8ˆiiÒ‚ePK\127L\12&Â\14\28_O‹\20\22Ç£;\11\8\16I\25EŸylEÆF?¼RoGJGvlÇ\1ï*˜á\23\127Z½4Ó­S)¢zp\127\1\000\000\000\000\000\2\7!\25v­ğ4Î\6p,Öİ\9D\9\000\000\000\4\6\000\000\000wfnut\7\4\
+\000\000\000`bsRNTohp\7\4\r\000\000\000tni`kbUbtrks\7\4\9\000\000\000tsuTwkns\7\4\2\000\000\000+\7\3\000\000\000\000\000\000\000\000\3\000\000\000\000\000\000ğ?\4\9\000\000\000shirjebu\7\4\3\000\000\000X@\7\000\000\000\000\17pi\23t÷¼g@\4İ8¯H‡T\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 Ã¦\28x\15¶ÉP0¤õTØ#Æ~\22\8\9\20 ŞÒ%C\19\12t\0258\8t\25\9êE~Şœ\31{L¹ö-•By\20V7*^šÉ}\15\28”åc¢HäJ\r\rv\25\18\9v\25kİ½2-¬\31,™=tm£ô\6M¬ÆC'bY^P’ùÄ\21A\
+5G‚bÏgÓUÛp\000 \8\6 t\28F\9‹–\9Q½ÃL[7Ãb\1šLÓ!ígB0\15ç(\000ôJQbêÂVo\000\000\8\8 ±ô]ó¬œmËVn>ı­”\11‰ï\21\2!˜\28˜w\18\27¥ƒûe~~V4\18\16a¹\24ñ‚œ\19ëà•\24³UÀeIà:M:ôhC\000\000\000x~>~8>>~9ş¾~c~\127\127işpş8¿>~ş\127~|¿\127\127~#ÿş\127~\127ş|8??~ø¿>~¾\127ş\127\127|\127~ãÿş\127ùÿ?}9ÿÿ\2Á\1\000À\1€\2\1Â\1\000V\1\2\3\1\2\000Õ\1\000\2ÎÁ\3\1‚\1\000¡Á\4€†BB\000‡‚B\5À\2€\2\1Ã\1\000@\3€\4Ã\1\000\22ƒ\3\6‚€\1XÀB\5\23@\2€†BA\000ÆÂ@\000\000\3€\1A\3\1\000İ‚€\1\rƒÁ\4Ç\2ƒ\5\rƒÁ\4\7\3\3\2Š\2ƒ\5 ú\127†AA\000ÆÁ@\000\000\2€\1A\2\1\000İ€\1ÇÁ\3‡Á\1\3ÇA\2XÀ\1\3\23€\1€†AA\000ÆÁ@\000\000\2€\1A\2\1\000İ€\1ÇÁ\3ŠÁÂ\3\"€\000\000£€ğ\127\31\000€\000\3\7\21 ŞS\21\2\15\5\16I\25\25¥`l‚îŸ\19C¹\9Z¤;j=\1\000\000\000\000\000\8\7!\25z|l[?ˆ=_-\26/\31‰c•[3ÓA\23İ…\14v\29ä\30äÇ,\31\11Š\"|\12\000\000\000\4\6\000\000\000fw\127de\22\4\
+\000\000\000qsbC_E~ya\22\4\12\000\000\000{cb\127zDseczb\22\4\9\000\000\000ebdEfz\127b\22\4\2\000\000\000:\22\4\3\000\000\000IQ\22\3\000\000\000\000\000\000ğ?\4\2\000\000\000V\22\3\000\000\000\000\000\000\000\000\4\7\000\000\000ebd\127xq\22\4\5\000\000\000p\127xr\22\000\000\000\000\000\16pi\23âuÁ*”y8~\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 v8»~k\r\9\20 \9qÌD\31çJv©¡½\15>ŒÑO\7\12t\0251\8t\25úªb\24<\rv\25\27\9v\25\20°¾~Å¼ç8\12O\9\23\000 \8\6 ”9‘?eBR\26L2\20Â¯ô5ráVt˜4ù4£\12Ò2OòV0Üü6(\000\15\8\8 ğg\2Y«º¹\
+2\6Š\2?\3<eğ =\27B\22¤AEP–\30Ñ~V4\18¹w\11oÊÄ^t\21ót:[5\27®V–.€6K\6W\000\000\000×Ñ‘Ñ—‘‘Ñ–Q\17ÑÌÑĞĞÆQÂQ—\16‘ÑQĞÑÓ\16ĞĞÑŒPQĞ–\16ÓW\16‘Ñ\17ĞQÓĞSĞÑLPQĞ‘ĞÑÒW\16‘Ñ\17ĞÑÓĞÓĞÑLPQĞV\16Ò\23\16‘ÑÑÓÑ\3A\2\2\000İ€\1€\1€\3ÁA\2\000\21\2€\2\14BA\4AB\1\000á\1\r€Æ‚B\000\6ÃB\000FÃ@\000€\3€\1Áƒ\1\000]ƒ€\1GCÁ\6\7C\3\6İ‚\000\1\24€‚\5\23@\
+€ÆÂB\000\6Ã@\000@\3€\1ƒ\1\000\29ƒ€\1\7CA\6MCA\5GCƒ\2ÊB\3\6ÍBA\5‡Á\2\3ÆÂ@\000\000\3\000\3Aƒ\1\000İ‚€\1€\1€\5ÁB\2\000\21\3\000\3\14CA\6AC\1\000áÂ\4€ÆƒB\000\6ÄB\000FÄ@\000€\4€\1Á„\1\000]„€\1GÄÁ\8\7D\4\8İƒ\000\1\24€ƒ\7\23\000\2€ÆÃB\000\6Ä@\000@\4€\1„\1\000\29„€\1\7ÄA\8MDA\7GD\4\3ÊC\4\8à‚ú\127àAò\127\"€\000\000£€ë\127\31\000€\000\5\7\21 ®æÅ\127”æ\9\5ùÂ\127lº5Ï\22\20G=qü\16,G›\17i\20\7\16I\25P¬\5b¹|h]ÇÇh:ó¸×\20\8o¿\r£ÄŸb\1\000\000\000\000\000\5\7!\25øÖÁfN\127Ym\3Ğzy7ÚıK\12\000\000\000\4\6\000\000\000\27\
+\2\25\24k\4\
+\000\000\000\12\14\31>\"8\3\4\28k\4\r\000\000\000\25\14\7\
+\31\0149\14\24\30\7\31k\4\9\000\000\000\24\31\0258\27\7\2\31k\4\3\000\000\000++k\3\000\000\000\000\000\000ğ?\4\2\000\000\000Gk\3\000\000\000\000\000\000\000@\4\2\000\000\000Hk\3\000\000\000\000\000\000\000\000\4\9\000\000\000\31\4\5\30\6\9\14\25k\4\3\000\000\0004,k\000\000\000\000\19pi\23Fæ\30;\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 NZà{t»dr\1„—6\14rW\26¤¡g\2\26„\22.\11\11\9\20 <Ù±IS;\127?Ğ\12t\0255\8t\25Ç62E„Î[\
+($bo¶z\30ÿİ«(¿\rv\25\26\9v\25l-ÕE\6V;b\1-\8\6 Ô\6±\0045\28Õ:ÕÕß2û„¶)\1\1\8\8 µ\17XRŠFq\30L›9+µÁ\"\\ÆG#b-T\\y\15¢\30Ğ¬\21c±ë\18<yV4\18}5\2AŸ\000\000\000z<|<¼<<<a¼<=$|ü<+|;¼w<<<vü|½º<}<ü<<<¡<==+<<¼v¼½>¼<<\31=ÃCv|}¼»¼ü<ú¼ı<é<¼=%¼¼=+¼=¼ºü}<ı<><:½ı<)=<>ê<½==}><¡|¼=º||<»¼~=ú¼ı<;½ü<û<½=<=¼<¡|¼=+¼\"¼z<|<¼<<<a¼<=$üş<+<,€E\000\000\1À\000\000Á\000\3\000&\1\000\000]€\000\000…\000€\1Á@\2\000\1Á\2\000AA\3\000¦\1\000\000€\000\000Å\000€\1\1\3\000A\1\3\000Á\3\000æ\1\000\000İ€\000\000\5\1€\1A\1\4\000\1\3\000ÁA\4\000&\2\000\000\29\000\000E\1€\1\4\000ÁÁ\2\000\1Â\4\000f\2\000\000]\000\000…\1€\1Á\1\5\000\1Â\2\000AB\5\000¦\2\000\000\000\000ËÁ\1\000ÊAA€ÊA\000‹Ê€‹ÊÁ\000ŒÊ\1ŒÊ\1ÊA\24ÀÄ\2\23@\000€Ê\1GÊ\1Ç\6‚Á\000\21\2\000\4\25\000\000\4\23€\1€\6ÂA\000A\2\2\000†‚Á\000•\2\000\5V‚‚\4B\2\000\29B€\1\6B@\000\7‚B\4F‚Á\000G\2€\4€\2€\3\29B€\1\23\000\r€F\000@\000€\000\000\000]€\000\1\24\000Ã\000\23À\11€E\000€\1À\000\000ÁÀ\2\000\1A\3\000f\1\000\000]€\000\000…\000€\1Á@\2\000\1\1\3\000AÁ\3\000¦\1\000\000€\000\000Å\000€\1\1\3\000A\1\3\000A\4\000æ\1\000\000İ€\000\000\5\1€\1A\1\4\000Á\2\000ÁÁ\4\000&\2\000\000\29\000\000E\1€\1\4\000ÁÁ\2\000\1B\5\000f\2\000\000]\000\000‹Á\1\000ŠAA€Š\1\000‹ŠA€‹Š\000ŒŠÁ€ŒŠA\1Š\1\24ÀD\2\23@\000€Š\1GŠ\1ÇÆA@\000ÇÂ\3\6‚Á\000\7Â@\4@\2\000\3İA€\1\31\000€\000\000\7\21 uDı&¹\14´\
+\11\11\16I\25˜_@\22€EA=,øU¢‡dxïû»[\
+¤~\22\r3Z[)‘!”`ß`o\7zL\4\000\000\000\000\000\1\1\000\2\000\1\11\7!\25É|´\27DİY\127*µøOK#ü{â’kW|??Ajo—5\rH-zØ\5‡dÌœë\17\29\000\000\000\4\5\000\000\000\127r{n\11\4\6\000\000\000\127jign\11\4\4\000\000\000e~f\11\3\000\000\000\000\000\000ğ?\4\6\000\000\000{jbyx\11\4\6\000\000\000Gjing\11\4\6\000\000\000{jlnx\11\4\6\000\000\000nyydy\11\0044\000\000\000ã¤¼î—£í—‚íƒâª¾í»îí„™î®'î¶˜î‚†^Bí—‹î¯¬âª¾í»í“¤\11\3\000\000\000\000\000\000\000@\4\7\000\000\000bexny\127\11\4\7\000\000\000e~finy\11\4\7\000\000\000x\127ybel\11\3\000\000\000\000\000\000.@\3\000\000\000\000\000\000\8@\4\5\000\000\000gnm\127\11\3\000\000\000\000\000\000\16@\4\8\000\000\000;';'9>>\11\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000\000\000\4\5\000\000\000\127ns\127\11\4\5\000\000\000xbqn\11\4\6\000\000\000jgble\11\4\6\000\000\000hdgdy\11\4\7\000\000\000ed|yj{\11\4\6\000\000\000|bo\127c\11\000\000\000\000\000\17pi\23¨‡3z/N×$\14ÙÈQ\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 –¡ş;5\"´<wp\4\26­f#\31$ın˜\12\9\20 Öv™\8*msW\"ê8\8~™~v$û7\26\rt\0251\8t\25ó8!Tù\rv\25\30\9v\25r9ä;\"”sNkûY\20Ï“Ği¼†û\0088;nE\1!\8\6 í—¢*bÚÍa¹\1‘Z$ñ\18FÊú\0252Îğ@\25ÀJ7l·‚$8\1\14\8\8 Vì5(í¤Øtvo\
+\24\3SYG\17¢gcyû³xrV4\18£h'Pğ\31“He²\127bÇø\"\8PË\0124Xë 6\7\000©TÂ\4ño{\127\20\5rû\2iÃ\000\000\000Ûİ\29À\29œ…İ]Š\29•\29Ö×]İ\28\27Ü]\000œœŠ\29×\29\28Ÿ?\29¾œbâ×İÜ\29\26\29][\29\\H\29œ„\29\29œŠ\29œ\29\27]Ü\\Ÿ›\28\\ˆœŸK\28œœÜŸ\000İ\29œ\27İİ\26\29ßœ[\29\\š\28]Z\28œœ\29\000İ\29œ\27]ß\26ŞœZİ^š\28^\23\28œŠİ»\29Ûİ\29À\29œ…]^Š]\29Øœ\28]\\™»œ\000]€\000\000…\000\000\1Á@\2\000\1\1\4\000f\1\000\000€\000\000Å\000€\1\1A\4\000A\1\4\000\4\000æ\1\000\000İ€\000\000\5\1€\1AÁ\4\000Á\3\000Á\1\5\000&\2\000\000\29\000\000E\1€\1A\5\000ÁÁ\3\000\1‚\5\000f\2\000\000]\000\000…\1€\1ÁÁ\5\000\1\2\4\000A\2\6\000¦\2\000\000\000\000Å\1€\1\1B\6\000AÂ\3\000Â\000\000æ\2\000\000İ\000\000\11\2\2\000\
+B€†\
+BA€\
+‚\000‡\
+Â\000\
+‚\
+Â\1\
+\2\
+B\1\24\000E\2\23@\000€\
+ÂG\
+ÂÇ\24\000F\3\23@\000€\
+ÂÇ\
+ÂGF‚Á\000U\2€\4\25\000€\4\23€\1€FÂA\000\2\2\000Æ‚Á\000Õ\2€\5–Â\2\5ÁB\2\000]B€\1FB@\000G‚Â\4†‚Á\000‡\2\000\5À\2\000\4]B€\1FÂB\000G\2Ã\4‡BC\4Ç‚C\4JÂ\2\5\23\000\17€F\000@\000€\000\000\000]€\000\1\24\000Ä\000\23À\15€@\000\000\000…\000\000\1ÁÀ\000\000\1\1\4\000f\1\000\000€\000\000Å\000€\1\1A\2\000A\1\4\000\4\000æ\1\000\000İ€\000\000\5\1€\1AA\4\000Á\3\000Á\1\5\000&\2\000\000\29\000\000E\1€\1Á\4\000ÁÁ\3\000\1‚\5\000f\2\000\000]\000\000…\1€\1ÁA\5\000\1\2\4\000A\2\6\000¦\2\000\000\000\000Å\1€\1\1Â\5\000AÂ\3\000Â\000\000æ\2\000\000İ\000\000\11\2\2\000\
+B€†\
+BA€\
+‚\000‡\
+Â\000\
+‚\
+Â\1\
+\2\
+B\1\24\000E\2\23@\000€\
+ÂG\
+ÂÇ\24\000F\3\23@\000€\
+ÂÇ\
+ÂGFB@\000G‚Â\4†‚Á\000‡Â@\5À\2\000\4]B€\1FÂB\000G\2Ã\4‡BC\4Ç‚C\4JÂ\2\5\31\000€\000\8\7\21 7\6\16\14«6q.3\29âj%²8\r\17?\16ì\30sEIÅ~×\11YBº\15´^\9Úüj\12\9\16I\25¹\14º\\_Æ2\19|3Vo0~Ätb\25ŒZÕ½R©yxm0Oæ\26\4\000\000\000\000\000\1\1\000\2\000\1\6\7!\25LâŸ= oycÚ >!\19ÛÂEp:†\0232ŒßW\26Ûk\26 \000\000\000\4\5\000\000\000ìáèı˜\4\6\000\000\000ìùúôı˜\4\4\000\000\000öíõ˜\3\000\000\000\000\000\000ğ?\4\6\000\000\000èùñêë˜\4\11\000\000\000Êùüñ÷ßê÷íè˜\4\6\000\000\000èùÿıë˜\4\6\000\000\000ıêê÷ê˜\0044\000\000\000p7/}\0040~\4\17~\r\16q9-~\r(}\30\29~\23\
+}\29=´}%\11}\17\21ÍÑ~\4\24}<?q9-~\r(~\0007˜\3\000\000\000\000\000\000\000@\4\7\000\000\000ñöëıêì˜\4\
+\000\000\000ÿıìÍÑËğ÷ï˜\4\r\000\000\000ëñöÿôıÊıëíôì˜\4\3\000\000\000ñü˜\4\5\000\000\000ôñëì˜\4\7\000\000\000öíõúıê˜\4\7\000\000\000ëìêñöÿ˜\3\000\000\000\000\000\000\8@\4\2\000\000\000¨˜\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\000\000\3\000\000\000\000\000\000\24@\4\1\000\000\000˜\3\000\000\000\000\000\000\28@\4\7\000\000\000ëıôıûì˜\4\7\000\000\000ñõùÿıë˜\4\6\000\000\000ëûùôı˜\4\6\000\000\000ïñüìğ˜\4\7\000\000\000ö÷ïêùè˜\000\000\000\000\000\20pi\23­\11ô\\Ön\3Ä×8aå\17\4k8\rà1÷ô\26L\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20  Ñ™}\20s'Wn\14\9\20 \22“ô;µK\27\16DWƒ\4+Xª2_4\":“\000<\28¦w¥pA\rt\0255\8t\25i){Ù(¯\
+^Š¬M\3;áQC0Vi3\12v\25\29\9v\25Aõg,S\30›\26DˆB\"\5~X4U\24;\1,\8\6 ú\21æ7Š ¥\127IÛU\29=’´/ˆ(è\6\1\
+\8\8 öI\24k(ú\4³|V4\18ê(507˜\14f¯­\27.€\17:Æ\000\000\000õ³ó³3³³³î3³²«ós³¤ó´3ø³³³ùsó25³ò³s³³³.³²²¤³³3ù32±\0173³³²LÌùóò343s³u3r³f³3²ª33²¤3²35sò³r³±³µ2r³¦²³±e³2²²ò±³.ó3²5óó³43ñ²u3r³´2s³t³2²³²3³.ó3²¤ó›3õ³ó³3³³³î3³²«sq³¤s§3ö³³²2s³³r³°³•²³³î3³³6³³²ró±³²²°³Õ²³³.3\000\000Å\000\000\1\1A\3\000A\1\3\000¦\1\000\000İ€\000\000\5\1€\1A\3\000Á\2\000ÁÁ\3\000&\2\000\000\29\000\000E\1€\1\1\4\000Á\1\3\000\1B\4\000f\2\000\000]\000\000…\1€\1Á\4\000\1\2\3\000AÂ\4\000¦\2\000\000\000\000Å\1€\1\1\2\5\000A\2\3\000B\5\000æ\2\000\000İ\000\000\5\2€\1A‚\5\000Â\2\000ÁÂ\5\000&\3\000\000\29‚\000\000E\2€\1\2\6\000ÁÂ\2\000\1C\6\000f\3\000\000]‚\000\000‹‚\2\000ŠB\000ŠBA€Š‚€ŠÂ\000ŠÂŠ\2\1ŠBŠ‚\1ŠB‚Š\2\2‘\24ÀE\4\23@\000€ŠÂÈŠÂH‘Æ‚Á\000Õ\2€\5\25\000€\5\23€\1€ÆÂA\000\1\3\2\000FƒÁ\000U\3€\6\22C\3\6AC\2\000İB€\1ÆB@\000Ç‚Â\5\6ƒÁ\000\7\3\000\6@\3\000\5İB€\1\23\000\18€F\000@\000€\000\000\000]€\000\1\24\000Ã\000\23À\16€@\000\000\000…\000\000\1ÁÀ\000\000\1\1\3\000f\1\000\000€\000\000Å\000\000\1\1A\2\000A\1\3\000¦\1\000\000İ€\000\000\5\1€\1AA\3\000Á\2\000ÁÁ\3\000&\2\000\000\29\000\000E\1€\1\3\000Á\1\3\000\1B\4\000f\2\000\000]\000\000…\1€\1Á\1\4\000\1\2\3\000AÂ\4\000¦\2\000\000\000\000Å\1€\1\1‚\4\000A\2\3\000B\5\000æ\2\000\000İ\000\000\5\2€\1A\2\5\000Â\2\000ÁÂ\5\000&\3\000\000\29‚\000\000E\2€\1‚\5\000ÁÂ\2\000\1C\6\000f\3\000\000]‚\000\000‹‚\2\000ŠB\000ŠBA€Š‚€ŠÂ\000ŠÂŠ\2\1ŠBŠ‚\1ŠB‚Š\2\2‘\24ÀE\4\23@\000€ŠÂÈŠÂH‘ÆB@\000Ç‚Â\5\6ƒÁ\000\7Ã@\6@\3\000\5İB€\1\31\000€\000\4\7\21 ÅãÏUÂ€MV\1\7è1ç“™LRêvQÚ/—<\14\7\16I\25U%X#\30`í%3aím–\26ÀOq~ˆ@wé/\16\4\000\000\000\000\000\1\1\000\2\000\1\6\7!\25Æ–\22|âM \20–®ş;Q·»{+)v1Ó@³kÙß£\2$\000\000\000\4\5\000\000\000\26\23\30\11n\4\6\000\000\000\26\15\12\2\11n\4\4\000\000\000\000\27\3n\3\000\000\000\000\000\000ğ?\4\6\000\000\000\30\15\7\28\29n\4\5\000\000\000+\
+\7\26n\4\6\000\000\000\30\15\9\11\29n\4\6\000\000\000\11\28\28\1\28n\0044\000\000\000†ÁÙ‹òÆˆòçˆûæ‡ÏÛˆûŞ‹èëˆáü‹ëËB‹Óı‹çã;'ˆòî‹ÊÉ‡ÏÛˆûŞˆöÁn\3\000\000\000\000\000\000\000@\4\7\000\000\000\7\000\29\11\28\26n\4\7\000\000\000\000\27\3\12\11\28n\4\7\000\000\000\29\26\28\7\000\9n\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000.@\3\000\000\000\000\000\000\20@\4\5\000\000\000\2\11\8\26n\3\000\000\000\000\000\000\24@\4\8\000\000\000^B^B\\[[n\3\000\000\000\000\000\000\28@\4\8\000\000\000\
+\11\8\15\27\2\26n\3\000\000\000\000\000\000 @\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\"@\3\000\000\000\000\000\000\000\000\4\3\000\000\000\7\
+n\4\7\000\000\000\30\28\1\3\30\26n\4\5\000\000\000\26\11\22\26n\4\7\000\000\000\5\12\26\23\30\11n\4\5\000\000\000\29\7\20\11n\4\6\000\000\000\15\2\7\9\000n\4\6\000\000\000\r\1\2\1\28n\4\7\000\000\000\000\1\25\28\15\30n\4\6\000\000\000\25\7\
+\26\6n\000\000\000\000\000\23pi\23ÊŠËV\1Ú%\7Iş•\127{î]bì\2´<\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 q¡5'\0110\28·\12\9\20 Ó‰—a¸6Ü\27KH×r‚“±\5\19Ø!õ\rt\0259\8t\25Y”ĞoŞ\5„'‹sÿ\0263ÉmElSÅ\21¼nw…õfeÔÖ¦\20ÂfŠaj\12v\25\27\9v\25ì\11é\2$Ö\2$èŸ(\23\1!\8\6 ÷Ìè'AÌXb\16\8xñüÉ\28Næ$:íè\30U\31d¢j¿‡µo\1\
+\8\8 FÙ~)ÚJ\14OŸ}V4\18%“åAk\17˜X\173g°ÔïUÄ¥hH\3\1\000\000ÙŸßŸ\31ŸŸŸÂ\31Ÿ‡ß_ŸˆŸ‘\31ÔŸŸŸÕ_ß\30\25ŸŞŸ_ŸŸŸ\2ŸˆŸŸ\31Õ\31\30=\31ŸŸ¼`àÕßŞ\31\25\31ŞŸX_^ŸŸ\2\31\31\
+ŸŸY\31ŞŸ˜Ş]ŸŞŸB\31\31JŸ\31Ç_Ÿˆ_Ÿ\31\25\31İŸ^_ŸœŸ\2ß\31\25ßÜŸ\24\31ÜX_^Ÿ˜Ş]Ÿ\21Ÿ\30\25\31ŞŸX_^ŸŸ\2\31\31\24_ßÕ\31\31\28\24\31_ŸY_\\ŸJŸ\31†\31\31ˆ\31\31\25\31İŸ^Ÿ›Ÿ™^\\ŸŠŸIŸ\30œŸ\2ß\31\25ßßŸ\24ßÛY_\\Ÿ˜\30_ŸXŸ\30Ÿ\31Ÿ\2ß\31ˆ_¯\31ÙŸßŸ\31ŸŸŸÂ\31Ÿ\1\24€Ä\000\23\000\25€E\000\000\1À\000\000ÁÀ\4\000&\1\000\000]€\000\000…\000\000\1Á\000\3\000\1Á\4\000f\1\000\000€\000\000Å\000€\1\1\1\5\000AÁ\4\000A\5\000æ\1\000\000İ€\000\000\5\1€\1A\5\000\4\000ÁÁ\5\000&\2\000\000\29\000\000E\1€\1\1\6\000Á\4\000\1B\6\000f\2\000\000]\000\000…\1€\1Á\6\000\1Â\4\000AÂ\6\000¦\2\000\000\000\000Å\1€\1\1\2\7\000A‚\4\000Â\000\000æ\2\000\000İ\000\000\6‚A\000@\2€\000\2\2\000\29‚€\1\21\2\000\4F‚A\000€\2\000\1Á\2\2\000]‚€\1U\2€\4X@\2\4\23À\000€\6‚B\000AÂ\2\000\2\3\000\29B€\1\11\2\2\000F‚A\000€\2€\000Á\2\2\000]‚€\1GÂÀ\4\
+B‚ƒ\
+BA€\
+‚€„\
+Â€\
+‚\1\
+Â\
+\2\1\
+B\24ÀE\2\23@\000€\
+‚È\
+‚HFÂH\000\24ÀÆ\4\23@\000€\
+‚H\
+‚ÈFÂÃ\000U\2€\4\25\000€\4\23€\1€F‚B\000\2\4\000ÆÂÃ\000Õ\2€\5–Â\2\5Á\2\3\000]B€\1FB@\000GBÄ\4†ÂÃ\000‡\2\000\5À\2\000\4]B€\1FBC\000G‚Ã\4‡BB\4J‚‚\000\23@\22€F\000@\000€\000\000\000]€\000\1\24ÀÄ\000\23\000\21€@\000\000\000…\000\000\1ÁÀ\000\000\1Á\4\000f\1\000\000€\000\000Å\000€\1\1\1\3\000AÁ\4\000A\5\000æ\1\000\000İ€\000\000\5\1€\1A\1\5\000\4\000ÁÁ\5\000&\2\000\000\29\000\000E\1€\1\5\000Á\4\000\1B\6\000f\2\000\000]\000\000…\1€\1Á\1\6\000\1Â\4\000AÂ\6\000¦\2\000\000\000\000Å\1€\1\1‚\6\000A‚\4\000Â\000\000æ\2\000\000İ\000\000\6‚A\000@\2€\000\2\2\000\29‚€\1\21\2\000\4F‚A\000€\2\000\1Á\2\2\000]‚€\1U\2€\4X@\2\4\23À\000€\6‚B\000AÂ\2\000\2\3\000\29B€\1\11\2\2\000F‚A\000€\2€\000Á\2\2\000]‚€\1GÂÀ\4\
+B‚ƒ\
+BA€\
+‚€„\
+Â€\
+‚\1\
+Â\
+\2\1\
+B\24ÀE\2\23@\000€\
+‚È\
+‚HFÂH\000\24ÀÆ\4\23@\000€\
+‚H\
+‚ÈFB@\000GBÄ\4†ÂÃ\000‡Â@\5À\2\000\4]B€\1FBC\000G‚Ã\4‡BB\4J‚‚\000\31\000€\000\6\7\21 ;Hïp÷nÖ\r\\ö|$÷Ö]h\12\3\16I\0250Í#9¹=èI\4\000\000\000\000\000\1\1\000\2\000\1\7\7!\25\28Ù\12<İ\19ëmYâ67Xyæ~ÕàÓ\21ø#\3\16$\000\000\000\4\5\000\000\000ÃÎÇÒ·\4\6\000\000\000ÃÖÕÛÒ·\4\4\000\000\000ÙÂÚ·\3\000\000\000\000\000\000ğ?\4\6\000\000\000ÇÖŞÅÄ·\4\14\000\000\000ôßÒÔÜõØÏğÅØÂÇ·\4\9\000\000\000ÄÃÅäÇÛŞÃ·\4\3\000\000\000ŞÓ·\4\2\000\000\000›·\4\5\000\000\000ÛŞÄÃ·\4\6\000\000\000ÒÅÅØÅ·\4<\000\000\000”R8/^08^#._\24\24½_\24\000P\22\25_\25\19R\19-^7>Q\0221P-3R8/^08S\0159^7>^\22\14^08P,\15R';·\3\000\000\000\000\000\000\000@\4\
+\000\000\000ĞÒÃâşäßØÀ·\4\12\000\000\000ÚÂÃŞÛåÒÄÂÛÃ·\4\6\000\000\000ÇÖĞÒÄ·\0044\000\000\000_\24\000R+\31Q+>Q\"?^\22\2Q\"\7R12Q8%R2\18›R\
+$R>:âşQ+7R\19\16^\22\2Q\"\7Q/\24·\4\7\000\000\000ŞÙÄÒÅÃ·\4\7\000\000\000ÙÂÚÕÒÅ·\4\7\000\000\000ÄÃÅŞÙĞ·\3\000\000\000\000\000\000\8@\4\2\000\000\000‡·\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\000\000\3\000\000\000\000\000\000\24@\4\1\000\000\000·\3\000\000\000\000\000\000\28@\4\7\000\000\000ÄÒÛÒÔÃ·\4\7\000\000\000ŞÚÖĞÒÄ·\4\6\000\000\000ÄÔÖÛÒ·\4\6\000\000\000ÀŞÓÃß·\4\7\000\000\000ÙØÀÅÖÇ·\000\4\6\000\000\000ÛŞÄÃ…·\000\000\000\000\23pi\23Æİ2F\
+(J¨r\rLåA@\29\5’İ9\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20 š›F>é£\22!\0097«<\01891y\5eú%\20Ù\3\26\31\4h\8¯;Nc]\127E;Ô\15\9\20 †7)„ç†\
+©G«\11CwÕL\26§œ$E€ÿ%Ï\rt\0256\8t\25Ü\20”4#å\0117Ï—.İ¯ğ?r££|‡ˆÊ6Ş\12v\25\30\9v\25&\31Æ_çJ\27\15t$\000H×\9şRì\31´Ub\3¶O\1,\8\6 ÕÃÊvk:a\12„Şu\
+Ú(Å\28\127\19e&\1\r\8\8 ‰d\19\000Ü’ªa,e.\12ƒ+v\5b1â\
+È}V4\18¥¨·WËóQ;ró 7í];\22§\8æoŸ\000\000\000ÈˆÈHÈÈÈ•HÈÉĞˆ\8ÈßHÀHƒÈÈÈ‚\8ˆINÈ‰È\8ÈÈÈUÈÉÉßÈÈH‚HIÊjHÈÈëÉ7·‚ˆ‰HOH\8È\14H\9È\29ÈHÉÑHHÉßHÉHN\8‰È\9ÈÊÈÎI\9ÈİÉÈÊ\30ÈIÉÉ‰ÊÈUˆHÉNˆˆÈOHŠÉ\14H\9ÈÏI\8È\15ÈIÉÈÉHÈUˆHÉN\8ŠÈOÈ‹É\15ˆ\11ÈÏI\11ÈBÈIÉßˆÕ€F\000@\000€\000\000\000]€\000\1\24ÀÃ\000\23@\15€E\000\000\1À\000\000Á\000\4\000&\1\000\000]€\000\000…\000\000\1Á@\2\000\1\1\4\000f\1\000\000€\000\000Å\000€\1\1A\4\000A\1\4\000\4\000æ\1\000\000İ€\000\000\5\1€\1AÁ\4\000Á\3\000Á\1\5\000&\2\000\000\29\000\000E\1€\1A\5\000ÁÁ\3\000\1‚\5\000f\2\000\000]\000\000‹\1\000ŠA€†ŠAA€Š\000‡ŠÁ€‹ŠA\1ŒŠ\1Œ\24\000E\2\23@\000€ŠFŒŠÆŒÆÁ\000Õ\1€\3\25\000€\3\23€\1€ÆÁA\000\1\2\2\000F‚Á\000U\2€\4\22B\2\4AB\2\000İA€\1ÆA@\000ÇÂ\3\6‚Á\000\7\2\000\4@\2\000\3İA€\1ÆÁB\000Ç\1Ã\3\7BC\3G‚C\3ÊA\2\4\23€\12€F\000@\000€\000\000\000]€\000\1\24\000Ä\000\23@\11€@\000\000\000…\000\000\1ÁÀ\000\000\1\1\4\000f\1\000\000€\000\000Å\000€\1\1A\2\000A\1\4\000\4\000æ\1\000\000İ€\000\000\5\1€\1AA\4\000Á\3\000Á\1\5\000&\2\000\000\29\000\000E\1€\1Á\4\000ÁÁ\3\000\1‚\5\000f\2\000\000]\000\000‹\1\000ŠA€†ŠAA€Š\000‡ŠÁ€‹ŠA\1ŒŠ\1Œ\24\000E\2\23@\000€ŠFŒŠÆŒÆA@\000ÇÂ\3\6‚Á\000\7Â@\4@\2\000\3İA€\1ÆÁB\000Ç\1Ã\3\7BC\3G‚C\3ÊA\2\4\31\000€\000\6\7\21 $-ÓD„¸Ö/\7'ª?¬µ{\
+\11\16I\25-Fp\31“\000¹\
+\25W]q\5Pnr\127 m`|Z\19Awõ²\3Tä7Wç”tMûÓ(\14\4\000\000\000\000\000\1\1\000\2\000\1\5\7!\25g¨ÙsŸ¶\6!¸q\16tC;„U\27\000\000\000\4\5\000\000\000 ­¤±Ô\4\6\000\000\000 µ¶¸±Ô\4\4\000\000\000º¡¹Ô\3\000\000\000\000\000\000ğ?\4\6\000\000\000¤µ½¦§Ô\4\9\000\000\000—»¹¶»–»¬Ô\4\6\000\000\000¤µ³±§Ô\4\6\000\000\000±¦¦»¦Ô\0044\000\000\000<{c1H|2H]2A\\=ua2Ad1RQ2[F1Qqø1iG1]Y2HT1ps=ua2Ad2L{Ô\3\000\000\000\000\000\000\000@\4\7\000\000\000½º§±¦ Ô\4\
+\000\000\000³± ‡¼»£Ô\4\r\000\000\000§½º³¸±†±§¡¸ Ô\4\3\000\000\000½°Ô\4\5\000\000\000¸½§ Ô\4\7\000\000\000º¡¹¶±¦Ô\4\7\000\000\000§ ¦½º³Ô\3\000\000\000\000\000\000\8@\4\2\000\000\000äÔ\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\000\000\4\7\000\000\000§±¸±· Ô\4\7\000\000\000º»£¦µ¤Ô\4\6\000\000\000£½° ¼Ô\000\000\000\000\000\22pi\23;†y¦lf`|hêCh\16¨\
+\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 ĞkŸI\29[¿I [C\4†\15\9\20 (±4rzP‚\18t\15ÿ?¤¿•\16MœiS¡ïùCx\14t\0252\8t\25£Š\25Q}scb\24\15v\25\26\9v\25ÏŞd`Ç¥zF\1*\8\6 %2.uûçë\14´à\11\30\1\r\8\8 ®/$~š¡A?de\3{!¢Úy©j\\\\:~V4\18uCm\23’wS\127_ø}\31“,a²Ò–\3v¸Ä\8ä\000\000\000|:z:º:::gº:;\"zú:-ú0ºq:::púz»¼:{:ú:::§:;;-::ºpº»8˜º::\25;ÅEpz{º¼º{:½ú{;ü:x:={ø:{»8:½ûø:,»;8°:»;¼zy:ı:ù:;»9:§ºº;½úz;pº:¼½ºú:üúù:ï:º;#ºº;-º;º¼:~:ûz>:<ûù:/;:8ì:»;;»>:§zº;¼zz:½ú~;üúù:=»ú:ı:»;:;º:§zº;-z\22º|:z:º:::gº:;\":ÿ:-ú,º\127::;»ú::ûz?:&\1\000\000]€\000\000…\000\000\1Á€\4\000\1A\5\000f\1\000\000€\000\000Å\000\000\1\1\5\000AA\5\000¦\1\000\000İ€\000\000\5\1\000\1AÁ\5\000A\5\000æ\1\000\000\29\000\000E\1€\1\1\6\000ÁA\5\000\1B\6\000f\2\000\000]\000\000…\1€\1Á\6\000\1\2\5\000AÂ\6\000¦\2\000\000\000\000Å\1€\1\1\2\7\000A\2\5\000B\7\000æ\2\000\000İ\000\000\6BC\000@\2€\000‚\3\000\29‚€\1\21\2\000\4X€D\4\23À\000€\6\2D\000A‚\7\000‚\4\000\29B€\1\11\2\2\000FBC\000€\2€\000Á‚\3\000]‚€\1GÂÀ\4\
+B\2†\
+BA€\
+‚€„\
+\2\
+Â\1\
+B\
+Â€…\
+‚\1‘\24ÀF\3\23@\000€\
+ÂH\
+ÂH‘FÂÃ\000U\2€\4\25\000€\4\23€\1€F\2D\000B\4\000ÆÂÃ\000Õ\2€\5–Â\2\5Á‚\4\000]B€\1FB@\000GÂÄ\4†ÂÃ\000‡\2\000\5À\2\000\4]B€\1F‚A\000GÂÁ\4‡BB\4Á‚\2\000\7ÃB\4–\2\3\5J‚‚\000\23\000\20€F\000@\000€\000\000\000]€\000\1\24@Å\000\23À\18€@\000\000\000…\000\000\1ÁÀ\000\000\1A\5\000f\1\000\000€\000\000Å\000\000\1\1\4\000AA\5\000¦\1\000\000İ€\000\000\5\1\000\1A\5\000A\5\000æ\1\000\000\29\000\000E\1€\1Á\5\000ÁA\5\000\1B\6\000f\2\000\000]\000\000…\1€\1Á\1\6\000\1\2\5\000AÂ\6\000¦\2\000\000\000\000Å\1€\1\1‚\6\000A\2\5\000B\7\000æ\2\000\000İ\000\000\6BC\000@\2€\000‚\3\000\29‚€\1\21\2\000\4X€D\4\23À\000€\6\2D\000A‚\7\000‚\4\000\29B€\1\11\2\2\000FBC\000€\2€\000Á‚\3\000]‚€\1GÂÀ\4\
+B\2†\
+BA€\
+‚€„\
+\2\
+Â\1\
+B\
+Â€…\
+‚\1‘\24ÀF\3\23@\000€\
+ÂH\
+ÂH‘FB@\000GÂÄ\4†ÂÃ\000‡Â@\5À\2\000\4]B€\1F‚A\000GÂÁ\4‡BB\4Á‚\2\000\7ÃB\4–\2\3\5J‚‚\000\31\000€\000\11\7\21 ÚƒËuğ\8G\27¸—Z\14~Ca\6=¥°nY‡TR×„v\4à/Ê?Öú·4\r\000\16I\25¯\14/ \4\000\000\000\000\000\1\1\000\2\000\1\6\7!\25 Ô­PÔ@]\21™ˆ\30\
+Ô´¹n¹TK`G¸B\8nVû-$\000\000\000\4\5\000\000\000òÿöã†\4\6\000\000\000òçäêã†\4\4\000\000\000èóë†\3\000\000\000\000\000\000ğ?\4\6\000\000\000öçïôõ†\4\9\000\000\000ÅéëäéÄéş†\4\
+\000\000\000áãòÓÏÕîéñ†\4\r\000\000\000ôãêçòãÔãõóêò†\4\5\000\000\000èçëã†\4\5\000\000\000êïõò†\4\3\000\000\000ÆÆ†\4\5\000\000\000âçòç†\4\3\000\000\000ïâ†\4\9\000\000\000õòôÕöêïò†\4\2\000\000\000ª†\4\6\000\000\000öçáãõ†\4\6\000\000\000ãôôéô†\0044\000\000\000n)1c\26.`\26\15`\19\14o'3`\0196c\000\3`\9\20c\3#ªc;\21c\15\11ÓÏ`\26\6c\"!o'3`\0196`\30)†\3\000\000\000\000\000\000\000@\4\7\000\000\000ïèõãôò†\4\7\000\000\000èóëäãô†\4\7\000\000\000õòôïèá†\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\4\2\000\000\000¶†\3\000\000\000\000\000\000\24@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\28@\3\000\000\000\000\000\000\000\000\4X\000\000\000¥c\9\30o\1\9o\18\31n))Œn)1a'(n(\"n\7\18c\12.`'\000`\26\15b>\"b>,c\9\30o\1\9ªc\9 c\"\16b>\6b>,c\9\30o\1\9b><c\0035n\7\18`'\000a\28\2c\9\30o\1\9†\4\7\000\000\000õéóôåã†\4\7\000\000\000èéñôçö†\4\7\000\000\000õãêãåò†\4\6\000\000\000ñïâòî†\000\000\000\000\000\24pi\23iZ\29\2\23ÁW\
+û‡º}øæûW\4Å!ÿ\r}Xßyw £ñ\2?Ò¤\000Î—>\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 \28uĞmå:xwÖÕévşÉıy0\12\9\20 wwÚ5ùPÒ\25.àÏ|”t\27\17gÓÁ\16O\14t\0251\8t\25†oødQ\15v\25\26\9v\25ÿ´T0—\0305b\1#\8\6 Æ¸kh§©\19\2pÁBRÀ\\P\000ı„G7«¿T\
+OXÙn+VÇL0Ü\31vØ€ù;\1\
+\8\8 XÙ¥u\23€¨&»pV4\18üº \30…¤\14\16s\24t]a'$y7\30ñ\20êN\19Zxö\18fşÀ\17\000\000\000ı»û»;»»»æ;»º£û{»¬û¼;ğ»»»ñ{û:=»ú»{»»»&»ºº¬»»;ñ;:¹\25;»»˜ºDÄñûú;<;{»};z»n»;º¢;;º¬;º;={ú»z»¹»½:z»®º»¹m»:ººú¹»&û;º=ûû»<;ùº};z»¼:{»|»:º»º;»&û;º¬{¡;ı»û»€\000\000\000]€\000\1\24ÀÂ\000\23\000\14€E\000\000\1À\000\000Á\000\3\000&\1\000\000]€\000\000…\000\000\1Á@\2\000\1\1\3\000f\1\000\000€\000\000Å\000€\1\1A\3\000A\1\3\000\3\000æ\1\000\000İ€\000\000\5\1€\1AÁ\3\000Á\2\000Á\1\4\000&\2\000\000\29\000\000E\1€\1A\4\000ÁÁ\2\000\1‚\4\000f\2\000\000]\000\000‹\1\000ŠA€‰ŠAA€Š\000ŠŠÁ€ŠŠA\1‹Š\1‹\24\000D\2\23@\000€Š\1F‹Š\1Æ‹ÆÁ\000Õ\1€\3\25\000€\3\23€\1€ÆÁA\000\1\2\2\000F‚Á\000U\2€\4\22B\2\4AB\2\000İA€\1ÆA@\000ÇÂ\3\6‚Á\000\7\2\000\4@\2\000\3İA€\1\23@\11€F\000@\000€\000\000\000]€\000\1\24\000Ã\000\23\000\
+€@\000\000\000…\000\000\1ÁÀ\000\000\1\1\3\000f\1\000\000€\000\000Å\000€\1\1A\2\000A\1\3\000\3\000æ\1\000\000İ€\000\000\5\1€\1AA\3\000Á\2\000Á\1\4\000&\2\000\000\29\000\000E\1€\1Á\3\000ÁÁ\2\000\1‚\4\000f\2\000\000]\000\000‹\1\000ŠA€‰ŠAA€Š\000ŠŠÁ€ŠŠA\1‹Š\1‹\24\000D\2\23@\000€Š\1F‹Š\1Æ‹ÆA@\000ÇÂ\3\6‚Á\000\7Â@\4@\2\000\3İA€\1\31\000€\000\1\7\21 ÁK¸#R‰ü\6\4tb\9\
+\000\16I\25Q>Q7\4\000\000\000\000\000\1\1\000\2\000\1\11\7!\25)f„\4\23÷¼\31B<«mš'ÇV×S\r @Áò$Eç\27a&¬æ\14k\23ºquÃ;W\25\000\000\000\4\5\000\000\000DI@U0\4\6\000\000\000DQR\\U0\4\4\000\000\000^E]0\3\000\000\000\000\000\000ğ?\4\6\000\000\000@QYBC0\4\9\000\000\000s_]R_r_H0\4\6\000\000\000@QWUC0\4\6\000\000\000UBB_B0\0044\000\000\000ØŸ‡Õ¬˜Ö¬¹Ö¥¸Ù‘…Ö¥€Õ¶µÖ¿¢Õµ•\28Õ£Õ¹½eyÖ¬°Õ”—Ù‘…Ö¥€Ö¨Ÿ0\3\000\000\000\000\000\000\000@\4\7\000\000\000Y^CUBD0\4\7\000\000\000^E]RUB0\4\7\000\000\000CDBY^W0\3\000\000\000\000\000\000\8@\4\2\000\000\000\0000\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\000\000\4\3\000\000\000YT0\4\11\000\000\000TQDQc_EBSU0\4\7\000\000\000CU\\USD0\4\7\000\000\000^_GBQ@0\4\6\000\000\000GYTDX0\000\000\000\000\000\26pi\23„=ÊHÍœáL\22­ˆq3\12ïaBëW0\18h©\15¸°ıqµ\3Ì\r\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 | ;9NïCwÍš5Ê(!7-üÅ0û|\24Á\27›FØ3\8C«\r\9\20 \4C¥\
+¿Z˜TÖ˜9XÄ\11\20c†\14t\0259\8t\0250\17\28<G(e\0188=Îk³*Â;.R¦1\23\18\6\24Ö\
+\27G7…0qÈ\21ÚE˜\15v\25\29\9v\25ŒÊqjˆî«aÎİÿ\29¿Ñ\24„lªD\1,\8\6 ;ò¼QÒ[î;\127}ç\2\5\27Ş\8\000X´l\1\1\8\8 Æ6yOØ‹¼/½|?+J~y*İÎa:|××\127 \23³\2¡Úu\29\15Ÿ•\"†yV4\18GÜc\14’\000\000\000À†Æ†\6†††Û\6†‡ÆF†‘Æ\6Í†††ÌFÆ\7\000†Ç†F†††\27†‡‡‘††\6Ì\6\7„$\6††¥‡yùÌÆÇ\6\1\6F†@\6G†S†\6‡Ÿ\6\6‡‘\6‡\6\000FÇ†G†„†€\7G†“‡†„P†\7‡‡Ç„†\27Æ\6‡\000ÆÆ†\1\6Ä‡@\6G†\7F†A†\7‡†‡\6†\27Æ\6‡‘Æ\6À†Æ†\6†\000\000]€\000\1\24ÀÂ\000\23@\14€E\000\000\1À\000\000Á\000\3\000&\1\000\000]€\000\000…\000€\1Á@\2\000\1\1\3\000AA\3\000¦\1\000\000€\000\000Å\000€\1\1\3\000AÁ\2\000Á\000\000æ\1\000\000İ€\000\000\5\1€\1AÁ\3\000Á\2\000Á\1\4\000&\2\000\000\29\000\000E\1€\1A\4\000ÁÁ\2\000\1‚\4\000f\2\000\000]\000\000‹\1\000ŠAA€ŠA€‰Š\000ŠŠÁ€ŠŠA\1‹Š\1‹\24\000D\2\23@\000€Š\1F‹Š\1Æ‹ÆÁ\000Õ\1€\3\25\000€\3\23€\1€ÆÁA\000\1\2\2\000F‚Á\000U\2€\4\22B\2\4AB\2\000İA€\1ÆA@\000ÇÂ\3\6‚Á\000\7\2\000\4@\2\000\3İA€\1\23€\11€F\000@\000€\000\000\000]€\000\1\24\000Ã\000\23@\
+€@\000\000\000…\000€\1ÁÀ\000\000\1\1\3\000AA\3\000¦\1\000\000€\000\000Å\000€\1\1A\2\000AÁ\2\000Á\000\000æ\1\000\000İ€\000\000\5\1€\1A\3\000Á\2\000Á\1\4\000&\2\000\000\29\000\000E\1€\1Á\3\000ÁÁ\2\000\1‚\4\000f\2\000\000]\000\000‹\1\000ŠAA€ŠA€‰Š\000ŠŠÁ€ŠŠA\1‹Š\1‹\24\000D\2\23@\000€Š\1F‹Š\1Æ‹ÆA@\000ÇÂ\3\6‚Á\000\7Â@\4@\2\000\3İA€\1\31\000€\000\6\7\21 \22Ua_îi&Ú]¬ANÚ±R\
+\11\16I\25bƒ\22!Ú¤#=°òïM1a\22?™v¥U4_š\18ã@c\12Ôhb'\6»ˆNb¾J\15\4\000\000\000\000\000\1\1\000\2\000\1\7\7!\25\6\19=;Ü½®*Ÿº¹\127ßùjš:îUé83*\25\000\000\000\4\5\000\000\000ßÒÛÎ«\4\6\000\000\000ßÊÉÇÎ«\4\4\000\000\000ÅŞÆ«\3\000\000\000\000\000\000ğ?\4\6\000\000\000ÛÊÂÙØ«\4\6\000\000\000âÆÊÌÎ«\4\6\000\000\000ÛÊÌÎØ«\4\6\000\000\000ÎÙÙÄÙ«\0044\000\000\000C\4\28N7\3M7\"M>#B\
+\30M>\27N-.M$9N.\14‡N\0228N\"&şâM7+N\15\12B\
+\30M>\27M3\4«\3\000\000\000\000\000\000\000@\4\7\000\000\000ÂÅØÎÙß«\4\7\000\000\000ÅŞÆÉÎÙ«\4\7\000\000\000ØßÙÂÅÌ«\4\7\000\000\000ÈÎÅßÎÙ«\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000ğ¿\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\000\000\4\4\000\000\000ØÙÈ«\4\6\000\000\000ÊÇÂÌÅ«\4\6\000\000\000ØÈÊÇÎ«\4\7\000\000\000ÅÄÜÙÊÛ«\4\6\000\000\000ÜÂÏßÃ«\000\000\000\000\000\19pi\23\22\18ÆU\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 ‹+\22\15@×4\8\12&\r§Ô‡\21ê\14\9\20 \17`ÿ_,\16a&põbbE“1EÊÙ5ğË“=‘Ú8ş\14t\0251\8t\25à”…v¯\15v\25\31\9v\25%ï\11\19¶N\15eHL'‹÷9!ŒUS\11Ô\24\11T¡çıv\000#\8\6 \
+ÌE\17\27×½{k›€0‚¯¦bG!â ZÁ‹cw‘\4|ÒLø/š˜Àk„·“\9\1\11\8\8 \18‚Íg\"‘ğ\28‹\127%…yV4\18íÆ\18W/\000\000\000Ã…Å…\4Å……Ø\5…„\2\5E…BEÅ„€„\5…X\5…„„……Ã„Ä…\3\4Ä…E„\5„\24D…\1JÁ‚\000\1\000\3\24ÀA\2\23€\5€F\1B\000†\1A\000‡AA\3]\1\1\1\23@\000€†BB\000ŠB\2\4b\000\000ãÁş\127F\1A\000GÂ\2]A€\000F\1A\000GÁÂ\2]A€\000F\1A\000G\1Ã\2]A€\000\24@C\000\23@\2€AÁ\1\000_\1\000\1\23€\1€\24@C\000\23€\000€AA\3\000_\1\000\1\23@\000€FC\000]A€\000\31\000€\000\8\7\21 8Íy=~¡±\15şc™8\25bÿ3\6ÁjU#S¥KÏ°\14\25–\9·|®Jßl[\6b$\11\4\16I\25P2İc©VsVtî\7bk\9›_\20òó\6\2\000\000\000\000\000\1\1\000\7!\25²*}\000\15\000\000\000\4\8\000\000\000˜›Ÿƒ˜ê\4\3\000\000\000™ê\4\5\000\000\000€™…„ê\4\7\000\000\000„‰…ê\4\
+\000\000\000¿£¹‚…ê\4\7\000\000\000œ‹†Ÿ™ê\4\7\000\000\000™‚…¿£ê\3\000\000\000\000\000\000ğ?\4\6\000\000\000š‹ƒ˜™ê\4\3\000\000\000µ­ê\4\7\000\000\000…šƒ…„ê\4\8\000\000\000…šƒ…„™ê\4\
+\000\000\000…šƒ…„¸†ê\3\000\000\000\000\000\000\000\000\4\9\000\000\000†Ÿ‹µ’ƒê\000\000\000\000\22pi\23m/³@…wu0\9L@VñæFJ\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\24pi\23\28Î\r>\19x7gŠ\26u\27Ì|ë\6\\y\29gwá‡rÁõ¢\5”F—$ö‚9\2¿Y<>\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 y,¨{1šêb¶m)\6’ì¸r\24\16Õ^zFÖ'3Aß\17r3ı\
+™\3\9\20 \7ÉÊ\0271¾{*á4»N„\30O\12\24–æ\\á=Ò\21×ÕG\31ê6Ksq\8(M¡’½%î\14t\0252\8t\25Ùª3VL—AÉ\15v\25\16\9v\25óÙ!4ºÖ\"…™\11K•ıÛS¯\25e7°\3±R¤w£s(F\r3\000/\8\6 ZåÌyº2Æ%ú­p\20Ô+£!ís¥7lám\31\4\14\8\8 \4\28ê\27sª8;¼ïÒuåP¥jøÈ‡GÔ…¹RÌrV4\18¾¼\4F7—ŸMp1\12å¦q4\17BÓ#ò}$N™\12f8®5­E&8ûp\30¦q\3.\000\000\000ÊÍŒÌÑ\rLÌJŒÌKMŒÏQMLÌ\12ÍÌÏÍ\14ÌÌ\26ÍNÏÊÎÌÑNLÌÍÌLÎ€\3\22‚\2\4e\2\000\000X€A\000\23@\1€X€Á\000\23À\000€X€A\1\23@\000€\24€Á\1\23€\1€Â\1\000ÁÂ\1\000\14\3B\2Î\000Â\2€\000\000\6@\000€\5\000\000\000\5†BB\000À\2€\3\000\3\000\000@\3€\000€\3\000\1À\3€\1B\000\3†‚B\000À\2€\3B\000\1†ÂB\000Á\2\3\000B\000\1€\2€\4À\2\000\4B\000\1\31\000€\000\4\7\21 ÕQ`(Ï©\"Vçª,\rı—m[°G¾\11Bù\6\16\9\16I\25ªõ. \22¼œ(¤>Ù8\22×œ?¡íós¨ZÃTŠÕz]İÆi\1\000\000\000\000\000\000\7!\25‚J]B\r\000\000\000\4\14\000\000\000şüíÊúëüü÷Êğãü™\4\3\000\000\000öê™\4\5\000\000\000íğôü™\4\5\000\000\000·é÷ş™\4\9\000\000\000ìêüëÉøíñ™\4\6\000\000\000¶ëüê¶™\000\3\000\000\000\000\000\000\000\000\3\000\000\000\000\000\000ğ?\4\9\000\000\000ê÷øéêñöí™\4\17\000\000\000êøïüĞôøşüÍöØõûìô™\4\7\000\000\000ôÊõüüé™\3\000\000\000\000\000\000I@\1\000\000\000\3\9\20 [rºJÈƒ\15\5´ t{ûÓÔrªE_es‡º\11äĞˆ%g¼&4†\3{\14Ï›I\1]\000\9\20 \"Ê\7NÒ¡h\"\4´\8S<ÔÿiŠgåb£[²\8ÿŠ\24+\31û¾?”3À>è\14t\0259\8t\25\8çO*L?MP¡Ö™\17(\22ø\127…£ÔQšO>e¥ã?Wº ñ\25­²¿dÎ\15v\25\30\9v\25‚$\1\31aS4`ü)Ï\20,j`\4ÕÚîkáúW:\000+\8\6 [Şiz°–¡;\1\
+\8\8 îı\11rÒ`©\9UqV4\18\0155©s\9_Ÿ\7•\rÇM\14ÀÁ\30(Z^G)A‡\12ä\15b80A®qu€Ô\\\5\000\000\000\19U\21U\18@À\000…\000€\000]@\000\1\31\000€\000\
+\7\21 YW¦qú#©.\0316:/ş:æHµÄšHÌèù\19ÿàj7é›g\3\8\16I\25üº¯\127dSük\3\23\29`İµ\7:÷yƒ$^õ†ZL©u¥ÏÔ&Ló’L\2\000\000\000\000\000\1\8\9\7!\25$ÇK>¥§\17nâûr.&.SÓ²n_|¢½\17V€Œ\26üóõk\2\000\000\000\4\3\000\000\0002.]\4\7\000\000\000/802+8]\000\000\000\000\23pi\23‡Á:\12rtÊHæ˜\27\20à\24á}l˜sw\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\24pi\23ŞSÇF!]\14@Ò·OWŞä§1YFª'\000ô}KÚŸW1½™¦\19\3\11›+·U_k\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 çÈGv\21Úx\3U\1\9\20 œ¬xT*ëË\30ñT\1*–™úVÁÆ\22\1\6Kô_ ˆ?õìá{À\14t\0259\8t\25‰Eš\
+\15•ù\4Ÿ;Ù)lYX\30;\28sñÀ‡1Ëœ\27\23ÙßW\4+LË\15Ç\15v\25\17\9v\25\29P‡zd\6e:·ö#*‰cza¯r5?²G#\6\24Qa\28\28\8ú=\1,\8\6 ]‡Ô\3û^Š\18Ô\20s^‡r \"í³‹<\000\11\8\8 H9·#óş\127\28øÎõt\28~V4\18\20\127M»’$^Z=\28í±éWkö®\23O\27ÅM\12\000\000\000\25\28\28\28]\28\28\28\\\28\28æ\000\000\000\29€\000\000K\000\000\000¥\000\000\000À\000\000\1\000\1\000\000Ş\000\000\1ß\000\000\000\31\000€\000\11\7\21 DÖ\6\28{g]Š²l^a&\22ßmõ\23A©\8ê‰,\17@û¤\
+wèBP\5\000\16I\25YL\6'\2\000\000\000\1\2\000\000\3\7!\25F€¨!¶ÓÚ*\2\000\000\000\3\000\000\000\000\000\000ğ?\4\6\000\000\000!4790U\1\000\000\000\r\9\20 \14ÈS]za7/o\127o\11Ø¡_L{\12\9\20 n\6î \11•kVHøˆIõ²\2!Ğ \127^Ş\14t\25:\8t\25üøB{Ì˜\16Ç\17ÿ,.TˆP\2´\000;5%ÛißF€O| Y\11\"¿‘zfúİHú\15v\25\26\9v\25¸X\6-*©jj\000,\8\6 _ıŠA~'\0121–ş@±¥\31(ÕİZ\7\1\12\8\8 +\7WWD]Ê\18u\000²jÄ7ÿaæyV4\18ÏÌj8#\000\000\000 æ¦æfæææ»fæç¾¦&æñ¦æfùææçñæçf æfæ½ææ\000\23@\000€F\000€\000_\000\000\1K\000\000\000H@\000\000†€@\000À\000\000\000\000\1\1\23€\1€Å\1\000\1\000\2€\2İ\000\1\5\2\000\1@\2\000\3\29‚\000\1J\000‚\3¢€\000\000#ı\127†À@\000À\000€\000\6\1A\000@\1\000\000\29\1\000\1\000\000\000Ÿ\000\000\000\31\000€\000\5\7\21 Ù¹¢,Ÿmê\22\6˜ \
+Ö²å'k\6z'Í©Ÿ7\4\7nx\
+\6\16I\25\2Ïz!äMîGêÚÓm%\12\28JHÌ\16a¼„bİæ\18I\3\000\000\000\000\1\1\1\1\2\4\7!\25}\28¨v<ä\
+ò\24C,\12³¦7î‰½2\5\000\000\000\4\5\000\000\000\15\2\11\30{\4\6\000\000\000\15\26\25\23\30{\4\6\000\000\000\11\26\18\9\8{\4\r\000\000\000\8\30\15\22\30\15\26\15\26\25\23\30{\4\r\000\000\000\28\30\15\22\30\15\26\15\26\25\23\30{\000\000\000\000\22pi\23©\17ùU\25‘\20\
+\12ThF\30\18«@\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\22pi\23ªê©6\2\25KL­•~$‘ytp\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 eÊÈXìJ‡!ÂMğ\27;\12\9\20 ôÆH9ä3.\22U*V\6;ôE`¿cÃ$Ç\14t\0255\8t\25ò\21¹\3hóè\127Ÿó#1eQÍrD0\22ké\15v\25\16\9v\25ÖÓ\31\24IPM\28½pşrK//ÀëF|\0035c2°_\0063›f\14T\000!\8\6 øBå\127C\26T\1¼EDp,Å+vå\"¡e!\16\rI\24\16³\23¨p‘\1\000\r\8\8 nÜ Jœ7Ú:uŒ\15Ã\6wP×+ \27ª{V4\18ÊAÙ\30œã:4Å“c<\r\000\000\000«ªªªìêêª÷j*ªe€€\000\24€À\1\23@\000€\1À\000\000\23€\000€\24\000Á\1\23\000\000€\1@\1\000\31\000\000\1\31\000€\000\
+\7\21 à\19Q\31„ˆÊd\5gÆ)*d;BùÈW“²õXêOå7E.,\
+\4\5\16I\25…¶ó\0110(q};Uá\11ÈĞG\r\1\000\000\000\000\000\000\7!\25g\26\r\2\6\000\000\000\3\000\000\000\000\000\000\000@\4\14\000\000\000\\^OhXI^^UhRA^;\3\000\000\000\000 ìDA\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000(A\3\000\000\000\000\000\000ğ?\000\000\000\000\27pi\23\r~Â6€*À\25VdztÖ\"0î\6ácò›T/\19c±?²\rX4ÊÇtJ\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 \15_Lrvş9 \11\9\20 3¨BX\127[Ç>3\15t\0254\8t\25¼•*\6ØpnqÈ¼Æ#=Ÿ‰0à\15v\25\25\9v\25¸\28Ú7\1+\8\6 Âáˆ\30Aª\1p\000\2\8\8 ª¸\14|ğ\27Ÿ$İ#‰\"£P†\3+Æ‡\6Êz€ctØW3Â©n:×({Åı\9B¡rV4\18\4vÿMÀ¨Ï\17 &–wzt\7¶×¾\29ä\4AB®\28Ä_53†\\¥‹×Hj²îe%\000\000\000¤¡¡¡à¡¡¡ á¡¡G¡¡¡¼!¡¡ç!a¡æaa¡!¡¡¡ü!¡ '€À\000‡\000A\1Á@\1\000€\000\1Æ€À\000ÇÀÀ\1\11\1\000GA\1\
+A\1ƒGÁA\1\
+AƒG\1B\1\
+A\1„\
+Â„\
+Â…\
+B†İ€\000\1\26@€\1\23@\1€\rAÃ\1\25\000\000\23€\000€\3\1€\000\31\1\000\1\23@\000€\3\1\000\000\31\1\000\1\31\000€\000\7\7\21 mHl§Qx\22RûqS&ex$ğ\31]9\6\4\16I\25g\15z\20\12äâ%¾•\9nW+\0259é\7lH\2\000\000\000\1\2\000\000\5\7!\25‚ñ ?³‚ì+Ö¾ Iµ³J.\14\000\000\000\3\000\000\000\000\000\000ğ?\4\6\000\000\000TABLE \4\3\000\000\000OS \4\5\000\000\000TIME \4\5\000\000\000DATE \4\3\000\000\000\
+T \4\4\000\000\000DAY \4\6\000\000\000MONTH \4\5\000\000\000YEAR \4\5\000\000\000HOUR \3\000\000\000\000\000\000\000\000\4\7\000\000\000MINUTE \4\7\000\000\000SECOND \3\000\000\000\000\000\24õ@\000\000\000\000\16pi\23›¼*\11®ìW\16\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 jâ%$“ÆêHX\11\9\20 >Hà\"¸ïğF\28\15t\0258\8t\25Ğº%zoÇÏ\20\\eækH¢cL*xü\\â\1³J\25àtyL\28í\6\28\14v\25\29\9v\25ım‰\15ÿC¢I½‡ë{$¿YBÈ\21Ñ%\1+\8\6 ĞÜB\9®\21‚5\000\12\8\8 Œ\6)\21v’ˆ\21-—9>\31®Å:qqV4\18‰ë^ \29Š6M\1275rfØ‰jŞejY\6o&9]™D3® Su6öMœ\000\000\000tqqq0qqqğ1qq—qqqlñqq7ñ±qğ±qq,ñqpöq°qºqqqTpqq\0200qqö00qêpqqf±sññpqs¶00qpópqìğñpêpqqfqqñfqpñ÷0±qö°0r±pñppssqì0ñpö03qêpqqf±sññpqs¶03qpósqìğñpêpqqfqqñfqpñ÷0±qö°0rÀ\1€\1\1Â\2\000A€\1‡\1C\000›\1\000\000\23À\2€€\1\000\2Ç\1C\000\1‚\2\000€\1›\1\000\000\23\000\000€\23\000\1€†AÀ\000‡ÁA\3À\1€\1\1B\3\000A€\1‡C\000›\1\000\000\23À\2€€\1\000\2ÇC\000\1‚\2\000€\1›\1\000\000\23\000\000€\23\000\1€†AÀ\000‡ÁA\3À\1€\1\1Â\3\000A€\1‡\1D\000›\1\000\000\23À\2€€\1\000\2Ç\1D\000\1‚\1\000€\1›\1\000\000\23\000\000€\23\000\1€†AÀ\000‡ÁA\3À\1€\1\1B\4\000A€\1‡D\000›\1\000\000\23À\2€€\1\000\2ÇD\000\1‚\1\000€\1›\1\000\000\23\000\000€\23\000\1€†AÀ\000‡ÁA\3À\1€\1\1Â\4\000A€\1‡\1E\000›\1\000\000\23À\2€€\1\000\2Ç\1E\000\1‚\1\000€\1›\1\000\000\23\000\000€\23\000\1€†AÀ\000‡ÁA\3À\1€\1\1B\5\000A€\1\1\000\000ÇE\000Õ\1€\3\1\2\000\000¡A\3€\2\000\000Ç‚E\000ÇB‚\5Õ\2€\5\1\3\000\000¡‚\1€€\3€\2ÇƒE\000ÇC‚\7ÇCƒ\7\000\4€\4@\4€\6C\000\2 Âı\127 \1ü\127‡\1À\1›\1\000\000\23€\2€†AÀ\000‡\1F\3À\1€\1\1B\6\000€\1H€‹†Æ\000ÆÁÅ\000\1Â\6\000A€\1\23À\000€‡\1G\1À\1\000\000\1\000\1Ÿ\1\000\000\31\000€\000\
+\7\21 öÂó\31 ®ò*œ\000Şi\15£h\25ìÊß1¨‘×$\12\17ò(ì\14‚{\18\5\16I\0250ĞKk´$S!4\20ŞZ\1­t\2\000\000\000\1\2\000\000\000\7!\25C’Õ\28\29\000\000\000\3\000\000\000\000\000\000ğ?\4\6\000\000\000,9:4=X\4\8\000\000\000*=)-1*=X\4\3\000\000\000+\"X\4\5\000\000\0002+76X\4\6\000\000\000+,!4=X\4\7\000\000\000+,*16?X\4\7\000\000\00016+=*,X\4\19\000\000\000½İğ½éØ½éÆ¾Øÿb+,!4=X\4\6\000\000\000/1<,0X\4\7\000\000\0006-5:=*X\4\19\000\000\000½İğ½éØ½éÆ¾Øÿb/1<,0X\4\7\000\000\0000=1?0,X\4\20\000\000\000½İğ½éØ½éÆ¾Øÿb0=1?0,X\4\7\000\000\0007*1=6,X\4\20\000\000\000½İğ½éØ½éÆ¾Øÿb7*1=6,X\4\6\000\000\000,1,4=X\4\19\000\000\000½İğ½éØ½éÆ¾Øÿb,1,4=X\4\11\000\000\000;96;=4695=X\4\24\000\000\000½İğ½éØ½éÆ¾Øÿb;96;=4695=X\4\7\000\000\00073695=X\4\20\000\000\000½İğ½éØ½éÆ¾Øÿb73695=X\4\6\000\000\000(9?=+X\4\r\000\000\000=**7*5=++9?=X\4\7\000\000\000;76;9,X\4\2\000\000\000tX\4\6\000\000\000=**7*X\3\000\000\000\000\000\000\000\000\4\7\000\000\000=6;7<=X\2\000\000\000\11\9\20 ğ†$x\5SĞ\
+~\11\9\20 ¥-È\7+#\22<;\15t\0258\8t\25Ú)Õ4v¤)¹C**Kl1\23‘¯W]—PÕt5æ¸\4ÓkZ<\17\14v\25\18\9v\25%$Ø(Mìï\5òü\16GÕ5š\27\31†\21V·…\31o\23Ñ€\\)ş\0002Êõ”\14çYV\1\000,\8\6 \19×é\22éÍ5%ºÅ¼h¶\26,IÙTZ\29\2\
+\8\8 \rçL\4§ƒ{\28|}V4\18PHÍO?p*0®®òi\9Œ÷y‹Ü[G\11\000\000\000ú|<|¼|||áü|\1\24@\000\1\23€\000€ƒ\000€\000Ÿ\000\000\1\23@\000€ƒ\000\000\000Ÿ\000\000\1\31\000€\000\
+\7\21  ÜÌnÀÂ\20L\18Ê¤\3‰\3\26\14åæìt_¶”\9{\000+U»\28‡\16\4\6\16I\0253†JDÒí\7m¨:«\17ı{ßRºG^nÎí90\16SÉi\1\000\000\000\000\1\3\7!\25ˆ³ö\24Æmõ2\1\000\000\000\4\5\000\000\000\
+\7\14\27~\000\000\000\000\21pi\23GÌƒ\12ÓTB7#îiM¬\18Ù\7\11_¥wt67\29ì‚\0038\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 B@é!\000¥\21\11^ş;D.\11\9\20 “6dkTÅÖy,\15t\0252\8t\25#‹ò<Z¡XT\20\14v\25\17\9v\25ãWg\29Û\1«NpKE%\18Ki/³O²vÅîYTWïß\24VzIfCš=\000/\8\6 Rpë\21¶õ4\18ÒÜs$È\4™\15vaQcl˜¥1\3\1\8\8 Æs\27$ÙŞì\25T»›;\8´\4FÙƒ\2%²¹×\127˜á#\23š'\6,Eğ;kzV4\18i{.(FHSe™\000\000\000YŞ†Ş^Ÿ‰^\30Y\30ŞE‰š\30[™\31Şß_C\30\30ŸE‰\30‰Şœ\30X_YŞ_Ÿ›ŸŸß\31Ÿ\30Ÿ\30__ŸœŸßœœÈß\28œCŞ\30ŸYŞÜE‰š\30[™ßÜß\31œC\30\30ŸE‰\30‰Şœ\30X_YŞ_Ÿ›ŸŸß\31Ÿ\30Ÿ\30_Á\1\000\000\2\000\1AÂ\2\000VA‚\2İ@€\1Ç\000C\000Û\000\000\000\23\000\4€Å\000\000\000\7\1C\000AÁ\000\000İ€€\1Û\000\000\000\23\000\000€\23@\2€Æ\000Á\000Ç@Á\1\5\1\000\1A\1\000€\1€\000ÁÁ\1\000\000\2\000\1A\2\2\000VA‚\2İ@€\1Ç@C\000Û\000\000\000\23\000\4€Å\000\000\000\7AC\000AÁ\000\000İ€€\1Û\000\000\000\23\000\000€\23@\2€Æ\000Á\000Ç@Á\1\5\1\000\1A\1\000€\1€\000ÁÁ\1\000\000\2\000\1A‚\3\000VA‚\2İ@€\1Ç\000@\000\24ÀÃ\1\23À\4€Ç\000D\000Û\000\000\000\23\000\4€Å\000\000\000\7\1D\000AÁ\000\000İ€€\1Û\000\000\000\23\000\000€\23@\2€Æ\000Á\000Ç@Á\1\5\1\000\1A\1\000€\1€\000ÁÁ\1\000\000\2\000\1AB\4\000VA‚\2İ@€\1Ç\000@\000\24€Ä\1\23À\4€Ç\000D\000Û\000\000\000\23\000\4€Å\000\000\000\7\1D\000AÁ\000\000İ€€\1Û\000\000\000\23\000\000€\23@\2€Æ\000Á\000Ç@Á\1\5\1\000\1A\1\000€\1€\000ÁÁ\1\000\000\2\000\1AB\4\000VA‚\2İ@€\1Ç\000@\000\24ÀÄ\1\23À\4€Ç\000D\000Û\000\000\000\23\000\4€Å\000\000\000\7\1D\000AÁ\000\000İ€€\1Û\000\000\000\23\000\000€\23@\2€Æ\000Á\000Ç@Á\1\5\1\000\1A\1\000€\1€\000ÁÁ\1\000\000\2\000\1AB\4\000VA‚\2İ@€\1\31\000€\000\000\7\21 LÓ•E!Jş3\
+\11\16I\25^\30ÿtÔ™°*“í!\18¶\rß\r+\20ú\16 1¼O\27\15\
+w}„å&×&ñaíë}\27\3\000\000\000\1\4\000\1\1\3\3\7!\25MˆBEY„#M\20\000\000\000\4\5\000\000\000ZW^K.\4\6\000\000\000bOLKB.\4\5\000\000\000ZKVZ.\4\7\000\000\000]Z\\G@I.\4\6\000\000\000ZOLBK.\4\7\000\000\000G@]K\\Z.\4\4\000\000\000É‚‚.\4\7\000\000\000Ç›É‚‚.\4\26\000\000\000Ê–„È ‰Ê•˜ZKVZËŸ°È®‰Çº·Æ.\4\5\000\000\000]GTK.\4\7\000\000\000@[CLK\\.\4\26\000\000\000Ê–„È ‰Ê•˜]GTKËŸ°È®‰Çº·Æ.\4\6\000\000\000OBGI@.\4\6\000\000\000MABA\\.\4\27\000\000\000Ê–„È ‰Ê•˜MABA\\ËŸ°È®‰Çº·Æ.\4\11\000\000\000|OJGAi\\A[^.\4\7\000\000\000]KBKMZ.\4\28\000\000\000Ê–„È ‰Ê•˜]KBKMZËŸ°È®‰Çº·Æ.\4\14\000\000\000mFKMElAVi\\A[^.\4\9\000\000\000mACLAlAV.\000\000\000\000\24pi\23\19ü]i3c\16g\25^+\27°b/\12ç\18\12Ë\23h+³‘†F§\14\0258\17\8¤\22Ÿ8W\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\27pi\23zƒÒ>å€Ô<öµÉuÆVh\4\6ËÒpÃ´‘3$ugyÛdƒ\27V¢³E\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 Èßb\127û›[I a±QûUöe2úF,äè\8DˆÜF\24\1\9\20 \2ï\17~¨0-g;$Î\5s\1àjÅ cDÄò\"ñ\19Ñ+”Ä\2\3\
+\15t\0257\8t\25Vÿª{\1l=:uJÍ^–\27\4J°?x\11w\19\"]ú´\0305\14v\25\31\9v\25ºQÚTw]J\28Dù^\9\"\21\5\8¹¨#\12Ùò]\4¾pN\1.\8\6 \7/éC6¸·zŒ\3c9\11‡\
+ğ›ëA5\127E\\’ú˜\8\000\15\8\8 q£\19b\5üxs(’¹\12µg\6\5ö\15J\31¼V¼\15\21^ŠIk~V4\18Š¨W(ã*ùdm\2rU\1¼y\5s%®\3‡0ç@I\000\000\000nkkk*kkkê+kkkkkvëkk.kkkêëkkª«kkMjkk6ëkkîkkkªkjkjªkk\rjkköëkk®kkkj*jk*ªkkÍ\1\000\000İ€\000\000\5\1\000\000A\1\000Á\000\000æ\1\000\000\29\000\000E\1\000\000Á\1\000ÁÁ\000\000&\2\000\000]\000\000‡\1@\000‡\1A\3Ë\1\000\000\1‚\000\000U\2\000\000\2\000\000!Â\4€\6CÀ\000\7\3B\6@\3€\3†CÂ\000‡ƒB\7ÁÃ\2\000\7Ä\2\000\7\4@\8G\4@\000G\4À\8\14D\4\8GÄ\2\000G„À\8‡\4@\000‡„@\9N„„\8‡Ä\2\000‡\4A\9\3€\2\29C\000\000 ‚ú\127\6\2Ã\000@\2\000\3†BÀ\000‡BC\5À\2€\3\1ƒ\3\000‚€\1À\2€\000\000\3\000\1@\3€\1€\3\000\2À\3€\2\30\2\000\4\31\2\000\000\31\000€\000\3\7\21 ë‚ø\31\19\11\16I\25Å/i_ó;¡C×\2j}ÉíÙ-›Vû8ß1SAÿ¥‘((Z^ro=ÚKïA}j\2\000\000\000\1\2\000\000\3\7!\25\0018sT‡\14–\19\15\000\000\000\3\000\000\000\000\000\000ğ?\4\6\000\000\000lyzt}\24\3\000\000\000\000\000\000\000@\4\7\000\000\000vmuz}j\24\3\000\000\000\000\000\000\8@\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\20@\3\000\000\000\000\000\000\24@\4\7\000\000\000qvk}jl\24\4\7\000\000\000kljqv\127\24\4\7\000\000\000~wjuyl\24\4\r\000\000\000=kd=kd(`=(.`\24\4\28\000\000\000~qv|Umtlq[wtwjQvJ}\127qwv^mbba\24\4\7\000\000\000{wv{yl\24\4\2\000\000\0004\24\000\000\000\000\21pi\23\0074ìG¯ O ƒä½5ıC6gl÷\0110˜BH\127JS+\2\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 kN4f\21\1\9\20 ¦(\0171¨—Ú+„e²\"§_OØN‚\7&Uë\31ëkq3\15J.\19™\15t\0253\8t\25æJ=³•\2u)3<#\14v\25\27\9v\25\22k\8'\31à\8v¶dG\1*\8\6 ^\3şTå\0170h“ƒ×r\000\2\8\8 {}sM˜^\23\000XµM4lP\"\6»i•–°.&¥¢Fr\9¶OTÜ}qå\\€{\18}V4\18iÂ2\30¿À&PÔÂÚ$\23\30>«,˜\3B\1\000\000\23\18\18\18S\18\18\18“R\18\18ô\18\18\18\15’\18\18W\18\18\18“’\18\18ÓR\18\0184\19\18\18O’\18\18™\18\18\18ÕÒR\18Ç\18’\19\19\19\18\18T\19Ó\18“S\19\18O“\18\19•“Ó\16Ù\19\18\0187\16\18\18S\16\18\18’\16’\19Ó\16\18\18sĞ2’S\17\18\18•ÑR\18•\17\17\21‡\17\18\21Ó\17\18\18s\17\r’UÖR\18U\22‘\26U\22–\26UÖÓ\26\
+\18Ğ\26\5\18\21’UÖR\18U\22‘\26U\22–\26UVĞ\26I\22\18\18\5’\17’UÖR\18U\22‘\26U\22–\26U–Ğ\26IV\18\18\5\18\16’TVÒ\18UÖĞ\26’\22\18\19ÕÖR\18Õ\22‘\27Õ\22–\27ÕVĞ\27OV’\19\5Ò\19’TVÒ\18UÖĞ\26’\22\18\19ÕÖR\18Õ\22‘\27Õ\22–\27Õ–Ğ\27OV’\19UÖR\18U\22‘\26U\22–\26UÖÓ\26\
+\18Ñ\26\5\18\21’UÖR\18U\22‘\26U\22–\26UVĞ\26I\22\18\18\5’\17’UÖR\18U\22‘\26U\22–\26U–Â\8[D\000\000\23\000\2€FDÀ\000GÄÂ\8€\4\000\1ÇÄ@\000Ç\4ƒ\9Ç\4„\9ÇDÂ\9]D€\1\23À\1€FDÀ\000GÄÂ\8€\4\000\1ÇÄ@\000Ç\4ƒ\9Ç\4„\9Ç„Â\9]D€\1GÄ@\000G\4ƒ\8G\4„\8GÄÁ\8\24@Ã\8\23\000\1€FDÀ\000GÄÂ\8€\4\000\1Á„\3\000]D€\1GÄ@\000G\4ƒ\8G\4„\8GÄÁ\8\24ÀÃ\8\23@\9€GÄ@\000G\4ƒ\8G\4„\8G„Â\8[\4\000\000\23À\7€GÄ@\000G\4ƒ\8G\4„\8G\4Ä\8[\4\000\000\23\000\4€FDÀ\000GÄÂ\8€\4\000\1ÇÄ@\000Ç\4ƒ\9Ç\4„\9Ç„Â\9]D€\1FDÀ\000GÄÂ\8€\4\000\1ÇÄ@\000Ç\4ƒ\9Ç\4„\9Ç\4Ä\9]D€\1\23\000\2€FDÀ\000GÄÂ\8€\4\000\1ÇÄ@\000Ç\4ƒ\9Ç\4„\9Ç„Â\9]D€\1\23Àÿ\127`Cà\127`‚Ş\127[@\000\000\23€\2€K\2\000\000@\000€\4A\2\000\000•\2\000\1Á\2\000\000aÂ\000€AC\4\000€\3\000\6Vƒƒ\6J@\3\6`‚ş\127U\2€\000•\2\000\1\25€‚\4\23€\5€F‚Ä\000Â\4\000Á\2\5\000]B€\1U\2\000\1•\2€\000N‚‚\4†BÅ\000À\2€\4\1\3\5\000B€\1\2\000\000À\2€\4\1\3\000\000¡‚\1€†CÀ\000‡ÃB\7À\3€\000\1D\4\000@\4€\6\22D\4\8C€\1 Âı\127K\2\000\000†ÂÅ\000Ç\2F\3\000\3\000\000İ\2\000\1\2\000\000dB\000\000H@\2‹F‚Å\000G\2À\4\24\000À\4\23À\26€A‚\000\000†‚Å\000•\2\000\5Á\2\000\000a\2\25€\1\1\000\000FCÆ\000GƒÆ\6†ƒÅ\000‡\3\3\7ÁÃ\6\000]ƒ€\1[\3\000\000\23À\6€@\3\000\4†ƒÅ\000‡\3\3\7ÁÃ\6\000]ƒ€\1€\3\000\4Î\3@\6ÇÃ\3\1\1\4\7\000ƒ€\1Ë\3\000\000\1\4\000\000U\4€\6\4\000\000!D\1€\6EÇ\000GÅ„\6\29…\000\1\r\5@\
+\7\5\5\7Ê\3…\9 \4ş\127\6„Ç\000N\4@\6GD„\000\
+Äƒ\8\1\1\5\000\23À\15€N\3@\6GC\3\1\24€Ã\6\23€\1€FƒÇ\000\3@\6‡ƒƒ\000ÆƒÅ\000Ç\3ƒ\7JÃ\3\7\1\1\5\000FCÆ\000GƒÆ\6\3@\6‡ƒ\3\1ÁÃ\7\000]ƒ€\1[\3\000\000\23€\6€@\3\000\4\3@\6‡ƒ\3\1ÁÃ\7\000]ƒ€\1†CÇ\000ÆƒÅ\000\14\4@\6Ç\3„\7ƒ\000\1\3@\7‡ƒƒ\6À\3\000\4\000\4\000\7A\4\7\000İƒ€\1\6DÇ\000F„Å\000G\4ƒ\8\29„\000\1\r\4@\8\7\4„\7F„Ç\000\4@\6‡„„\000J\4\4\9\1\1\5\000\24\000@\2\23À\3€@\3\000\4\3@\6‡ƒ\3\1Á\3\7\000]ƒ€\1†CÇ\000ÆƒÅ\000Ç\3ƒ\7ƒ\000\1\3@\7‡ƒƒ\6ÆƒÇ\000\14\4@\6\7\4„\000Êƒ\3\8\1\1\5\000`Bæ\127\23@\000€A\2\5\000_\2\000\1A\2\000\000_\2\000\1\31\000€\000\8\7\21 ú\19¡\8‘w&AÀ:o=ÔDAJ/S—+§a\29bM·\000”\0269Ì¦-ì `\"\22\2\16I\25ÌO~ «³X\6\237P\2\000\000\000\1\2\000\000\000\7!\25\4i¦: \000\000\000\3\000\000\000\000\000\000ğ?\4\6\000\000\000atwyp\21\3\000\000\000\000\000\000\000@\4\6\000\000\000etrpf\21\4\8\000\000\000gpd`|gp\21\4\3\000\000\000fo\21\4\5\000\000\000\127fz{\21\4\5\000\000\000alep\21\4\11\000\000\000Gtq|zRgz`e\21\4\7\000\000\000|xtrpf\21\4\5\000\000\000y|fa\21\4\7\000\000\000|{fpga\21\4\14\000\000\000V}pv~WzmRgz`e\21\4\5\000\000\000Pq|a\21\4\6\000\000\000Jpq|a\21\4\9\000\000\000VzxwzWzm\21\4\5\000\000\000qtat\21\4\4\000\000\000ctg\21\4\6\000\000\000pggzg\21\0045\000\000\000ñ¨µò‘Pmey|faıªŒñ­¿ğš—ó€¥ñ©µò‘ñ­˜ğº¬ú©™ğ¥„ğ’µñ­¿ö•—\21\3\000\000\000\000\000\000\000\000\4\7\000\000\000q|tyzr\21\4\
+\000\000\000xlJgpa`g{\21\4\7\000\000\000f}zb@\\\21\4\7\000\000\000p{vzqp\21\4\7\000\000\000fag|{r\21\4\5\000\000\000s|{q\21\4\2\000\000\000U\21\4\2\000\000\0009\21\4\9\000\000\000az{`xwpg\21\4\3\000\000\000JR\21\4\2\000\000\0006\21\1\000\000\000\3\9\20 £\19İyø½¹^â<\28\30°$:l÷\7Û#` Z[IA›}Èã‹T†î\roê\11³fN\12\9\20 —~×\18†|†(;Ôú\17úR.n¦\30¡\5d\15t\0256\8t\25UoS\11ç(;\\…R¢Y\9ÿar‘¶\9a\"Ï}\\\14v\25\25\9v\25\127X\9|\000!\8\6 3ä5s\14sA&ÿ~š6 [E~²†\30 ÷<T\21ƒ˜a\28b«X\12\3\9\8\8 ã8¼w•|V4\18i'Êf•ø¦pcÒXh©9½O+\000\000\000IÕ•”‚••\21T•••‰Ô\21•‚••\21”Ô••Ô”••\30”••S\20Õ•RTU–•—•\000@\2\000\2€\2€\1İ\000\2ÛA\000\000\23€\2€\6‚@\000\7\2A\4@\2\000\000€\2€\1Æ‚@\000ÇBÁ\5\000\3\000\000İ\2\000\1\29‚\000\000Š\1‚\2\23@\3€\6‚@\000\7\2A\4@\2\000\000€\2€\1Î\2À\3\29‚\000\2Š\1‚\2\6‚@\000\7BA\4@\2\000\2\29‚\000\1Í\000‚\3M\1À\2\23€÷\127Ÿ\1\000\1\31\000€\000\6\7\21 éNß\16ä\r¸a'Ê¬qm€\22\r\000\16I\25|9\000}\1\000\000\000\000\1\4\7!\25ÍÉ¶\5†8bo\0074r|/ì…\3d]° \6\000\000\000\3\000\000\000\000\000\000ğ?\4\2\000\000\000\14N\4\7\000\000\000=:<' )N\4\5\000\000\000(' *N\4\4\000\000\000=;,N\4\4\000\000\000\"+ N\000\000\000\000\17pi\23^_/(˜Aæ\19”ÿ¼\30\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\21pi\0238+\18F†Û>U\27\30t»5.¨14KD`M-nI&\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 £§\26A\0225&\16a–>k\000\9\20 ßãù\000Pîl†¬”\5Fƒõx_,ş!Üé¶DKö®@U¶³\15\25Ü½@¶\2t\0259\8t\25Ós¦wó¤”\
+\24…%5Xğ1—Îşpn¦\8/\000•ÔirÒ@\5\19x\24W³\14v\25\30\9v\25òĞ)YlòÊSDÍşnÿ\20-B,¡–\27(\127\8|\1/\8\6 BÖ¼+Åà:MS9<>\31\12w¤Ä˜;AÈ(\000\1\8\8 êG4ümÆJ¡µWA6>=uQ$zZº‘\21\2>‹öM%˜ R­6ª\12…yV4\18D\5©}S\000\000\000 ………ã……‡„……àÄ………E…’\5‡\5\4Ä……`\4……\rE„\4`D……\rE\4\4`„„…\rE„\7`Ä„…\rE\4\7RÄ•\5’…•\5\5D…’\5†\5 \4„…`D„\000\1Â\1\000@\2\000\3]‚€\000¥\2\2\000ˆ€\2¥B\2\000ˆ€‚¥‚\2\000ˆ€\2‚¥Â\2\000ˆ€‚‚×\1\12€\23À\11€\24\000Â\000\23€\6€¥\1\3\000åA\3\000\1B\2\000A‚\2\000€\2€\3À\2€\4\000\3€\3@\3€\3€\3\000\1]ƒ\000\1€\3€\3À\3€\1ƒ\000\1Vƒƒ\6\29ƒ\000\1Ö\2ƒ\5‚\000\1å‚\3\000ˆÀ\2åÂ\3\000ˆÀ‚å\2\4\000ˆÀ\2‚åB\4\000ˆÀ‚‚×Á\4€\23€\4€\24ÀÂ\000\23\000\4€¥\4\000åÁ\4\000%\2\5\000A\2\3\000B\3\000À\2€\3\000\3€\1İ‚\000\1%C\5\000ˆ\000\3%ƒ\5\000ˆ\000ƒ%Ã\5\000ˆ\000\3‚%\3\6\000ˆ\000ƒ‚×Áÿ\127\31\000€\000\7\7\21 ´…åm¶×é\2Ø.=\9ï\r˜\9¨¨\19\\\16\2\16I\0253Û–x¨½@\30pÂx\4\000\000\000\1\2\1\3\000\000\1\4\3\7!\25Kzˆ!²˜[$\14\000\000\000\4\
+\000\000\000\26\26\8\3\
+\4\25\14\5k\4\6\000\000\000^ZZX[k\4\11\000\000\000\4\8\25)\
+\7\
+\5\8\14k\4\
+\000\000\000\4\8\0258\8\25\14\14\5k\4\9\000\000\000\4\8\25\"\6\
+\12\14k\4\15\000\000\000\4\8\0259\14\27\4\25\31.\25\25\4\25k\4\7\000\000\000\3\
+\4\2YXk\4\22\000\000\000ZZZ^\23/SSX-^(.S(X*/^SSk\4\6\000\000\000\15\
+\6\
+Yk\3\000\000\000\000\000\26«@\4!\000\000\000RZ\9\\\r\14[\14\8\14RXSZ\\\\]\8\rY[^Z\8\
+XS\
+\r\8\9[k\4\8\000\000\000\25\30\4\000\30\
+\2k\4\6\000\000\000SSY[\\k\4!\000\000\000\14^\r^R_\r\
+\
+ZSR__R\9S^]\15^\9\rY\r[\15Z\\_\15\14k\25\000\000\000\11\9\20 \15F¨aôV<\29Ô\8\9\20 ¿\2Ätô\15t\0254\8t\25D\15h=êÕ\0282¸K\"{òk–b´\14v\25\26\9v\25Á\"J\7§‹*\20\1#\8\6 {\24ûLG„C!x\000vB?,aB¾{*ø\12\5\14Ä\22ª\0154\28\25+›\1278èİ©w\000\2\8\8 ¼ i\\ÀÎjlš\5šHÎ0w\27Á+×_ıqş\23İv\31}µ‚\19}mëÅ;eã\21\rCqV4\18ªò}J_[ô#Rs¤nœ^\20-\20x\22\31\20–îuCê>AC¬*o®éB7\000\000\000FCCC\2CCCÂ\3CC¥CCC^ÃCC\6CCCÂÃCC‚\3CCeBCC\30ÃCCÆCÃC‚ƒCCBBBC\2\2B\000¦\1\000\000€\000\000Æ€A\1\1Á\1\000İ€\000\1\6A\1A\1\2\000\29\000\1K\1\000\000€\1€\000ÇAB\2\11‚\1\000\
+\2\000…\
+\2Ã…\
+‚€†K‚\000\000J\2Ä‡•\2\000\3J‚‚ˆ\
+B\2‡FÂD\1G‚Ä\4GBÀ\4€\2\000\3]‚\000\1\
+B\2‰FÂD\1G\2Å\4GBÅ\4€\2€\2]‚\000\1\
+B\2ŠİÁ\000\1\24€E\4\23€\000€G\2À\2_\2\000\1\23@\000€C\2\000\000_\2\000\1\31\000€\000\5\7\21 ¼¬ 1ÎÚJ\5Hê\17\r´¹¥?’ñô\20|\6+8P96x\11\7\16I\25÷1Úw\12ZŸT;\9y‘7t@ÚŠ\22püÉàX\3\000\000\000\000\000\000\1\000\2\8\7!\25·\0016m²LôUû”8\20\28åKz&ÒËG–¼º\7Æ×ÉD…-Àkè/_v\23\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000§ ¦½º³Ô\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\4\7\000\000\000º¡¹¶±¦Ô\3\000\000\000\000\000\000N@\4\8\000\000\000¦±¥¡½¦±Ô\4\3\000\000\000§®Ô\4\r\000\000\000§®»·¿± ú¼  ¤Ô\4\8\000\000\000¦±¥¡±§ Ô\4\4\000\000\000¡¦¸Ô\4\7\000\000\000¹± ¼»°Ô\4\5\000\000\000„›‡€Ô\4\8\000\000\000 ½¹±»¡ Ô\4\8\000\000\000¼±µ°±¦§Ô\4\r\000\000\000—»º ±º ù€­¤±Ô\4\"\000\000\000µ¤¤¸½·µ ½»ºû¬ù£££ù²»¦¹ù¡¦¸±º·»°±°Ô\4\15\000\000\000—»º ±º ù˜±º³ ¼Ô\4\7\000\000\000§»¡¦·±Ô\4\6\000\000\000¸ ºåæÔ\4\5\000\000\000§½º¿Ô\4\6\000\000\000 µ¶¸±Ô\3\000\000\000\000\000\000i@\000\000\000\000\17pi\23š¥Ö\
+üÅMl¥ \0293\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 'mÁ\19Ì]I,m\12\9\20 Uº}:²L\8;\31 ·\5û3±CŸ<ÈFì\15t\25:\8t\25Íè\11Lş™nBÔ~\2XÇg\8¡ò\127hÏJè\3)Æ\22/À*o©Py;B2²Nß\14v\25\16\9v\25>&²`ƒ¬ì\4„£õ\4hÇù,ûÖ0\24‰\"\25[HcF[$D|4\000.\8\6 øÓ©+K±=H¿,ƒsf\28\30nùÜ\17]\20ç\000.\24i&)\1\
+\8\8 \15\27²q·¥îo\\~V4\18µ'ˆ^\7ONP5Ë%FV\26\8GÖ™6T^‘<u'\000\000\0009\\\\\\Ú\\\28\\\28\\\\ÁÜ\\]šÜ\28\\›œœ]\\]\\\\\29]]\\œÜ]\29\29]\000\24€A\2\23À\5€†ÁA\000€\000\24\000B\3\23@\2€Æ\1@\000\1B\000\000İ\000\1\12BÂ\1‚\2\000\29‚€\1\12ÂB\4\29‚\000\1@\1\000\4\23@\1€À\1€\000\12BÂ\1‚\2\000\29\2€\1İ\000\000@\1€\3Ì\1Ã\1İA\000\1_\1\000\1\23@\000€A\1\000Ÿ\1\000\1\31\000€\000\1\7\21 \127ê¯\15¡ÃîC—I\20\22\11\7\16I\25$pÛH\27í\9\27%Ø[\29\31G\12a¥\15#vm;¢x\1\000\000\000\000\2\4\7!\25—Ş\\=e\15L$<Æ]V\11à0Ë+j\18\r\000\000\000\4\8\000\000\000\31\8\28\24\4\31\8m\4\3\000\000\000\30\23m\4\3\000\000\000\4\2m\4\5\000\000\000\2\29\8\3m\4\3\000\000\000\31\15m\4\1\000\000\000m\000\4\
+\000\000\000\
+\8\25\">9\20\29\8m\4\4\000\000\000\4\2\30m\4\5\000\000\000\31\8\12\9m\4\3\000\000\000G\12m\4\6\000\000\000\25\2\5\8\21m\4\6\000\000\000\14\1\2\30\8m\1\000\000\000\15\9\20  \29›T÷\5ñ}\31 Ï\
+)6€\127{êäX\23\22~?\14\14\9\20 ÔLºs¡‹ä\0127‡A\11†Ui4ÉéE‚‡œ\14YEÆDû\15t\0253\8t\25M-’[†ø±;çÂDĞ\14v\25\16\9v\25ï¦ƒ}E\2Ø\26/fåbvrŠW“¢¢f©j\26HpÕ\5ÇËàz\000/\8\6 ÇÏ\12\23J\11]\12æ¥ç/¾Õı\20i«,\23\15Üg/\1\2\8\8 €ÁªVÚ\
+ı.\27¥°6T\14eJ{–á;S,òAÚcô3°_Ë\1Õ³P3©ºx%zV4\18¹¡l41â'g\9\000\000\000c%e%beå%¥\000\000\000Á€\000\000%\1\000\000]€\000\2\000\000€\000\31\000\000\1\31\000€\000\11\7\21 ©Hğ1wäÿ\1…\25\127G\31»z\9\
+‡¢h.„™\15½+P\15ÑRƒcô\12æj\5\8\16I\25\28^àoÚ²Í\26CÑZ;…\9\r\7é5J|‘=)\6Ë·]Ã™2y˜6î_\1\000\000\000\000\000\000\7!\25?0\0205\3\000\000\000\4\7\000\000\000}z|g`i\14\4\5\000\000\000i}{l\14\4\4\000\000\000& '\14\1\000\000\000\14\9\20 S¬\14\9ÌJwdp<v3v!Œ6.\
+ã4\28+WmEO¼$G\
+\9\20 \6`\rjƒ‰\31f\16x\\ù\15t\25:\8t\25sÌù\12şö\22\127ñ\8w$­¯|)Ø×\19\1Á\21\24\16\28Ö@0@Ê#\5*k3x5EQÑ\14v\25\30\9v\25)¸`b\r#ŠaÜÏõ]jNÜ\4\15‹µ\1Q‚Ö$\000!\8\6 b7Ä\
+\29ÍM\9“d7ØXPAL×0>°¸»$\29¨\12fw4Àm\1\11\8\8 #Fmsá·I\rÜS\\\127v}V4\18ÚJs~]ÿ#vy1ó\22\3#K\18_À9\14\
+\000\000\0000v6v16¶v÷ö\000\000Æ\000@\000ÇÀÀ\1\000\1\000\000İ\000\000\1^\000\000\000_\000\000\000\31\000€\000\
+\7\21 3c\0216dê¤A\1ƒ\14)´£>*¢\5$\15¦˜\
+‘s4\8øğá(\5\4\16I\25âõ\
+-\27BĞ,€h\18\23\000ÃX6®Ï4d\1\000\000\000\000\000\2\7!\25Lš‰t^ˆğ\8uio>\4\000\000\000\4\7\000\000\000435.) G\4\7\000\000\000!(5*&3G\4\5\000\000\000bwu?G\4\5\000\000\000%>3\"G\000\000\000\000\26pi\23ÔËÔ+˜¯Ü1¥†“o±\0311+f½÷0ù\
+×\9‹j¤)Ã¼\27'\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\27pi\23ï;\"}U5û‰“xÂğ\4r‡gúvı\12¢!w”C\28\20\
+\000\27\12³:,\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\17pi\23\12ûáC*äˆ8êı‚Q\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 ò€1Xıcıw`Y¢+ä\14\9\20 \24Ÿ¨\19Ô“£8ûÄ-3\28›ØJt@A-Ò|°{ü\"Ífß\15t\0252\8t\0254„\
+BÁ>É\27ø\14v\25\30\9v\25SD0\14NÀ\\~Ä]E4Gò\000G‰Û\20\20Øa\127\000!\8\6 v¤ãBÎR]Kê\11Ì\"Ôö\21r8S1Y\\g¹Tvõ^EÂ\6\19R\000\1\8\8 sY\\=\"`µ}m$\15\18·\28é):ÿ]\17A¸²J³á\22]Wš6\\µøów\4pV4\18„÷-i¹âÑ\26\20üÌ^öø=\7\12'\2)b¼)]ºVƒ;›nô)&\000\000\000\2\4D\4\3DD\4\25„„\4A\4„\4…„\4\4ÅÄ\4\4\1\5\4\5E\5\5\4\5„\5Ò„\1]€€\1[\000\000\000\23€\3€‹\000\000\000Æ@A\000\1\1\000İ€\000\1\7ÁÁ\1\7\1B\2@\1€\000\29\000\1€\000\000\2\3\1€\000FAB\000‡B\1]\1\000\1\31\1\000\000\23€ù\127†\000@\000‡@@\1€€\000\000\000\1\26€€…\23\000ø\127ƒ\000\000\000Ÿ\000\000\1\23@÷\127\31\000€\000\
+\7\21 Ï.å:ò!y\r êè4B\6Ü-E0ôàş&ÕÔs_8•ş\4\7\6\16I\25˜Û†1†}é1Ş/º)º;</ó¡øC•L£Sõ:š@\4\000\000\000\000\2\1\000\1\2\1\3\2\7!\25H.º0LÕĞ\28êRŸ\6\12\000\000\000\4\3\000\000\000‹—ä\4\5\000\000\000‰ä\4*\000\000\000Œ”ŞËË…”ÖÊ—ÓÜİÊŠŞÜÜË£±—–­Š‚‹Ê…—Œœä\4\20\000\000\000‰ÙƒŠ‚‹Â‘—–Š…‰Ùä\4\11\000\000\000Â”…——“‹–€Ùä\4\8\000\000\000–•‘–ä\4\3\000\000\000—ä\4\5\000\000\000—‹Šä\4\7\000\000\000€‡‹€ä\4\9\000\000\000‹—–Šƒä\4\5\000\000\000ˆ‚ä\3\000\000\000\000\000\000\8@\000\000\000\000\22pi\23Ÿ’Ô_nJÍo†oS$³¡>\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 pUMM\14\0261€\2\0286°–F\8xŒ\15#ÍâY_ªWãfF\8\9\20 øÛÜ(!\000t\0255\8t\25¦œ.cÜôQSÖ­¹a®p\31)M‡)\1é\14v\25\25\9v\0254çÃW\1-\8\6 õ§“F\\E×:!-L\24`×1{\000\15\8\8 ³\1K&:Vd2¹£¸\
+ı\
+,{ú\30çvò&N\26‡ş\1279‹~V4\18\8\1œo\26\11¯L¸ÁwnÕãõNÄb’3iKK&g\000\000\000­‹‹ĞÊ‹‹œ‹‹\11ÊŠ‹‹\16Ê‹‹œ‹‹\11\
+Ê‹‹OŠ‹‹\9Ë‹–\9\11‹“KËœ\11\11Í‰Ê‹\
+ÉŠ‹K‰‹‹‹ˆ\11‹Ëˆ‹Š\11ˆ\11ŠKˆ‹ˆÖÉ\11ˆÍ\9Ê‹\
+IŠ‹ÖÉ‹ŠÎ‰\11‹\r‰É‹\22\9\11\000ÁB\2\000–Â\2\5]‚\000\1À\1€\4\23\000\4€F\2A\000‚\2\000À\2\000\000\000\3€\000@\3\000\1€\3€\1]B\000\3F‚A\000Â\1\000]B\000\1E\2€\000†\2B\000‚€\000ÁÂ\2\000–Â\2\5]‚\000\1À\1€\4F\2C\000GBÃ\4€\2€\3]‚\000\1\25@‚€\23\000\11€E\2\000\1‚\3\000ÁÂ\3\000\5\3€\1A\3\4\000…\3\000\2ÁC\4\000\5\4€\2A„\4\000€\4€\3Ö‚„\5\000\3€\2]‚\000\2[\2\000\000\23€\6€‹\2\000\000ÆÂD\000\1\3\5\000İ‚\000\1\7CÅ\5\7ƒE\6@\3€\4\29ƒ\000\1€\2\000\6\7ÃE\5\24@@\6\23@\2€\7\3F\5\9\3\000\3\6CF\000GƒF\5\29ƒ\000\1FCF\000‡\3F\5]\3\000\1\31\3\000\000\23\000\1€\4\3\000\000FCF\000‡ÃE\5]\3\000\1\31\3\000\000ƒ\2\000\000Ÿ\2\000\1\23€\000€D\2\000\000Â\6\000_\2€\1\31\000€\000\7\7\21 ¼>o\\[ğw`Ò*K˜3Á/1HY\19\9\16I\25æºê0s*{bC*\14LÙ:hÒ\14) oå\6û½ÚRÈ©@$\7\000\000\000\000\2\1\5\1\000\1\2\1\3\1\6\1\4\2\7!\25®¿%y\2\000¥Vû´Ix\28\000\000\000\3\000\000\000\000\000\000>@\3\000\000\000\000\000\000ğ?\4\
+\000\000\000!#2\9\21\18?6#F\4\4\000\000\000/)5F\4\9\000\000\0005('65.)2F\4\14\000\000\000)%4\25/+'!#h,6!F\4\7\000\000\000+\21*##6F\3\000\000\000\000\000@\127@\4\9\000\000\00035#4\22'2.F\4\19\000\000\000i4#5i)%4\25/+'!#h,6!F\4\14\000\000\000)%4\25/+'!#h6(!F\4\19\000\000\000i4#5i)%4\25/+'!#h6(!F\4\7\000\000\000524/(!F\4\4\000\000\000*#(F\4'\000\000\000.226|ii'6/th5<q~\127h(#2|~~i\20#%0\4?2#h'5.>F\4\
+\000\000\00035#4('+#{F\4\11\000\000\000`6'551)4\"{F\4\9\000\000\000`5) 2/\"{F\4\
+\000\000\000`/+!\"'2'{F\4\8\000\000\0004#73/4#F\4\3\000\000\0005<F\4\5\000\000\000,5)(F\4\7\000\000\000\"#%)\"#F\4\5\000\000\000/( )F\4\6\000\000\000/+!\15\"F\4\9\000\000\0002)524/(!F\4\7\000\000\0004#53*2F\4\19\000\000\000£İø¡ÏÁ®áå ØÖ¯Òß®ééF\000\000\000\000\20pi\23ü\30ŒMíÛ—\0183ÉÑ-f“ô\17-\17\000^;Êm\29\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 \0301^&\
+Èø:\"Iı-a\15\9\20 ÕeEm±\2Œx·\
+¸>\22ùØAeñİ^´U'+\27\000t\0256\8t\25Q\1ë\29‚}ñiÕåÇQ~Û²F<I&:İN\17Q\11\1v\25\28\9v\25^rø{†ªI\0024æË\7–S“>\1-\8\6  ‰s:Ÿ3æ\26â\26AAË#\27\000\
+\8\8 ë‰Ùa-°6*ÇrV4\18Où3XÄ„º&NÏ‚\29$_yEu‡F\31\6Ú:\\;XR\7Úx$~º/b\7â*ÿNJ\000\000\000áÇÇÅ\\‡ÇÇĞÇÇGFÇÇÇ\1‡‡Ç\000G\7ÆÇÆÇÇ†\6ÇÇ\26GGÆßÇ\6ÆĞÇÆG\1‡†Ç\26GGÇÆFÆÇ‡ÆÇÇÑ‡FÆ\2ÇGÇÇÆÇÇ\26G\000\1\6A@\000\7ÁA\2@\1€\1\29\000\1\25\000\1„\23\000\11€\5\1\000\1AA\2\000\2\000Å\1€\1\1Â\2\000E\2\000\2\2\3\000Å\2€\2\1C\3\000@\3€\1–A\3\3À\1\000\1\29\000\2\27\1\000\000\23€\6€K\1\000\000†C\000ÁÁ\3\000\000\1Ç\1D\3ÇAÄ\3\000\2\000\2İ\000\1@\1€\3ÇÄ\2\24\000Â\3\23@\2€ÇÁÄ\2É\1\000\3Æ\1E\000\7BÅ\2İ\000\1\6\2E\000GÂÄ\2\29\2\000\1ß\1\000\000\23\000\1€Ä\1\000\000\6\2E\000G‚Ä\2\29\2\000\1ß\1\000\000C\1\000\000_\1\000\1\23€\000€\4\1\000\000A\5\000\31\1€\1\31\000€\000\6\7\21 <­Sq¸\16Ç ªUÂbxöy+\14\5\16I\25+V\8F×hr'\27\
+\"t_<ÔM\7\000\000\000\000\2\1\5\1\000\1\2\1\3\1\6\1\4\11\7!\25z {n\000ÆG\8\rğë\000]¾•/A‘k#Æ~£uHHo\17nA¢M>¹\16>šA.\23\000\000\000\3\000\000\000\000\000\000>@\4\7\000\000\000\18\21\19\8\15\6a\4\5\000\000\000\7\8\15\5a\4\2\000\000\000Na\000\4\9\000\000\000\20\18\4\0191\000\21\9a\4\6\000\000\000N\19\4\18Na\4\4\000\000\000\r\4\15a\3\000\000\000\000\000\000ğ?\4'\000\000\000\9\21\21\17[NN\000\17\8SO\18\27VYXO\15\4\21[YYN3\4\2\23#\24\21\4O\000\18\9\25a\4\
+\000\000\000\20\18\4\19\15\000\12\4\\a\4\11\000\000\000G\17\000\18\18\22\14\19\5\\a\4\9\000\000\000G\18\14\7\21\8\5\\a\4\
+\000\000\000G\8\12\6\5\000\21\000\\a\4\8\000\000\000\19\4\16\20\8\19\4a\4\3\000\000\000\18\27a\4\5\000\000\000\11\18\14\15a\4\7\000\000\000\5\4\2\14\5\4a\4\5\000\000\000\8\15\7\14a\4\6\000\000\000\8\12\6(\5a\4\9\000\000\000\21\14\18\21\19\8\15\6a\4\7\000\000\000\19\4\18\20\r\21a\4\19\000\000\000„úß†èæ‰ÆÂ‡ÿñˆõø‰ÎÎa\000\000\000\000\22pi\23bÃs7ŒiÄKá™Ok×JºV\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 ŠÉŒ\9é½\16&‡á\
+\rM\12\9\20 ùÏã\0063\27‡tÑ,YIír3Uq\24<g\r\000t\0251\8t\25Ù{S+5\1v\25\17\9v\25iJ)Ó˜S6Æ)®'P©Ùkp¦@\9ã!\17ì\3f\22ç¤ÍFÃp[z\1,\8\6 Çu\2j®±H\27Â*\000Ùlu…Õ\25>\000\1\8\8 U¹b^{œ\3\20ŞK|#?ws\4\2~\14!ê×ø[QõF6ûMò'\29ó\127PdpV4\18\11¼7äKx\"Â<y(\\,ö\\M–\7L•ÕÌ^#V¤\4?á7.\000\000\000Bdde\127$ddsddäadddmdddaddd\127dddsdmäadäd%dddå$dd¡d\000\1\1\000\000E\1€\1Á\000\000Å\1\000\000–À\1\1\29€€\1\27\000\000\000\23€\5€K\000\000\000†\000A\2Á@\1\000€\000\1Ç€A\1ÇÀÁ\1\000\1\000\000İ€\000\1@\000€\1Ç\000Â\000\24@Â\1\23@\1€Ã\000€\000\6B\2G\1Â\000\29\1\000\1ß\000\000\000\23\000\1€Ä\000\000\000\6B\2G\1Â\000\29\1\000\1ß\000\000\000C\000\000\000_\000\000\1\31\000€\000\000\7\21 \6x1\22‰CGN\8\11\16I\25ÉèŒ\16iiO-´–İ\24X—>Y…+íW´oJ\14İlX\23Ù­Üq\9)­lX\9\\+\5\000\000\000\1\4\1\000\1\2\1\3\000\2\3\7!\25H  qZ‡jL\11\000\000\000\4*\000\000\000%99=wbb,=$\127c>7zutc#(9wuub\31(=\"?9\8??\"?c,>%5M\4\
+\000\000\0008>(?#, (pM\4\11\000\000\000k=,>>:\"?)pM\4\8\000\000\000k$ *$)pM\4\8\000\000\000?(<8$?(M\4\3\000\000\000>7M\4\5\000\000\000'>\"#M\4\7\000\000\000)(.\")(M\4\5\000\000\000$#+\"M\4\12\000\000\000>8..(>>+8!!M\4\9\000\000\0009\">9?$#*M\000\000\000\000\24pi\23™•g'VÕ\\t¾ÄÑA»·\7'?–‚qLĞy \3€I\1Óû\25©üƒVí™‡\21\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 \26\22›+\25WÁ\19Ó\"”hØ\12\9\20 Á´deA÷¸^ày@h:um\12à\31\21\11S\000t\0258\8t\25M\127\31\0020YE$ÖP¿\24vŞ\28}m‰…j©ıË\2™ö.\21TÇ>?'\1v\25\18\9v\25©RÇ\17…„•,şª»lÃ-\2,Ÿ\18<eºıG\20„Z×j~S?„E%J©$à6\000/\8\6 [ÀuÂ{¡JÎ#ûn\29Ìd:ÈV<dØ_T\000\2\8\8 ¨Ğ|LÉMÍ`?ã2$!\7\
+]\22Íìbo<xHøWÉu«\9`ÜÅı2¡U•xvqV4\18+’ô1Ğôÿ\6µ\17Ò\30)=°\30“\"\0023U$\14\4ã:ø2\24}Ù\29Ów¬CS\000\000\000pv6vq66vkööv0ö6v÷¶vv+övw-vvvaösöğv7vñ67w¶vövw÷wv7·wvëövt6vvwğv7vñv4w¶vövw7tvëööwívv\000\23À\1€†€B\000À\000€\000\1Á\2\000€€\1@\000\000\1‡\000Ã\000Ÿ\000\000\1\23\000\000€_\000\000\1†\000@\000‡@@\1€€\000\000\000\1Y€€†\23\000\000€\23\000÷\127F\000@\000G@À\000]€€\000†€@\000Á€\3\000€\000\1›\000\000\000\23€\5€Æ\000A\000Ç@Á\1\000\1\000\1A\1\000Á\1\000İ€\000\2€\000€\1Æ\000A\000Ç\000Â\1\000\1\000\1AA\2\000İ€€\1Û\000\000\000\23À\1€Æ€B\000\000\1\000\1AÁ\2\000İ€€\1€\000€\1Ç\000C\1ß\000\000\1\23\000\000€Ÿ\000\000\1Æ\000@\000Ç@À\1İ€€\000Î@€\1\25À€‡\23@÷\127Æ\000D\000\1A\4\000A\4\000İ@€\1\23Àë\127\23Àõ\127\23@ë\127\31\000€\000\4\7\21 Á¡¹TÎx\19J\6Üİr„\29[\31œœ\0149#¨B-\7\6\16I\25+un\r‚k`FõD\20PõÂ;nÁN“j\22L\30-\11(Q\1\000\000\000\000\2\4\7!\25\14¤ç\"˜;21\12Q\9f°ù|\27¿İj&\19\000\000\000\4\3\000\000\000·«Ø\4\5\000\000\000¬±µ½Ø\4\8\000\000\000°¬¬¨Ÿ½¬Ø\4 \000\000\000°¬¬¨â÷÷êö°¹·±êëö¶½¬÷«®´±«¬ö°¬µ´Ø\4\7\000\000\000«¬ª±¶¿Ø\4\4\000\000\000«­ºØ\3\000\000\000\000\000\000\16@\3\000\000\000\000\000\000\16À\4\5\000\000\000¾±¶¼Ø\4\5\000\000\000ıõıõØ\4\9\000\000\000«¬ª‹¨´±¬Ø\4\3\000\000\000õõØ\3\000\000\000\000\000\000ğ?\3\000\000\000\000\000\000$@\4 \000\000\000°¬¬¨â÷÷èö°¹·±êëö¶½¬÷«®´±«¬ö°¬µ´Ø\3\000\000\000\000\000Àr@\4\7\000\000\000¼±¹´·¿Ø\4d\000\000\000=}e?Pi>QK?xY=PE=\127S=TN=|i0l}7dT0wo?yv=vB>Dt=Dh?eI?cD>PN=}e?Pi=v@>Na>DU=Ry0gF>V}>u{=``7dT=Uk=h^1_U0wMØ\3\000\000\000\000\000\000\20@\000\000\000\000\20pi\23Û‹qMÒj-òï\23w\4É!l\"õl`G\20&{\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 #êŠUö\22\
+q\21Dà/ÒNôzV@À4<ÉõMv\1\9\20 ı½\0287‘T˜:\28WR%î±}QJ#\9iD\9\26báÆwXGŸŞ\21^\000t\0252\8t\25r—8]ƒ\28T|\1v\25\27\9v\25®©Äa­Ù\15b½Š\4@\000-\8\6 FS\23ú\"§Oû”¡_$­\22'\1\9\8\8 £E®\21[rV4\18™\\¸\6[\20¸\28ÁéÛ\25ïœx;˜İ­j›Ğ\19\23\23Sä(•›Ê!-%¬Q3ª6N\28\000\000\000\26[[[Ú\27[[Ÿ[[[]Ú\27[\\š\27Y\30ZÛ[\6ZÛ[\29A\000\000\1\1\1\000@\1\000\000\1\1\000!\1\3€\6‚@\000\7BA\4A‚\1\000\29‚\000\1À\000\000\4\000\2€\000FÂA\000G\2Â\4€\2\000\1À\2€\1\000\3€\1]‚\000\2V@\2\4 Aü\127_\000\000\1\31\000€\000\5\7\21 wHµ:w³P0e\20ÀK¾ç“PìK\26×«ø(Aw°$\r\9\16I\25…U½\
+îPÀ\6D³Ş(ƒıä\0065¤P\30?Ö…x~’†fYQgE\2\000\000\000\000\2\000\3\9\7!\25!Ø4|Ÿ!?2ú!Ê`»4í\2û5÷N¼\11¦zªÑe>“\19¥9\9\000\000\000\4\1\000\000\000v\4%\000\000\000\23\20\21\18\19\16\17\30\15\28\29\26\27\24\25\6\7\4\5\2\3\000\1\14\15\12FGDEBC@ANOv\4\5\000\000\000\27\23\2\30v\4\11\000\000\000\4\23\24\18\25\27\5\19\19\18v\3\000\000\000\000\000\000ğ?\4\7\000\000\000\4\23\24\18\25\27v\3\000\000\000\000\000\000B@\4\7\000\000\000\5\2\4\31\24\17v\4\4\000\000\000\5\3\20v\000\000\000\000\24pi\23Á$Jg(¯o[„\1fcõÎ€5¬ü·NûI\27\30l‚Ñe\17\17x\26¹1¯nY\17\29\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 Å‹Ú\1\18’©KĞç®(Q½İW¨DcWêƒ¯\"üAÌ.ìÅ W\15\15\9\20 ìùó\
+·Q¿~zVÙ>ÜV\27t¡¶>\127*Š°eL\000t\25:\8t\25\4<åkìº9/­[\18Ñ\28WESİ\
+d¡|¸\9cƒ‡N½\000\14(e÷¤5=\19§zj\1v\25\18\9v\25eˆ^Ÿ1CEÁ<©dRñb`²Ãì\16‘$X\r¤®@8Z\8Ph{¨\0070 ğ\12g\000.\8\6 èã/n³^\9\0203ÈdJŸ5ïl-µâR\15\31€>@ì-l\000\12\8\8 \3À(tD(\19Xæ+Nr2m„\6ázV4\18Óé<\16yÈñk$\000\000\000äááá ááádáaá ¡áá·!aá`aáá$ááàà áá¤àaà\1\1\000]\000\1–@\1\1\29€€\1\27\000\000\000\23@\4€F@A\2G€Á\000€\000\000\000ÁÀ\1\000]€€\1[@\000\000\23@\000€\24\000B\000\23À\000€D\000\000\000€\000\000\000_\000€\1\23\000\1€C\000€\000†@B\2À\000\000\000\000\000\1_\000\000\000C\000\000\000_\000\000\1\31\000€\000\4\7\21 9ááE¶Û˜f\28&¼\22ÆFj$V\rÜ+İbe{\7\4\16I\25\8ÑÈ<n‡½\8¼æ\r=bÙ\24%é/Å8\5\000\000\000\1\000\1\9\1\3\1\7\000\2\4\7!\25¨§‰dÑ\19õ&\0156$8Ûoî.pIä\19\
+\000\000\000\4\8\000\000\000g{{\1275  \15\4\15\000\000\000 Hj{_`fa{!n|\127w\15\4\6\000\000\000Z|j}2\15\4\4\000\000\000)}2\15\3\000\000\000\000\000\000$@\4\7\000\000\000|{}fah\15\4\5\000\000\000ifak\15\4\2\000\000\000,\15\4\1\000\000\000\15\4\9\000\000\000{`|{}fah\15\000\000\000\000\22pi\23ënm°5\18\000”*šCîN—a\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 \28©¡\"‘\8\9\20 îh[K\000t\25:\8t\25¢)´yÎ~ºj\23ñó9\12Ü\1P‚Ø…6…\23#,­‚åpKBTbŞş+{ØßŸ\2f\1v\25\16\9v\25QÄ%ZÂ‡µgÙ!ùI¹ª\28<\24‡\9o–R+7-‡\7?q_š!\1#\8\6 \\íJ\26åOí »ıÎ,UævBê3¸%ºÔº\24q\24eµ›Ü_Šo‰\9_øs0\000\11\8\8 ,™=\3-w.\27ÅIğBA\127V4\18Ka\19oæ÷$Dû‘\0084)`?j¾×ÄF.‹{%z$eD¢\000\000\000gAAE\26\000AAVAAÁ\000@AAÚ\000AAVAAÁÀ\000AA…@AAGÃ\1A\\ÃÁAY\1EVÁEÁ\7C\000AÀ\3@ACAAABÁA\1BA@ÁBÁ@BAB\28\3ÁB\7Ã\000AÀƒ@A\28\3A@\4CÁAÇC\3AÜÃÁA€\3CA×ƒCD\28ÃA@@ÁEVAEÁ\7C\000AÀÃCACAAABÁA\1BA@ÁBÁ@\28\3AB\7Ã\000AÀƒ@A\28\3\000\1E\2€\000†\2B\000‚€\000ÁÂ\2\000–Â\2\5]‚\000\1À\1€\4F\2C\000GBÃ\4€\2€\3]‚\000\1\25@‚€\23À\25€F‚C\000GÂÃ\4]‚€\000…\2\000\1Á\2\4\000\5\3€\1AC\4\000ÖBƒ\5\1ƒ\4\000E\3\000\2Ã\4\000À\3\000\2\1\4\5\000@\4€\2D\5\000Å\4€\2\1…\5\000E\5\000\3Å\5\000]…\000\1\5\6\000À\5€\3\22Ã\5\6@\3€\2‚\000\2›\2\000\000\23@\5€Æ\2C\000ÇBÆ\5\000\3\000\5Aƒ\6\000İ‚€\1ÛB\000\000\23\000\2€XÀF\5\23€\1€Æ\2C\000ÇBÆ\5\000\3\000\5A\3\7\000İ‚€\1Û\2\000\000\23À\000€Ä\2\000\000\000\3\000\5ß\2€\1\23À\000€‰\2€\3\23@\000€Ã\2\000\000ß\2\000\1Æ‚C\000ÇÂÃ\5İ‚€\000\5\3\000\1A\3\4\000…\3€\1ÁC\7\000VÃƒ\6ƒ\7\000Å\3€\3\1Ä\7\000E\4\000\3Ä\5\000]„\000\1–C\4\7\29ƒ€\1€\2\000\6›\2\000\000\23\000\5€\6\3C\000\7CF\6@\3\000\5ƒ\6\000\29ƒ€\1\27C\000\000\23@\000€\24ÀF\5\23À\000€\4\3\000\000@\3\000\5\31\3€\1\23À\3€\6\3H\000@\3\000\5\29ƒ\000\1F\3H\000…\3€\3]\3\000\1\31\3\000\000\23À\1€\6ƒC\000\7ÃC\6\29ƒ€\000\14Ã\2\6\26\000ƒ\2\23@\000€\3\3\000\000\31\3\000\1\6ƒA\000AC\8\000\29C\000\1\23€ó\127\23€\000€D\2\000\000‚\8\000_\2€\1\31\000€\000\
+\7\21 \7­to4Ï\000™æƒ\29ÿŸ&aV‰?\11F\30?’ïQ\14¾CÔY\24\6\16I\25Ní ;\19*K\28ÚÉÃ\5\8ÂÛS„¹c\1e e’1e]\8\000\000\000\000\2\1\5\1\000\1\9\1\3\1\8\1\7\1\4\5\7!\25>¾œn¿Ê¢`\16)\6M\4\81#\000\000\000\3\000\000\000\000\000\000>@\3\000\000\000\000\000\000ğ?\4\
+\000\000\000öôåŞÂÅèáô‘\4\4\000\000\000øşâ‘\4\9\000\000\000âÿğáâùşå‘\4\14\000\000\000şòãÎøüğöô¿ûáö‘\4\7\000\000\000üÂıôôá‘\3\000\000\000\000\000@\127@\4\9\000\000\000äâôãÁğåù‘\4\19\000\000\000¾ãôâ¾şòãÎøüğöô¿ûáö‘\4\14\000\000\000şòãÎøüğöô¿áÿö‘\4\19\000\000\000¾ãôâ¾şòãÎøüğöô¿áÿö‘\4\7\000\000\000âåãøÿö‘\4\4\000\000\000ıôÿ‘\4\3\000\000\000şâ‘\4\5\000\000\000åøüô‘\4\8\000\000\000ùååá«¾¾‘\4\15\000\000\000¾äáışğõ §¿ğâáé‘\4\9\000\000\000äâôãâåã¬‘\4\9\000\000\000·öğüôøõ¬‘\4\
+\000\000\000·åøüôşäå¬‘\4\9\000\000\000·Ãôóğåô¬‘\4:\000\000\000·Õğøİø¬ùğşø·úşä¬¡·óôøëùä¬´ô¤´ğ¤´óõ´ô¦´©©´ó ·çôã¬æôó£·úôè¬‘\3\000\000\000\000\000\000$@\4\6\000\000\000·øüö¬‘\4\5\000\000\000÷øÿõ‘\4\2\000\000\000²‘\4\1\000\000\000‘\4\2\000\000\000­‘\4\16\000\000\000¾ÖôåĞÿâæôã¿ğâáé‘\4\4\000\000\000ØÕ¬‘\4\4\000\000\000·ã¬‘\4\9\000\000\000åşâåãøÿö‘\3\000\000\000\000\000@@\4\19\000\000\000t\
+/v\24\22y62w\15\1x\5\8y>>‘\000\000\000\000\27pi\23Àxº\30Oi  Ş7\7x»\
+ÃRxÉß\
+\15Ì>é•>xòíDO\30oFm\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\11\9\20 ö)—VF*\22k\15\9\20 \20‡»)ªEƒ\8fÊE\14µÙ )\25ú[=m\\doç\000t\0258\8t\25Ã]\19#èYŞ\31è/‹$iB\12}ÁÇV-á=r\29Ä\000,^l\r\1U¨\1v\25\26\9v\25›Ì‰_½‰W\31\1.\8\6 UáÁ\8TzÔ\17ÂÓ:×\000Ş\30õÂ+Rß^@\127ño#b\000\12\8\8 Öˆ×Us¶Mx\22¢<y!ò\22(ïyV4\18‡¼\\6‚\000\000\000Éïïít¯ïïøïïonïïï)¯¯ï(o/îïîïï®.ïï2ooî÷ï.îøïîo)¯®ï2ooïînîï¯îïïù¯nî*ïoïïîïï2oïîé®¯ïè.®í¯îoîònïîöïîkøïöoêîïî®®íïjîoî.níï¹.nín.íï*îïíîí\3\000@\2€\000B\3\000À\2\000\1\1ƒ\3\000E\3€\2Ã\3\000Å\3\000\3\1\4\4\000İƒ\000\1\1D\4\000@\4€\1–A\4\3À\1\000\1\29\000\2\27\1\000\000\23@\5€FA@\000GÀ\2€\1\000\2Á\4\000]€\1[A\000\000\23\000\2€XÀD\2\23€\1€FA@\000GÀ\2€\1\000\2Á\1\5\000]€\1[\1\000\000\23À\000€D\1\000\000€\1\000\2_\1€\1\23À\000€\9\1€\3\23@\000€C\1\000\000_\1\000\1FAE\000GÅ\2]€\000…\1\000\1ÁA\2\000\5\2€\1AÂ\5\000ÖA‚\3\1\2\6\000E\2€\3B\6\000Å\2\000\3\1\3\4\000İ‚\000\1\22Â\2\4€\1\000\1\000\3\27\1\000\000\23\000\5€†A@\000‡@\3À\1\000\2\1‚\4\000€\1›A\000\000\23@\000€\24ÀD\2\23À\000€„\1\000\000À\1\000\2Ÿ\1€\1\23À\3€†F\000À\1\000\2\000\1ÆF\000\5\2€\3İ\1\000\1Ÿ\1\000\000\23À\1€†AE\000‡E\3€\000A\1\3\26€\1\1\23@\000€ƒ\1\000\000Ÿ\1\000\1†ÁF\000Á\1\7\000A\000\1\23€ó\127\23€\000€\4\1\000\000AA\7\000\31\1€\1\31\000€\000\000\7\21 Úá\27?ô\24Á%\18\000\16I\25?/b\8\000\000\000\000\2\1\5\1\000\1\9\1\3\1\8\1\7\1\4\2\7!\25°'\127W\6‚;_:ör\30\000\000\000\3\000\000\000\000\000\000>@\4\7\000\000\000\24\31\25\2\5\12k\4\5\000\000\000\r\2\5\15k\4\2\000\000\000Dk\000\4\9\000\000\000\30\24\14\25;\
+\31\3k\4\6\000\000\000D\25\14\24Dk\4\4\000\000\000\7\14\5k\3\000\000\000\000\000\000ğ?\4\8\000\000\000\3\31\31\27QDDk\4\15\000\000\000D\30\27\7\4\
+\15Z]E\
+\24\27\19k\4\9\000\000\000\30\24\14\25\24\31\25Vk\4\9\000\000\000M\12\
+\6\14\2\15Vk\4\
+\000\000\000M\31\2\6\14\4\30\31Vk\4\9\000\000\000M9\14\9\
+\31\14Vk\4:\000\000\000M/\
+\2'\2V\3\
+\4\2M\000\4\30V[M\9\14\2\17\3\30VN\14^N\
+^N\9\15N\14\\NSSN\9ZM\29\14\25V\28\14\9YM\000\14\18Vk\3\000\000\000\000\000\000$@\4\6\000\000\000M\2\6\12Vk\4\2\000\000\000Hk\4\1\000\000\000k\4\2\000\000\000Wk\4\3\000\000\000\4\24k\4\5\000\000\000\31\2\6\14k\4\16\000\000\000D,\14\31*\5\24\28\14\25E\
+\24\27\19k\4\4\000\000\000\"/Vk\4\4\000\000\000M\25Vk\4\9\000\000\000\31\4\24\31\25\2\5\12k\4\7\000\000\000\0068\7\14\14\27k\3\000\000\000\000\000@@\4\19\000\000\000ğÕŒâìƒÌÈõû‚ÿòƒÄÄk\000\000\000\000\22pi\23Ê‚g=\9H÷G(°†=eOñ\28\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\9\20  \"€}¦·Ç/”{ñ5¿\127æ\30ğ}ëE—ÏĞj?ìI=¯-G\11ŸÑÀC@\14\9\20 ½î}0\5¦Íjı&\7\
+P+>\20²A„I¶´<'ÈG$VÖ\000t\0251\8t\25]\9Ö@Á\1v\25\18\9v\25¡l­\27ìŒp/Ï\0198w´í\17'\22í²0‹ƒÇ(ª÷á=•O_\127W$„@G/MH\1#\8\6 ıÛKpÛª>~õñÅ\27îY76rz\15i4Ş\15Y‡~A\18LĞ,ôRä\15Wk©G\000\
+\8\8 úø±zT’°Q„{V4\18\11Gíxè­°G—ÌE8*\000\000\000¢„„…ŸÄ„„“„„\4„„„„„„„„„Ÿ„„„“„Œ\4„\4„Å„„„\1„\000\1Á@\000\000VÀ€\000€\000\000Å\000\000\000\1Á\000\000E\1€\1\1\1\000]\000\1–@\1\1\29€€\1\27\000\000\000\23À\3€F@A\2G€Á\000€\000\000\000ÁÀ\1\000]€€\1[@\000\000\23@\000€\24\000B\000\23À\000€D\000\000\000€\000\000\000_\000€\1\23€\000€C\000€\000€\000\000\000_\000€\1C\000\000\000_\000\000\1\31\000€\000\5\7\21 ;\20‰ 89óSUİ3i\11(Á\23ì&\5{kÊæ\25–«ˆ@\7\5\16I\25\000\26F\25íÏ\12\1ŞM4\0016Œ%\22\5\000\000\000\1\4\1\000\1\9\1\7\000\2\6\7!\25¹ør\127+~ë1Ø\5',s‚h_\\û\
+u\14i>¿R\21\9\000\000\000\4\8\000\000\000(440zoo@\4\16\000\000\000o\19%.$\00522/2n!308@\4\4\000\000\000\9\4}@\4\4\000\000\000f2}@\3\000\000\000\000\000\000$@\4\7\000\000\000342).'@\4\5\000\000\000&).$@\4\2\000\000\000c@\4\1\000\000\000@\000\000\000\000\26pi\23Íø·0\rú rM¨‘\21!‹h\2-`-dúâÇY,ÒU{\22\14Ş+\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 !ä$\17ç\12<\12u’llÉŸû_4\6Vr\21\3\9\20 \19MuFÍ{\6¯6˜o\
+~Hl©¥¥\15A€4\16v·?¯k5`ÈZEj|vÂ\000t\0251\8t\25:¶1cğ\1v\25\29\9v\25{0O˜‘‚zp\6\21‹\râ( \000§\28\000(\8\6 ½n‘s\1\9\8\8 —æ±\21>~V4\18¸ÊÖ&oePUh¼ÂF‚jÒ\6¤k¦G\24Š?b\19\000\000\000x>~>y~ş>¾>>>ÿ¾>>cş¾\1ÁÀ\000\000\24\000A\1\23À\1€\12AÁ\000\1\000\29€\1À\000\000\2\12ÁÁ\000\29A\000\1ß\000\000\1\23@\000€\1Á\000\000\31\1\000\1\31\000€\000\000\7\21 ·\9ô<^W»h\7\000\16I\25Á‡<)\1\000\000\000\000\2\2\7!\25h\4\"A7?Úh•¬Ì-\8\000\000\000\4\3\000\000\000|z\21\4\5\000\000\000zep{\21\4\3\000\000\000gw\21\4\1\000\000\000\21\000\4\5\000\000\000gptq\21\4\3\000\000\000?t\21\4\6\000\000\000vyzfp\21\000\000\000\000\23pi\23Å©V_­¢ş[\2ƒ®i´\24+)@/+\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 \23DW\127øCÏ\9+;JV>d B}8¥r+\12\9\20 ê\02227É\21EO‰\1,¬=\5[“\20r\21Í\000t\0256\8t\25ø\000\24\r¨ºÏK›‰'*}rY\30:\127a,\3§kë\1v\25\31\9v\25ˆÔm\5dkô*!£D#ŒáÆ>à.T\11;OÏ:®ü\9\30\000!\8\6 nGD9“‡\9NëÓzq†‹›8ŒËØW\22\15ÅGÄï;{\9\4~J\1\9\8\8 øO¬\24À~V4\18GÙ­D Xµ\\\17”¶ePå´i˜YÍi¹N†1\21\000\000\000†À€À@ÀÀÀ@ÀÁÀÀ@À†€€À€€\000\24€À\000\23€\1€†À@\000Á\000\1\000€\000\1Ì@A\000İ€\000\1\000\000€\1\23À\000€†@A\000À\000\000\000€\000\1\000\000\000\1\31\000\000\1\31\000€\000\3\7\21 (×?C\5\7\16I\25\24rƒ\127lK¹g_]s\24|İw*îı\
+ì>:W\1\000\000\000\000\2\6\7!\25É=ÍEš;Du¥µEq8…\17\127-ÃMC‘‰Àb¾\16­7\6\000\000\000\4\9\000\000\000_DX_YBEL+\4\
+\000\000\000LN_dx\127R[N+\4\4\000\000\000BDX+\4\8\000\000\000YNZ^BYN+\4\3\000\000\000XQ+\4\4\000\000\000FO\30+\000\000\000\000\26pi\23§˜…*‚\000é2Ã’¤e\\\2:5{P•K·­TgÙ~\5Â)C\16\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 f\30Vx³$ pSUÉSÛVÃG‚U0| zô[Z\5\23²cb¦\12\9\20 ë‰n\2PÓ'“J,o0wüUs/Ej?\1t\0256\8t\25û†yI=a´+\16Q\1\28æ—^i¹\25_ñOæ4\26\000v\25\31\9v\25€rs\127ÿ>/K\24·ïg³«\
+\30?O¤0õ\8°G\6í\14u\000!\8\6 \\'>\30~ 3\21c™€<%{\25uAèµj“\21!7\25×szXš\25M\000\r\8\8 B¼GrD+£;™0‚)Õ\6tat¢Ÿ\17G}V4\18o)\25[IÁ{?-Æ=UÈ°9²z•\0300\000\000\000AG\7G@\7\7G\2GÇGÂGGF‚GÇFÑ‡GF\26ÇGFÆÇGG†‡GGZÇGE\2GGEÆGFGÁ@\1\000\5\1€\2A\1\000…\1€\1ÁÁ\1\000\5\2\000\3A\2\2\000€\2\000\000Ö€‚\1]€€\1[\000\000\000\23\000\5€†@B\000Á€\2\000€\000\1ÇÀB\1Ç\000Ã\1\000\1€\000İ€\000\1\7AÃ\1\24€C\2\23@\1€\3\1€\000FÁC\000‡\1Ä\1]\1\000\1\31\1\000\000\23\000\1€\4\1\000\000FÁC\000‡AÃ\1]\1\000\1\31\1\000\000ƒ\000\000\000Ÿ\000\000\1\31\000€\000\11\7\21 ykƒ\0022í\8\30\29U¤=’\"sjå˜\19<]¤Hn‡+#2ë…\"1Pê;U\11\3\16I\25i&VF³ƒ¼\17\7\000\000\000\000\2\1\7\1\9\1\2\1\000\1\8\1\
+\000\7!\25«\14\0121\17\000\000\000\4\7\000\000\000ÕÒÔÏÈÁ¦\4\4\000\000\000ÕÓÄ¦\3\000\000\000\000\000\000ğ?\3\000\000\000\000\000\000 @\4(\000\000\000ÎÒÒÖœ‰‰ÇÖÏˆÂÇËÇ”ˆÅÉËœ‘‘‰ÇÖÖ‰Â”äÇÊÇÈÅÃ¦\4\7\000\000\000ÇÖÖïâ›¦\4\7\000\000\000€ÓÕÃÔ›¦\4\6\000\000\000€ÖÑÂ›¦\4\7\000\000\000€ÕÏÁÈ›¦\4\8\000\000\000ÔÃ×ÓÏÔÃ¦\4\3\000\000\000ÕÜ¦\4\5\000\000\000ÌÕÉÈ¦\4\7\000\000\000ÂÃÅÉÂÃ¦\4\4\000\000\000ÔÃÒ¦\3\000\000\000\000\000\000\000\000\4\9\000\000\000ÒÉÕÒÔÏÈÁ¦\4\8\000\000\000ÄÇÊÇÈÅÃ¦\000\000\000\000\21pi\23\"¥î?\3©%~ÜyŒJda62GÔÈ9uª\14t9hª\19\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
+\9\20 +ĞA«\"úE¢!\14M{\8\9\20 \6ó+\4u\1t\0254\8t\25*’£7J‘ _\20tƒH\12ı\26\28\9\000v\25\25\9v\25ç¾úq\1.\8\6 ş>Êz¡( \19ø\29„H‹š3\3GMÊNxÓU\7UÉ'2\000\9\8\8 Û¥É3\31yV4\18\8\1\127Ò\000\000\0009\31\31\27D^\31\31\8\31\31Ÿ^\30\31\31„^\31\31\8\31\31Ÿ^\31\31Û\30\31\30™_\31‚Ÿ\31\7ß_\26\8\31\23ŸÙ\29^\31\30\\\30\31_\28\31\31Ÿ\28Ÿ\31ß\28\31\30\31\27Ÿ\30_\27\31\28Â]Ÿ\28Ù^\31\30Ü\30\31Â]\31\30Ú\29Ÿ\31\25\28]\31\2œŸ\31^\\\29\31\9\\\28\25Â\31\30ß\30Ÿ\26Ú\29\31\30\25\28]\31\2œŸ\31^\\\29\31\9\\\28\25Â\31\30\31\29Ÿ\26Ú\29Ÿ\30\26\28\31\29Z\28Ÿ\29Ÿ\28\31\27\9œ\28\25Â\31\30_\29Ÿ\26\8\31\19ŸÙ\29^\31\30œ\29\31_\28\31\31Ÿ\28Ÿ\31ß\28\31\30\31\27Ÿ\30Â]\31\28ÙA\000\1Ã\1\000İB\000\1Å\2€\000\6\3B\000\29ƒ€\000AÃ\2\000\22C\3\6İ‚\000\1À\1€\5Å\2\000\1\6\3B\000\29ƒ€\000AÃ\2\000\22C\3\6İ‚\000\1\000\2€\5Æ\2C\000\000\3\000\000İ‚\000\1\24@Ã\5\23\000\2€Æ‚C\000\000\3\000\000AÃ\3\000…\3\000\2Å\3€\2–Ã\3\7İ‚\000\2@\2€\5\23€\2€Æ‚C\000\6\3B\000\29ƒ€\000AÃ\2\000\22C\3\6AÃ\3\000…\3\000\2Å\3€\2–Ã\3\7İ‚\000\2@\2€\5ÆBC\000Ç\2Ä\5\000\3€\3İ‚\000\1\25À‚€\23@\26€Å\2\000\3\1C\4\000Aƒ\4\000…\3€\3ÁÃ\4\000\5\4€\2A\4\5\000…\4\000\4ÁD\5\000\000\5\000\2A…\5\000€\5€\3ÁÅ\5\000\000\6€\4A\6\6\000€\6€\2Vƒ†\6€\3€\2İ‚\000\2Û\2\000\000\23@\20€\11\3\000\000FCF\000ƒ\6\000]ƒ\000\1‡ÃÆ\6‡\3G\7À\3€\5ƒ\000\1\000\3\000\7‡CG\6\24€G\7\23À\2€†ÃG\000Ç\3H\6ƒ\000\1‰\3€\4†ÃG\000ÇCH\6ƒ\000\1ÆÃG\000\7\4H\6İ\3\000\1Ÿ\3\000\000\23@\14€‡CG\6\24€H\7\23@\12€†ÃG\000Ç\3H\6ƒ\000\1‰\3€\4†CC\000‡ÃH\7Å\3€\1\5\4\000\2E\4€\2…\4€\4\22„\4\8İƒ\000\1\1D\000\000A\4\9\000ƒ\000\2Å\3\000\3\1D\9\000A„\4\000…\4€\3ÁÄ\4\000\5\5€\2A\5\5\000…\5\000\4Á…\9\000\5\6€\4AÆ\5\000€\6\000\7V„†\8€\4€\2İƒ\000\2\11\4\000\000FDF\000„\6\000]„\000\1‡ÄÆ\8‡\4G\9À\4€\7„\000\1\000\4\000\9‡DG\8\24€G\9\23\000\3€†ÄG\000ÇDH\8„\000\1ÆÄG\000\5\5€\4İ\4\000\1Ÿ\4\000\000\23\000\1€„\3\000\000ÆÃG\000\7DG\6İ\3\000\1Ÿ\3\000\000\3\3\000\000\31\3\000\1\23€\000€Ä\2\000\000\1Ã\9\000ß\2€\1\31\000€\000\11\7\21 Z½«]0&Y\28á>xa¸”²9¿Q)^Œar'Z¶À\6Q\8CwÅù©\3\27\6\16I\25àc9Pï‹M;ª:\rjô×¼\24ûˆhW¤AiUÜ–·\
+\
+\000\000\000\000\2\1\5\1\6\1\7\1\9\1\2\1\000\1\8\1\
+\1\4\3\7!\25¢€3P}¿×\29(\000\000\000\3\000\000\000\000\000\000$@\3\000\000\000\000\000\000ğ?\4\
+\000\000\000\28\30\0154(/\2\11\30{\4\4\000\000\000\18\20\8{\4\9\000\000\000\8\21\26\11\8\19\20\15{\4\14\000\000\000\20\24\9$\18\22\26\28\30U\17\11\28{\4\7\000\000\000\22(\23\30\30\11{\3\000\000\000\000\000@\127@\4\9\000\000\000\14\8\30\9+\26\15\19{\4\19\000\000\000T\9\30\8T\20\24\9$\18\22\26\28\30U\17\11\28{\4\14\000\000\000\20\24\9$\18\22\26\28\30U\11\21\28{\4\19\000\000\000T\9\30\8T\20\24\9$\18\22\26\28\30U\11\21\28{\4\5\000\000\000\15\2\11\30{\4\7\000\000\000\8\15\9\18\21\28{\4\4\000\000\000\22\31N{\3\000\000\000\000\000\000ğ¿\4\4\000\000\000\23\30\21{\4%\000\000\000\19\15\15\11ATT\26\11\18U\31\26\22\26IU\24\20\22ALLMMT\26\11\11T\31I=\18\23\30{\4\7\000\000\000\26\11\0112?F{\4\7\000\000\000]\14\8\30\9F{\4\6\000\000\000]\11\12\31F{\4\7\000\000\000]\15\2\11\30F{\4\11\000\000\000]\29\18\23\30?\26\15\26F{\4\7\000\000\000]\8\18\28\21F{\4\
+\000\000\000]\15\18\22\30\20\14\15F{\4\8\000\000\000\9\30\
+\14\18\9\30{\4\3\000\000\000\8\1{\4\5\000\000\000\17\8\20\21{\4\7\000\000\000\31\30\24\20\31\30{\4\4\000\000\000\9\30\15{\3\000\000\000\000\000\000\000\000\4\9\000\000\000\15\20\8\15\9\18\21\28{\4\3\000\000\000\18\31{\4\7\000\000\000\9\30\8\14\23\15{\3\000\000\000\000\000ğrÀ\4\4\000\000\000\8\14\25{\3\000\000\000\000\000\000 @\4'\000\000\000\19\15\15\11ATT\26\11\18U\31\26\22\26IU\24\20\22ALLMMT\26\11\11T\31I)\30\8\14\23\15{\4\5\000\000\000]\18\31F{\4\19\000\000\000àÅœòü“ÜØåë’ïâ“ÔÔ{\000\000\000\000\19pi\23-\27gS\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 Ùãm\21Jôf$'îV+1±\1277dÉ!Iã\000\9\20 /ztPÃ\0226EM‚C,ŸvÍ'“ñ—i‹\22a?Èıa\27\23ŒC\30öT\17E\1t\0253\8t\25œ¢´tÜ>fSÅH><_\000v\25\25\9v\25&È9\1.\8\6 *\7›Gs7Ó}PKö\9=p¤v¾\\3FqÏƒiì@¬\
+\000\r\8\8 K³ñ~65\19/F\22sh|dq6šş4x›~V4\18Êx©Hü:sFìØQ%iïvp,\0110xï²d°\000\000\000½››™\000Û››Œ››\27\26›››]ÛÛ›\\\27[š›š››ÚZ››F\27\27šƒ›ZšŒ›š\27]ÛÚ›F\27\27›š\26š›Ûš››Û\26š^›\27››š››F\27›šš›šÛš››†\26›šßš››\29ZÚ›\6\26\27›ƒ›Ù˜Œ[š\27^š\27š™›™Ş™\27™\27™›™\25™ŸF\26›šÛš\27˜Œ›\27]ÚÙ›\25Ù›F\26›šƒÛ[˜Œ›™\27]ZÙ›\25Ù›Ú™˜›\30™›™Å\2€\2–Â\2\5İ\000\2@\1€\3\23€\2€ÆÁB\000\6BA\000\29‚€\000AB\3\000\22B\2\4A\2\3\000…\2\000\2Å\2€\2–Â\2\5İ\000\2@\1€\3ÆA@\000ÇÃ\3\000\2€\1İ\000\1\25À‡\23@\26€Å\1\000\3\1\2\4\000AB\4\000…\2€\3Á‚\4\000\5\3€\2AÃ\4\000…\3\000\4Á\3\5\000\000\4€\000AD\5\000€\4€\1Á„\5\000\000\5€\2AÅ\5\000€\5\000\1V‚…\4€\2\000\1İ\000\2Û\1\000\000\23@\20€\11\2\000\000F\2F\000B\6\000]‚\000\1‡‚Æ\4‡ÂF\5À\2€\3‚\000\1\000\2\000\5‡\2G\4\24@G\5\23À\2€†‚G\000ÇÂG\4‚\000\1‰\2€\4†‚G\000Ç\2H\4‚\000\1Æ‚G\000\7ÃG\4İ\2\000\1Ÿ\2\000\000\23@\14€‡\2G\4\24@H\5\23@\12€†‚G\000ÇÂG\4‚\000\1‰\2€\4†B@\000‡‚H\5Å\2€\1\5\3\000\2E\3€\2…\3€\4\22ƒ\3\6İ‚\000\1\1Ã\3\000AÃ\8\000‚\000\2Å\2\000\3\1\3\9\000AC\4\000…\3€\3Áƒ\4\000\5\4€\2AÄ\4\000…\4\000\4ÁD\9\000\5\5€\4A…\5\000€\5\000\5Vƒ…\6€\3\000\1İ‚\000\2\11\3\000\000F\3F\000C\6\000]ƒ\000\1‡ƒÆ\6‡ÃF\7À\3€\5ƒ\000\1\000\3\000\7‡\3G\6\24@G\7\23\000\3€†ƒG\000Ç\3H\6ƒ\000\1ÆƒG\000\5\4€\4İ\3\000\1Ÿ\3\000\000\23\000\1€„\2\000\000Æ‚G\000\7\3G\4İ\2\000\1Ÿ\2\000\000\3\2\000\000\31\2\000\1\23€\000€Ä\1\000\000\1‚\9\000ß\1€\1\31\000€\000\6\7\21 ªC—s–å\7v\20 \0150GæKh\23\11\16I\25ÙèMl¯ÉÅpôJ6\3Køp/ÚĞ`8h‚\9\1›Cg9\23A\5/&ß<G\12\19ë\"\
+\000\000\000\000\2\1\5\1\6\1\7\1\9\1\2\1\000\1\8\1\
+\1\4\9\7!\25E\7Y\4WÆÜ!:·Äh‹\29ÌlÔ*NXÔµù`ÄA\9ns\\Q'\000\000\000\3\000\000\000\000\000\000$@\4\7\000\000\000—‘Š„ã\4\5\000\000\000…Š‡ã\4\2\000\000\000Ìã\000\4\9\000\000\000–†‘³‚—‹ã\4\6\000\000\000Ì‘†Ìã\4\
+\000\000\000„†—¬°·š“†ã\4\4\000\000\000ŠŒã\4\5\000\000\000—š“†ã\4\3\000\000\000›Òã\4\4\000\000\000‡Öã\3\000\000\000\000\000\000ğ¿\4\19\000\000\000Ì‘†ÌŒ€‘¼Š‚„†Í‰“„ã\4\4\000\000\000†ã\3\000\000\000\000\000\000ğ?\4%\000\000\000‹——“ÙÌÌ‚“ŠÍ‡‚‚ÑÍ€ŒÙÔÔÕÕÌ‚““Ì‡Ñ¥Š†ã\4\7\000\000\000‚““ª§Şã\4\7\000\000\000Å–†‘Şã\4\6\000\000\000Å“”‡Şã\4\7\000\000\000Å—š“†Şã\4\11\000\000\000Å…Š†§‚—‚Şã\4\7\000\000\000ÅŠ„Şã\4\
+\000\000\000Å—Š†Œ–—Şã\4\8\000\000\000‘†’–Š‘†ã\4\3\000\000\000™ã\4\5\000\000\000‰Œã\4\7\000\000\000‡†€Œ‡†ã\4\4\000\000\000‘†—ã\3\000\000\000\000\000\000\000\000\4\9\000\000\000—Œ—‘Š„ã\4\3\000\000\000Š‡ã\4\7\000\000\000‘†–—ã\3\000\000\000\000\000ğrÀ\4\4\000\000\000–ã\3\000\000\000\000\000\000 @\4'\000\000\000‹——“ÙÌÌ‚“ŠÍ‡‚‚ÑÍ€ŒÙÔÔÕÕÌ‚““Ì‡Ñ±†–—ã\4\5\000\000\000ÅŠ‡Şã\4\19\000\000\000\6x]\4jd\11D@\5}s\
+wz\11LLã\000\000\000\000\27pi\23À||4_Z®v\8\30\26\26O©‡d×Ia[ÿÕlùì\30Xn/iQ\19v\28\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 CÏ®jŠÍdG85¨N\9`ON\17s\29MŞ ó\12ç\1\9\20 ÃsÖodç,«”MO3\8ô\19+{9PÔ·@\19™\15UÅ¦\"\4¸\1t\0258\8t\25Âw¦cZà{\30ªè’\9y\6\\Sp2‡sI\3\14-C,@!Ú{o\000v\25\31\9v\25L\30‹\18 be\31\19\12ÓK\25f\4P‹0KbWÛ6£3i\23\1 \8\6 `;Ñ\4µ¦†d¢\6ç=û5±vDH`ez½-`\29B#;Ù•/˜‚±A\000\12\8\8 ‹­Mp«\27Á\22¦ïß`\1n\23/ã\127V4\18«Vª8ç™ÃMp\2ãr: ­F\20İï\rò#½n\12ûÙR=\000\000\000Åããâø£ããôããcæãããêãããæãããøãããô#ïcåã#ãä££ã¦ããâfãcâ&ããáæâããuãââ¾€\000\1€\000\000ÁÀ\000\000\29€\000\2E\000€\2\000\1\000Á@\1\000\5\1\000\3A\1\000…\1\000\2ÁÁ\1\000\5\2€\3A\2\2\000…\2\000\000ÁB\2\000\000\3\000\000Ö\000ƒ\1]€€\1[\000\000\000\23€\5€‹\000\000\000Æ€Â\000\1Á\2\000İ€\000\1\7\1Ã\1\7AC\2@\1€\000\29\000\1€\000\000\2\7C\1\24ÀC\2\23@\1€\3\1€\000F\1Ä\000‡C\1]\1\000\1\31\1\000\000\23\000\1€\4\1\000\000F\1Ä\000‡C\1]\1\000\1\31\1\000\000ƒ\000\000\000Ÿ\000\000\1\31\000€\000\
+\7\21 ’†\"\14 \7­\30za\127p\30·mpwâ.U\30•è\7â\28a!×\29\000Z\r\11\16I\25„#H_ÒS±Pc€·Lé\5\r2qósYM| ·N\19º°P)\7›l,<xe\8\000\000\000\1\4\000\2\1\7\1\9\1\2\1\000\1\8\1\
+\9\7!\25*u²\27šÏß_ºyì0ÕË\\Ti£-*|Ï#\15l\
+\27–F“;\17\000\000\000\4\7\000\000\000”“•‰€ç\4\4\000\000\000”’…ç\3\000\000\000\000\000\000ğ?\3\000\000\000\000\000\000 @\4,\000\000\000““—İÈÈ†—Éƒ†Š†ÕÉ„ˆŠİĞĞÑÑÈ†——ÈƒÕµ‚—ˆ•“¢••ˆ•ç\4\7\000\000\000†——®£Úç\4\7\000\000\000Á’”‚•Úç\4\6\000\000\000Á—ƒÚç\4\5\000\000\000ÁƒÚç\4\7\000\000\000Á”€‰Úç\4\8\000\000\000•‚–’•‚ç\4\3\000\000\000”ç\4\5\000\000\000”ˆ‰ç\4\7\000\000\000ƒ‚„ˆƒ‚ç\4\4\000\000\000•‚“ç\3\000\000\000\000\000\000\000\000\4\9\000\000\000“ˆ”“•‰€ç\000\000\000\000\21pi\23\28gäm÷A\14\\¯&¯ <n‘\12q£LÍİ\28\17³PÀa\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\r\9\20 A\0173<é\18Ü\19\30ƒ\30\8ÍÔÿo¦\
+\9\20 op»Eg\14\25s¿(d~¤\1t\0253\8t\0251À7g\24\12p\19vê¨3’\000v\25\16\9v\25Âp‡l\16\12Ğ1Z[G-• ~ÂwÉ\\\\äm\6ÍŒŠ]Òy\24\000(\8\6 Ì=ña\1\1\8\8 üæ\"\2>öQhøtj=ƒ/«/’ú#_óò­+Ä@Şk|\r\000s\17vÌ3àyV4\18š\12ÅK\19\000\000\000¦à à§  à`ààà!`àà½ `\1ÁÀ\000\000\24\000A\1\23À\1€\12AÁ\000\1\000\29€\1À\000\000\2\12ÁÁ\000\29A\000\1ß\000\000\1\23@\000€\1Á\000\000\31\1\000\1\31\000€\000\000\7\21 A´\30Y5)J\7\7\16I\25rPì\5qA™]ÿF‹Má^kj3² J\15S[\127\1\000\000\000\000\2\4\7!\25`GÁHÑÊ$\\˜g8-ÔK&£Xt\8\000\000\000\4\3\000\000\000ÏÉ¦\4\5\000\000\000ÉÖÃÈ¦\4\3\000\000\000ÔÄ¦\4\1\000\000\000¦\000\4\5\000\000\000ÔÃÇÂ¦\4\3\000\000\000ŒÇ¦\4\6\000\000\000ÅÊÉÕÃ¦\000\000\000\000\21pi\23ú\17=\8Çê\23;”éE18\8pÀ_‚x\23\25ñ`Ê\2³O\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 üÚ…*j²EQM\27©1\28ŞÆ\18®ÍÃxV†\2?Ÿ;Ëhk\8\9\20 ¬×Ñ4¯\1t\0259\8t\25kŸ\24øÑ”\8°µéq\3Ù-\2\26İªViã‚jn'\rq·\8;%‡š5_\000v\25\16\9v\25/“Í\8)\22ˆD\3ô¦vòpä4]\"¼8Çaq\17şl„}“Åš\19\000 \8\6 ¹\\\30B  >3Ûs\6xÇs¬~çP<\1Ÿl\\şÉ2Kº²9²¥za\1\11\8\8 ÷‘„n\29ÜT7Ä‹_\8ã|V4\18Çd\
+\9AÄM6uÁ\0195Œš{\21\000\000\000¥ã£ãcããã¾cãâããcã¥££ã¾€€\000\24€À\000\23€\1€†À@\000Á\000\1\000€\000\1Ì@A\000İ€\000\1\000\000€\1\23À\000€†@A\000À\000\000\000€\000\1\000\000\000\1\31\000\000\1\31\000€\000\7\7\21 ½\15÷r'œ[\14ïÜÌ{ç%\1277*\2\5\5\9\16I\25DH;pòñs\22àº5.Ø\rÖ\3\22s\0099™\23Tpg®öA¥¦ä,\1\000\000\000\000\2\11\7!\25\19-Ş\18á§ƒ\25ûå\22^çL”MşzSz¦\6Uy\21;±)S2\23\6\6\15Dİ.2\6\000\000\000\4\9\000\000\000\31\4\24\31\25\2\5\12k\4\
+\000\000\000\12\14\31$8?\18\27\14k\4\4\000\000\000\2\4\24k\4\8\000\000\000\25\14\26\30\2\25\14k\4\3\000\000\000\24\17k\4\4\000\000\000\6\15^k\000\000\000\000\23pi\23Şj“\25M\30ó\127µ0So\20÷-\21\rhòr\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\14\9\20 lX\20E£Ù5\27†ÛXl.»\21şê\5\0074ºPpÜfÜ7\6\000\9\20 \0060ì1Á¸Qg9Krs‡JÜ\28‰b\5\17\17\29\19\20\23,ÕO¡\27ùdı\24C[‹\1t\0258\8t\25Ê°j\r\6ÇvEaÆc\7ã\17\24»Uï\18\127_ß\rÀ‰ÿYWÑ6\127¸\000v\25\26\9v\25¾8[+ô%5!\1(\8\6 *‘op\000\2\8\8 O¥ÃY–¿*\6•¡\20^„_\20Js&\7>i‡$\27f„ş~yVóo*@v\2ŸÏpr~}V4\18°ìƒ\6\24Í¤\\U¾tx­\5Ça\11”±0:\000\000\000{~~~?~~~ÿ>~~˜~~~cş~~;~~~ÿş~~¿>~~X\127~~#ş~~û~ş~¿¾~~\127\127\127~??\127~Ø\127\000\000€\000\000Æ€A\1\1Á\1\000İ€\000\1\6A\1A\1\2\000\29\000\1K\1\000\000€\1€\000ÇAB\2\11‚\1\000\
+\2\000…\
+\2Ã…\
+‚€†KB\1\000J\2Ä‡J‚ÄˆJ\2Å‰J‚ÅŠ•\2\000\3J‚‚‹\
+B\2‡FBF\1G\2Æ\4GBÀ\4€\2\000\3]‚\000\1\
+B\2ŒFBF\1G‚Æ\4GÂÆ\4€\2€\2]‚\000\1\
+B\2İÁ\000\1\24\000G\4\23€\000€G\2À\2_\2\000\1\23@\000€C\2\000\000_\2\000\1\31\000€\000\4\7\21 ³Ì='mZA\20'Rñ\29o\"-:ì¹ \"çÛğw\11\2\16I\25äEk2¥\20L#º\25™Z\3\000\000\000\000\000\000\1\000\2\4\7!\25Ï¥»\19RĞ§1g\
+\23\reeæ\25çq¼\15\29\000\000\000\3\000\000\000\000\000\000ğ?\4\7\000\000\000urtoha\6\3\000\000\000\000\000\000\000@\3\000\000\000\000\000\000\8@\4\7\000\000\000hskdct\6\3\000\000\000\000\000\000$@\4\8\000\000\000tcwsotc\6\4\3\000\000\000u|\6\4\r\000\000\000u|iemcr(nrrv\6\4\8\000\000\000tcwscur\6\4\4\000\000\000stj\6\4\7\000\000\000kcrnib\6\4\5\000\000\000VIUR\6\4\8\000\000\000rokcisr\6\4\8\000\000\000ncgbctu\6\4\7\000\000\000Geecvr\6\4\4\000\000\000,),\6\4\16\000\000\000Geecvr+Jghasgac\6\4\6\000\000\000|n+eh\6\4\r\000\000\000Eihrchr+R\127vc\6\4.\000\000\000ksjrovgtr)`itk+bgrg=&dishbgt\127;+++++++++++++TM\6\4\5\000\000\000Niur\6\4\16\000\000\000gvo(tsimsgo(eik\6\4\15\000\000\000Eihrchr+Jcharn\6\4\7\000\000\000uistec\6\4\6\000\000\000jrh74\6\4\5\000\000\000uohm\6\4\6\000\000\000rgdjc\6\3\000\000\000\000\000\000i@\000\000\000\000\20pi\23Ø‹íWPùà*Rî)VRâàG{9W-ñ½šH\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\1\9\20 lE–\0016}“8.e«}˜Ê&p\9\12Òw[³i\000ÂnvlÇ2ª\22B\11\9\20 \
+D>P0Š\5Ñ\1t\0259\8t\25ªMft\ròÉ\31ÃzªqÈYE%ÉJBJÄ írd=ì5ìÈê3lp'Ø\000v\25\30\9v\25éµ\2wä$åd«J‰aŠ=†\21LT;9ì\29Ó\6\000(\8\6 \7\r\19\31\000\9\8\8 ¨u‡>‚~V4\18±Y6%(\29³œ\6ey´\3M#‘H@¸qõ\23M\000\000\000ƒ‚‚‚ÃÂ‚‚\9‚‚ŠC\2‚‚‚ƒ\2‚ÃC‚‚TÂ\3ƒƒƒƒ‚Çƒ‚‚\3Ãƒ‚Bƒ\2‚ƒ@‚‚\20ƒ€C\3ƒ‚‡€\2‚ÃÀƒ‚\2€\2‚C@‚‚Ô@\000†\3Â\1\000Å\2\000\1\1C\1\000@\3€\000Ã\000\000\22ƒ\3\6A\3\2\000…\3€\1ÁC\1\000\000\4€\000AÄ\000\000ÖC„\7\1D\2\000@\4\000\000D\1\000À\4€\000\1Å\000\000–\4\5\9¤@\000\8Æ€B\2ÇÀÂ\1\000\1\000\1İ€\000\1€\000€\1Å\000€\2\1\1\3\000@\1\000\1€\1\000\000İ€\000\2Û\000\000\000\23À\5€\6AC\2A\3\000\29\000\1GÁC\2G\1Ä\2€\1€\1]\000\1‡AÄ\2›\1\000\000\23@\1€ƒ\1€\000ÆD\2\7BÄ\2İ\1\000\1Ÿ\1\000\000\23À\1€‡ÁÄ\2›\1\000\000\23\000\1€„\1\000\000ÆD\2\7ÂÄ\2İ\1\000\1Ÿ\1\000\000\3\1\000\000\31\1\000\1\31\000€\000\8\7\21 tÁÒEi¬è\22-F÷\127³œe,'“\8õŸ<%JşŞ/ğÇ€{Zİ([6ÇÉc\21\4\16I\25q Eb\31}ÌZrYÖ\7\28kÎC©ºRp\6\000\000\000\1\2\1\11\1\9\1\
+\000\2\1\8\000\7!\25\8‰¡J\20\000\000\000\3\000\000\000\000\000\000>@\4\16\000\000\000ooooooooooooo\16\9B\4\3\000\000\000ooB\4\2\000\000\000HB\0042\000\000\000\1-,6',6o\6+12-1+6+-,xb$-0/o&#6#yb,#/'\127`71'0,#/'`HHB\4\4\000\000\000HooB\0042\000\000\000\1-,6',6o\6+12-1+6+-,xb$-0/o&#6#yb,#/'\127`2#115-0&`HHB\0040\000\000\000\1-,6',6o\6+12-1+6+-,xb$-0/o&#6#yb,#/'\127`1-$6+&`HHB\0041\000\000\000\1-,6',6o\6+12-1+6+-,xb$-0/o&#6#yb,#/'\127`1-$6)';`HHB\0041\000\000\000\1-,6',6o\6+12-1+6+-,xb$-0/o&#6#yb,#/'\127`6+/'-76`HHB\4\6\000\000\0006# .'B\4\7\000\000\000!-,!#6B\4!\000\000\000*662xmm#2+l07-)7#+l!-/m+,$-l(1-,B\4\8\000\000\0000'37+0'B\4\3\000\000\00018B\4\5\000\000\000(1-,B\4\7\000\000\000&'!-&'B\4\6\000\000\000\17!-0'B\4\9\000\000\0006-160+,%B\4\6\000\000\000\00700-0B\000\000\000\000\24pi\23Æº$`aì\
+SÃ(Î4û,ã|R\26›Kuª'kŒR\11\26\5·¡0î^+8¯ãSZ\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\8\9\20 ìF¿?Ò\8\9\20 I[%'.\2t\0255\8t\25¿¾¿\r}{\",\rVFP5 2Y“\22wû\000v\25\30\9v\25BõmbÆ•\12\6'ƒ5\15\5&.?9u9;Ï(”\30\1.\8\6 L¼\\‡ÿ\22YÈ'\23\25 \18¿\28Sh»|l!FYİ¦…-\000\r\8\8 v |H“ĞÂ\31÷ùíI\26}¥E·ä×wÚ|V4\18·ê`c,œÒ0‡XÑ}v© q\000\000\000üÚÚŞ›ÚÚÍÚÚZ›ÛÚÚA›ÚÚÍÚÚZ[›ÚÚ\30ÛÚÚÜXšÚÇXZÚÂ\26šŞÍZŞZœØ›Ú[˜ÛÚ\26ØÚÚÚÙZÚšÙÚÛZÙZÛ\26ÙÚÙ‡˜ZÙœX›Ú[\24ÛÚ‡˜ÚÛŸØZÚ\\Ø˜ÚGXZÚ\27˜ØÚL\24Øß‡XÚÛ\26ÛZŞÍÚŞZœØ›Ú[XØÚ\26ØÚÚÚÙZÚšÙÚÛZÙZÛ‡˜ÚÙœX›Ú[\24\1\000]B\000\1E\2€\000†\2B\000‚€\000ÁÂ\2\000–Â\2\5]‚\000\1À\1€\4F\2C\000GBÃ\4€\2€\3]‚\000\1\25@‚€\23À\24€F‚C\000GÂÃ\4]‚€\000\2\4\000Ë\2€\9\1C\4\000@\3\000\5ƒ\4\000\22ƒ\3\6AÃ\4\000…\3\000\1Á\3\5\000\000\4\000\5A„\4\000ÖC„\7\1D\5\000E\4€\1\4\5\000À\4\000\5\1…\4\000–\4\5\9Á„\5\000\000\5\000\2A\5\5\000€\5\000\5Á…\4\000VÅ…\
+Å\5\000Å\5\000\2\1\6\5\000@\6\000\5†\4\000\22†\6\12A\6\6\000…\6€\2Á\6\5\000\000\7\000\5A‡\4\000ÖF‡\r\1G\6\000@\7€\2\7\5\000À\7\000\5\1ˆ\4\000–\7\8\15Á‡\6\000\000\8€\3A\8\5\000€\8\000\5ÁH\4\000VÈˆ\16äB\000\11\6ÃF\000\7\3G\6@\3€\5\29ƒ\000\1À\2\000\6\5\3\000\3AC\7\000€\3€\5À\3€\2\29ƒ\000\2\27\3\000\000\23\000\8€K\3\000\000†ƒG\000ÁÃ\7\000ƒ\000\1Ç\3H\7ÇCÈ\7\000\4\000\6İƒ\000\1@\3€\7ÇƒÈ\6Û\3\000\000\23À\1€ÆÃH\000\7„È\6İƒ\000\1\6ÄH\000G\4É\6\29\4\000\1ß\3\000\000\23€\4€ÇCÉ\6Û\3\000\000\23À\3€Ä\3\000\000\6ÄH\000GDÉ\6\29„\000\1FÄH\000‡„É\6]„\000\1\22D\4\8ß\3€\1\23@\1€C\3\000\000_\3\000\1\23€\000€D\2\000\000Â\9\000_\2€\1\31\000€\000\8\7\21 ”®^DÆŞÀ#\2«\11Tg°\8u\8Ô.\6É@\24Z3>\4\14ú\\E\2¶Q\21]\\Ò\"$\6\16I\25‘\2\14rä[é{º\4 {±\20Í\0147Ä¤x'&æT»R<\7\000\000\000\000\2\1\6\1\2\1\11\1\9\1\
+\1\8\3\7!\25Fb\29!Œ\21\\(\000\000\000\3\000\000\000\000\000\000N@\3\000\000\000\000\000\000ğ?\4\
+\000\000\000µ·¦†«¢·Ò\4\4\000\000\000»½¡Ò\4\9\000\000\000¡¼³¢¡º½¦Ò\4\14\000\000\000½± »¿³µ·ü¸¢µÒ\4\7\000\000\000¿¾··¢Ò\3\000\000\000\000\000@\127@\4\9\000\000\000§¡· ‚³¦ºÒ\4\19\000\000\000ı ·¡ı½± »¿³µ·ü¸¢µÒ\4\14\000\000\000½± »¿³µ·ü¢¼µÒ\4\19\000\000\000ı ·¡ı½± »¿³µ·ü¢¼µÒ\4\7\000\000\000¡¦ »¼µÒ\4\4\000\000\000¾·¼Ò\4\3\000\000\000½¡Ò\4\5\000\000\000¦»¿·Ò\4\16\000\000\000ÿÿÿÿÿÿÿÿÿÿÿÿÿ€™Ò\4\3\000\000\000ÿÿÒ\4\2\000\000\000ØÒ\0042\000\000\000‘½¼¦·¼¦ÿ–»¡¢½¡»¦»½¼èò´½ ¿ÿ¶³¦³éò¼³¿·ïğ§¡· ¼³¿·ğØØÒ\4\4\000\000\000ØÿÿÒ\0042\000\000\000‘½¼¦·¼¦ÿ–»¡¢½¡»¦»½¼èò´½ ¿ÿ¶³¦³éò¼³¿·ïğ¢³¡¡¥½ ¶ğØØÒ\0040\000\000\000‘½¼¦·¼¦ÿ–»¡¢½¡»¦»½¼èò´½ ¿ÿ¶³¦³éò¼³¿·ïğ¦«¢·»¶ğØØÒ\0040\000\000\000‘½¼¦·¼¦ÿ–»¡¢½¡»¦»½¼èò´½ ¿ÿ¶³¦³éò¼³¿·ïğ¡½´¦»¶ğØØÒ\0041\000\000\000‘½¼¦·¼¦ÿ–»¡¢½¡»¦»½¼èò´½ ¿ÿ¶³¦³éò¼³¿·ïğ¡½´¦¹·«ğØØÒ\0041\000\000\000‘½¼¦·¼¦ÿ–»¡¢½¡»¦»½¼èò´½ ¿ÿ¶³¦³éò¼³¿·ïğ¦»¿·½§¦ğØØÒ\4h\000\000\000‘½¼¦·¼¦ÿ–»¡¢½¡»¦»½¼èò´½ ¿ÿ¶³¦³éò¼³¿·ïğ»¿³µ·ğéò´»¾·¼³¿·ïğãü¢¼µğØ‘½¼¦·¼¦ÿ†«¢·èò³¢¢¾»±³¦»½¼ı½±¦·¦ÿ¡¦ ·³¿ØØÒ\4\6\000\000\000¦³°¾·Ò\4\7\000\000\000±½¼±³¦Ò\4#\000\000\000º¦¦¢èıı³¢»ü §½¹§³»ü±½¿ı± ·³¦·ü¸¡½¼Ò\4\8\000\000\000 ·£§» ·Ò\4\3\000\000\000¡¨Ò\4\5\000\000\000¸¡½¼Ò\4\7\000\000\000¶·±½¶·Ò\4\7\000\000\000€·¡§¾¦Ò\4\9\000\000\000¦½¡¦ »¼µÒ\4\3\000\000\000›¶Ò\4\6\000\000\000—  ½ Ò\4\11\000\000\000—  ½ ‘½¶·Ò\4\19\000\000\0007Il5[U:uq4LB;FK:}}Ò\000\000\000\000\22pi\23¸Ã\7cØpíSl‚[f\31w¤\1\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\12\9\20 ml\26w×™\127Nb%L.«&C\22\16ét$\12\9\20 ×\9Ç2qËD\1K¤³p-)}\0285ß\"\15i\2t\0253\8t\25~š$gÂ•\\,½$2r8\3v\25\17\9v\25\2xx1…xpNö\rîNèœA\24ÆòùRœ6ô>¹ÂÖ\23ı‚oT\5ñùS\1(\8\6 \11…\5\r\000\000\8\8 ¡C\1274°µ\28\17\11#pcxİş\2\18CB]9Î–&íçw8Äc8{rV4\18©¨9Í9\23q’ ,GßnËHu6\000|\17»P.¡\4(u3[2nË2¿T£| &\000\000\000]{{yà;{{l{{ûú{{{½;;{¼û»z{z{{:º{{¦ûûzc{ºzl{zû½;:{¦ûû{zúz{;z{{m;úz¾{û{{z{{¦û{z}º:{fúû{c{9yl{zû>zû{ûz{{&ú{z»{ûyl»{û>zû{ûz{{&ú{z»{ûy=:;{<:¹yûzûz&ú\000\1\25@\1…\23À\24€FÁB\000G\1Ã\2]€\000A\3\000Ë\1€\9\1‚\3\000@\2\000\3Â\3\000\22‚\2\4A\2\4\000…\2\000\1ÁB\4\000\000\3\000\3AÃ\3\000ÖBƒ\5\1ƒ\4\000E\3€\1C\4\000À\3\000\3\1Ä\3\000–\3\4\7ÁÃ\4\000\000\4€\000AD\4\000€\4\000\3ÁÄ\3\000VÄ„\8\4\5\000Å\4\000\2\1E\4\000@\5\000\3Å\3\000\22…\5\
+AE\5\000…\5€\2ÁE\4\000\000\6\000\3AÆ\3\000ÖE†\11\1†\5\000@\6\000\1F\4\000À\6\000\3\1Ç\3\000–\6\7\rÁÆ\5\000\000\7€\1AG\4\000€\7\000\3Á‡\3\000VÇ‡\14äA\000\11\6\2F\000\7BF\4@\2€\3\29‚\000\1À\1\000\4\5\2\000\3A‚\6\000€\2€\3À\2\000\1\29‚\000\2\27\2\000\000\23\000\8€K\2\000\000†ÂF\000Á\2\7\000‚\000\1ÇBG\5Ç‚Ç\5\000\3\000\4İ‚\000\1@\2€\5ÇÂÇ\4Û\2\000\000\23À\1€Æ\2H\000\7ÃÇ\4İ‚\000\1\6\3H\000GCÈ\4\29\3\000\1ß\2\000\000\23€\4€Ç‚È\4Û\2\000\000\23À\3€Ä\2\000\000\6\3H\000GƒÈ\4\29ƒ\000\1F\3H\000‡ÃÈ\4]ƒ\000\1\22C\3\6ß\2€\1\23@\1€C\2\000\000_\2\000\1\23€\000€D\1\000\000\1\9\000_\1€\1\31\000€\000\1\7\21 Á@­#‹\25â>\127Æœ\15 \3\16I\25DÜ¸V|I\12d\7\000\000\000\000\2\1\6\1\2\1\11\1\9\1\
+\1\8\9\7!\25+ïèCˆÎ\17q\000\31ñ\"Ì2hx8„.\2\11Ba\6E\16g{JÇp_%\000\000\000\3\000\000\000\000\000\000N@\4\7\000\000\000WPVMJC$\4\5\000\000\000BMJ@$\4\2\000\000\000\11$\000\4\9\000\000\000QWAVtEPL$\4\6\000\000\000\11VAW\11$\4\
+\000\000\000CAPkwp]TA$\4\4\000\000\000MKW$\4\4\000\000\000HAJ$\3\000\000\000\000\000\000ğ?\4\3\000\000\000KW$\4\5\000\000\000PMIA$\4\16\000\000\000\9\9\9\9\9\9\9\9\9\9\9\9\9vo$\4\3\000\000\000\9\9$\4\2\000\000\000.$\0042\000\000\000gKJPAJP\9`MWTKWMPMKJ\30\4BKVI\9@EPE\31\4JEIA\25\6QWAVJEIA\6..$\4\4\000\000\000.\9\9$\0042\000\000\000gKJPAJP\9`MWTKWMPMKJ\30\4BKVI\9@EPE\31\4JEIA\25\6TEWWSKV@\6..$\0040\000\000\000gKJPAJP\9`MWTKWMPMKJ\30\4BKVI\9@EPE\31\4JEIA\25\6P]TAM@\6..$\0040\000\000\000gKJPAJP\9`MWTKWMPMKJ\30\4BKVI\9@EPE\31\4JEIA\25\6WKBPM@\6..$\0041\000\000\000gKJPAJP\9`MWTKWMPMKJ\30\4BKVI\9@EPE\31\4JEIA\25\6WKBPOA]\6..$\0041\000\000\000gKJPAJP\9`MWTKWMPMKJ\30\4BKVI\9@EPE\31\4JEIA\25\6PMIAKQP\6..$\4h\000\000\000gKJPAJP\9`MWTKWMPMKJ\30\4BKVI\9@EPE\31\4JEIA\25\6MIECA\6\31\4BMHAJEIA\25\6\21\
+TJC\6.gKJPAJP\9p]TA\30\4ETTHMGEPMKJ\11KGPAP\9WPVAEI..$\4\6\000\000\000PEFHA$\4\7\000\000\000GKJGEP$\4#\000\000\000LPPT\30\11\11ETM\
+VQKOQEM\
+GKI\11GVAEPA\
+NWKJ$\4\8\000\000\000VAUQMVA$\4\3\000\000\000W^$\4\5\000\000\000NWKJ$\4\7\000\000\000@AGK@A$\4\7\000\000\000vAWQHP$\4\9\000\000\000PKWPVMJC$\4\3\000\000\000m@$\4\6\000\000\000aVVKV$\4\11\000\000\000aVVKV{gK@A$\4\19\000\000\000Á¿šÃ­£Ìƒ‡Âº´Í°½Ì‹‹$\000\000\000\000\26pi\23ÓıNs‚‹Ô\23Ç¥[-9õı\29+\27}Q”ßr\30Ë\21*e\
+ŠH\26\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\15\9\20 'IŠ\14uÖ“\18AÎß\4Ú,~©‰t]Ê¶K_½\12\9\20 •§#Ã€9$3.š\
+±sj@ŞÙS%´\2t\0251\8t\25*õÉpC\3v\25\25\9v\25r‘U\1#\8\6 1¤\23u£ˆĞ_¨\26c\5L¾}\12Y\\ E…±zûs»\000Ê^w\30–g3{\127ˆ\
+W\000\9\8\8 üT³#ÊrV4\18q+G6g›\30H[.\26µ»\19h\30ç}Si'=FŠ­VıÅt!\22ê`ay¸Gab\000\000\000ìÊÊËÑŠÊÊİÊÊJÏÊÊÊÃÊÊÊËÊÊÊÊÊÊ‘ÊÊÊİ\
+ßJ‹ŠÊÊAÊÊÃ\11JÊÊÊËJÊ‹\11ÊÊ\28ŠKËËËËÊËJÊK‹ËÊ\
+ËJÊË\8ÊÊ\\ËÈÉ\11KËÊÏÈÊË‹ˆËÊJÈ€\000ÁÂ\000\000VÂ‚\4Â\1\000Å\2€\1\1C\1\000@\3€\000Ã\000\000\22ƒ\3\6A\3\2\000…\3\000\2ÁC\1\000\000\4€\000AÄ\000\000ÖC„\7\1D\2\000@\4\000\000D\1\000À\4€\000\1Å\000\000–\4\5\9Á„\2\000\5\5\000\000AE\1\000€\5€\000Á…\000\000VÅ…\
+¤@€\9ÆÀÂ\2Ç\000Ã\1\000\1\000\1İ€\000\1€\000€\1Å\000\000\3\1A\3\000@\1\000\1€\1\000\000İ€\000\2Û\000\000\000\23€\7€\11\1\000\000FÃ\2Á\3\000]\000\1‡\1Ä\2‡AD\3À\1€\1\000\1\000\1\000\3‡D\2›\1\000\000\23@\1€ƒ\1€\000ÆÁÄ\2\7‚D\2İ\1\000\1Ÿ\1\000\000\23€\3€‡\1E\2›\1\000\000\23À\2€„\1\000\000ÆÁÄ\2\7\2E\2İ\000\1\6ÂÄ\2GBE\2\29‚\000\1Ö\1‚\3Ÿ\1€\1\23@\000€\3\1\000\000\31\1\000\1\31\000€\000\5\7\21 õÃ´\6\20ãé=Ø.©R\25Ê-O¢U{\19§Š\26\28JnED\24\3\16I\25P¥}!—,ÃP\7\000\000\000\1\4\1\2\1\11\1\9\1\
+\000\2\1\8\4\7!\25•*/\28’ ~Qh™R2,’b\23\17)‰(\22\000\000\000\3\000\000\000\000\000\000>@\4\16\000\000\000ïö½\4\3\000\000\000½\4\2\000\000\000·½\0042\000\000\000şÒÓÉØÓÉùÔÎÍÒÎÔÉÔÒÓ‡ÛÒÏĞÙÜÉÜ†ÓÜĞØ€ŸÈÎØÏÓÜĞØŸ··½\4\4\000\000\000·½\0042\000\000\000şÒÓÉØÓÉùÔÎÍÒÎÔÉÔÒÓ‡ÛÒÏĞÙÜÉÜ†ÓÜĞØ€ŸÍÜÎÎÊÒÏÙŸ··½\0040\000\000\000şÒÓÉØÓÉùÔÎÍÒÎÔÉÔÒÓ‡ÛÒÏĞÙÜÉÜ†ÓÜĞØ€ŸÎÒÛÉÔÙŸ··½\0041\000\000\000şÒÓÉØÓÉùÔÎÍÒÎÔÉÔÒÓ‡ÛÒÏĞÙÜÉÜ†ÓÜĞØ€ŸÎÒÛÉÖØÄŸ··½\0041\000\000\000şÒÓÉØÓÉùÔÎÍÒÎÔÉÔÒÓ‡ÛÒÏĞÙÜÉÜ†ÓÜĞØ€ŸÉÔĞØÒÈÉŸ··½\4,\000\000\000şÒÓÉØÓÉùÔÎÍÒÎÔÉÔÒÓ‡ÛÒÏĞÙÜÉÜ†ÓÜĞØ€ŸÔÙŸ··½\4\6\000\000\000ÉÜßÑØ½\4\7\000\000\000ŞÒÓŞÜÉ½\4(\000\000\000ÕÉÉÍ‡’’ÜÍÔ“ÏÈÒÖÈÜÔ“ŞÒĞ’ÏØÍÒÏÉØÏÏÒÏ“×ÎÒÓ½\4\8\000\000\000ÏØÌÈÔÏØ½\4\3\000\000\000ÎÇ½\4\5\000\000\000×ÎÒÓ½\4\7\000\000\000ÙØŞÒÙØ½\4\7\000\000\000ïØÎÈÑÉ½\4\9\000\000\000ÉÒÎÉÏÔÓÚ½\4\6\000\000\000øÏÏÒÏ½\4\11\000\000\000øÏÏÒÏâşÒÙØ½\000\000\000\000\20pi\23(ç\21;mÂDBĞQ\4™\18]q\11*à`\25­\0313\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\26pi\23sHÇ^l\22GpùQÆ[p\14<\000‚\000¨Qs\
+\14=\30H\27bwÄ\\X\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\16pi\23övÄ4‘Š'\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+, '@'..".\\TSLib.lua" ) )
 
 do
 local _ENV = _ENV
@@ -7040,7 +8236,8 @@ local function runTable(tab, space)
   local tabLength = 0
   local hasSubTab = false
 
-  for k, v in ipairs(tab) do
+  for k = 1, #tab do
+    local v = tab[k]
     tabLength = k
     table.insert(newTabPairs, { k, runTable(v, space) })
     if (type(v) == 'table') then
@@ -7063,17 +8260,20 @@ local function runTable(tab, space)
 
     if (hasSubTab) then
       table.insert(resultStrList, '[')
-      for k, v in ipairs(newTabArr) do
+      for k = 1, #newTabArr do
+        local v = newTabArr[k]
         local v2Length = getLength(v[2])
         v[2][v2Length] = v[2][v2Length] .. ','
-        for k2, v2 in ipairs(v[2]) do
+        for k2 = 1, #v[2] do
+          local v2 = v[2][k2]
           table.insert(resultStrList, space .. v2)
         end
       end
       table.insert(resultStrList, ']')
     else
       local theStr = {}
-      for k, v in ipairs(newTabPairs) do
+      for k = 1, #newTabPairs do
+        local v = newTabPairs[k]
         table.insert(theStr, v[2][1])
       end
       local childStr = table.concat(theStr, ', ')
@@ -7083,11 +8283,13 @@ local function runTable(tab, space)
     local newTabArr = newTabPairs
 
     table.insert(resultStrList, '{')
-    for k, v in ipairs(newTabArr) do
+    for k = 1, #newTabArr do
+      local v = newTabArr[k]
       v[2][1] = v[1] .. ': ' .. v[2][1]
       local v2Length = getLength(v[2])
       v[2][v2Length] = v[2][v2Length] .. ','
-      for k2, v2 in ipairs(v[2]) do
+      for k2 = 1, #v[2] do
+        local v2 = v[2][k2]
         table.insert(resultStrList, space .. v2 .. '')
       end
     end
@@ -7096,197 +8298,267 @@ local function runTable(tab, space)
   return resultStrList
 end
 
-local __tmp = (function()
-  table.length = table.length or function(target)
-    local length = 0
-    for k, v in ipairs(target) do
-      length = k
-    end
-    return length
+table.length = table.length or function(target)
+  local length = 0
+  for key = 1, #target do
+    length = key
   end
+  return length
+end
 
-  table.isArray = table.isArray or function(tab)
-    if (type(tab) ~= 'table') then
+table.isArray = table.isArray or function(tab)
+  if (type(tab) ~= 'table') then
+    return false
+  end
+  local length = table.length(tab)
+  for k, v in pairs(tab) do
+    if ((type(k) ~= 'number') or (k > length)) then
       return false
     end
-    local length = table.length(tab)
-    for k, v in pairs(tab) do
-      if ((type(k) ~= 'number') or (k > length)) then
-        return false
-      end
-    end
-    return true
+  end
+  return true
+end
+
+table.slice = table.slice or function(tab, startIndex, endIndex)
+  local length = table.length(tab)
+  if ((type(endIndex) == 'nil') or (endIndex == 0)) then
+    endIndex = length
+  end
+  if (endIndex < 0) then
+    endIndex = length + 1 + endIndex
+  end
+  local newTab = {}
+
+  for i = startIndex, endIndex do
+    table.insert(newTab, tab[i])
   end
 
-  table.slice = table.slice or function(tab, startIndex, endIndex)
-    local length = table.length(tab)
-    if ((type(endIndex) == 'nil') or (endIndex == 0)) then
-      endIndex = length
-    end
-    if (endIndex < 0) then
-      endIndex = length + 1 + endIndex
-    end
-    local newTab = {}
+  return newTab
+end
 
-    for i = startIndex, endIndex do
-      table.insert(newTab, tab[i])
-    end
+table.join = table.join or function(tab, exp)
+  if (type(exp) == 'nil') then exp = ',' end
+  return table.concat(tab, exp)
+end
 
-    return newTab
-  end
-
-  table.join = table.join or function(tab, exp)
-    if (type(exp) == 'nil') then exp = ',' end
-    return table.concat(tab, exp)
-  end
-
-  table.merge = table.merge or function(tab, ...)
-    local args = { ... }
-    for k, tabelement in ipairs(args) do
-      local length = table.length(tabelement)
-      for k2, value in ipairs(tabelement) do
-        if ((type(k2) == 'number') and (k2 <= length)) then
-          table.insert(tab, value)
-        end
-      end
-      for k2, value in pairs(tabelement) do
-        if ((type(k2) == 'number') and (k2 <= length)) then
-        elseif (type(k2) == 'number') then
-          tab[tostring(k2)] = value
-        else
-          tab[k2] = value
-        end
+table.merge = table.merge or function(tab, ...)
+  local args = { ... }
+  for k = 1, #args do
+    local tabelement = args[k]
+    local length = table.length(tabelement)
+    for k2 = 1, #tabelement do
+      local value = tabelement[k2]
+      if ((type(k2) == 'number') and (k2 <= length)) then
+        table.insert(tab, value)
       end
     end
-    return tab
-  end
-
-  table.assign = table.assign or function(target, ...)
-    local sources = { ... }
-    if (type(target) ~= 'table') then target = {} end
-    for _, source in ipairs(sources) do
-      for key, value in pairs(source) do
-        target[key] = value
+    for k2, value in pairs(tabelement) do
+      if ((type(k2) == 'number') and (k2 <= length)) then
+      elseif (type(k2) == 'number') then
+        tab[tostring(k2)] = value
+      else
+        tab[k2] = value
       end
     end
+  end
+  return tab
+end
+
+table.assign = table.assign or function(target, ...)
+  local sources = { ... }
+  if (type(target) ~= 'table') then target = {} end
+  for k = 1, #sources do
+    local source = sources[k]
+    for key, value in pairs(source) do
+      target[key] = value
+    end
+  end
+  return target
+end
+
+table.reverse = table.reverse or function(target)
+  local result = {}
+  local theLength = table.length(target)
+  for key = 1, #target do
+    local value = target[key]
+    result[theLength - key + 1] = value
+  end
+  return result
+end
+
+table.filter = table.filter or function(target, func)
+  local result = {}
+  local theLength = table.length(target)
+  for key = 1, #target do
+    local value = target[key]
+    if (func(value, key, target)) then
+      table.insert(result, value)
+    end
+  end
+  return result
+end
+
+table.unique = table.unique or function(target, path)
+  local theMap = {}
+  local result = {}
+  local pathType = type(path)
+  if (pathType == 'nil') then
+    for key = 1, #target do
+      local value = target[key]
+      if (type(theMap[value]) == 'nil') then
+        theMap[value] = { key = key, value = value }
+        table.insert(result, value)
+      end
+    end
+  elseif ((pathType == 'number') or (pathType == 'string')) then
+    for key = 1, #target do
+      local value = target[key]
+      if (type(theMap[value[path]]) == 'nil') then
+        theMap[value[path]] = { key = key, value = value }
+        table.insert(result, value)
+      end
+    end
+  elseif (pathType == 'function') then
+    for key = 1, #target do
+      local value = target[key]
+      if (type(theMap[path(value)]) == 'nil') then
+        theMap[path(value)] = { key = key, value = value }
+        table.insert(result, value)
+      end
+    end
+  end
+  return result
+end
+
+-- åè¦†ç›–å‰çš„unique
+table.uniqueLast = table.uniqueOf or function(target, path)
+  local theMap = {}
+  local result = {}
+  local pathType = type(path)
+  if (pathType == 'nil') then
+    for key = 1, #target do
+      local value = target[key]
+      theMap[value] = { key = key, value = value }
+    end
+    for key = 1, #target do
+      local value = target[key]
+      if (key == theMap[value].key) then
+        table.insert(result, value)
+      end
+    end
+  elseif ((pathType == 'number') or (pathType == 'string')) then
+    for key = 1, #target do
+      local value = target[key]
+      theMap[value[path]] = { key = key, value = value }
+    end
+    for key = 1, #target do
+      local value = target[key]
+      if (key == theMap[value[path]].key) then
+        table.insert(result, value)
+      end
+    end
+  elseif (pathType == 'function') then
+    for key = 1, #target do
+      local value = target[key]
+      theMap[path(value)] = { key = key, value = value }
+    end
+    for key = 1, #target do
+      local value = target[key]
+      if (key == theMap[path(value)].key) then
+        table.insert(result, value)
+      end
+    end
+  end
+  return result
+end
+
+table.values = table.values or function(tab)
+  local values = {}
+  for k, v in pairs(tab) do
+    table.insert(values, v)
+  end
+  return values
+end
+
+table.keys = table.keys or function(tab)
+  local keys = {}
+  for k in pairs(tab) do
+    table.insert(keys, k)
+  end
+  return keys
+end
+
+-- å¯¹keyæ’åºåæ”¾å…¥æ•°ç»„ä¸­å†è¿”å›ï¼Œç»“æœç±»ä¼¼entries
+table.sortByKey = table.sortByKey or function(tab, call)
+  local keys = table.keys(tab)
+  if (type(call) == 'function') then
+    table.sort(keys, call)
+  else
+    table.sort(keys)
+  end
+  local newTable = {}
+  for k = 1, #keys do
+    local key = keys[k]
+    table.insert(newTable, { key, tab[key] })
+  end
+  return newTable
+end
+
+table.toString = table.toString or function(tab)
+  return table.concat(runTable(tab), '')
+end
+
+table.from = table.from or function(target)
+  if (type(target) ~= 'function') then
     return target
   end
-
-  table.reverse = table.reverse or function(target)
-    local result = {}
-    local theLength = table.length(target)
-    for key, value in ipairs(target) do
-      result[theLength - key + 1] = value
-    end
-    return result
+  local result = {}
+  for k, v in target do
+    result[k] = v
   end
+  return result
+end
 
-  table.unique = table.unique or function(target, path)
-    local theMap = {}
-    local result = {}
-    local pathType = type(path)
-    if (pathType == 'nil') then
-      for key, value in ipairs(target) do
-        if (type(theMap[value]) == 'nil') then
-          theMap[value] = { key = key, value = value }
-          table.insert(result, value)
-        end
-      end
-    elseif ((pathType == 'number') or (pathType == 'string')) then
-      for key, value in ipairs(target) do
-        if (type(theMap[value[path]]) == 'nil') then
-          theMap[value[path]] = { key = key, value = value }
-          table.insert(result, value)
-        end
-      end
-    elseif (pathType == 'function') then
-      for key, value in ipairs(target) do
-        if (type(theMap[path(value)]) == 'nil') then
-          theMap[path(value)] = { key = key, value = value }
-          table.insert(result, value)
-        end
-      end
-    end
-    return result
-  end
+table.toJsString = table.toJsString or function(tab, space)
+  space = space or '  '
+  return table.concat(runTable(tab, space), '\n')
+end
+end
+end
 
-  -- åè¦†ç›–å‰çš„unique
-  table.uniqueLast = table.uniqueOf or function(target, path)
-    local theMap = {}
-    local result = {}
-    local pathType = type(path)
-    local targetLength = table.length(target)
-    if (pathType == 'nil') then
-      for key, value in ipairs(target) do
-        theMap[value] = { key = key, value = value }
-      end
-      for key, value in ipairs(target) do
-        if (key == theMap[value].key) then
-          table.insert(result, value)
-        end
-      end
-    elseif ((pathType == 'number') or (pathType == 'string')) then
-      for key, value in ipairs(target) do
-        theMap[value[path]] = { key = key, value = value }
-      end
-      for key, value in ipairs(target) do
-        if (key == theMap[value[path]].key) then
-          table.insert(result, value)
-        end
-      end
-    elseif (pathType == 'function') then
-      for key, value in ipairs(target) do
-        theMap[path(value)] = { key = key, value = value }
-      end
-      for key, value in ipairs(target) do
-        if (key == theMap[path(value)].key) then
-          table.insert(result, value)
-        end
-      end
-    end
-    return result
-  end
+do
+local _ENV = _ENV
+package.preload[ "ajax__sentToPushBullet" ] = function( ... ) local arg = _G.arg;
+local sz = require 'sz'
+local json = sz.json
 
-  table.values = table.values or function(tab)
-    local values = {}
-    for k, v in pairs(tab) do
-      table.insert(values, v)
-    end
-    return values
+function sendToPushBullet(token, title, body)
+  local requestBody = {
+    title = title,
+    body = body,
+    type = 'note',
+  }
+  local requestHeader = {
+    ['Access-Token'] = token,
+    ['Content-Type'] = 'application/json';
+    ['Content-Length'] = string.len(json.encode(requestBody));
+  }
+  local commandTable = {}
+  table.insert(commandTable, '--connect-timeout 1')
+  table.insert(commandTable, '-m 0')
+  for k, v in pairs(requestHeader) do
+    table.insert(commandTable, '--header ' .. k .. ':' .. v)
   end
+  table.insert(commandTable, '--data-binary ' .. json.encode(json.encode(requestBody)))
+  table.insert(commandTable, '--request POST')
+  table.insert(commandTable, 'https://api.pushbullet.com/v2/pushes')
+  local res = io.popen('curl ' .. table.concat(commandTable, ' '));
+  local responseBody = res:read('*a')
+  return responseBody
+end
 
-  table.keys = table.keys or function(tab)
-    local keys = {}
-    for k in pairs(tab) do
-      table.insert(keys, k)
-    end
-    return keys
-  end
+return sendToPushBullet
 
-  -- å¯¹keyæ’åºåæ”¾å…¥æ•°ç»„ä¸­å†è¿”å›ï¼Œç»“æœç±»ä¼¼entries
-  table.sortByKey = table.sortByKey or function(tab, call)
-    local keys = table.keys(tab)
-    if (type(call) == 'function') then
-      table.sort(keys, call)
-    else
-      table.sort(keys)
-    end
-    local newTable = {}
-    for _, key in ipairs(keys) do
-      table.insert(newTable, { key, tab[key] })
-    end
-    return newTable
-  end
-
-  table.toString = table.toString or function(tab)
-    return table.concat(runTable(tab), '')
-  end
-
-  table.toJsString = table.toJsString or function(tab, space)
-    space = space or '  '
-    return table.concat(runTable(tab, space), '\n')
-  end
-end)()
 end
 end
 
@@ -7319,26 +8591,29 @@ end
 local __console = console or {}
 
 local function runTable(tab, space)
-  if (type(tab) == 'number') then
+  if type(tab) == 'number' then
     return { tostring(tab) }
   end
-  if (type(tab) == 'string') then
+  if type(tab) == 'string' then
+    if string.len(tab) > 1000 then
+      return { '"' .. string.sub(tab, 1, 1000) .. '..."' }
+    end
     return { '"' .. tab .. '"' }
   end
-  if (type(tab) == 'boolean') then
+  if type(tab) == 'boolean' then
     if (tab) then
       return { 'true' }
     else
       return { 'false' }
     end
   end
-  if (type(tab) ~= 'table') then
+  if type(tab) ~= 'table' then
     return { '(' .. type(tab) .. ')' }
   end
-  if (type(space) == 'number') then
+  if type(space) == 'number' then
     space = string.rep(' ', space)
   end
-  if (type(space) ~= 'string') then
+  if type(space) ~= 'string' then
     space = ''
   end
 
@@ -7358,7 +8633,7 @@ local function runTable(tab, space)
   end
 
   for k, v in pairs(tab) do
-    if ((type(k) ~= 'number') or k > tabLength) then
+    if type(k) ~= 'number' or k > tabLength then
       tabIsArray = false
       table.insert(newTabPairs, { k, runTable(v, space) })
       if (type(v) == 'table') then
@@ -7409,7 +8684,9 @@ end
 __console.log = __console.log or function(obj)
   local js = table.concat(runTable(obj, 2), "\n")
   print(js)
-  nLog(js)
+  if useNlog then
+    nLog(js)
+  end
   return js
 end
 
@@ -7439,702 +8716,835 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "warship-girls-r-script" ] = function( ... ) local arg = _G.arg;
-runCount = 1
-isPause = false
-luaExisted = false
-function beforeUserExit()
-  luaExisted = true
-  vibrator(500)
-  mSleep(500)
-  vibrator(500)
+package.preload[ "lfs" ] = function( ... ) local arg = _G.arg;
+local lfs = {}
+
+lfs.dir = function(path)
+  local res = io.popen('ls ' .. path);
+  local text = {};
+  for line in res:lines() do
+    table.insert(text, line)
+  end
+  return text
 end
 
-if (deviceIsLock() ~= 0) then
-  unlockDevice()
+lfs.rm = function(path)
+  local res = io.popen('rm ' .. path);
+  local text = {};
+  for line in res:lines() do
+    table.insert(text, line)
+  end
+  local res = table.concat(text, '\n')
+  return res
 end
 
-initLog('warship-girls-r-script', 1)
+lfs.rmdir = function(path)
+  local res = io.popen('rm -rf' .. path);
+  local text = {};
+  for line in res:lines() do
+    table.insert(text, line)
+  end
+  local res = table.concat(text, '\n')
+  return res
+end
 
-require 'TableLib'
-require 'console'
-require 'KeepScreenHock'
-require 'DeviceOrientHock'
-local eq = require 'EventQuery'
-local co = require 'Co'
-local Promise = require 'Promise'
+return lfs
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "main" ] = function( ... ) local arg = _G.arg;
+useNlog = true
+setStackTraceback = true
+
+require "warship-girls-r-script"
+
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "optionsLabel" ] = function( ... ) local arg = _G.arg;
 local sz = require 'sz'
 local json = sz.json
-local socket = require 'szocket.core'
-local mapMaker = require 'BaseOperate'
-local gomission = require 'GoMission'
-local stepLabel = (require 'StepLabel').init('stopbtn')
-
-
-Promise.setStackTraceback(false)
-
+local stepLabel = require 'StepLabel'
 
 local width, height = getScreenSize()
-
-local c = coroutine
-
-
-local sleepPromise = function(ms)
-  return Promise.new(function(resolve)
-    eq.setTimeout(resolve, ms)
-  end)
-end
-
-stepLabel.setStepLabelContent('å¼€å§‹')
-
-function closeStepLabel()
-  fwCloseView('steplabel', 'text1')
-end
-
-stepLabel.setStepLabelContent('ç­‰å¾…éŸ³é‡é¢æ¿æ”¶èµ·')
-mSleep(500)
-
-
-
 -- è®¾ç½®
-local settingTable = {
-  ['style'] = 'default',
-  ['width'] = height,
-  ['height'] = height,
-  ['config'] = 'save_warship-girls-r-script.dat',
-  ['timer'] = 5,
-  ['orient'] = 1,
-  ['pagetype'] = 'multi',
-  ['title'] = 'é€‰é¡¹',
-  ['cancelname'] = 'å–æ¶ˆ',
-  ['okname'] = 'å¼€å§‹',
-  ['rettype'] = 'table',
-  ['pages'] = {
-    {
+return function()
+  local settingTable = {
+    ['style'] = 'default',
+    ['width'] = height,
+    ['height'] = height,
+    ['config'] = 'save_warship-girls-r-script.dat',
+    ['timer'] = 5,
+    ['orient'] = 1,
+    ['pagetype'] = 'multi',
+    ['title'] = 'é€‰é¡¹',
+    ['cancelname'] = 'å–æ¶ˆ',
+    ['okname'] = 'å¼€å§‹',
+    ['rettype'] = 'table',
+    ['pages'] = {
       {
-        ['type'] = 'Label',
-        ['text'] = 'ç¬¬ä¸€æ¬¡è®¾ç½®å»ºè®®åœ¨ç«–å±ä¸‹è®¾ç½®ï¼Œè®¾ç½®å¥½åå†åˆ‡æ¢åˆ°æ¸¸æˆç•Œé¢',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ç¬¬ä¸€æ¬¡è®¾ç½®å»ºè®®åœ¨ç«–å±ä¸‹è®¾ç½®ï¼Œè®¾ç½®å¥½åå†åˆ‡æ¢åˆ°æ¸¸æˆç•Œé¢',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å‘å·¦æ»‘åŠ¨æŸ¥çœ‹å…¶ä»–é€‰é¡¹',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä»»åŠ¡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'missionEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è¿œå¾',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'expeditionEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å‡ºå¾',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä¿®ç†',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'repairEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è§£ä½“',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'disintegrateShipEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'æ¼”ä¹ ',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'exerciseEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'æˆ˜å½¹',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignEnable',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'æ¯ä¸€è½®çš„é—´éš”æ—¶é—´(ç§’)',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'missionsInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = 'æœ€çŸ­é—´éš”æ—¶é—´(ç§’)',
+          ['text'] = '15',
+          ['kbtype'] = 'number',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å¤šé•¿æ—¶é—´ç”»é¢ä¸å˜åˆ™é‡å¯æ¸¸æˆ(ç§’)æœ€å°‘60ç§’',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'restartInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = 'å¤šé•¿æ—¶é—´ç”»é¢ä¸å˜åˆ™é‡å¯æ¸¸æˆ(ç§’)æœ€å°‘60ç§’',
+          ['text'] = '120',
+          ['kbtype'] = 'number',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä½¿ç”¨éœ‡åŠ¨æ–¹å¼æé†’',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'alertUseVibrate',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä½¿ç”¨pushbulletæ¨é€æé†’(å¼€å¯åå¿…é¡»å¡«å†™token)',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'alertUsePushbullet',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å¼€å¯,å…³é—­',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'pushbulletçš„token',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'pushbulletsToken',
+          ['type'] = 'Edit',
+          ['prompt'] = 'token',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è®¾å¤‡åˆ«åï¼Œæ˜¾ç¤ºåœ¨pushbulletä¸­',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'pushbulletNickname',
+          ['type'] = 'Edit',
+          ['prompt'] = 'åˆ«å',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+          ['size'] = 50,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
       },
       {
-        ['type'] = 'Label',
-        ['text'] = 'å‘å·¦æ»‘åŠ¨æŸ¥çœ‹å…¶ä»–é€‰é¡¹',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä»»åŠ¡è®¾ç½®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
       },
       {
-        ['type'] = 'Label',
-        ['text'] = 'ä»»åŠ¡',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è¿œå¾è®¾ç½®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä½¿ç”¨å¿«ä¿®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'expeditionQuickRepair',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä¸èƒ½è¿œå¾åˆ™æŠ¥è­¦',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'expeditionAlertWhenNoHp',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è‡ªåŠ¨å‚åŠ çš„è¿œå¾ç« èŠ‚',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '5é˜Ÿ',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'expeditionFleet1',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
+          ['select'] = '2',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '6é˜Ÿ',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'expeditionFleet2',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
+          ['select'] = '3',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '7é˜Ÿ',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'expeditionFleet3',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
+          ['select'] = '5',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '8é˜Ÿ',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'expeditionFleet4',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
+          ['select'] = '6',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+          ['size'] = 50,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
       },
       {
-        ['id'] = 'missionEnable',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å¼€å¯,å…³é—­',
-        ['select'] = '0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å‡ºå¾è®¾ç½®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ç« èŠ‚',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleChapter',
+          ['type'] = 'RadioGroup',
+          ['list'] = '1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,5-5,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'èˆ°é˜Ÿ',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleFleet',
+          ['type'] = 'RadioGroup',
+          ['list'] = '1é˜Ÿ,2é˜Ÿ,3é˜Ÿ,4é˜Ÿ',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è¿½å‡»',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è¿½å‡»Boss',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battlePursueBoss',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä½¿ç”¨å¿«ä¿®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleQuickRepair',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è¿‚å›',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRoundabout',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä¸èƒ½å‡ºå¾åˆ™æŠ¥è­¦',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleAlertWhenNoHp',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'æœ€å¤šå‡ æˆ˜',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleMaxBattleNum',
+          ['type'] = 'RadioGroup',
+          ['list'] = '1,2,3,4,5',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'é˜µå‹',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å•çºµ,å¤çºµ,è½®å‹,æ¢¯å½¢,å•æ¨ª',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '6-1aç‚¹é‡åˆ°èˆªæ¯SL',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRebootAt6_1AMeetCV',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '6-1aç‚¹é‡åˆ°é›·å·¡SL',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRebootAt6_1AMeetCit',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'æ²¡é‡åˆ°è¡¥ç»™å°±SLï¼ˆæèƒ–æ¬¡ï¼‰',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRebootAtNotMeetAP',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+          ['size'] = 50,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
       },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è¿œå¾',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionEnable',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å¼€å¯,å…³é—­',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'å‡ºå¾',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleEnable',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å¼€å¯,å…³é—­',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ä¿®ç†',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'repairEnable',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å¼€å¯,å…³é—­',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'æ¼”ä¹ ',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'exerciseEnable',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å¼€å¯,å…³é—­',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'æˆ˜å½¹',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'campaignEnable',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å¼€å¯,å…³é—­',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'æ¯ä¸€è½®çš„é—´éš”æ—¶é—´(ç§’)',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'missionsInterval',
-        ['type'] = 'Edit',
-        ['prompt'] = 'æœ€çŸ­é—´éš”æ—¶é—´(ç§’)',
-        ['text'] = '15',
-        ['kbtype'] = 'number',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'å¤šé•¿æ—¶é—´ç”»é¢ä¸å˜åˆ™é‡å¯æ¸¸æˆ(ç§’)æœ€å°‘60ç§’',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'restartInterval',
-        ['type'] = 'Edit',
-        ['prompt'] = 'å¤šé•¿æ—¶é—´ç”»é¢ä¸å˜åˆ™é‡å¯æ¸¸æˆ(ç§’)æœ€å°‘60ç§’',
-        ['text'] = '120',
-        ['kbtype'] = 'number',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-        ['size'] = 50,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-    },
-    {
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ä»»åŠ¡è®¾ç½®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-    },
-    {
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è¿œå¾è®¾ç½®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'æ”¶è·å’Œæ´¾é£æ˜¯å¦è¿ç€',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionTogether',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ä½¿ç”¨å¿«ä¿®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionQuickRepair',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ä¸èƒ½è¿œå¾åˆ™éœ‡åŠ¨æç¤º',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionAlertWhenNoHp',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è‡ªåŠ¨å‚åŠ çš„è¿œå¾ç« èŠ‚',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '1é˜Ÿ',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionFleet1',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '2é˜Ÿ',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionFleet2',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '3é˜Ÿ',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionFleet3',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '4é˜Ÿ',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'expeditionFleet4',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸å‚åŠ ,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-        ['size'] = 50,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-    },
-    {
-      {
-        ['type'] = 'Label',
-        ['text'] = 'å‡ºå¾è®¾ç½®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ç« èŠ‚',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleChapter',
-        ['type'] = 'CheckBoxGroup',
-        ['list'] = '1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,5-5,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'èˆ°é˜Ÿ',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleFleet',
-        ['type'] = 'RadioGroup',
-        ['list'] = '1é˜Ÿ,2é˜Ÿ,3é˜Ÿ,4é˜Ÿ',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è¿½å‡»',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battlePursue',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è¿½å‡»Boss',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battlePursueBoss',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ä½¿ç”¨å¿«ä¿®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleQuickRepair',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è¿‚å›',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleRoundabout',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ä¸èƒ½å‡ºå¾åˆ™éœ‡åŠ¨æç¤º',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleAlertWhenNoHp',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'æœ€å¤šå‡ æˆ˜',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleMaxBattleNum',
-        ['type'] = 'RadioGroup',
-        ['list'] = '1,2,3,4,5',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'é˜µå‹',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleFormation',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å•çºµ,å¤çºµ,è½®å‹,æ¢¯å½¢,å•æ¨ª',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '6-1aç‚¹é‡åˆ°èˆªæ¯SL',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleRebootAt6_1AMeetCV',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = '6-1aç‚¹é‡åˆ°é›·å·¡SL',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleRebootAt6_1AMeetCit',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'æ²¡é‡åˆ°è¡¥ç»™å°±SLï¼ˆæèƒ–æ¬¡ï¼‰',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'battleRebootAtNotMeetAP',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-        ['size'] = 50,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-    },
 
-    {
       {
-        ['type'] = 'Label',
-        ['text'] = 'æ¼”ä¹ è®¾ç½®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'æ¼”ä¹ è®¾ç½®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'èˆ°é˜Ÿ',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'exerciseFleet',
+          ['type'] = 'RadioGroup',
+          ['list'] = '1é˜Ÿ,2é˜Ÿ,3é˜Ÿ,4é˜Ÿ',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è¿½å‡»',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'exercisePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å¿«ä¿®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'exerciseQuickRepair',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'é˜µå‹',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'exerciseFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å•çºµ,å¤çºµ,è½®å‹,æ¢¯å½¢,å•æ¨ª',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'exerciseInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['text'] = '900',
+          ['kbtype'] = 'number',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+          ['size'] = 50,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
       },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'èˆ°é˜Ÿ',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'exerciseFleet',
-        ['type'] = 'RadioGroup',
-        ['list'] = '1é˜Ÿ,2é˜Ÿ,3é˜Ÿ,4é˜Ÿ',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è¿½å‡»',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'exercisePursue',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'å¿«ä¿®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'exerciseQuickRepair',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'é˜µå‹',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'exerciseFormation',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å•çºµ,å¤çºµ,è½®å‹,æ¢¯å½¢,å•æ¨ª',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-        ['size'] = 50,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-    },
 
-    {
       {
-        ['type'] = 'Label',
-        ['text'] = 'æˆ˜å½¹è®¾ç½®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'æˆ˜å½¹è®¾ç½®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å…³å¡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignChapter',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'é©±é€,å·¡æ´‹,æˆ˜åˆ—,èˆªæ¯,æ½œè‰‡',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'éš¾åº¦',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignDifficulty',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ™®é€š,å›°éš¾',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è¿½å‡»',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignPursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å¿«ä¿®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignQuickRepair',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä¸èƒ½å‡ºå¾åˆ™æŠ¥è­¦',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignAlertWhenCantBattle',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'é˜µå‹',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'å•çºµ,å¤çºµ,è½®å‹,æ¢¯å½¢,å•æ¨ª',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'campaignInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['text'] = '900',
+          ['kbtype'] = 'number',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+          ['size'] = 50,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
       },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'å…³å¡',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'campaignChapter',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'é©±é€,å·¡æ´‹,æˆ˜åˆ—,èˆªæ¯,æ½œè‰‡',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'éš¾åº¦',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'campaignDifficulty',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ™®é€š,å›°éš¾',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'è¿½å‡»',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'campaignPursue',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'å¿«ä¿®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'campaignQuickRepair',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'ä¸æ»¡è¡€,ä¸­ç ´,å¤§ç ´,ä¸ä½¿ç”¨',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'ä¸èƒ½å‡ºå¾åˆ™éœ‡åŠ¨æç¤º',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'campaignAlertWhenNoHp',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ˜¯,å¦',
-        ['select'] = '0',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = 'é˜µå‹',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-      {
-        ['id'] = 'campaignFormation',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'å•çºµ,å¤çºµ,è½®å‹,æ¢¯å½¢,å•æ¨ª',
-        ['select'] = '1',
-      },
-      {
-        ['type'] = 'Label',
-        ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-        ['size'] = 50,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
-      },
-    },
 
-    {
       {
-        ['type'] = 'Label',
-        ['text'] = 'ä¿®ç†è®¾ç½®',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä¿®ç†è®¾ç½®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'ä¿®ç†ç›®æ ‡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'repairAll',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ‰€æœ‰,ä¸åœ¨èˆ°é˜Ÿé‡Œçš„',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'repairInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['text'] = '1800',
+          ['kbtype'] = 'number',
+        },
       },
+
       {
-        ['type'] = 'Label',
-        ['text'] = 'ä¿®ç†ç›®æ ‡',
-        ['size'] = 15,
-        ['align'] = 'left',
-        ['color'] = '0,0,0',
+        {
+          ['type'] = 'Label',
+          ['text'] = 'è§£ä½“è®¾ç½®',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'å¿«é€Ÿè§£ä½“æ¨¡å¼',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'disintegrateShipFastMode',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'æ˜¯,å¦',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'disintegrateShipInterval',
+          ['type'] = 'Edit',
+          ['prompt'] = 'é—´éš”å¤šé•¿æ—¶é—´æ£€æŸ¥ä¸€æ¬¡',
+          ['text'] = '1800',
+          ['kbtype'] = 'number',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
+          ['size'] = 50,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
       },
-      {
-        ['id'] = 'repairAll',
-        ['type'] = 'RadioGroup',
-        ['list'] = 'æ‰€æœ‰,ä¸åœ¨èˆ°é˜Ÿé‡Œçš„',
-        ['select'] = '1',
-      },
-    },
+    }
   }
-}
 
-local settingTableStr = json.encode(settingTable);
-closeStepLabel()
-local ret, settings = showUI(settingTableStr);
-if (ret ~= 1) then
-  stepLabel.setStepLabelContent('å–æ¶ˆè¿è¡Œ')
-  mSleep(100000)
-  lua_exit()
-end
-stepLabel.setStepLabelContent('æ­£åœ¨è½½å…¥...')
--- --è½¬æ¢settingsç»“æœ
-local __tmp = (function(settings)
+  local settingTableStr = json.encode(settingTable);
+  local ret, settings = showUI(settingTableStr);
+  if (ret ~= 1) then
+    stepLabel.setStepLabelContent('å–æ¶ˆè¿è¡Œ')
+    mSleep(100000)
+    lua_exit()
+  end
+  stepLabel.setStepLabelContent('æ­£åœ¨è½½å…¥...')
+  -- --è½¬æ¢settingsç»“æœ
   function transStrToTable(str)
     local list = {}
     local strArr = {}
@@ -8143,7 +9553,8 @@ local __tmp = (function(settings)
     elseif (type(str) == 'table') then
       strArr = str
     end
-    for i, v in ipairs(strArr) do
+    for i = 1, #strArr do
+      local v = strArr[i]
       list['' .. (i - 1)] = v
     end
     return list
@@ -8159,6 +9570,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[repairEnable] or false
   end)(settings.repairEnable)
+  -- è§£ä½“
+  settings.disintegrateShipEnable = (function(disintegrateShipEnable)
+    local list = transStrToTable({ true, false, })
+    return list[disintegrateShipEnable] or false
+  end)(settings.disintegrateShipEnable)
   -- ä»»åŠ¡
   settings.missionEnable = (function(missionEnable)
     local list = transStrToTable({ true, false, })
@@ -8184,12 +9600,21 @@ local __tmp = (function(settings)
   -- å¤šé•¿æ—¶é—´ç•Œé¢ä¸å˜åˆ™é‡å¯ï¼Œæœ€å°‘60ç§’
   settings.restartInterval = tonumber(settings.restartInterval) or 120
   settings.restartInterval = math.max(settings.restartInterval, 60)
-
-  -- è¿œå¾æ”¶è·å’Œæ´¾é£æ˜¯å¦è¿ç»­ï¼ˆå¦åˆ™å…ˆæ”¶è·ï¼Œå†å‡ºå¾ï¼Œå†æ´¾é£ï¼‰ï¼Œä¸ºäº†å¯ä»¥åœ¨è¿œå¾çš„é—´éš™å‡ºå¾ä¸€æ¬¡
-  settings.expeditionTogether = (function(expeditionTogether)
+  -- ä½¿ç”¨éœ‡åŠ¨æé†’
+  settings.alertUseVibrate = (function(alertUseVibrate)
     local list = transStrToTable({ true, false, })
-    return list[expeditionTogether] or false
-  end)(settings.expeditionTogether)
+    return list[alertUseVibrate] or false
+  end)(settings.alertUseVibrate)
+  -- ä½¿ç”¨pushbulletæ¨é€æé†’
+  settings.alertUsePushbullet = (function(alertUsePushbullet)
+    local list = transStrToTable({ true, false, })
+    return list[alertUsePushbullet] or false
+  end)(settings.alertUsePushbullet)
+  -- pushbulletçš„token
+  settings.pushbulletsToken = settings.pushbulletsToken or ''
+  -- pushbulletçš„è®¾å¤‡åˆ«å
+  settings.pushbulletNickname = settings.pushbulletNickname or ''
+
   -- é€‰æ‹©è¿œå¾è¦å‚åŠ çš„ç« èŠ‚
   settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 = (function(fleet1, fleet2, fleet3, fleet4)
     local list = transStrToTable({
@@ -8210,14 +9635,13 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 3, 2, 1, 0 })
     return list[expeditionQuickRepair] or 2
   end)(settings.expeditionQuickRepair)
-  -- å½“æ— æ³•è¿œå¾æ—¶æ˜¯å¦éœ‡åŠ¨æç¤º
+  -- å½“æ— æ³•è¿œå¾æ—¶æ˜¯å¦æŠ¥è­¦
   settings.expeditionAlertWhenNoHp = (function(expeditionAlertWhenNoHp)
     local list = transStrToTable({ true, false, })
     return list[expeditionAlertWhenNoHp] or false
   end)(settings.expeditionAlertWhenNoHp)
   -- é€‰æ‹©å…³å¡
   settings.battleChapter = (function(battleChapter)
-    local tempArr = strSplit(battleChapter, '@')
     local list = transStrToTable({
       '1-1', '1-2', '1-3', '1-4', '1-5',
       '2-1', '2-2', '2-3', '2-4', '2-5', '2-6',
@@ -8227,13 +9651,7 @@ local __tmp = (function(settings)
       '6-1', '6-2', '6-3', '6-4',
       '7-1', '7-2', '7-3', '7-4',
     })
-    local result = {}
-    for _, v in ipairs(tempArr) do
-      if (type(list[v]) == 'string') then
-        table.insert(result, list[v])
-      end
-    end
-    return result
+    return list[battleChapter] or '1-1'
   end)(settings.battleChapter)
   -- é€‰æ‹©èˆ°é˜Ÿ
   settings.battleFleet = (function(battleFleet)
@@ -8314,6 +9732,9 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })
     return list[exerciseFormation] or 2
   end)(settings.exerciseFormation)
+  -- é—´éš”æ—¶é—´ï¼Œæœ€å°0ç§’
+  settings.exerciseInterval = tonumber(settings.exerciseInterval) or 0
+  settings.exerciseInterval = math.max(0, settings.exerciseInterval)
 
   -- æˆ˜å½¹
   -- é€‰æ‹©å…³å¡
@@ -8337,11 +9758,11 @@ local __tmp = (function(settings)
     local list = transStrToTable({ 3, 2, 1, 0 })
     return list[campaignQuickRepair] or 2
   end)(settings.campaignQuickRepair)
-  -- ä¸èƒ½å‡ºå¾åˆ™éœ‡åŠ¨æç¤º
-  settings.campaignAlertWhenNoHp = (function(campaignAlertWhenNoHp)
+  -- ä¸èƒ½å‡ºå¾åˆ™æŠ¥è­¦
+  settings.campaignAlertWhenCantBattle = (function(campaignAlertWhenCantBattle)
     local list = transStrToTable({ true, false, })
-    return list[campaignAlertWhenNoHp] or false
-  end)(settings.campaignAlertWhenNoHp)
+    return list[campaignAlertWhenCantBattle] or false
+  end)(settings.campaignAlertWhenCantBattle)
   -- é˜µå‹
   settings.campaignFormation = (function(campaignFormation)
     local list = transStrToTable({ 1, 2, 3, 4, 5 })
@@ -8353,9 +9774,153 @@ local __tmp = (function(settings)
     local list = transStrToTable({ true, false, })
     return list[repairAll] or false
   end)(settings.repairAll)
-end)(settings)
+  -- å¤šé•¿æ—¶é—´ä¿®ç†ä¸€æ¬¡
+  settings.repairInterval = tonumber(settings.repairInterval) or 0
+  -- è§£ä½“
+  -- å¿«é€Ÿè§£ä½“æ¨¡å¼
+  settings.disintegrateShipFastMode = (function(disintegrateShipFastMode)
+    local list = transStrToTable({ true, false, })
+    return list[disintegrateShipFastMode] or false
+  end)(settings.disintegrateShipFastMode)
+  -- å¤šé•¿æ—¶é—´è§£ä½“ä¸€æ¬¡
+  settings.disintegrateShipInterval = tonumber(settings.disintegrateShipInterval) or 0
 
--- --è½¬æ¢settingsç»“æœ
+  return ret, settings
+  -- --è½¬æ¢settingsç»“æœ
+end
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "sendMessageToTasker" ] = function( ... ) local arg = _G.arg;
+local eq = require 'EventQuery'
+
+local titleFileName = '/sdcard/.tsnotificationt.txt'
+local textFileName = '/sdcard/.tsnotificationb.txt'
+
+function sendToTasker(title, text)
+  if not title then
+    title = ''
+  end
+  if not text then
+    text = title
+  end
+  os.execute('rm -rf ' .. titleFileName)
+  os.execute('rm -rf ' .. textFileName)
+  local titleFile = io.open(titleFileName, 'w')
+  if titleFile then
+    io.output(titleFile)
+    io.write(title)
+    io.flush()
+    io.close()
+  end
+  local textFile = io.open(textFileName, 'w')
+  if textFile then
+    io.output(textFile)
+    io.write(text)
+    io.flush()
+    io.close()
+  end
+  if titleFile or textFile then
+    os.execute("am broadcast -a net.dinglisch.android.tasker.ACTION_TASK --es task_name warship-girls-r")
+  end
+
+  eq.setTimeout(function()
+    os.execute('rm -rf ' .. titleFileName)
+    os.execute('rm -rf ' .. textFileName)
+  end, 10000)
+end
+
+return sendToTasker
+
+end
+end
+
+end
+
+runCount = 1
+isPause = false
+luaExisted = false
+function beforeUserExit()
+  luaExisted = true
+  --  vibrator(500)
+  --  mSleep(500)
+  --  vibrator(500)
+end
+
+if (deviceIsLock() ~= 0) then
+  unlockDevice()
+end
+
+initLog('warship-girls-r-script', 1)
+
+require 'TSLib'
+require 'TableLib'
+require 'StringLib'
+require 'console'
+require 'KeepScreenHock'
+require 'MultiColorHock'
+require 'DeviceOrientHock'
+local eq = require 'EventQuery'
+local co = require 'Co'
+local Promise = require 'Promise'
+local sz = require 'sz'
+local socket = require 'szocket.core'
+local mapMaker = require 'BaseOperate'
+local gomission = require 'GoMission'
+local stepLabel = (require 'StepLabel').init('stopbtn')
+local optionsLabel = require 'optionsLabel'
+local lfs = require 'lfs'
+
+Promise.setStackTraceback(setStackTraceback or false)
+
+-- åˆ é™¤å¤§äº7å¤©å¹¶ä¸”å¤§äº50æ¡çš„logï¼Œé¿å…æ—¥å¿—è¿‡å¤§
+local _ = (function()
+  local logPath = userPath() .. '/log'
+  local dirs = lfs.dir(logPath)
+  local sevenDayBeforeTime = os.time() - (7 * 24 * 60 * 60)
+  local theTime = os.time()
+
+  local dirsLen = #dirs
+
+  dirs = table.filter(dirs, function(e, index)
+    if (string.startWith(e, 'warship-girls-r-script_')) then
+      local res = string.match(e, 'warship%-girls%-r%-script_(%d+)')
+      res = tonumber(res) or theTime
+      if ((index < (dirsLen - 50)) and (res < sevenDayBeforeTime)) then
+        return true
+      end
+    end
+    return false
+  end)
+
+  for k, v in ipairs(dirs) do
+    lfs.rm(logPath .. '/' .. v)
+  end
+end)()
+
+local c = coroutine
+
+
+local sleepPromise = function(ms)
+  return Promise.new(function(resolve)
+    eq.setTimeout(resolve, ms)
+  end)
+end
+
+stepLabel.setStepLabelContent('å¼€å§‹')
+
+function closeStepLabel()
+  fwCloseView('steplabel', 'text1')
+end
+
+stepLabel.setStepLabelContent('ç­‰å¾…éŸ³é‡é¢æ¿æ”¶èµ·')
+mSleep(500)
+
+
+closeStepLabel()
+local ret, settings = optionsLabel()
 
 -- æ³¨å†ŒæŒ‰é’®äº‹ä»¶ï¼Œç›®å‰åªæœ‰æš‚åœæŒ‰é’®
 eq.setButotnListener('stopbtn', function()
@@ -8378,6 +9943,7 @@ co(c.create(function()
     or settings.battleEnable
     or settings.repairEnable
     or settings.exerciseEnable
+    or settings.disintegrateShipEnable
     or settings.campaignEnable) then
 
     -- æ’å…¥ä¸€ä¸ªç‰¹æ®Šçš„ä»»åŠ¡è¡¨ç¤ºè¿™æ˜¯é˜Ÿåˆ—çš„å¼€å¤´
@@ -8393,7 +9959,7 @@ co(c.create(function()
     end
     -- æ˜¯å¦è¿è¡Œå‡ºå¾
     if (settings.battleEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_START' })
+      table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_INIT' })
     end
     -- æ˜¯å¦è¿è¡Œæ¼”ä¹ 
     if (settings.exerciseEnable) then
@@ -8406,6 +9972,10 @@ co(c.create(function()
     -- æ˜¯å¦è¿è¡Œä¿®ç†
     if (settings.repairEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
+    end
+    -- æ˜¯å¦è¿è¡Œè§£ä½“
+    if (settings.disintegrateShipEnable) then
+      table.insert(theMissionsQuery, { isBase = true, type = 'DISINTEGRATE_SHIP_INIT' })
     end
     -- æ’å…¥ä¸€ä¸ªç‰¹æ®Šä»»åŠ¡è¡¨ç¤ºè¿™æ˜¯é˜Ÿåˆ—çš„ç»“å°¾
     table.insert(theMissionsQuery, { isBase = true, isEnd = true })
@@ -8486,11 +10056,10 @@ co(c.create(function()
   end
 end)).catch(function(err)
   wLog("warship-girls-r-script", "[DATE] " .. err);
-  eq.setImmediate(function() error(err) end)
+  console.log(err)
+  eq.setImmediate(function()
+    error(err)
+  end)
 end)
 
 eq.run()
-
-end
-end
-
