@@ -10,7 +10,7 @@ exercise.isBattlePage = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 178, 622, 0x10597b },
+    { 174, 739, 0x10557b },
     { 278, 1007, 0x635d52 },
     { 224, 613, 0xc5cac5 },
     { 92, 969, 0xa47d42 },
@@ -39,12 +39,16 @@ exercise.isExercisePage = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 178, 622, 0x10597b },
+    { 174, 739, 0x10557b },
     { 278, 1007, 0x635d52 },
     { 224, 613, 0xc5cac5 },
     { 92, 969, 0xa47d42 },
     { 169, 1014, 0xffffff },
     { 195, 1033, 0xb58a5a },
+
+    { 671, 39, 0x0871b5 },
+    { 254, 404, 0xcecace },
+    { 253, 759, 0xcecace },
   }
   local list2 = {
     { 687, 33, 0x0875b5 },
