@@ -298,7 +298,7 @@ end
 
 -- 点击准备出征
 battle.clickReadyBattleBtn = function()
-  tap(1061, 523, 100)
+  tap(1481, 729, 100)
 end
 
 -- 等待出征准备界面
