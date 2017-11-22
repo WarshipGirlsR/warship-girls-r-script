@@ -54,6 +54,18 @@ local battleOnce = function(action, state)
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE', map.battle.isBattleBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE_LAG_AND_BACK', map.battle.isBattlePage },
+      }))
+      return makeAction(newstateTypes), state
+
+    elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE_LAG_AND_BACK') then
+
+      stepLabel.setStepLabelContent('2-4.由于在主界面卡住，一直点击出征导致直接跳进准备战斗页面，点击返回')
+      map.battle.clickReadyBattlePageBackBtn()
+
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+        { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
+        { 'BATTLE_BATTLE_BATTLE_PAGE', map.battle.isBattleBattlePage, 1000 },
         { 'BATTLE_BATTLE_PAGE', map.battle.isBattlePage },
       }))
       return makeAction(newstateTypes), state
