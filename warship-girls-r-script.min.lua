@@ -4048,8 +4048,8 @@ local battleOnce = function(action, state)
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'BATTLE_HOME_CLICK_BATTLE', map.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', map.battle.isBattleBattlePage, 1000 },
-        { 'BATTLE_BATTLE_PAGE', map.battle.isBattlePage },
+        { 'BATTLE_BATTLE_BATTLE_PAGE', map.battle.isBattleBattlePage, 2000 },
+        { 'BATTLE_BATTLE_PAGE', map.battle.isBattlePage, 2000 },
       }))
       return makeAction(newstateTypes), state
 
