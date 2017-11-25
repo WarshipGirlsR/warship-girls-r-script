@@ -127,7 +127,11 @@ local battleOnce = function(action, state)
           stepLabel.setStepLabelContent('2-13.状态正常')
           state.battle.quickSupplyCount = 1
           state.battle.quickRepairCount = 1
-          return { type = 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO' }, state
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            { 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO', map.battle.isReadyBattlePage, 2000 },
+            { 'BATTLE_QUICK_SUPPLY_MODAL', map.battle.isQuickSupplyModal },
+          }))
+          return makeAction(newstateTypes), state
         else
           stepLabel.setStepLabelContent('2-14.状态不正常')
           map.battle.clickReadyBattlePageQuickSupplyBtn()
