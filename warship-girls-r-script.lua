@@ -11,7 +11,7 @@ end
 if (deviceIsLock() ~= 0) then
   unlockDevice()
 end
-
+mSleep(true)
 initLog('warship-girls-r-script', 1)
 
 require 'TSLib'
