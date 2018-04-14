@@ -22,16 +22,20 @@
 -----------------------------------------------------------------------------
 
 
-local Promise = Promise or require 'Promise'
+local Promise = Promise
+
+if type(Promise) ~= 'table' then
+  error('Co need Promise module to work. Please add \'Promise\' and require it.', 2)
+end
 
 local unpack = unpack or table.unpack
 local isArray = table.isArray or function(tab)
-  if (type(tab) ~= 'table') then
+  if (type(tab) ~= "table") then
     return false
   end
   local length = #tab
   for k, v in pairs(tab) do
-    if ((type(k) ~= 'number') or (k > length)) then
+    if ((type(k) ~= "number") or (k > length)) then
       return false
     end
   end
@@ -166,7 +170,7 @@ function thunkToPromise(fn)
   end)
 end
 
--- Convert an array of 'yieldables' to a promise.
+-- Convert an array of "yieldables" to a promise.
 -- Uses `Promise.all()` internally.
 --
 -- @param {Array} obj
@@ -174,14 +178,13 @@ end
 -- @api private
 function arrayToPromise(obj)
   local newArr = {}
-  for k = 1, #obj do
-    local v = obj[k]
+  for k, v in ipairs(obj) do
     table.insert(newArr, toPromise(v))
   end
   return Promise.all(newArr);
 end
 
--- Convert an object of 'yieldables' to a promise.
+-- Convert an object of "yieldables" to a promise.
 -- Uses `Promise.all()` internally.
 --
 -- @param {Object} obj

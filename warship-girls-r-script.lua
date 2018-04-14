@@ -1,32 +1,38 @@
+-- 载入 lua-require
+require('lua-require')({
+  osExit = lua_exit,
+})
+
 runCount = 1
 isPause = false
 luaExisted = false
 function beforeUserExit()
   luaExisted = true
-  --  vibrator(500)
-  --  mSleep(500)
-  --  vibrator(500)
 end
 
+-- 解锁手机屏幕
 if (deviceIsLock() ~= 0) then
   unlockDevice()
 end
-mSleep(true)
+
 initLog('warship-girls-r-script', 1)
 
 require 'TSLib'
-require 'TableLib'
-require 'StringLib'
+require './table-polyfill'
+require './string-polyfill'
 require 'console'
-require 'KeepScreenHock'
-require 'MultiColorHock'
-require 'DeviceOrientHock'
-local eq = require 'EventQuery'
-local co = require 'Co'
-local Promise = require 'Promise'
+require './utils/keep-screen-hock'
+require './utils/multi-color-hock'
+require './utils/device-orient-hock'
+require './utils/clear-log'
+
+EventQuery = require './lib/event-query'
+Promise = require './lib/promise'
+
+local co = require './lib/co'
+local Promise = require './lib/promise'
 local sz = require 'sz'
 local socket = require 'szocket.core'
-local mapMaker = require 'BaseOperate'
 local gomission = require 'GoMission'
 local stepLabel = (require 'StepLabel').init('stopbtn')
 local optionsLabel = require 'optionsLabel'

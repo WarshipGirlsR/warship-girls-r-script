@@ -9,11 +9,11 @@ local fontSize = 16
 local tsver = getTSVer(); --获取触动精灵引擎版本
 local tsint = tonumber(string.sub(tsver, 1, 1) .. string.sub(tsver, 3, 3) .. string.sub(tsver, 5, 5));
 --转化为数字版本号
-if tsint >= 224 then
+if tsint >= 170 then
   fontSize = 7
 end
 
-fwShowWnd('steplabel', 300, 50, 300, 100, 0)
+fwShowWnd('steplabel', 350, 50, 300, 100, 0)
 
 StepLable.init = function(labelId)
   StepLable.labelId = labelId
@@ -34,13 +34,23 @@ StepLable.setStepLabelContent = function(text, noNLog)
   end
   StepLable.text = text
   local finalText = StepLable.prefix .. text
-  fwShowButton('steplabel', StepLable.labelId, finalText, '90333333', '90FFFFFF', '', fontSize, 0, 0, 300, 100)
+  fwShowButton('steplabel', StepLable.labelId, finalText, '90333333', '90FFFFFF', '', 7, 0, 0, 300, 100)
   local dateStr = os.date('%Y-%m-%d %X')
-  if (not noNLog) then
-    wLog('warship-girls-r-script', '[DATE] ' .. finalText);
+  if not noNLog then
+    local info = debug.getinfo(2, 'Sl')
+    local lineInfo = ''
+    if info.currentline then
+      lineInfo = info.source .. ': ' .. info.currentline .. ': '
+    end
+    wLog('azur_lane', '[DATE] ' .. lineInfo .. finalText);
   end
   if useNlog then
-    nLog(dateStr .. ' ' .. finalText)
+    local info = debug.getinfo(2, 'Sl')
+    local lineInfo = ''
+    if info.currentline then
+      lineInfo = info.source .. ': ' .. info.currentline .. ':\n'
+    end
+    nLog(lineInfo .. dateStr .. ' ' .. finalText .. '\n')
   end
 end
 

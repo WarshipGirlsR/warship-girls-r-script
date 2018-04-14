@@ -1,4 +1,11 @@
 -- table方法添加
+local myTable = {}
+do
+  for key, value in pairs(table) do
+    myTable[key] = table[key]
+  end
+end
+
 local function runTable(tab, space)
   if (type(tab) == 'number') then
     return { tostring(tab) }
@@ -33,7 +40,7 @@ local function runTable(tab, space)
   for k = 1, #tab do
     local v = tab[k]
     tabLength = k
-    table.insert(newTabPairs, { k, runTable(v, space) })
+    myTable.insert(newTabPairs, { k, runTable(v, space) })
     if (type(v) == 'table') then
       hasSubTab = true
     end
@@ -42,7 +49,7 @@ local function runTable(tab, space)
   for k, v in pairs(tab) do
     if ((type(k) ~= 'number') or k > tabLength) then
       tabIsArray = false
-      table.insert(newTabPairs, { k, runTable(v, space) })
+      myTable.insert(newTabPairs, { k, runTable(v, space) })
       if (type(v) == 'table') then
         hasSubTab = true
       end
@@ -53,30 +60,30 @@ local function runTable(tab, space)
     local newTabArr = newTabPairs
 
     if (hasSubTab) then
-      table.insert(resultStrList, '[')
+      myTable.insert(resultStrList, '[')
       for k = 1, #newTabArr do
         local v = newTabArr[k]
         local v2Length = getLength(v[2])
         v[2][v2Length] = v[2][v2Length] .. ','
         for k2 = 1, #v[2] do
           local v2 = v[2][k2]
-          table.insert(resultStrList, space .. v2)
+          myTable.insert(resultStrList, space .. v2)
         end
       end
-      table.insert(resultStrList, ']')
+      myTable.insert(resultStrList, ']')
     else
       local theStr = {}
       for k = 1, #newTabPairs do
         local v = newTabPairs[k]
-        table.insert(theStr, v[2][1])
+        myTable.insert(theStr, v[2][1])
       end
-      local childStr = table.concat(theStr, ', ')
-      table.insert(resultStrList, '[' .. childStr .. ']')
+      local childStr = myTable.concat(theStr, ', ')
+      myTable.insert(resultStrList, '[' .. childStr .. ']')
     end
   else
     local newTabArr = newTabPairs
 
-    table.insert(resultStrList, '{')
+    myTable.insert(resultStrList, '{')
     for k = 1, #newTabArr do
       local v = newTabArr[k]
       v[2][1] = v[1] .. ': ' .. v[2][1]
@@ -84,27 +91,23 @@ local function runTable(tab, space)
       v[2][v2Length] = v[2][v2Length] .. ','
       for k2 = 1, #v[2] do
         local v2 = v[2][k2]
-        table.insert(resultStrList, space .. v2 .. '')
+        myTable.insert(resultStrList, space .. v2 .. '')
       end
     end
-    table.insert(resultStrList, '}')
+    myTable.insert(resultStrList, '}')
   end
   return resultStrList
 end
 
-table.length = table.length or function(target)
-  local length = 0
-  for key = 1, #target do
-    length = key
-  end
-  return length
+myTable.length = myTable.length or function(tab)
+  return #tab
 end
 
-table.isArray = table.isArray or function(tab)
+myTable.isArray = myTable.isArray or function(tab)
   if (type(tab) ~= 'table') then
     return false
   end
-  local length = table.length(tab)
+  local length = myTable.length(tab)
   for k, v in pairs(tab) do
     if ((type(k) ~= 'number') or (k > length)) then
       return false
@@ -113,8 +116,10 @@ table.isArray = table.isArray or function(tab)
   return true
 end
 
-table.slice = table.slice or function(tab, startIndex, endIndex)
-  local length = table.length(tab)
+myTable.unpack = myTable.unpack or unpack
+
+myTable.slice = myTable.slice or function(tab, startIndex, endIndex)
+  local length = myTable.length(tab)
   if ((type(endIndex) == 'nil') or (endIndex == 0)) then
     endIndex = length
   end
@@ -124,29 +129,25 @@ table.slice = table.slice or function(tab, startIndex, endIndex)
   local newTab = {}
 
   for i = startIndex, endIndex do
-    table.insert(newTab, tab[i])
+    myTable.insert(newTab, tab[i])
   end
 
   return newTab
 end
 
-table.join = table.join or function(tab, exp)
-  if (type(exp) == 'nil') then exp = ',' end
-  return table.concat(tab, exp)
-end
-
-table.merge = table.merge or function(tab, ...)
+myTable.merge = myTable.merge or function(tab, ...)
   local args = { ... }
   for k = 1, #args do
     local tabelement = args[k]
-    local length = table.length(tabelement)
+    local length = myTable.length(tabelement)
     for k2 = 1, #tabelement do
       local value = tabelement[k2]
       if ((type(k2) == 'number') and (k2 <= length)) then
-        table.insert(tab, value)
+        myTable.insert(tab, value)
       end
     end
-    for k2, value in pairs(tabelement) do
+    for k2 = 1, #tabelement do
+      local value = tabelement[k2]
       if ((type(k2) == 'number') and (k2 <= length)) then
       elseif (type(k2) == 'number') then
         tab[tostring(k2)] = value
@@ -158,21 +159,23 @@ table.merge = table.merge or function(tab, ...)
   return tab
 end
 
-table.assign = table.assign or function(target, ...)
+myTable.assign = myTable.assign or function(target, ...)
   local sources = { ... }
-  if (type(target) ~= 'table') then target = {} end
-  for k = 1, #sources do
-    local source = sources[k]
-    for key, value in pairs(source) do
-      target[key] = value
+  if (type(target) ~= 'table') then
+    target = {}
+  end
+  for key1 = 1, #sources do
+    local source = sources[key1]
+    for key2, value in pairs(source) do
+      target[key2] = value
     end
   end
   return target
 end
 
-table.reverse = table.reverse or function(target)
+myTable.reverse = myTable.reverse or function(target)
   local result = {}
-  local theLength = table.length(target)
+  local theLength = myTable.length(target)
   for key = 1, #target do
     local value = target[key]
     result[theLength - key + 1] = value
@@ -180,19 +183,19 @@ table.reverse = table.reverse or function(target)
   return result
 end
 
-table.filter = table.filter or function(target, func)
+myTable.filter = myTable.filter or function(target, func)
   local result = {}
-  local theLength = table.length(target)
+  local theLength = myTable.length(target)
   for key = 1, #target do
     local value = target[key]
     if (func(value, key, target)) then
-      table.insert(result, value)
+      myTable.insert(result, value)
     end
   end
   return result
 end
 
-table.unique = table.unique or function(target, path)
+myTable.unique = myTable.unique or function(target, path)
   local theMap = {}
   local result = {}
   local pathType = type(path)
@@ -201,7 +204,7 @@ table.unique = table.unique or function(target, path)
       local value = target[key]
       if (type(theMap[value]) == 'nil') then
         theMap[value] = { key = key, value = value }
-        table.insert(result, value)
+        myTable.insert(result, value)
       end
     end
   elseif ((pathType == 'number') or (pathType == 'string')) then
@@ -209,7 +212,7 @@ table.unique = table.unique or function(target, path)
       local value = target[key]
       if (type(theMap[value[path]]) == 'nil') then
         theMap[value[path]] = { key = key, value = value }
-        table.insert(result, value)
+        myTable.insert(result, value)
       end
     end
   elseif (pathType == 'function') then
@@ -217,7 +220,7 @@ table.unique = table.unique or function(target, path)
       local value = target[key]
       if (type(theMap[path(value)]) == 'nil') then
         theMap[path(value)] = { key = key, value = value }
-        table.insert(result, value)
+        myTable.insert(result, value)
       end
     end
   end
@@ -225,10 +228,11 @@ table.unique = table.unique or function(target, path)
 end
 
 -- 后覆盖前的unique
-table.uniqueLast = table.uniqueOf or function(target, path)
+myTable.uniqueLast = myTable.uniqueLast or function(target, path)
   local theMap = {}
   local result = {}
   local pathType = type(path)
+  local targetLength = myTable.length(target)
   if (pathType == 'nil') then
     for key = 1, #target do
       local value = target[key]
@@ -237,18 +241,23 @@ table.uniqueLast = table.uniqueOf or function(target, path)
     for key = 1, #target do
       local value = target[key]
       if (key == theMap[value].key) then
-        table.insert(result, value)
+        myTable.insert(result, value)
       end
     end
   elseif ((pathType == 'number') or (pathType == 'string')) then
     for key = 1, #target do
       local value = target[key]
-      theMap[value[path]] = { key = key, value = value }
+      local res, err = pcall(function()
+        theMap[value[path]] = { key = key, value = value }
+      end)
+      if not res then
+        error(console.log(value))
+      end
     end
     for key = 1, #target do
       local value = target[key]
       if (key == theMap[value[path]].key) then
-        table.insert(result, value)
+        myTable.insert(result, value)
       end
     end
   elseif (pathType == 'function') then
@@ -259,50 +268,132 @@ table.uniqueLast = table.uniqueOf or function(target, path)
     for key = 1, #target do
       local value = target[key]
       if (key == theMap[path(value)].key) then
-        table.insert(result, value)
+        myTable.insert(result, value)
       end
     end
   end
   return result
 end
 
-table.values = table.values or function(tab)
+myTable.map = myTable.map or function(tab, callback)
   local values = {}
-  for k, v in pairs(tab) do
-    table.insert(values, v)
+  for k, v in ipairs(tab) do
+    myTable.insert(values, callback(v, k, tab))
   end
   return values
 end
 
-table.keys = table.keys or function(tab)
+myTable.values = myTable.values or function(tab)
+  local values = {}
+  for k, v in pairs(tab) do
+    myTable.insert(values, v)
+  end
+  return values
+end
+
+myTable.keys = myTable.keys or function(tab)
   local keys = {}
   for k in pairs(tab) do
-    table.insert(keys, k)
+    myTable.insert(keys, k)
   end
   return keys
 end
 
 -- 对key排序后放入数组中再返回，结果类似entries
-table.sortByKey = table.sortByKey or function(tab, call)
-  local keys = table.keys(tab)
+myTable.sortByKey = myTable.sortByKey or function(tab, call)
+  local keys = myTable.keys(tab)
   if (type(call) == 'function') then
-    table.sort(keys, call)
+    myTable.sort(keys, call)
   else
-    table.sort(keys)
+    myTable.sort(keys)
   end
   local newTable = {}
   for k = 1, #keys do
     local key = keys[k]
-    table.insert(newTable, { key, tab[key] })
+    myTable.insert(newTable, { key, tab[key] })
   end
   return newTable
 end
 
-table.toString = table.toString or function(tab)
-  return table.concat(runTable(tab), '')
+myTable.findIndex = myTable.findIndex or function(tab, call)
+  local index = -1
+  if type(call) == 'function' then
+    if myTable.isArray(tab) then
+      for key = 1, #tab do
+        local value = tab[key]
+        if call(value) then
+          index = key
+        end
+      end
+    else
+      for key = 1, #tab do
+        local value = tab[key]
+        if call(value) then
+          index = key
+        end
+      end
+    end
+  else
+    if myTable.isArray(tab) then
+      for key = 1, #tab do
+        local value = tab[key]
+        if value == call then
+          index = key
+        end
+      end
+    else
+      for key = 1, #tab do
+        local value = tab[key]
+        if value == call then
+          index = key
+        end
+      end
+    end
+  end
+  return index
 end
 
-table.from = table.from or function(target)
+myTable.find = myTable.find or function(tab, call)
+  local result
+  if type(call) == 'function' then
+    if myTable.isArray(tab) then
+      for key = 1, #tab do
+        local value = tab[key]
+        if call(value) then
+          result = value
+        end
+      end
+    else
+      for _, value in pairs(tab) do
+        if call(value) then
+          result = value
+        end
+      end
+    end
+  else
+    if myTable.isArray(tab) then
+      for _, value in pairs(tab) do
+        if value == call then
+          result = tab[call]
+        end
+      end
+    else
+      for key = 1, #tab do
+        local value = tab[key]
+        if value == call then
+          result = tab[call]
+        end
+      end
+    end
+  end
+  return result
+end
+
+myTable.toString = myTable.toString or function(tab)
+  return myTable.concat(runTable(tab), '')
+end
+
+myTable.from = myTable.from or function(target)
   if (type(target) ~= 'function') then
     return target
   end
@@ -313,7 +404,13 @@ table.from = table.from or function(target)
   return result
 end
 
-table.toJsString = table.toJsString or function(tab, space)
+myTable.toJsString = myTable.toJsString or function(tab, space)
   space = space or '  '
-  return table.concat(runTable(tab, space), '\n')
+  return myTable.concat(runTable(tab, space), '\n')
+end
+
+do
+  for key, value in pairs(myTable) do
+    table[key] = table[key] or myTable[key]
+  end
 end
