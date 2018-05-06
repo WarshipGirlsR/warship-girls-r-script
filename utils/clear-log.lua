@@ -1,5 +1,5 @@
 -- 删除大于7天并且大于50条的log，避免日志过大
-local lfs = require 'lfs'
+local lfs = require './lfs'
 local logPath = userPath() .. '/log'
 local dirs = lfs.dir(logPath)
 local sevenDayBeforeTime = os.time() - (7 * 24 * 60 * 60)

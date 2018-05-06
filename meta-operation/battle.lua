@@ -1,4 +1,4 @@
-local ImgInfo = require 'BaseOperate__ImgInfo'
+local ImgInfo = require './img'
 
 local battle = {}
 
@@ -315,30 +315,30 @@ battle.isQuickRepairModalShipNeedRepair = function(checkLevel)
   }
   -- 满血
   local list23 = {
-    { 443, 621, 0x9cff8c },
-    { 640, 621, 0x94fb84 },
-    { 837, 621, 0x9cff8c },
-    { 1034, 621, 0x94fb84 },
-    { 1231, 621, 0x9cff8c },
-    { 1428, 621, 0x94fb84 },
+    { 281, 621, 0x08ba08 },
+    { 478, 621, 0x08ba08 },
+    { 675, 621, 0x08ba08 },
+    { 872, 621, 0x08ba08 },
+    { 1069, 621, 0x08ba08 },
+    { 1266, 621, 0x08ba08 },
   }
   -- 中破
   local list22 = {
-    { 278, 621, 0xefe310 },
-    { 474, 621, 0xe6df08 },
-    { 671, 621, 0xefe310 },
-    { 868, 621, 0xe6df08 },
-    { 1065, 621, 0xefe310 },
-    { 1262, 621, 0xe6df08 },
+    { 281, 621, 0xbd8e08 },
+    { 477, 621, 0xbd8e08 },
+    { 674, 621, 0xbd8e08 },
+    { 871, 621, 0xbd8e08 },
+    { 1068, 621, 0xbd8e08 },
+    { 1265, 621, 0xbd8e08 },
   }
   -- 大破
   local list21 = {
-    { 280, 621, 0xbd0808 },
-    { 474, 621, 0xe60808 },
-    { 671, 621, 0xef0c10 },
-    { 868, 621, 0xe60c08 },
-    { 1065, 621, 0xef0c10 },
-    { 1262, 621, 0xe60808 },
+    { 281, 621, 0xbd0808 },
+    { 477, 621, 0xbd0808 },
+    { 674, 621, 0xbd0808 },
+    { 871, 621, 0xbd0808 },
+    { 1068, 621, 0xbd0808 },
+    { 1265, 621, 0xbd0808 },
   }
   local result = {}
   if (checkLevel == 3) then

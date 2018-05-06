@@ -1,5 +1,3 @@
-require 'TableLib'
-
 local function transRelativePoint(tab, base)
   if not base then
     base = tab[1]

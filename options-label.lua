@@ -1,6 +1,5 @@
-local sz = require 'sz'
-local json = sz.json
-local stepLabel = require 'StepLabel'
+local json = require './lib/json'
+local stepLabel = require './utils/step-label'
 
 local width, height = getScreenSize()
 -- 设置

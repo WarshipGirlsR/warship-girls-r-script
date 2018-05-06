@@ -1,86 +1,88 @@
-local co = require 'Co'
+local co = require '../lib/co'
 local c = coroutine
-local stepLabel = require 'StepLabel'
-local makeAction = (require 'GoMission__utils').makeAction
-local sleepPromise = (require 'GoMission__utils').sleepPromise
-local setScreenListeners = (require 'GoMission__utils').setScreenListeners
-local allOptions = require 'GoMission__options'
+local stepLabel = require '../utils/step-label'
+local makeAction = (require './utils').makeAction
+local sleepPromise = (require './utils').sleepPromise
+local setScreenListeners = (require './utils').setScreenListeners
 
+local store = require '../store'
+store.home = store.home or {}
 
-local home = function(action, state)
-  local map = allOptions.map
-  local settings = allOptions.settings
+local moHome = require '../meta-operation/home'
+
+local o = {
+  home = moHome,
+}
+
+local home = function(action)
+  local settings = store.settings
 
   return co(c.create(function()
     if (action.type == 'HOME_HOME') then
 
-      return '', state
+      return ''
 
     elseif (action.type == 'HOME_MEDAL_MODAL') then
 
       stepLabel.setStepLabelContent('1-2勋章取消')
-      map.home.clickMedalModalCancelBtn()
+      o.home.clickMedalModalCancelBtn()
       c.yield(sleepPromise(2000))
-      local res = map.home.isMedalModal()
+      local res = o.home.isMedalModal()
       if (res) then
-        return makeAction('HOME_MEDAL_MODAL'), state
+        return makeAction('HOME_MEDAL_MODAL')
       end
-      return '', state
+      return ''
 
     elseif (action.type == 'HOME_NEWS_MODAL') then
 
       stepLabel.setStepLabelContent('1-3.关闭新闻')
-      map.home.clickMewsModalClose()
+      o.home.clickMewsModalClose()
       c.yield(sleepPromise(2000))
-      local res = map.home.isNewsModal()
+      local res = o.home.isNewsModal()
       if (res) then
-        return makeAction('HOME_NEWS_MODAL'), state
+        return makeAction('HOME_NEWS_MODAL')
       end
-      return '', state
+      return ''
 
     elseif (action.type == 'HOME_SIGN_MODAL') then
 
       stepLabel.setStepLabelContent('1-4.获取签到奖励')
-      local res = map.home.isSignModalHasReward()
+      local res = o.home.isSignModalHasReward()
       if (res) then
         stepLabel.setStepLabelContent('1-5.有奖励，点击获取')
-        map.home.clickSignModalGetReward()
+        o.home.clickSignModalGetReward()
         stepLabel.setStepLabelContent('1-6.等待获取确认')
         local newstateTypes = c.yield(setScreenListeners({
-          { 'HOME_SIGN_CONFIRM_MODAL', map.home.isSignConfirmModal },
-          { 'HOME_SIGN_MODAL', map.home.isSignModal, 2000 },
+          { 'HOME_SIGN_CONFIRM_MODAL', o.home.isSignConfirmModal },
+          { 'HOME_SIGN_MODAL', o.home.isSignModal, 2000 },
         }))
-        return makeAction(newstateTypes), state
+        return makeAction(newstateTypes)
       else
         stepLabel.setStepLabelContent('1-7.没有奖励')
-        map.home.clickSignModalClose()
+        o.home.clickSignModalClose()
         c.yield(sleepPromise(2000))
-        local res = map.home.isSignModal()
+        local res = o.home.isSignModal()
         if (res) then
-          return makeAction('HOME_SIGN_MODAL'), state
+          return makeAction('HOME_SIGN_MODAL')
         end
-        return '', state
+        return ''
       end
 
     elseif (action.type == 'HOME_SIGN_CONFIRM_MODAL') then
 
       stepLabel.setStepLabelContent('1-8.点击获取确认')
-      map.home.clickSignConfirmModalGetReward()
+      o.home.clickSignConfirmModalGetReward()
       stepLabel.setStepLabelContent('1-9.等待获取签到奖励面板')
       c.yield(sleepPromise(2000))
       local newstateTypes = c.yield(setScreenListeners({
-        { 'HOME_SIGN_CONFIRM_MODAL', map.home.isSignConfirmModal, 2000 },
-        { 'HOME_SIGN_MODAL', map.home.isSignModal },
+        { 'HOME_SIGN_CONFIRM_MODAL', o.home.isSignConfirmModal, 2000 },
+        { 'HOME_SIGN_MODAL', o.home.isSignModal },
       }))
-      return makeAction(newstateTypes), state
+      return makeAction(newstateTypes)
     end
 
     return nil
   end))
 end
 
-return function(state)
-  state.home = {}
-
-  return home
-end
+return home

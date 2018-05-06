@@ -91,7 +91,6 @@ return {
         if type(action) ~= 'table' then
           error(' bad argument # 1 "next"(table excepted, got ' .. type(action) .. ')', 2)
         end
-
         return co(c.create(function()
           if action.type and action.type ~= '' then
             local nextAction

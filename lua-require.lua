@@ -2,9 +2,9 @@ local originRequire = require
 local _ENV = _ENV
 
 local options = {
-  basePath = '',
+  basePath = './',
   osExit = os.exit,
-  extensions = { '', '.lua', '/index.lua' },
+  extensions = { '', '.lua' },
 }
 
 -- 字符串分割
@@ -49,7 +49,6 @@ end
 
 local path = (function()
   local path = {}
-  path.separator = myString.find(package.path, '/') and '/' or '\\'
   path.basename = function(thePath)
     thePath = myString.gsub(thePath, '\\', '/')
     thePath = myString.gsub(thePath, '//+', '/')
@@ -62,7 +61,7 @@ local path = (function()
     thePath = myString.gsub(thePath, '//+', '/')
     local thePathArray = myString.split(thePath, '/')
     table.remove(thePathArray)
-    return table.concat(thePathArray, path.separator)
+    return table.concat(thePathArray, '/')
   end
   path.extname = function()
   end
@@ -93,7 +92,7 @@ local path = (function()
         end
       end
     end
-    return table.concat(resultPathArray, path.separator)
+    return table.concat(resultPathArray, '/')
   end
   path.relative = function()
   end
@@ -122,7 +121,7 @@ local path = (function()
         end
       end
     end
-    return table.concat(resultPathArray, path.separator)
+    return table.concat(resultPathArray, '/')
   end
   return path
 end)()
@@ -135,7 +134,9 @@ requireFactory = function(dirPath)
     end
 
     if myString.match(loadpath, '^%.%/') or myString.match(loadpath, '^%.%.%/') or myString.match(loadpath, '^%/') then
+      -- 相对于项目根目录的路径
       local requirePath
+      -- 绝对路径
       local absolutePath
 
       -- 遍历扩展名列表并尝试在 package.loaded 里寻找已加载的模块
@@ -163,34 +164,50 @@ requireFactory = function(dirPath)
           local requireSource
           local file
           local errArr = {}
-          -- 遍历扩展名列表并尝试从文件中寻找模块
+
+          -- 遍历扩展名列表并尝试在 package.sourceCode 里寻找已加载的模块
           for key = 1, #options.extensions do
             local rp = path.resolve(dirPath, loadpath .. options.extensions[key])
-            local ap = path.join(options.basePath, rp)
-            local res, err = pcall(function()
-              local theFile = assert(io.open(ap, 'r'))
-              file = theFile
-              requireSource = file:read('*a')
-            end)
-            if not res then
-              table.insert(errArr, err)
-            end
-            -- 成功读取文件，返回项目路径和系统路径
-            if requireSource then
+            if package.sourceCode[rp] then
               requirePath = rp
-              absolutePath = ap
+              absolutePath = path.join(options.basePath, rp)
+              requireSource = package.sourceCode[rp].source
               break
             end
           end
-          -- 如果都没找到能执行的文件，则抛出错误
-          if not requireSource then
-            error(table.concat(errArr, '\r\n'), 2)
-          end
-          if file then
-            file.close()
+
+          -- 如果 package.sourceCode 中没有需要的模块
+          if not requirePath or not package.sourceCode[requirePath] then
+            -- 遍历扩展名列表并尝试从文件中寻找模块
+            for key = 1, #options.extensions do
+              local rp = path.resolve(dirPath, loadpath .. options.extensions[key])
+              local ap = path.join(options.basePath, rp)
+              local res, err = pcall(function()
+                local theFile = assert(io.open(ap, 'r'))
+                file = theFile
+                requireSource = file:read('*a')
+              end)
+              if not res then
+                table.insert(errArr, err)
+              end
+              -- 成功读取文件，返回项目路径和系统路径
+              if requireSource then
+                requirePath = rp
+                absolutePath = ap
+                break
+              end
+            end
+            -- 如果都没找到能执行的文件，则抛出错误
+            if not requireSource then
+              error(table.concat(errArr, '\r\n'), 2)
+            end
+            if file then
+              file.close()
+            end
+            --            package.sourceCode[requirePath] = { path = requirePath, source = requireSource }
           end
           requireSource = 'local require, modePath = ...; ' .. requireSource
-          package.preload[requirePath] = assert(load(requireSource, '@' .. absolutePath, 'bt', _ENV))
+          package.preload[requirePath] = assert(load(requireSource, '@' .. requirePath))
         end
         package.loaded[requirePath] = package.preload[requirePath](requireFactory(path.dirname(requirePath)), requirePath) or true
         -- 载入完成以后删除 package.preloaded 里的内容
@@ -213,7 +230,6 @@ end
 return function(optionParam)
   options.osExit = optionParam.osExit or options.osExit
   options.basePath = optionParam.basePath or options.basePath
-
   local result = debug.getinfo(2, 'S')
   if myString.match(result.short_src, '%[string') then
     local newMain = myString.gsub(result.source, '%.lua$', '')
@@ -230,7 +246,7 @@ return function(optionParam)
     options.basePath = optionParam.basePath or path.dirname(filePath)
     options.extensions = optionParam.extensions or options.extensions
 
-    require = requireFactory('/')
+    require = requireFactory('./')
   end
 
   return {

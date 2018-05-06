@@ -5,7 +5,7 @@ local gettimeFunc = function()
   return socket.gettime() * 1000
 end
 -- sleep
-local mSleep = mSleepor or function(n)
+local mSleep = mSleep or function(n)
   socket.select(nil, nil, n / 1000)
 end
 
@@ -237,11 +237,12 @@ function run()
 
     -- screenListenerQuery
     if #screenListenerQuery > 0 then
+      keepScreen(false);
       if type(getDeviceOrient) == 'function' then getDeviceOrient() end
       local hasDropEvent = false
       continue = continue + 1
       sleepTime = math.min(sleepTime, 200)
-      keepScreen(false);
+      getColor(0, 0)
       keepScreen(true);
       for key = 1, #screenListenerQuery do
         local value = screenListenerQuery[key]

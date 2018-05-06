@@ -1,5 +1,5 @@
-local ImgInfo = require 'BaseOperate__ImgInfo'
-local battle = require 'BaseOperate__battle';
+local ImgInfo = require './img'
+local battle = require './battle';
 
 local disintegrateShip = {}
 

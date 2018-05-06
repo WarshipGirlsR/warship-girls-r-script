@@ -1,146 +1,153 @@
-local co = require 'Co'
+local co = require '../lib/co'
 local c = coroutine
-local stepLabel = require 'StepLabel'
-local makeAction = (require 'GoMission__utils').makeAction
-local sleepPromise = (require 'GoMission__utils').sleepPromise
-local setScreenListeners = (require 'GoMission__utils').setScreenListeners
-local commonListenerFactory = require 'GoMission__commonListener'
-local allOptions = require 'GoMission__options'
+local stepLabel = require '../utils/step-label'
+local makeAction = (require './utils').makeAction
+local sleepPromise = (require './utils').sleepPromise
+local setScreenListeners = (require './utils').setScreenListeners
+local commonListenerFactory = require './common-listener'
 
-local getHomeListener = (require 'GoMission__commonListener').getHomeListener
-local getLoginListener = (require 'GoMission__commonListener').getLoginListener
-local getComListener = (require 'GoMission__commonListener').getComListener
+local getHomeListener = (require './common-listener').getHomeListener
+local getLoginListener = (require './common-listener').getLoginListener
+local getComListener = (require './common-listener').getComListener
 
-local expeditionReward = function(action, state)
-  local map = allOptions.map
-  local settings = allOptions.settings
+local store = require '../store'
+
+local moHome = require '../meta-operation/home'
+local moExpedition = require '../meta-operation/expedition'
+
+local o = {
+  home = moHome,
+  expedition = moExpedition,
+}
+
+store.expeditionReward = store.expeditionReward or {}
+
+local expeditionReward = function(action)
+  local settings = store.settings
 
   return co(c.create(function()
     if (action.type == 'EXPEDITION_REWARD_START') then
 
       stepLabel.setStepLabelContent('4-1.等待HOME')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
-        { 'EXPEDITION_REWARD_INIT', map.home.isHome },
+        { 'EXPEDITION_REWARD_INIT', o.home.isHome },
       }))
-      return makeAction(newstateTypes), state
+      return makeAction(newstateTypes)
 
     elseif (action.type == 'EXPEDITION_REWARD_INIT') then
 
       -- 远征章节
-      state.expeditionReward.enableChapter = { 1, 2, 3, 4, 5, 6, 7 }
+      store.expeditionReward.enableChapter = { 1, 2, 3, 4, 5, 6, 7 }
 
       -- 此任务使用的变量恢复默认值
-      state.expedition.lastChapter = nil
+      store.expedition.lastChapter = nil
 
-      return makeAction('EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED'), state
+      return makeAction('EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED')
 
     elseif (action.type == 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED') then
 
       stepLabel.setStepLabelContent('4-3.检测是否有远征奖励')
       c.yield(sleepPromise(100))
-      local res = map.expedition.isExpeditionCompleted()
+      local res = o.expedition.isExpeditionCompleted()
       if (not res) then
         stepLabel.setStepLabelContent('4-4.没有远征奖励和任务')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-          { '', 'homeGroup', map.home.isHome },
+          { '', 'homeGroup', o.home.isHome },
         }))
-        return makeAction(newstateTypes), state
+        return makeAction(newstateTypes)
       end
       stepLabel.setStepLabelContent('4-5.点击出征')
-      map.expedition.clickBattle()
+      o.expedition.clickBattle()
       stepLabel.setStepLabelContent('4-6.等待出征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', map.home.isHome, 3000 },
-        { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', o.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', o.home.isHome, 3000 },
+        { 'EXPEDITION_REWARD_IS_BATTLE', o.expedition.isBattlePage, 2000 },
       }))
-      return makeAction(newstateTypes), state
+      return makeAction(newstateTypes)
 
     elseif (action.type == 'EXPEDITION_REWARD_IS_BATTLE') then
 
       stepLabel.setStepLabelContent('4-7.点击远征')
-      map.expedition.clickExpedition()
+      o.expedition.clickExpedition()
       stepLabel.setStepLabelContent('4-8.等待远征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', map.expedition.isBattleExpedition },
-        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', map.home.isHome, 3000 },
-        { 'EXPEDITION_REWARD_IS_BATTLE', map.expedition.isBattlePage, 2000 },
+        { 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER', o.expedition.isBattleExpedition },
+        { 'EXPEDITION_REWARD_IS_EXPEDITION_COMPLETED', o.home.isHome, 3000 },
+        { 'EXPEDITION_REWARD_IS_BATTLE', o.expedition.isBattlePage, 2000 },
       }))
-      return makeAction(newstateTypes), state
+      return makeAction(newstateTypes)
 
     elseif (action.type == 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER') then
 
       c.yield(sleepPromise(500))
-      if (#state.expeditionReward.enableChapter > 0) then
-        local chapter = state.expeditionReward.enableChapter[1]
+      if (#store.expeditionReward.enableChapter > 0) then
+        local chapter = store.expeditionReward.enableChapter[1]
         stepLabel.setStepLabelContent('4-9.移动到第' .. chapter .. '章')
         c.yield(sleepPromise(500))
-        map.expedition.moveToChapter(chapter, state.expedition.lastChapter)
-        state.expedition.lastChapter = chapter
+        o.expedition.moveToChapter(chapter, store.expedition.lastChapter)
+        store.expedition.lastChapter = chapter
         stepLabel.setStepLabelContent('4-10.检测本页有可收获奖励')
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition, 1000 },
+          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', o.expedition.isBattleExpedition, 1000 },
         }))
-        return makeAction(newstateTypes), state
+        return makeAction(newstateTypes)
       else
-        return { type = 'EXPEDITION_REWARD_RETURN_TO_HOME' }, state
+        return { type = 'EXPEDITION_REWARD_RETURN_TO_HOME' }
       end
 
     elseif (action.type == 'EXPEDITION_REWARD_CHECK_HAS_REWARD') then
 
-      local res, list = map.expedition.isThisExpeditionPageHasReward()
+      local res, list = o.expedition.isThisExpeditionPageHasReward()
       if (res) then
         local v = list[1]
 
         -- 当回收一个远征奖励时，就需要远征派遣
-        state.expedition.needExpedition = true
+        store.expedition.needExpedition = true
 
         stepLabel.setStepLabelContent('4-11.点击第' .. v .. '节')
-        map.expedition.clickExpeditionBtn(v)
+        o.expedition.clickExpeditionBtn(v)
         stepLabel.setStepLabelContent('4-12.等待远征完成页面')
 
         local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition, 2000 },
-          { 'EXPEDITION_REWARD_COMPLETED_PAGE', map.expedition.isExpeditionCompletedPage },
+          { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', o.expedition.isBattleExpedition, 2000 },
+          { 'EXPEDITION_REWARD_COMPLETED_PAGE', o.expedition.isExpeditionCompletedPage },
         }))
-        return makeAction(newstateTypes), state
+        return makeAction(newstateTypes)
       end
 
       stepLabel.setStepLabelContent('4-13.本页没有可收获的奖励')
-      table.remove(state.expeditionReward.enableChapter, 1)
-      return { type = 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER' }, state
+      table.remove(store.expeditionReward.enableChapter, 1)
+      return { type = 'EXPEDITION_REWARD_EXPEDITION_SELECT_CHAPTER' }
 
     elseif (action.type == 'EXPEDITION_REWARD_COMPLETED_PAGE') then
 
-      map.expedition.clickRewardPannelOk()
+      o.expedition.clickRewardPannelOk()
       stepLabel.setStepLabelContent('4-14.等待远征界面')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'EXPEDITION_REWARD_COMPLETED_PAGE', map.expedition.isExpeditionCompletedPage, 2000 },
-        { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', map.expedition.isBattleExpedition },
-        { '', map.home.isHome },
+        { 'EXPEDITION_REWARD_COMPLETED_PAGE', o.expedition.isExpeditionCompletedPage, 2000 },
+        { 'EXPEDITION_REWARD_CHECK_HAS_REWARD', o.expedition.isBattleExpedition },
+        { '', o.home.isHome },
       }))
-      return makeAction(newstateTypes), state
+      return makeAction(newstateTypes)
 
     elseif (action.type == 'EXPEDITION_REWARD_RETURN_TO_HOME') then
 
-      map.expedition.clickBackToHome()
+      o.expedition.clickBackToHome()
       stepLabel.setStepLabelContent('4-15.返回HOME')
 
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
-        { 'EXPEDITION_REWARD_RETURN_TO_HOME', map.expedition.isBattleExpedition, 2000 },
-        { '', map.home.isHome },
+        { 'EXPEDITION_REWARD_RETURN_TO_HOME', o.expedition.isBattleExpedition, 2000 },
+        { '', o.home.isHome },
       }))
-      return makeAction(newstateTypes), state
+      return makeAction(newstateTypes)
     end
 
     return nil
   end))
 end
 
-return function(state)
-  state.expeditionReward = {}
-  return expeditionReward
-end
+return expeditionReward

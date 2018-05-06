@@ -1,7 +1,7 @@
-local eq = require 'EventQuery'
-local co = require 'Co'
-local Promise = require 'Promise'
-local gettimeFunc = require 'GetTime'
+local eq = require '../lib/event-query'
+local co = require '../lib/co'
+local Promise = require '../lib/promise'
+local gettimeFunc = require '../lib/get-time'
 local c = coroutine
 
 local combineListener = function(target, ...)

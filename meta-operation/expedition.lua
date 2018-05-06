@@ -1,5 +1,5 @@
-local battle = require 'BaseOperate__battle';
-local home = require 'BaseOperate__home';
+local battle = require './battle';
+local home = require './home';
 
 local expedition = {}
 

@@ -1,4 +1,4 @@
-local battle = require 'BaseOperate__battle';
+local battle = require './battle';
 
 local campaign = {}
 

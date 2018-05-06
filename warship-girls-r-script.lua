@@ -1,11 +1,16 @@
 -- 载入 lua-require
 require('lua-require')({
-  osExit = lua_exit,
+  osExit = function()
+    lua_exit()
+    mSleep(1)
+    mSleep(1)
+    mSleep(1)
+  end,
 })
 
-runCount = 1
 isPause = false
 luaExisted = false
+useNlog = true
 function beforeUserExit()
   luaExisted = true
 end
@@ -18,9 +23,9 @@ end
 initLog('warship-girls-r-script', 1)
 
 require 'TSLib'
-require './table-polyfill'
-require './string-polyfill'
-require 'console'
+require './lib/table-polyfill'
+require './lib/string-polyfill'
+require './lib/console'
 require './utils/keep-screen-hock'
 require './utils/multi-color-hock'
 require './utils/device-orient-hock'
@@ -30,47 +35,25 @@ EventQuery = require './lib/event-query'
 Promise = require './lib/promise'
 
 local co = require './lib/co'
-local Promise = require './lib/promise'
-local sz = require 'sz'
-local socket = require 'szocket.core'
-local gomission = require 'GoMission'
-local stepLabel = (require 'StepLabel').init('stopbtn')
-local optionsLabel = require 'optionsLabel'
-local lfs = require 'lfs'
+local socket = require 'socket'
+local createChain = require('./lib/mission-chain').createChain
+local missionsList = require './missions/index'
+local stepLabel = (require './utils/step-label').init('stopbtn')
+local optionsLabel = require './options-label'
+local store = require './store'
+local lfs = require './utils/lfs'
+require './utils/clear-log'
+
+console.log('version 20180506-1847')
 
 Promise.setStackTraceback(setStackTraceback or false)
-
--- 删除大于7天并且大于50条的log，避免日志过大
-local _ = (function()
-  local logPath = userPath() .. '/log'
-  local dirs = lfs.dir(logPath)
-  local sevenDayBeforeTime = os.time() - (7 * 24 * 60 * 60)
-  local theTime = os.time()
-
-  local dirsLen = #dirs
-
-  dirs = table.filter(dirs, function(e, index)
-    if (string.startWith(e, 'warship-girls-r-script_')) then
-      local res = string.match(e, 'warship%-girls%-r%-script_(%d+)')
-      res = tonumber(res) or theTime
-      if ((index < (dirsLen - 50)) and (res < sevenDayBeforeTime)) then
-        return true
-      end
-    end
-    return false
-  end)
-
-  for k, v in ipairs(dirs) do
-    lfs.rm(logPath .. '/' .. v)
-  end
-end)()
 
 local c = coroutine
 
 
 local sleepPromise = function(ms)
   return Promise.new(function(resolve)
-    eq.setTimeout(resolve, ms)
+    EventQuery.setTimeout(resolve, ms)
   end)
 end
 
@@ -86,9 +69,17 @@ mSleep(500)
 
 closeStepLabel()
 local ret, settings = optionsLabel()
+stepLabel.setStepLabelContent('正在载入...')
+if (ret ~= 1) then
+  stepLabel.setStepLabelContent('取消运行')
+  mSleep(100000)
+  lua_exit()
+end
+
+store.settings = settings
 
 -- 注册按钮事件，目前只有暂停按钮
-eq.setButotnListener('stopbtn', function()
+EventQuery.setButotnListener('stopbtn', function()
   if (isPause) then
     --    stepLabel.setPrefix('')
     --    isPause = false
@@ -98,9 +89,6 @@ eq.setButotnListener('stopbtn', function()
   end
 end)
 
-gomission.init(mapMaker(), settings)
-
-local theMissionsQuery = {}
 
 co(c.create(function()
   if (settings.missionEnable
@@ -111,8 +99,8 @@ co(c.create(function()
     or settings.disintegrateShipEnable
     or settings.campaignEnable) then
 
-    -- 插入一个特殊的任务表示这是队列的开头
-    table.insert(theMissionsQuery, { isBase = true, isStart = true })
+    local theMissionsQuery = {}
+
     -- 是否运行任务
     if (settings.missionEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'MISSION_START' })
@@ -142,89 +130,40 @@ co(c.create(function()
     if (settings.disintegrateShipEnable) then
       table.insert(theMissionsQuery, { isBase = true, type = 'DISINTEGRATE_SHIP_INIT' })
     end
-    -- 插入一个特殊任务表示这是队列的结尾
-    table.insert(theMissionsQuery, { isBase = true, isEnd = true })
 
-    runCount = 1
-    local runStartTime = socket.gettime() * 1000
-    while (true) do
-      -- 任务队列里没有任务则停止运行
-      local action = theMissionsQuery[1]
-      if ((#theMissionsQuery == 0) or (not action)) then
-        break
-      end
+    local theChain = createChain(missionsList)
 
-      if (action.isStart) then
-        runStartTime = socket.gettime() * 1000
-      end
+    -- 启动任务链
+    c.yield(theChain.runMission({
+      missionsQuery = theMissionsQuery,
+      -- 在每次循环执行过 action 之后调用
+      afterAction = function(res)
+        local action = res.action
+        local nextAction = res.nextAction
+        local missionsQuery = res.missionsQuery
+        local runStartTime = res.runStartTime
 
-      -- 如果是队列原有任务则将其加入队列末尾，以保证能一直循环
-      -- 如果是从原有任务衍生的下一步任务，则不加入队列末尾，会被新的下一步任务替换或者删除
-      if (action.isBase) then
-        table.insert(theMissionsQuery, action)
-      end
-
-      -- 执行一个action
-      if (action.type) then
-        local newAction = c.yield(gomission.next(action))
-        if (type(newAction) == 'table') then
-          if (newAction.addToStart) then
-            table.insert(theMissionsQuery, 1, newAction)
-          else
-            theMissionsQuery[1] = newAction
+        return co(c.create(function()
+          if (action.isEnd) then
+            local diffTime = (socket.gettime() * 1000) - runStartTime
+            if (diffTime < (settings.missionsInterval * 1000)) then
+              local remainTime = (settings.missionsInterval * 1000) - diffTime
+              stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒')
+              while (remainTime > 0) do
+                stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒', true)
+                c.yield(sleepPromise(1000))
+                remainTime = remainTime - 1000
+              end
+            end
           end
-        else
-          table.remove(theMissionsQuery, 1)
-        end
-      else
-        table.remove(theMissionsQuery, 1)
-      end
-
-      -- 如果点了暂停按钮
-      if (isPause) then
-        stepLabel.setPrefix('')
-        local lasttext = stepLabel.getText()
-        stepLabel.setStepLabelContent('暂停')
-        c.yield(Promise.new(function(resolve)
-          local theEid
-          theEid = eq.setButotnListener('stopbtn', function()
-            isPause = false
-            stepLabel.setPrefix('')
-            eq.clearButotnListener(theEid)
-            resolve()
-          end)
         end))
-        stepLabel.setStepLabelContent(lasttext)
-      end
-
-      if (action.isEnd) then
-        local diffTime = (socket.gettime() * 1000) - runStartTime
-        if (diffTime < (settings.missionsInterval * 1000)) then
-          local remainTime = (settings.missionsInterval * 1000) - diffTime
-          stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒')
-          while (remainTime > 0) do
-            stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒', true)
-            c.yield(sleepPromise(1000))
-            remainTime = remainTime - 1000
-          end
-        end
-
-        if (luaExisted) then
-          break
-        end
-
-        runCount = runCount + 1
-      end
-
-      -- 如果是任务队列结尾标志，则count+1
-    end
+      end,
+    }))
   end
 end)).catch(function(err)
   wLog("warship-girls-r-script", "[DATE] " .. err);
-  console.log(err)
-  eq.setImmediate(function()
-    error(err)
-  end)
+  nLog(err)
+  EventQuery.setImmediate(function() error(err) end)
 end)
 
-eq.run()
+EventQuery.run()
