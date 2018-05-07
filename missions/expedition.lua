@@ -5,6 +5,7 @@ local makeAction = (require './utils').makeAction
 local sleepPromise = (require './utils').sleepPromise
 local setScreenListeners = (require './utils').setScreenListeners
 local commonListenerFactory = require './common-listener'
+local vibratorPromise = require '../utils/vibrator-promise'
 
 local getHomeListener = (require './common-listener').getHomeListener
 local getLoginListener = (require './common-listener').getLoginListener
@@ -418,9 +419,7 @@ local expedition = function(action)
       -- 震动提示不能远征
       if (settings.expeditionAlertWhenNoHp) then
         if settings.alertUseVibrate then
-          vibrator(500)
-          mSleep(500)
-          vibrator(500)
+          vibratorPromise(3)
         end
         if settings.alertUsePushbullet then
           local datestr = os.date('%Y-%m-%d %X')

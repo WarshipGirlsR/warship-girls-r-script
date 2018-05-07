@@ -182,12 +182,12 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   local result = true
   -- 槽位上没有船
   local list = {
-    { 118, 274, 0x94c242 },
-    { 118, 413, 0x8cbe42 },
-    { 118, 551, 0x8cbe42 },
-    { 118, 690, 0x94c242 },
-    { 118, 829, 0x8cbe42 },
-    { 118, 967, 0x8cbe42 },
+    { 469, 331, 0xbdae9c },
+    { 469, 470, 0xb5aa94 },
+    { 469, 608, 0xb5ae9c },
+    { 469, 747, 0xbdae9c },
+    { 469, 886, 0xb5aa94 },
+    { 469, 1024, 0xb5ae9c },
   }
   -- 满血
   local list23 = {
@@ -210,12 +210,13 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)
   -- 有大破
   local list21 = {
     { 469, 332, 0xef0c10 },
-    { 469, 471, 0xef0c08 },
+    { 469, 470, 0xce0808 },
     { 469, 609, 0xef0c08 },
     { 469, 748, 0xef0c10 },
     { 469, 887, 0xef0c08 },
     { 469, 1026, 0xef0c10 },
   }
+  console.log(checkLevel)
   if (checkLevel == 3) then
     -- 有不满血
     for i = 1, #list do

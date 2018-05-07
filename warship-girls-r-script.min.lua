@@ -370,12 +370,12 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)\
   local result = true\
   -- 槽位上没有船\
   local list = {\
-    { 118, 274, 0x94c242 },\
-    { 118, 413, 0x8cbe42 },\
-    { 118, 551, 0x8cbe42 },\
-    { 118, 690, 0x94c242 },\
-    { 118, 829, 0x8cbe42 },\
-    { 118, 967, 0x8cbe42 },\
+    { 469, 331, 0xbdae9c },\
+    { 469, 470, 0xb5aa94 },\
+    { 469, 608, 0xb5ae9c },\
+    { 469, 747, 0xbdae9c },\
+    { 469, 886, 0xb5aa94 },\
+    { 469, 1024, 0xb5ae9c },\
   }\
   -- 满血\
   local list23 = {\
@@ -398,12 +398,13 @@ campaign.isReadyBattlePageShipHPSafe = function(checkLevel)\
   -- 有大破\
   local list21 = {\
     { 469, 332, 0xef0c10 },\
-    { 469, 471, 0xef0c08 },\
+    { 469, 470, 0xce0808 },\
     { 469, 609, 0xef0c08 },\
     { 469, 748, 0xef0c10 },\
     { 469, 887, 0xef0c08 },\
     { 469, 1026, 0xef0c10 },\
   }\
+  console.log(checkLevel)\
   if (checkLevel == 3) then\
     -- 有不满血\
     for i = 1, #list do\
@@ -1175,6 +1176,37 @@ repair.clickBackToHomeBtn = function()\
 end\
 \
 return repair" }
+
+
+package.sourceCode = package.sourceCode or {}
+package.sourceCode["./utils/vibrator-promise.lua"] = { path = "./utils/vibrator-promise.lua", name = "./utils/vibrator-promise.lua", source = "if type(Promise) ~= 'table' then\
+  error('SleepPromise need Promise module to work. Please require \\'Promise\\' as global variable.', 2)\
+end\
+if type(EventQuery) ~= 'table' then\
+  error('SleepPromise need EventQuery module to work. Please require \\'EventQuery\\' as global variableß .', 2)\
+end\
+\
+local sleepPromise = function(ms)\
+  return Promise.new(function(resolve)\
+    EventQuery.setTimeout(resolve, ms)\
+  end)\
+end\
+\
+local vibratorPromise = function(num, ms)\
+  num = num or 1\
+  ms = ms or 500\
+  local res = Promise.resolve(1)\
+  for key = 1, num do\
+    res = res.andThen(function()\
+      return vibrator()\
+    end).andThen(function()\
+      return sleepPromise(ms)\
+    end)\
+  end\
+  return res\
+end\
+return vibratorPromise\
+" }
 
 
 package.sourceCode = package.sourceCode or {}
@@ -4883,6 +4915,7 @@ local makeAction = (require './utils').makeAction\
 local sleepPromise = (require './utils').sleepPromise\
 local setScreenListeners = (require './utils').setScreenListeners\
 local commonListenerFactory = require './common-listener'\
+local vibratorPromise = require '../utils/vibrator-promise'\
 \
 local getHomeListener = (require './common-listener').getHomeListener\
 local getLoginListener = (require './common-listener').getLoginListener\
@@ -5296,9 +5329,7 @@ local expedition = function(action)\
       -- 震动提示不能远征\
       if (settings.expeditionAlertWhenNoHp) then\
         if settings.alertUseVibrate then\
-          vibrator(500)\
-          mSleep(500)\
-          vibrator(500)\
+          vibratorPromise(3)\
         end\
         if settings.alertUsePushbullet then\
           local datestr = os.date('%Y-%m-%d %X')\
@@ -7985,7 +8016,11 @@ if tsint >= 170 then\
   fontSize = 7\
 end\
 \
-fwShowWnd('steplabel', 350, 50, 300, 100, 0)\
+if tsint < 230 then\
+  fwShowWnd('steplabel', 650, 50, 300, 100, 0)\
+else\
+  fwShowWnd('steplabel', 650, 50, 950, 150, 0)\
+end\
 \
 StepLable.init = function(labelId)\
   StepLable.labelId = labelId\

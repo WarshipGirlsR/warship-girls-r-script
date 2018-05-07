@@ -13,7 +13,11 @@ if tsint >= 170 then
   fontSize = 7
 end
 
-fwShowWnd('steplabel', 350, 50, 300, 100, 0)
+if tsint < 230 then
+  fwShowWnd('steplabel', 650, 50, 300, 100, 0)
+else
+  fwShowWnd('steplabel', 650, 50, 950, 150, 0)
+end
 
 StepLable.init = function(labelId)
   StepLable.labelId = labelId
