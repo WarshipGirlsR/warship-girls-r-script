@@ -2706,13 +2706,12 @@ battle.isNewShipPage = function()\
   local __keepScreenState = keepScreenState\
   if (not __keepScreenState) then keepScreen(true) end\
   local list = {\
-    { 110, 865, 0xadaaad },\
-    { 114, 984, 0xcecace },\
-    { 582, 1013, 0x00558c },\
-    { 1386, 1012, 0x085994 },\
-    { 1768, 964, 0x085994 },\
-    { 1803, 951, 0xcecece },\
-    { 1844, 949, 0x5a5d5a },\
+    { 110, 865, 0xadaaad }, { 114, 984, 0xcecace },\
+    { 1386, 1012, 0x085994 }, { 1768, 964, 0x085994 },\
+    { 1803, 951, 0xcecece }, { 1844, 949, 0x5a5d5a },\
+    { 114, 940, 0xcecace }, { 73, 996, 0x636563 },\
+    { 482, 1018, 0x0861a4 }, { 1805, 981, 0xcecece },\
+    { 1845, 975, 0x6b656b }, { 1848, 921, 0x525552 },\
   }\
   local result = multiColorS(list)\
   if (not __keepScreenState) then keepScreen(false) end\
@@ -4043,10 +4042,7 @@ local campaign = function(action)\
       o.campaign.clickBattleStartBtn()\
       -- 如果没有开始说明无法战役\
 \
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {\
-        { 'CAMPAIGN_GO_A_EXERCISE', o.campaign.isReadyBattlePage, 3000 },\
-      }))\
-      return makeAction(newstateTypes)\
+      return makeAction('CAMPAIGN_GO_A_EXERCISE')\
 \
     elseif (action.type == 'CAMPAIGN_GO_A_EXERCISE') then\
 \
@@ -6462,6 +6458,7 @@ local battle = function(action)\
       o.battle.clickVictoryPageContinueBtn()\
       stepLabel.setStepLabelContent('2-67.等待胜利继续界面')\
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {\
+        { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },\
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal, 2000 },\
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },\
         { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2 },\
@@ -6478,6 +6475,8 @@ local battle = function(action)\
       o.battle.clickVictoryPageContinueBtn2()\
       stepLabel.setStepLabelContent('2-69.等待大破警告，新船，下回合窗口，勋章对话框，home')\
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {\
+        { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },\
+        { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },\
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },\
         { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2, 2000 },\
         { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal },\
@@ -6494,6 +6493,9 @@ local battle = function(action)\
       stepLabel.setStepLabelContent('2-71.等待新船，下回合窗口，勋章对话框，home')\
       store.battle.HPIsSafe = false\
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {\
+        { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },\
+        { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },\
+        { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },\
         { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2, 2000 },\
         { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },\
         { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal },\
@@ -6509,6 +6511,10 @@ local battle = function(action)\
       stepLabel.setStepLabelContent('2-73.等待新船，下回合窗口，勋章对话框，home')\
       store.battle.HPIsSafe = false\
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {\
+        { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },\
+        { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },\
+        { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },\
+        { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2 },\
         { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },\
         { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },\
         { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage },\
@@ -6523,6 +6529,10 @@ local battle = function(action)\
       o.battle.clickNewShip()\
       stepLabel.setStepLabelContent('2-75.等待新船锁定窗口，下回合窗口，勋章对话框，home')\
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {\
+        { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },\
+        { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },\
+        { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },\
+        { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2 },\
         { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },\
         { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },\
         { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 2000 },\
@@ -6537,6 +6547,10 @@ local battle = function(action)\
       o.battle.clickNewShipPageLockModalOkBtn()\
       stepLabel.setStepLabelContent('2-77.等待下回合窗口，勋章对话框，home')\
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {\
+        { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },\
+        { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },\
+        { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },\
+        { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2 },\
         { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },\
         { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },\
         { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 2000 },\

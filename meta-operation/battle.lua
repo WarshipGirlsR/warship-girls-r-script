@@ -855,13 +855,12 @@ battle.isNewShipPage = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 110, 865, 0xadaaad },
-    { 114, 984, 0xcecace },
-    { 582, 1013, 0x00558c },
-    { 1386, 1012, 0x085994 },
-    { 1768, 964, 0x085994 },
-    { 1803, 951, 0xcecece },
-    { 1844, 949, 0x5a5d5a },
+    { 110, 865, 0xadaaad }, { 114, 984, 0xcecace },
+    { 1386, 1012, 0x085994 }, { 1768, 964, 0x085994 },
+    { 1803, 951, 0xcecece }, { 1844, 949, 0x5a5d5a },
+    { 114, 940, 0xcecace }, { 73, 996, 0x636563 },
+    { 482, 1018, 0x0861a4 }, { 1805, 981, 0xcecece },
+    { 1845, 975, 0x6b656b }, { 1848, 921, 0x525552 },
   }
   local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end

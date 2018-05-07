@@ -301,10 +301,7 @@ local campaign = function(action)
       o.campaign.clickBattleStartBtn()
       -- 如果没有开始说明无法战役
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
-        { 'CAMPAIGN_GO_A_EXERCISE', o.campaign.isReadyBattlePage, 3000 },
-      }))
-      return makeAction(newstateTypes)
+      return makeAction('CAMPAIGN_GO_A_EXERCISE')
 
     elseif (action.type == 'CAMPAIGN_GO_A_EXERCISE') then
 
