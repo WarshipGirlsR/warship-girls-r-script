@@ -2762,6 +2762,8 @@ battle.isNextLevelStepModal = function()\
     { 1353, 751, 0xcecece },\
     { 734, 705, 0xe6863a },\
     { 1196, 702, 0x42cef7 },\
+  }\
+  local list2 = {\
     -- 前进\
     { 659, 723, 0xe68131 },\
     { 671, 725, 0x5a3d29 },\
@@ -2773,6 +2775,8 @@ battle.isNextLevelStepModal = function()\
     { 780, 739, 0x4a2408 },\
     { 787, 748, 0xf7fbff },\
     { 798, 760, 0xbd5100 },\
+  }\
+  local list3 = {\
     -- 回港\
     { 1109, 729, 0x4acaf7 },\
     { 1122, 729, 0xf7f7f7 },\
@@ -2785,7 +2789,7 @@ battle.isNextLevelStepModal = function()\
     { 1225, 755, 0x082031 },\
     { 1236, 771, 0xffffff },\
   }\
-  local result = multiColorS(list)\
+  local result = multiColorS(list) and multiColorS(list2) and multiColorS(list3)\
   if (not __keepScreenState) then keepScreen(false) end\
   return result\
 end\
@@ -6551,7 +6555,7 @@ local battle = function(action)\
         { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2 },\
         { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },\
         { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },\
-        { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage },\
+        { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 500 },\
         { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal },\
       }))\
       return makeAction(newstateTypes)\
@@ -6559,7 +6563,6 @@ local battle = function(action)\
     elseif (action.type == 'BATTLE_NEW_SHIP_PAGE') then\
 \
       stepLabel.setStepLabelContent('2-74.获取新船')\
-      c.yield(sleepPromise(500))\
       o.battle.clickNewShip()\
       stepLabel.setStepLabelContent('2-75.等待新船锁定窗口，下回合窗口，勋章对话框，home')\
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {\

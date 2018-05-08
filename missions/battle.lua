@@ -597,7 +597,7 @@ local battle = function(action)
         { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2 },
         { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },
         { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },
-        { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage },
+        { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 500 },
         { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal },
       }))
       return makeAction(newstateTypes)
@@ -605,7 +605,6 @@ local battle = function(action)
     elseif (action.type == 'BATTLE_NEW_SHIP_PAGE') then
 
       stepLabel.setStepLabelContent('2-74.获取新船')
-      c.yield(sleepPromise(500))
       o.battle.clickNewShip()
       stepLabel.setStepLabelContent('2-75.等待新船锁定窗口，下回合窗口，勋章对话框，home')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
