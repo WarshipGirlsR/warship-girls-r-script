@@ -10,7 +10,6 @@ require('lua-require')({
 
 isPause = false
 luaExisted = false
-useNlog = true
 function beforeUserExit()
   luaExisted = true
 end

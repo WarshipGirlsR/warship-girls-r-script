@@ -1179,37 +1179,6 @@ return repair" }
 
 
 package.sourceCode = package.sourceCode or {}
-package.sourceCode["./utils/vibrator-promise.lua"] = { path = "./utils/vibrator-promise.lua", name = "./utils/vibrator-promise.lua", source = "if type(Promise) ~= 'table' then\
-  error('SleepPromise need Promise module to work. Please require \\'Promise\\' as global variable.', 2)\
-end\
-if type(EventQuery) ~= 'table' then\
-  error('SleepPromise need EventQuery module to work. Please require \\'EventQuery\\' as global variableß .', 2)\
-end\
-\
-local sleepPromise = function(ms)\
-  return Promise.new(function(resolve)\
-    EventQuery.setTimeout(resolve, ms)\
-  end)\
-end\
-\
-local vibratorPromise = function(num, ms)\
-  num = num or 1\
-  ms = ms or 500\
-  local res = Promise.resolve(1)\
-  for key = 1, num do\
-    res = res.andThen(function()\
-      return vibrator()\
-    end).andThen(function()\
-      return sleepPromise(ms)\
-    end)\
-  end\
-  return res\
-end\
-return vibratorPromise\
-" }
-
-
-package.sourceCode = package.sourceCode or {}
 package.sourceCode["./meta-operation/expedition.lua"] = { path = "./meta-operation/expedition.lua", name = "./meta-operation/expedition.lua", source = "local battle = require './battle';\
 local home = require './home';\
 \
@@ -1341,7 +1310,7 @@ expedition.isThisExpeditionPageHasReward = function()\
   local __keepScreenState = keepScreenState\
   if (not __keepScreenState) then keepScreen(true) end\
   local list1 = {\
-    { 821, 77, 0x9c5921 },\
+    { 1378, 50, 0x9c4110 },\
     { 1539, 149, 0xb54d08 },\
   }\
   local list2 = {\
@@ -1419,7 +1388,7 @@ expedition.isChapterCanExpedition = function(n)\
   local list = {}\
   if (n == 1) then\
     list = {\
-      { 821, 77, 0x0071b5 },\
+      { 1361, 49, 0x005dad },\
       { 1539, 149, 0x0092c5 },\
     }\
   elseif (n == 2) then\
@@ -2865,6 +2834,37 @@ function sendToPushBullet(token, title, body)\
 end\
 \
 return sendToPushBullet\
+" }
+
+
+package.sourceCode = package.sourceCode or {}
+package.sourceCode["./utils/vibrator-promise.lua"] = { path = "./utils/vibrator-promise.lua", name = "./utils/vibrator-promise.lua", source = "if type(Promise) ~= 'table' then\
+  error('SleepPromise need Promise module to work. Please require \\'Promise\\' as global variable.', 2)\
+end\
+if type(EventQuery) ~= 'table' then\
+  error('SleepPromise need EventQuery module to work. Please require \\'EventQuery\\' as global variableß .', 2)\
+end\
+\
+local sleepPromise = function(ms)\
+  return Promise.new(function(resolve)\
+    EventQuery.setTimeout(resolve, ms)\
+  end)\
+end\
+\
+local vibratorPromise = function(num, ms)\
+  num = num or 1\
+  ms = ms or 500\
+  local res = Promise.resolve(1)\
+  for key = 1, num do\
+    res = res.andThen(function()\
+      return vibrator()\
+    end).andThen(function()\
+      return sleepPromise(ms)\
+    end)\
+  end\
+  return res\
+end\
+return vibratorPromise\
 " }
 
 
@@ -4933,7 +4933,9 @@ local o = {\
   expedition = moExpedition,\
 }\
 \
-store.expedition = store.expedition or {}\
+store.expedition = store.expedition or {\
+  needExpedition = true,\
+}\
 \
 local expedition = function(action)\
   local settings = store.settings\
@@ -5959,6 +5961,7 @@ local setScreenListeners = (require '../missions/utils').setScreenListeners\
 local getHomeListener = (require '../missions/common-listener').getHomeListener\
 local getLoginListener = (require '../missions/common-listener').getLoginListener\
 local getComListener = (require '../missions/common-listener').getComListener\
+local vibratorPromise = require '../utils/vibrator-promise'\
 local store = require '../store'\
 \
 local sendToPushBullet = require '../utils/ajax-sent-to-push-bullet'\
@@ -6611,9 +6614,7 @@ local battle = function(action)\
       -- 提示不能战斗\
       if (settings.battleAlertWhenNoHp) then\
         if settings.alertUseVibrate then\
-          vibrator(500)\
-          mSleep(500)\
-          vibrator(500)\
+          vibratorPromise(3)\
         end\
         if settings.alertUsePushbullet then\
           local datestr = os.date('%Y-%m-%d %X')\
@@ -10624,7 +10625,6 @@ require('lua-require')({\
 \
 isPause = false\
 luaExisted = false\
-useNlog = true\
 function beforeUserExit()\
   luaExisted = true\
 end\

@@ -7,6 +7,7 @@ local setScreenListeners = (require '../missions/utils').setScreenListeners
 local getHomeListener = (require '../missions/common-listener').getHomeListener
 local getLoginListener = (require '../missions/common-listener').getLoginListener
 local getComListener = (require '../missions/common-listener').getComListener
+local vibratorPromise = require '../utils/vibrator-promise'
 local store = require '../store'
 
 local sendToPushBullet = require '../utils/ajax-sent-to-push-bullet'
@@ -659,9 +660,7 @@ local battle = function(action)
       -- 提示不能战斗
       if (settings.battleAlertWhenNoHp) then
         if settings.alertUseVibrate then
-          vibrator(500)
-          mSleep(500)
-          vibrator(500)
+          vibratorPromise(3)
         end
         if settings.alertUsePushbullet then
           local datestr = os.date('%Y-%m-%d %X')

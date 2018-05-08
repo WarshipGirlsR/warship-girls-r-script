@@ -129,7 +129,7 @@ expedition.isThisExpeditionPageHasReward = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list1 = {
-    { 821, 77, 0x9c5921 },
+    { 1378, 50, 0x9c4110 },
     { 1539, 149, 0xb54d08 },
   }
   local list2 = {
@@ -207,7 +207,7 @@ expedition.isChapterCanExpedition = function(n)
   local list = {}
   if (n == 1) then
     list = {
-      { 821, 77, 0x0071b5 },
+      { 1361, 49, 0x005dad },
       { 1539, 149, 0x0092c5 },
     }
   elseif (n == 2) then

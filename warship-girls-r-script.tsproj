@@ -1,6 +1,7 @@
 [res]
 [lib]
 [file]
-warship-girls-r-script.min.lua
+warship-girls-r-script-min.lua
 CheckColor.lua
 console.lua
+debug-warship-girls-r-script.lua

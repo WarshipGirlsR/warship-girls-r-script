@@ -23,7 +23,9 @@ local o = {
   expedition = moExpedition,
 }
 
-store.expedition = store.expedition or {}
+store.expedition = store.expedition or {
+  needExpedition = true,
+}
 
 local expedition = function(action)
   local settings = store.settings
