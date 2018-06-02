@@ -259,14 +259,29 @@ battle.isQuickSupplyModal = function()
     { 554, 184, 0xffffff }, { 547, 209, 0xffffff },
     { 505, 205, 0xfffbff },
   }
-  local result = multiColorS(list)
+  -- 带支援的快速补给
+  local list2 = {
+    { 152, 173, 0x0081c5 }, { 922, 173, 0x00619c },
+    { 1601, 174, 0xde1c00 }, { 153, 855, 0xd6cabd },
+    { 1552, 853, 0xc5b69c }, { 274, 172, 0x085d9c },
+    { 296, 183, 0x004d7b }, { 317, 182, 0x004973 },
+    { 342, 190, 0xe6ebef }, { 302, 190, 0xffffff },
+    { 361, 185, 0xffffff }, { 400, 184, 0xffffff },
+    { 429, 183, 0xffffff }, { 457, 181, 0xf7fbff },
+    { 449, 201, 0x105d94 }, { 357, 203, 0x105d94 },
+    { 371, 205, 0x106194 }, { 390, 205, 0x105d94 },
+    { 442, 202, 0xffffff }, { 1265, 767, 0x42caef },
+    { 1503, 805, 0x0096c5 }, { 1446, 780, 0xffffff },
+    { 1294, 780, 0x42c2ef }, { 1363, 800, 0xffffff },
+  }
+  local result = multiColorS(list) or multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
 
 -- 点击快速补给
 battle.clickReadyBattlePageQuickSupplyModalOkBtn = function()
-  tap(1269, 785, 100)
+  tap(1310, 793, 100)
 end
 
 -- 点击快速修理

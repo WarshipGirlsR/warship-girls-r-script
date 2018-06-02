@@ -2,6 +2,46 @@ local json = require './lib/json'
 local stepLabel = require './utils/step-label'
 
 local width, height = getScreenSize()
+
+-- 从name提取路径
+local nameToTablePath = function(name)
+  local tablePath = {}
+  local tmp = name
+  while tmp and tmp ~= '' do
+    if tmp:match('^%[') then
+      local res = tmp:match('^%[([^%]]*)%]')
+      local num = tonumber(res)
+      table.insert(tablePath, num and num or res)
+      tmp = tmp:gsub('^%[[^%]]*%]', '')
+    elseif tmp:match('^%.') then
+      table.insert(tablePath, '')
+      tmp = tmp:gsub('^%.', '')
+    else
+      table.insert(tablePath, tmp:match('^[^%[^%]^%.]*'))
+      tmp = tmp:gsub('^[^%[^%]^%.]*', ''):gsub('^[%.]', '')
+    end
+  end
+  return tablePath
+end
+
+-- 根据路径在 table 中添加一个值
+local setValue = function(tab, thePath, value)
+  thePath = thePath or {}
+  if type(thePath) == 'string' then
+    thePath = nameToTablePath(thePath)
+  end
+  local headPoint = tab
+  for k, v in ipairs(thePath) do
+    if k < #thePath then
+      headPoint[v] = headPoint[v] or {}
+      headPoint = headPoint[v]
+    else
+      headPoint[v] = value
+    end
+  end
+  return tab
+end
+
 -- 设置
 return function()
   local settingTable = {
@@ -212,15 +252,6 @@ return function()
       {
         {
           ['type'] = 'Label',
-          ['text'] = '任务设置',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-      },
-      {
-        {
-          ['type'] = 'Label',
           ['text'] = '远征设置',
           ['size'] = 15,
           ['align'] = 'left',
@@ -319,179 +350,6 @@ return function()
           ['color'] = '0,0,0',
         },
       },
-      {
-        {
-          ['type'] = 'Label',
-          ['text'] = '出征设置',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '章节',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleChapter',
-          ['type'] = 'RadioGroup',
-          ['list'] = '1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,5-5,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '0',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '舰队',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleFleet',
-          ['type'] = 'RadioGroup',
-          ['list'] = '1队,2队,3队,4队',
-          ['select'] = '0',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '追击',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battlePursue',
-          ['type'] = 'RadioGroup',
-          ['list'] = '是,否',
-          ['select'] = '1',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '追击Boss',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battlePursueBoss',
-          ['type'] = 'RadioGroup',
-          ['list'] = '是,否',
-          ['select'] = '1',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '使用快修',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleQuickRepair',
-          ['type'] = 'RadioGroup',
-          ['list'] = '不满血,中破,大破,不使用',
-          ['select'] = '1',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '迂回',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleRoundabout',
-          ['type'] = 'RadioGroup',
-          ['list'] = '是,否',
-          ['select'] = '0',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '不能出征则报警',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleAlertWhenNoHp',
-          ['type'] = 'RadioGroup',
-          ['list'] = '是,否',
-          ['select'] = '0',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '最多几战',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleMaxBattleNum',
-          ['type'] = 'RadioGroup',
-          ['list'] = '1,2,3,4,5',
-          ['select'] = '0',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '阵型',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleFormation',
-          ['type'] = 'RadioGroup',
-          ['list'] = '单纵,复纵,轮型,梯形,单横',
-          ['select'] = '1',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '6-1a点遇到航母SL',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleRebootAt6_1AMeetCV',
-          ['type'] = 'RadioGroup',
-          ['list'] = '是,否',
-          ['select'] = '1',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '6-1a点遇到雷巡SL',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleRebootAt6_1AMeetCit',
-          ['type'] = 'RadioGroup',
-          ['list'] = '是,否',
-          ['select'] = '1',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = '没遇到补给就SL（捞胖次）',
-          ['size'] = 15,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-        {
-          ['id'] = 'battleRebootAtNotMeetAP',
-          ['type'] = 'RadioGroup',
-          ['list'] = '是,否',
-          ['select'] = '1',
-        },
-        {
-          ['type'] = 'Label',
-          ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
-          ['size'] = 50,
-          ['align'] = 'left',
-          ['color'] = '0,0,0',
-        },
-      },
-
       {
         {
           ['type'] = 'Label',
@@ -764,7 +622,487 @@ return function()
           ['color'] = '0,0,0',
         },
       },
-    }
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '出征设置',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '章节',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleChapter',
+          ['type'] = 'RadioGroup',
+          ['list'] = '1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,5-5,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4,7-5',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '舰队',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleFleet',
+          ['type'] = 'RadioGroup',
+          ['list'] = '1队,2队,3队,4队',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '使用快修',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleQuickRepair',
+          ['type'] = 'RadioGroup',
+          ['list'] = '不满血,中破,大破,不使用',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '迂回',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRoundabout',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '不能出征则报警',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleAlertWhenNoHp',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '最多几战',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleMaxBattleNum',
+          ['type'] = 'RadioGroup',
+          ['list'] = '1,2,3,4,5,6',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '特殊功能',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '6-1a点遇到航母SL',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRebootAt6_1AMeetCV',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '6-1a点遇到雷巡SL',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRebootAt6_1AMeetCit',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '没遇到补给就SL（捞胖次）',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleRebootAtNotMeetAP',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '战斗选项',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '战斗选项使用统一配置',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOptionUseMain',
+          ['type'] = 'RadioGroup',
+          ['list'] = '统一配置(在本页配置),单独配置(在后面的页面配置)',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[main]battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '单纵,复纵,轮型,梯形,单横',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '遇到潜艇自动切换单横阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[main]autoChangeFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '追击',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[main]battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+      },
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '第1战 -------------------------',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[1]battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '单纵,复纵,轮型,梯形,单横',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '遇到潜艇自动切换单横阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[1]autoChangeFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '追击',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[1]battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+      },
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '第2战 -------------------------',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[2]battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '单纵,复纵,轮型,梯形,单横',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '遇到潜艇自动切换单横阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[2]autoChangeFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '追击',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[2]battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+      },
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '第3战 -------------------------',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[3]battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '单纵,复纵,轮型,梯形,单横',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '遇到潜艇自动切换单横阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[3]autoChangeFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '追击',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[3]battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+      },
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '第4战 -------------------------',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[4]battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '单纵,复纵,轮型,梯形,单横',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '遇到潜艇自动切换单横阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[4]autoChangeFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '追击',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[4]battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+      },
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '第5战 -------------------------',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[5]battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '单纵,复纵,轮型,梯形,单横',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '遇到潜艇自动切换单横阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[5]autoChangeFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '追击',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[5]battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+      },
+      {
+        {
+          ['type'] = 'Label',
+          ['text'] = '第6战 -------------------------',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[6]battleFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '单纵,复纵,轮型,梯形,单横',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '遇到潜艇自动切换单横阵型',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[6]autoChangeFormation',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '追击',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleOption[6]battlePursue',
+          ['type'] = 'RadioGroup',
+          ['list'] = '是,否',
+          ['select'] = '1',
+        },
+      },
+    },
   }
 
   local settingTableStr = json.encode(settingTable);
@@ -880,7 +1218,7 @@ return function()
       '4-1', '4-2', '4-3', '4-4',
       '5-1', '5-2', '5-3', '5-4', '5-5',
       '6-1', '6-2', '6-3', '6-4',
-      '7-1', '7-2', '7-3', '7-4',
+      '7-1', '7-2', '7-3', '7-4', '7-5'
     })
     return list[battleChapter] or '1-1'
   end)(settings.battleChapter)
@@ -889,16 +1227,6 @@ return function()
     local list = transStrToTable({ 1, 2, 3, 4, })
     return list[battleFleet] or 1
   end)(settings.battleFleet)
-  -- 是否追击
-  settings.battlePursue = (function(battlePursue)
-    local list = transStrToTable({ true, false, })
-    return list[battlePursue] or false
-  end)(settings.battlePursue)
-  -- 是否追击Boss
-  settings.battlePursueBoss = (function(battlePursueBoss)
-    local list = transStrToTable({ true, false, })
-    return list[battlePursueBoss] or false
-  end)(settings.battlePursueBoss)
   -- 是否使用快速修理
   settings.battleQuickRepair = (function(battleQuickRepair)
     -- '不满血,中破,大破,不使用'
@@ -917,7 +1245,7 @@ return function()
   end)(settings.battleAlertWhenNoHp)
   -- 出征最大战斗次数
   settings.battleMaxBattleNum = (function(battleMaxBattleNum)
-    local list = transStrToTable({ 1, 2, 3, 4, 5 })
+    local list = transStrToTable({ 1, 2, 3, 4, 5, 6 })
     return list[battleMaxBattleNum] or 1
   end)(settings.battleMaxBattleNum)
   -- 阵型
@@ -940,6 +1268,11 @@ return function()
     local list = transStrToTable({ true, false })
     return list[battleRebootAtNotMeetAP] or false
   end)(settings.battleRebootAtNotMeetAP)
+  -- 使用统一战斗配置
+  settings.battleOptionUseMain = (function(battleOptionUseMain)
+    local list = transStrToTable({ true, false })
+    return list[battleOptionUseMain] or false
+  end)(settings.battleOptionUseMain)
 
   -- 演习
   -- 选择舰队
@@ -1015,6 +1348,30 @@ return function()
   end)(settings.disintegrateShipFastMode)
   -- 多长时间解体一次
   settings.disintegrateShipInterval = tonumber(settings.disintegrateShipInterval) or 0
+
+  -- 战斗选项组合成数组
+  settings.battleOption = (function(settings)
+    local battleOption = {}
+    for key, value in pairs(settings) do
+      local thePath = nameToTablePath(key)
+      if thePath[1] == 'battleOption' then
+        local tmpPath = table.assign({}, thePath)
+        table.remove(tmpPath, 1)
+        if thePath[2] == 'main' or not settings.battleOptionUseMain then
+          if thePath[3] == 'battleFormation' then
+            local res = transStrToTable({ 1, 2, 3, 4, 5 })[value] or 2
+            setValue(battleOption, tmpPath, res)
+          elseif thePath[3] == 'battlePursue' then
+            local res = transStrToTable({ true, false })[value] or false
+            setValue(battleOption, tmpPath, res)
+          else
+            setValue(battleOption, tmpPath, value)
+          end
+        end
+      end
+    end
+    return battleOption
+  end)(settings)
 
   return ret, settings
   -- --转换settings结果

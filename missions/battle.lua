@@ -35,8 +35,8 @@ local battle = function(action)
       store.battle.HPIsSafe = true
       store.battle.battleNum = 1
       store.battle.cantBattle = true
-      store.battle.battleRebootAt6_1AMeetCVFlag = false
       store.battle.passBattleStartPage = false
+      store.battle.battleStartPageHasSS = false
       -- 出征后就应该需要维修
       store.repair.nextRepairStartTime = os.time()
 
@@ -385,7 +385,7 @@ local battle = function(action)
         { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal },
         { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage },
         -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL',  o.battle.isNewShipPageLockModal },
-        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal },
+        { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal, 2000 },
       }))
       return makeAction(newstateTypes)
 
@@ -446,6 +446,16 @@ local battle = function(action)
           return makeAction({ type = 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME' })
         end
       end
+      -- 所有关卡，遇到潜艇就切换单横阵
+      local battleOption = settings.battleOption[store.battle.battleNum] or settings.battleOption.main
+      if battleOption.autoChangeFormation then
+        stepLabel.setStepLabelContent('2-52.开始检测潜艇')
+        c.yield(sleepPromise(500))
+        if (not o.battle.isEnemyShipIsSS()) then
+          stepLabel.setStepLabelContent('2-53.遇到潜艇，切换单横阵')
+          store.battle.battleStartPageHasSS = true
+        end
+      end
 
       stepLabel.setStepLabelContent('2-54.开始面板，点击开始')
       c.yield(sleepPromise(200))
@@ -484,7 +494,13 @@ local battle = function(action)
 
       stepLabel.setStepLabelContent('2-57.阵型面板')
       c.yield(sleepPromise(100))
-      o.battle.clickFormationPageStartBtn(settings.battleFormation)
+      local battleOption = settings.battleOption[store.battle.battleNum] or settings.battleOption.main
+      if battleOption.autoChangeFormation and store.battle.battleStartPageHasSS then
+        -- 遇到潜艇自动换单横阵
+        o.battle.clickFormationPageStartBtn(5)
+      else
+        o.battle.clickFormationPageStartBtn(battleOption.battleFormation)
+      end
       stepLabel.setStepLabelContent('2-58.等待追击面板，胜利界面')
       local newstateTypes = c.yield(setScreenListeners(getComListener(), {
         { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage, 2000 },
@@ -501,8 +517,8 @@ local battle = function(action)
     elseif (action.type == 'BATTLE_PURSUE_PAGE') then
 
       stepLabel.setStepLabelContent('2-59.追击面板')
-      if ((settings.battlePursue and (store.battle.battleNum < settings.battleMaxBattleNum))
-        or (settings.battlePursueBoss and (store.battle.battleNum == settings.battleMaxBattleNum))) then
+      local battleOption = settings.battleOption[store.battle.battleNum] or settings.battleOption.main
+      if battleOption.battlePursue and store.battle.battleNum <= settings.battleMaxBattleNum then
         stepLabel.setStepLabelContent('2-60.追击')
         o.battle.clickPursueModalOk()
       else
