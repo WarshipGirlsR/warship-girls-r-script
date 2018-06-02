@@ -451,7 +451,7 @@ local battle = function(action)
       if battleOption.autoChangeFormation then
         stepLabel.setStepLabelContent('2-52.开始检测潜艇')
         c.yield(sleepPromise(500))
-        if (not o.battle.isEnemyShipIsSS()) then
+        if (o.battle.isEnemyShipIsSS()) then
           stepLabel.setStepLabelContent('2-53.遇到潜艇，切换单横阵')
           store.battle.battleStartPageHasSS = true
         end
