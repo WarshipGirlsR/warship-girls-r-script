@@ -170,45 +170,45 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   local result = true
 
   local list = {
-    { 634, 631, 0x085994 },
-    { 829, 631, 0x105d94 },
-    { 1029, 631, 0x105d94 },
-    { 1229, 631, 0x105d94 },
-    { 1419, 631, 0x105d94 },
-    { 1619, 631, 0x105d94 },
+    { 639, 601, 0xa49a84 },
+    { 835, 601, 0xa49a84 },
+    { 1032, 601, 0xa49a84 },
+    { 1229, 601, 0xa49a84 },
+    { 1425, 601, 0xa49a84 },
+    { 1622, 601, 0xa49a84 },
   }
 
   -- 满血
   local list23 = {
-    { 640, 600, 0x9cfb8c },
-    { 837, 600, 0x9cfb8c },
-    { 1034, 600, 0x9cfb8c },
-    { 1231, 600, 0x9cfb8c },
-    { 1428, 600, 0x9cfb8c },
-    { 1625, 600, 0x9cfb8c },
+    { 637, 601, 0x63f752 },
+    { 834, 601, 0x5af752 },
+    { 1031, 601, 0x63f752 },
+    { 1227, 601, 0x5af752 },
+    { 1424, 601, 0x5af752 },
+    { 1621, 601, 0x5af752 },
   }
   -- 黄血 中破
   local list22 = {
-    { 1459, 599, 0xefdb21 },
-    { 1262, 599, 0xe6d719 },
-    { 1065, 599, 0xefdb21 },
-    { 868, 599, 0xe6d719 },
-    { 671, 599, 0xefdb21 },
-    { 474, 599, 0xe6d719 },
+    { 479, 601, 0xbd8e08 },
+    { 675, 599, 0xbd8e08 },
+    { 871, 599, 0xbd8e08 },
+    { 1069, 599, 0xbd8e08 },
+    { 1266, 599, 0xbd8e08 },
+    { 1463, 599, 0xbd8e08 },
   }
   -- 红血 大破
   local list21 = {
-    { 474, 600, 0xef1010 },
-    { 671, 600, 0xe61010 },
-    { 868, 600, 0xef1010 },
-    { 1065, 600, 0xe61010 },
-    { 1262, 600, 0xef1010 },
-    { 1459, 600, 0xe61010 },
+    { 479, 601, 0xbd0808 },
+    { 675, 601, 0xbd0808 },
+    { 871, 601, 0xbd0808 },
+    { 1069, 600, 0xbd0808 },
+    { 1266, 600, 0xbd0808 },
+    { 1463, 600, 0xbd0808 },
   }
   if (checkLevel == 3) then
     -- 有不满血
     for i = 1, #list do
-      if (multiColorS({ list[i] }, 80) and (not multiColorS({ list23[i] }, 80))) then
+      if multiColorS({ list[i] }, 80) and (not multiColorS({ list23[i] }, 80)) then
         result = false
         break
       end
@@ -216,7 +216,7 @@ battle.isReadyBattlePageShipHPSafe = function(checkLevel)
   elseif (checkLevel == 2) then
     -- 有中破或大破
     for i = 1, #list do
-      if (multiColorS({ list[i] }, 80) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80))) then
+      if multiColorS({ list[i] }, 80) and (multiColorS({ list22[i] }, 80) or multiColorS({ list21[i] }, 80)) then
         result = false
         break
       end
