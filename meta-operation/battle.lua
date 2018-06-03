@@ -461,17 +461,21 @@ battle.isBattleStartPage = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 92, 210, 0xd6cabd },
-    { 931, 211, 0xd6cec5 },
-    { 1824, 226, 0xd6cabd },
-    { 84, 981, 0xcecabd },
-    { 909, 994, 0xcecabd },
-    { 1820, 993, 0xcecabd },
-    { 1205, 942, 0xcecabd },
-    { 1427, 951, 0xad4d08 },
+    { 92, 210, 0xd6cabd }, { 931, 211, 0xd6cec5 },
+    { 1824, 226, 0xd6cabd }, { 84, 981, 0xcecabd },
+    { 909, 994, 0xcecabd }, { 1820, 993, 0xcecabd },
+    { 1205, 942, 0xcecabd }, { 1427, 951, 0xad4d08 },
     { 1180, 512, 0xd6cac5 },
   }
-  local result = multiColorS(list)
+  -- 有迂回的
+  local list2 = {
+    { 73, 199, 0xd6c6b5 }, { 1842, 200, 0xd6cec5 },
+    { 74, 997, 0xcecabd }, { 1841, 997, 0xd6cac5 },
+    { 1248, 890, 0x4ad2f7 }, { 1482, 888, 0xf78e42 },
+    { 1720, 891, 0xef5542 }, { 479, 902, 0xbda273 },
+    { 987, 857, 0xbda27b }, { 1132, 527, 0xcecabd },
+  }
+  local result = multiColorS(list) or multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
