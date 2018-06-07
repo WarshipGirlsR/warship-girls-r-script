@@ -22,10 +22,46 @@ local o = {
 
 store.battle = store.battle or {}
 
+
+
+local battleListener = {
+  { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage, 2000 },
+  { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 2000 },
+  { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 2000 },
+  { 'BATTLE_EXTRA_RECEIVE_MODAL', o.battle.isExtraReceiveModal, 2000 },
+  { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage, 2000 },
+  { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage, 2000 },
+  { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal, 2000 },
+  { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },
+  { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2, 2000 },
+  { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },
+  { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },
+  { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 2000 },
+  -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL',  o.battle.isNewShipPageLockModal },
+  { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal, 2000 },
+}
+
+local battleListenerManue = {
+  { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 2000 },
+  { 'BATTLE_EXTRA_RECEIVE_MODAL', o.battle.isExtraReceiveModal, 2000 },
+  { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage, 2000 },
+  { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage, 2000 },
+  { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal, 2000 },
+  { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },
+  { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2, 2000 },
+  { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },
+  { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },
+  { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 2000 },
+  -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL',  o.battle.isNewShipPageLockModal },
+  { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal, 2000 },
+}
+
+
 local battle = function(action)
   local settings = store.settings
 
   return co(c.create(function()
+
     if (action.type == 'BATTLE_INIT') then
 
       store.battle.quickSupplyCount = 0
@@ -40,27 +76,45 @@ local battle = function(action)
       -- 出征后就应该需要维修
       store.repair.nextRepairStartTime = os.time()
 
+      if settings.battleChapter == '0' then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), battleListenerManue, {
+          { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
+        }))
+        return makeAction(newstateTypes)
+      end
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), battleListener, {
         { 'BATTLE_START', o.home.isHome },
       }))
       return makeAction(newstateTypes)
 
     elseif (action.type == 'BATTLE_START') then
 
+      if settings.battleChapter == '0' then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), battleListenerManue, {
+          { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
+        }))
+        return makeAction(newstateTypes)
+      end
       stepLabel.setStepLabelContent('2-1.等待HOME')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), battleListener, {
         { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome },
       }))
       return makeAction(newstateTypes)
 
     elseif (action.type == 'BATTLE_HOME_CLICK_BATTLE') then
 
+      if settings.battleChapter == '0' then
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), battleListenerManue, {
+          { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
+        }))
+        return makeAction(newstateTypes)
+      end
       stepLabel.setStepLabelContent('2-2.点击出征')
       o.home.clickBattleBtn()
       stepLabel.setStepLabelContent('2-3.等待出征页面')
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_LAG_AND_BACK', o.battle.isBattlePage },
@@ -72,7 +126,7 @@ local battle = function(action)
       stepLabel.setStepLabelContent('2-4.由于在主界面卡住，一直点击出征导致直接跳进准备战斗页面，点击返回')
       o.battle.clickReadyBattlePageBackBtn()
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage, 2000 },
         { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 2000 },
@@ -86,7 +140,7 @@ local battle = function(action)
       o.battle.clickBattleBtn()
       stepLabel.setStepLabelContent('2-6.等待出征的出征界面')
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage, 2000 },
         { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage },
@@ -100,7 +154,35 @@ local battle = function(action)
       c.yield(sleepPromise(300))
       o.battle.moveToChapter(settings.battleChapter)
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      if settings.useOcr then
+        stepLabel.setStepLabelContent('2-8.检查关卡')
+        local checkedChapter = {
+          '1-1', '1-2', '1-3', '1-4', '1-5',
+          '2-1', '2-2', '2-3', '2-4', '2-5', '2-6',
+          '3-1', '3-2', '3-3', '3-4',
+          '4-1', '4-2', '4-3', '4-4',
+          '5-1', '5-2', '5-3', '5-4', '5-5',
+          '6-1', '6-2', '6-3', '6-4',
+          '7-1', '7-2', '7-3', '7-4', '7-5',
+        }
+        if table.findIndex(checkedChapter, settings.battleChapter) then
+          local readChapter = ocrText(539, 66, 646, 121, 0)
+          readChapter = readChapter or ''
+          readChapter = readChapter:gsub('%s', '')
+          console.log(readChapter)
+          if readChapter ~= settings.battleChapter then
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
+              { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
+              { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage, 1000 },
+              { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 3000 },
+              { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
+            }))
+            return makeAction(newstateTypes)
+          end
+        end
+      end
+
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', o.battle.isBattleBattlePage, 1000 },
         { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 3000 },
@@ -115,7 +197,7 @@ local battle = function(action)
       o.battle.clickReadyBattleBtn()
       c.yield(sleepPromise(100))
       stepLabel.setStepLabelContent('2-10.等待出征准备界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', o.battle.isBattleBattlePage, 1000 },
         { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 3000 },
@@ -136,7 +218,7 @@ local battle = function(action)
           stepLabel.setStepLabelContent('2-13.状态正常')
           store.battle.quickSupplyCount = 1
           store.battle.quickRepairCount = 1
-          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
             { 'BATTLE_READY_BATTLE_PAGE_CHECK_CAN_GO', o.battle.isReadyBattlePage, 2000 },
             { 'BATTLE_QUICK_SUPPLY_MODAL', o.battle.isQuickSupplyModal },
           }))
@@ -145,7 +227,7 @@ local battle = function(action)
           stepLabel.setStepLabelContent('2-14.状态不正常')
           o.battle.clickReadyBattlePageQuickSupplyBtn()
           stepLabel.setStepLabelContent('2-15.等待快速补给界面')
-          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
             { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 2000 },
             { 'BATTLE_QUICK_SUPPLY_MODAL', o.battle.isQuickSupplyModal },
           }))
@@ -168,7 +250,7 @@ local battle = function(action)
             store.battle.quickRepairSingleLastShip = 0
             store.battle.quickRepairSingleCount = 0
 
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
               { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 2000 },
               { 'BATTLE_QUICK_REPAIR_MODAL', o.battle.isQuickRepairModal },
             }))
@@ -201,7 +283,7 @@ local battle = function(action)
       stepLabel.setStepLabelContent('2-24.等待出征准备界面')
       store.battle.quickSupplyCount = store.battle.quickSupplyCount + 1
       if (store.battle.quickSupplyCount < 3) then
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
           { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 1000 },
           { 'BATTLE_QUICK_SUPPLY_MODAL', o.battle.isQuickSupplyModal, 2000 },
         }))
@@ -217,7 +299,7 @@ local battle = function(action)
       c.yield(sleepPromise(100))
       o.battle.clickQuickSupplyModalCloseBtn()
       c.yield(sleepPromise(300))
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_QUICK_SUPPLY_MODAL_CLOSE', o.battle.isQuickSupplyModal, 2000 },
         { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
       }))
@@ -233,14 +315,14 @@ local battle = function(action)
         store.battle.quickRepairCount = store.battle.quickRepairCount + 1
         stepLabel.setStepLabelContent('2-28.等待出征准备界面')
         if (store.battle.quickRepairCount < 3) then
-          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
             { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 1000 },
             { 'BATTLE_QUICK_REPAIR_MODAL', o.battle.isQuickRepairModal, 2000 },
           }))
           return makeAction(newstateTypes)
         else
           stepLabel.setStepLabelContent('2-29.快修数量不足')
-          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
             { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
             { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', o.battle.isQuickRepairModal },
           }))
@@ -260,7 +342,7 @@ local battle = function(action)
 
             stepLabel.setStepLabelContent('2-31.中破或大破:' .. table.concat(res, ','))
             o.battle.clickQuickRepairModalSingleShip(res[1])
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
               { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
               { 'BATTLE_QUICK_REPAIR_MODAL', o.battle.isQuickRepairModal, 500 },
             }))
@@ -270,7 +352,7 @@ local battle = function(action)
             store.battle.quickRepairSingleCount = 0
             store.battle.quickRepairCount = store.battle.quickRepairCount + 1
             stepLabel.setStepLabelContent('2-32快修数量不足')
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
               { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
               { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', o.battle.isQuickRepairModal },
             }))
@@ -279,7 +361,7 @@ local battle = function(action)
         else
           stepLabel.setStepLabelContent('2-33.修理完成')
           store.battle.quickRepairCount = store.battle.quickRepairCount + 1
-          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
             { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
             { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', o.battle.isQuickRepairModal },
           }))
@@ -298,7 +380,7 @@ local battle = function(action)
 
             stepLabel.setStepLabelContent('2-35.大破:' .. table.concat(res, ','))
             o.battle.clickQuickRepairModalSingleShip(res[1])
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
               { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
               { 'BATTLE_QUICK_REPAIR_MODAL', o.battle.isQuickRepairModal, 500 },
             }))
@@ -308,7 +390,7 @@ local battle = function(action)
             store.battle.quickRepairSingleCount = 0
             store.battle.quickRepairCount = store.battle.quickRepairCount + 1
             stepLabel.setStepLabelContent('2-36.快修数量不足')
-            local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+            local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
               { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
               { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', o.battle.isQuickRepairModal },
             }))
@@ -317,7 +399,7 @@ local battle = function(action)
         else
           stepLabel.setStepLabelContent('2-37.修理完成')
           store.battle.quickRepairCount = store.battle.quickRepairCount + 1
-          local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+          local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
             { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
             { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', o.battle.isQuickRepairModal },
           }))
@@ -332,7 +414,7 @@ local battle = function(action)
       o.battle.clickQuickRepairModalCloseBtn()
       c.yield(sleepPromise(300))
       stepLabel.setStepLabelContent('2-39.等待出征准备界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_QUICK_REPAIR_MODAL_CLOSE', o.battle.isQuickRepairModal, 2000 },
         { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 1000 },
       }))
@@ -345,7 +427,7 @@ local battle = function(action)
       local fleetCanBattle = o.battle.isFleetsCanBattle()
       if (fleetCanBattle) then
         stepLabel.setStepLabelContent('2-41.可以出征')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
           { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', o.battle.isReadyBattlePage },
         }))
         return makeAction(newstateTypes)
@@ -373,7 +455,7 @@ local battle = function(action)
         stepLabel.setStepLabelContent('2-45.第' .. store.battle.battleNum .. '战Boss战开始')
       end
       stepLabel.setStepLabelContent('2-46.等待额外获得面板，开始面板，阵型面板，追击面板，勋章对话框，home，胜利界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), getLoginListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), getLoginListener(), battleListener, {
         { 'BATTLE_READY_BATTLE_PAGE_CAN_GO', o.battle.isReadyBattlePage, 2000 },
         { 'BATTLE_EXTRA_RECEIVE_MODAL', o.battle.isExtraReceiveModal },
         { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage },
@@ -394,7 +476,7 @@ local battle = function(action)
       stepLabel.setStepLabelContent('2-47.额外获得面板，点击确定')
       o.battle.clickExtraReceiveModalOk()
       stepLabel.setStepLabelContent('2-48.等待额外获得面板，开始面板，阵型面板，追击面板，勋章对话框，home，胜利界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), battleListener, {
         { 'BATTLE_EXTRA_RECEIVE_MODAL', o.battle.isExtraReceiveModal, 2000 },
         { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage },
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
@@ -465,7 +547,7 @@ local battle = function(action)
         o.battle.clickBattleStartModalStartBtn()
       end
       stepLabel.setStepLabelContent('2-55.等待阵型面板，追击面板，胜利界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage, 2000 },
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },
@@ -502,7 +584,7 @@ local battle = function(action)
         o.battle.clickFormationPageStartBtn(battleOption.battleFormation)
       end
       stepLabel.setStepLabelContent('2-58.等待追击面板，胜利界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
         { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage, 2000 },
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage, 2000 },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },
@@ -526,7 +608,7 @@ local battle = function(action)
         o.battle.clickPursuePageCancel()
       end
       stepLabel.setStepLabelContent('2-62.等待胜利界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage, 2000 },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal, 2000 },
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },
@@ -553,7 +635,7 @@ local battle = function(action)
       stepLabel.setStepLabelContent('2-66.点击胜利继续')
       o.battle.clickVictoryPageContinueBtn()
       stepLabel.setStepLabelContent('2-67.等待胜利继续界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal, 2000 },
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },
@@ -570,7 +652,7 @@ local battle = function(action)
       stepLabel.setStepLabelContent('2-68.点击胜利继续')
       o.battle.clickVictoryPageContinueBtn2()
       stepLabel.setStepLabelContent('2-69.等待大破警告，新船，下回合窗口，勋章对话框，home')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },
@@ -588,7 +670,7 @@ local battle = function(action)
       o.battle.clickShipSevereDamageModalBack()
       stepLabel.setStepLabelContent('2-71.等待新船，下回合窗口，勋章对话框，home')
       store.battle.HPIsSafe = false
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },
@@ -606,7 +688,7 @@ local battle = function(action)
       o.battle.clickShipCantGoOnModalBackBtn()
       stepLabel.setStepLabelContent('2-73.等待新船，下回合窗口，勋章对话框，home')
       store.battle.HPIsSafe = false
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },
@@ -623,7 +705,7 @@ local battle = function(action)
       stepLabel.setStepLabelContent('2-74.获取新船')
       o.battle.clickNewShip()
       stepLabel.setStepLabelContent('2-75.等待新船锁定窗口，下回合窗口，勋章对话框，home')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },
@@ -641,7 +723,7 @@ local battle = function(action)
       stepLabel.setStepLabelContent('2-76.新船锁定窗口点击确认')
       o.battle.clickNewShipPageLockModalOkBtn()
       stepLabel.setStepLabelContent('2-77.等待下回合窗口，勋章对话框，home')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage },
         { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal },
         { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage },
@@ -664,7 +746,7 @@ local battle = function(action)
         stepLabel.setStepLabelContent('2-79.点击回港')
         o.battle.clickLevelStepModalBackBtn()
         stepLabel.setStepLabelContent('2-80.等待主界面')
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
           { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal, 2000 },
         }))
         return makeAction(newstateTypes)
@@ -685,7 +767,7 @@ local battle = function(action)
         end
       end
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', o.battle.isReadyBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', o.battle.isBattleBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', o.battle.isBattlePage },
@@ -695,7 +777,7 @@ local battle = function(action)
     elseif (action.type == 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME') then
 
       o.battle.clickBattleStartModalBackToHomeBtn()
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_BATTLE_START_PAGE_BACK_TO_HOME', o.battle.isBattleStartPage },
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', o.battle.isReadyBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', o.battle.isBattleBattlePage },
@@ -708,7 +790,7 @@ local battle = function(action)
 
       o.battle.clickReadyBattlePageBackBtn()
       stepLabel.setStepLabelContent('2-81.等待出征界面')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_READY_BATTLE_PAGE_BACK_TO_HOME', o.battle.isReadyBattlePage, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', o.battle.isBattleBattlePage },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', o.battle.isBattlePage },
@@ -721,7 +803,7 @@ local battle = function(action)
       o.battle.clickBackToHomeBtn()
       stepLabel.setStepLabelContent('2-82.等待主界面')
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), {
+      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), battleListener, {
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', o.battle.isBattleBattlePage, 2000 },
         { 'BATTLE_BATTLE_BATTLE_PAGE_BACK_TO_HOME', o.battle.isBattlePage, 2000 },
         { '', o.home.isHome },

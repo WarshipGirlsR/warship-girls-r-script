@@ -326,8 +326,7 @@ myTable.findIndex = myTable.findIndex or function(tab, call)
         end
       end
     else
-      for key = 1, #tab do
-        local value = tab[key]
+      for _, value in pairs(tab) do
         if call(value) then
           index = key
         end
@@ -342,8 +341,7 @@ myTable.findIndex = myTable.findIndex or function(tab, call)
         end
       end
     else
-      for key = 1, #tab do
-        local value = tab[key]
+      for _, value in pairs(tab) do
         if value == call then
           index = key
         end

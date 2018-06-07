@@ -122,7 +122,7 @@ return function()
           ['id'] = 'repairEnable',
           ['type'] = 'RadioGroup',
           ['list'] = '开启,关闭',
-          ['select'] = '0',
+          ['select'] = '1',
         },
         {
           ['type'] = 'Label',
@@ -135,7 +135,7 @@ return function()
           ['id'] = 'disintegrateShipEnable',
           ['type'] = 'RadioGroup',
           ['list'] = '开启,关闭',
-          ['select'] = '0',
+          ['select'] = '1',
         },
         {
           ['type'] = 'Label',
@@ -243,6 +243,19 @@ return function()
         },
         {
           ['type'] = 'Label',
+          ['text'] = '使用文字识别增加精确度',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'useOcr',
+          ['type'] = 'RadioGroup',
+          ['list'] = '开启,关闭',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
           ['text'] = ' \n \n \n \n \n \n \n \n \n \n',
           ['size'] = 50,
           ['align'] = 'left',
@@ -314,7 +327,7 @@ return function()
           ['id'] = 'expeditionFleet2',
           ['type'] = 'RadioGroup',
           ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '3',
+          ['select'] = '5',
         },
         {
           ['type'] = 'Label',
@@ -327,7 +340,7 @@ return function()
           ['id'] = 'expeditionFleet3',
           ['type'] = 'RadioGroup',
           ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '5',
+          ['select'] = '6',
         },
         {
           ['type'] = 'Label',
@@ -340,7 +353,7 @@ return function()
           ['id'] = 'expeditionFleet4',
           ['type'] = 'RadioGroup',
           ['list'] = '不参加,1-1,1-2,1-3,1-4,2-1,2-2,2-3,2-4,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4',
-          ['select'] = '6',
+          ['select'] = '13',
         },
         {
           ['type'] = 'Label',
@@ -452,7 +465,7 @@ return function()
           ['id'] = 'campaignChapter',
           ['type'] = 'RadioGroup',
           ['list'] = '驱逐,巡洋,战列,航母,潜艇',
-          ['select'] = '0',
+          ['select'] = '1',
         },
         {
           ['type'] = 'Label',
@@ -465,7 +478,7 @@ return function()
           ['id'] = 'campaignDifficulty',
           ['type'] = 'RadioGroup',
           ['list'] = '普通,困难',
-          ['select'] = '0',
+          ['select'] = '1',
         },
         {
           ['type'] = 'Label',
@@ -640,8 +653,8 @@ return function()
         {
           ['id'] = 'battleChapter',
           ['type'] = 'RadioGroup',
-          ['list'] = '1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,5-5,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4,7-5',
-          ['select'] = '0',
+          ['list'] = '手动,1-1,1-2,1-3,1-4,1-5,2-1,2-2,2-3,2-4,2-5,2-6,3-1,3-2,3-3,3-4,4-1,4-2,4-3,4-4,5-1,5-2,5-3,5-4,5-5,6-1,6-2,6-3,6-4,7-1,7-2,7-3,7-4,7-5',
+          ['select'] = '1',
         },
         {
           ['type'] = 'Label',
@@ -1183,7 +1196,11 @@ return function()
   settings.pushbulletsToken = settings.pushbulletsToken or ''
   -- pushbullet的设备别名
   settings.pushbulletNickname = settings.pushbulletNickname or ''
-
+  -- 使用文字识别增加精确度
+  settings.useOcr = (function(useOcr)
+    local list = transStrToTable({ true, false })
+    return list[useOcr] or false
+  end)(settings.useOcr)
   -- 选择远征要参加的章节
   settings.expeditionFleet1, settings.expeditionFleet2, settings.expeditionFleet3, settings.expeditionFleet4 = (function(fleet1, fleet2, fleet3, fleet4)
     local list = transStrToTable({
@@ -1212,6 +1229,7 @@ return function()
   -- 选择关卡
   settings.battleChapter = (function(battleChapter)
     local list = transStrToTable({
+      '0',
       '1-1', '1-2', '1-3', '1-4', '1-5',
       '2-1', '2-2', '2-3', '2-4', '2-5', '2-6',
       '3-1', '3-2', '3-3', '3-4',
@@ -1220,7 +1238,7 @@ return function()
       '6-1', '6-2', '6-3', '6-4',
       '7-1', '7-2', '7-3', '7-4', '7-5'
     })
-    return list[battleChapter] or '1-1'
+    return list[battleChapter] or '0'
   end)(settings.battleChapter)
   -- 选择舰队
   settings.battleFleet = (function(battleFleet)
