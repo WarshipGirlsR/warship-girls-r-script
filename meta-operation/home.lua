@@ -101,6 +101,12 @@ home.clickMewsModalClose = function()
   return true
 end
 
+-- 点击新闻 不在显示
+home.clickMewsModalNeverShow = function()
+  tap(100, 978, 100)
+  return true
+end
+
 -- 签到窗口
 home.isSignModal = function()
   local __keepScreenState = keepScreenState

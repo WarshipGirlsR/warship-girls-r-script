@@ -3201,6 +3201,12 @@ home.clickMewsModalClose = function()\
   return true\
 end\
 \
+-- 点击新闻 不在显示\
+home.clickMewsModalNeverShow = function()\
+  tap(100, 978, 100)\
+  return true\
+end\
+\
 -- 签到窗口\
 home.isSignModal = function()\
   local __keepScreenState = keepScreenState\
@@ -7004,7 +7010,9 @@ local home = function(action)\
 \
       stepLabel.setStepLabelContent('1-3.关闭新闻')\
       o.home.clickMewsModalClose()\
-      c.yield(sleepPromise(2000))\
+      c.yield(sleepPromise(1000))\
+      o.home.clickMewsModalNeverShow()\
+      c.yield(sleepPromise(1000))\
       local res = o.home.isNewsModal()\
       if (res) then\
         return makeAction('HOME_NEWS_MODAL')\

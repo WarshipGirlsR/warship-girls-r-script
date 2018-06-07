@@ -37,7 +37,9 @@ local home = function(action)
 
       stepLabel.setStepLabelContent('1-3.关闭新闻')
       o.home.clickMewsModalClose()
-      c.yield(sleepPromise(2000))
+      c.yield(sleepPromise(1000))
+      o.home.clickMewsModalNeverShow()
+      c.yield(sleepPromise(1000))
       local res = o.home.isNewsModal()
       if (res) then
         return makeAction('HOME_NEWS_MODAL')
