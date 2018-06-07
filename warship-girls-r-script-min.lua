@@ -6057,7 +6057,7 @@ local battle = function(action)\
       store.repair.nextRepairStartTime = os.time()\
 \
       if settings.battleChapter == '0' then\
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), battleListenerManue, {\
+        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), battleListenerManue, {\
           { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },\
         }))\
         return makeAction(newstateTypes)\
