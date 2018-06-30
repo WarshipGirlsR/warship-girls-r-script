@@ -6164,7 +6164,7 @@ local battle = function(action)\
 \
       local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {\
         { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },\
-        { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', o.battle.isBattleBattlePage, 1000 },\
+        { 'BATTLE_BATTLE_BATTLE_PAGE_CLICK_CHAPTER', o.battle.isBattleBattlePage, 2000 },\
         { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 3000 },\
         { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },\
       }))\
