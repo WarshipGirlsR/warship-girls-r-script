@@ -1,5 +1,6 @@
 multiColorS = multiColorS or function(array, s)
   s = s or 90
+  local theS = math.floor(0xff * (100 - s) * 0.01)
 
   local __keepScreenState = keepScreenState
   if not __keepScreenState then keepScreen(true) end
@@ -10,7 +11,7 @@ multiColorS = multiColorS or function(array, s)
     local r = math.floor(array[var][3] / 0x10000)
     local g = math.floor(array[var][3] % 0x10000 / 0x100)
     local b = math.floor(array[var][3] % 0x100)
-    if math.abs(lr - r) > s or math.abs(lg - g) > s or math.abs(lb - b) > s then
+    if math.abs(lr - r) > theS or math.abs(lg - g) > theS or math.abs(lb - b) > theS then
       result = false
       break
     end
