@@ -90,75 +90,42 @@ end)
 
 
 co(c.create(function()
-  if (settings.missionEnable
-    or settings.expeditionEnable
-    or settings.battleEnable
-    or settings.repairEnable
-    or settings.exerciseEnable
-    or settings.disintegrateShipEnable
-    or settings.campaignEnable) then
 
-    local theMissionsQuery = {}
+  local theMissionsQuery = {}
 
-    -- 是否运行任务
-    if (settings.missionEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'MISSION_START' })
-    end
-    -- 是否运行远征
-    if (settings.expeditionEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'EXPEDITION_REWARD_START' })
-      table.insert(theMissionsQuery, { isBase = true, type = 'EXPEDITION_ONCE_START' })
-    end
-    -- 是否运行出征
-    if (settings.battleEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_INIT' })
-    end
-    -- 是否运行演习
-    if (settings.exerciseEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'EXERCISE_START' })
-    end
-    -- 是否运行战役
-    if (settings.campaignEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'CAMPAIGN_START' })
-    end
-    -- 是否运行修理
-    if (settings.repairEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'REPAIR_ONCE_START' })
-    end
-    -- 是否运行解体
-    if (settings.disintegrateShipEnable) then
-      table.insert(theMissionsQuery, { isBase = true, type = 'DISINTEGRATE_SHIP_INIT' })
-    end
+  -- 是否运行任务
+  if (settings.missionEnable) then
+    table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_INIT' })
+  end
 
-    local theChain = createChain(missionsList)
+  local theChain = createChain(missionsList)
 
-    -- 启动任务链
-    c.yield(theChain.runMission({
-      missionsQuery = theMissionsQuery,
-      -- 在每次循环执行过 action 之后调用
-      afterAction = function(res)
-        local action = res.action
-        local nextAction = res.nextAction
-        local missionsQuery = res.missionsQuery
-        local runStartTime = res.runStartTime
+  -- 启动任务链
+  c.yield(theChain.runMission({
+    missionsQuery = theMissionsQuery,
+    -- 在每次循环执行过 action 之后调用
+    afterAction = function(res)
+      local action = res.action
+      local nextAction = res.nextAction
+      local missionsQuery = res.missionsQuery
+      local runStartTime = res.runStartTime
 
-        return co(c.create(function()
-          if (action.isEnd) then
-            local diffTime = (socket.gettime() * 1000) - runStartTime
-            if (diffTime < (settings.missionsInterval * 1000)) then
-              local remainTime = (settings.missionsInterval * 1000) - diffTime
-              stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒')
-              while (remainTime > 0) do
-                stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒', true)
-                c.yield(sleepPromise(1000))
-                remainTime = remainTime - 1000
-              end
+      return co(c.create(function()
+        if (action.isEnd) then
+          local diffTime = (socket.gettime() * 1000) - runStartTime
+          if (diffTime < (settings.missionsInterval * 1000)) then
+            local remainTime = (settings.missionsInterval * 1000) - diffTime
+            stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒')
+            while (remainTime > 0) do
+              stepLabel.setStepLabelContent('休息剩余时间' .. math.ceil(remainTime / 1000) .. '秒', true)
+              c.yield(sleepPromise(1000))
+              remainTime = remainTime - 1000
             end
           end
-        end))
-      end,
-    }))
-  end
+        end
+      end))
+    end,
+  }))
 end)).catch(function(err)
   wLog("warship-girls-r-script", "[DATE] " .. err);
   nLog(err)

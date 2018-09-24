@@ -20,42 +20,9 @@ local o = {
   battle = moBattle,
 }
 
+local commonListener = {}
+
 store.battle = store.battle or {}
-
-
-
-local battleListener = {
-  { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage, 2000 },
-  { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 2000 },
-  { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 2000 },
-  { 'BATTLE_EXTRA_RECEIVE_MODAL', o.battle.isExtraReceiveModal, 2000 },
-  { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage, 2000 },
-  { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage, 2000 },
-  { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal, 2000 },
-  { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },
-  { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2, 2000 },
-  { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },
-  { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },
-  { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 2000 },
-  -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL',  o.battle.isNewShipPageLockModal },
-  { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal, 2000 },
-}
-
-local battleListenerManue = {
-  { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage, 2000 },
-  { 'BATTLE_EXTRA_RECEIVE_MODAL', o.battle.isExtraReceiveModal, 2000 },
-  { 'BATTLE_BATTLE_START_PAGE', o.battle.isBattleStartPage, 2000 },
-  { 'BATTLE_FORMATION_PAGE', o.battle.isFormationPage, 2000 },
-  { 'BATTLE_PURSUE_PAGE', o.battle.isPursueModal, 2000 },
-  { 'BATTLE_VICTORY_PAGE', o.battle.isVictoryPage, 2000 },
-  { 'BATTLE_VICTORY_NEXT_PAGE', o.battle.isVictoryPage2, 2000 },
-  { 'BATTLE_SHIP_SERVER_DAMAGE_MODAL', o.battle.isShipSevereDamageModal, 2000 },
-  { 'BATTLE_SHIP_CANT_GO_ON_MODAL', o.battle.isShipCantGoOnModal, 2000 },
-  { 'BATTLE_NEW_SHIP_PAGE', o.battle.isNewShipPage, 2000 },
-  -- { 'BATTLE_NEW_SHIP_PAGE_LOCK_MODAL',  o.battle.isNewShipPageLockModal },
-  { 'BATTLE_NEXT_LEVEL_STEP_MODAL', o.battle.isNextLevelStepModal, 2000 },
-}
-
 
 local battle = function(action)
   local settings = store.settings
@@ -64,26 +31,7 @@ local battle = function(action)
 
     if (action.type == 'BATTLE_INIT') then
 
-      store.battle.quickSupplyCount = 0
-      store.battle.quickRepairCount = 0
-      store.battle.quickRepairSingleLastShip = 0
-      store.battle.quickRepairSingleCount = 0
-      store.battle.HPIsSafe = true
-      store.battle.battleNum = 1
-      store.battle.cantBattle = true
-      store.battle.passBattleStartPage = false
-      store.battle.battleStartPageHasSS = false
-      -- 出征后就应该需要维修
-      store.repair.nextRepairStartTime = os.time()
-
-      if settings.battleChapter == '0' then
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), battleListenerManue, {
-          { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
-        }))
-        return makeAction(newstateTypes)
-      end
-
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), battleListener, {
+      local newstateTypes = c.yield(setScreenListeners({
         { 'BATTLE_START', o.home.isHome },
       }))
       return makeAction(newstateTypes)
