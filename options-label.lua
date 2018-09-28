@@ -60,10 +60,36 @@ return function()
       {
         {
           ['type'] = 'Label',
-          ['text'] = '四周年e6k，使用前请先切换到6个地图界面，并且准备好队伍。请先手动打几次确保稳定,
+          ['text'] = '四周年，使用前请先切换到6个地图界面，并且准备好队伍。请先手动打几次确保稳定。\n分辨率：1920*1080',
           ['size'] = 15,
           ['align'] = 'left',
           ['color'] = '0,0,0',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '关卡',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleActivityChapter',
+          ['type'] = 'RadioGroup',
+          ['list'] = 'e3o(e9o),e6k(e12k)',
+          ['select'] = '1',
+        },
+        {
+          ['type'] = 'Label',
+          ['text'] = '入口',
+          ['size'] = 15,
+          ['align'] = 'left',
+          ['color'] = '0,0,0',
+        },
+        {
+          ['id'] = 'battleActivityIntry',
+          ['type'] = 'RadioGroup',
+          ['list'] = '不选择,α点,β点',
+          ['select'] = '1',
         },
       },
     },
@@ -92,6 +118,19 @@ return function()
     end
     return list
   end
+
+  -- 章节
+  settings.battleActivityChapter = (function(battleActivityChapter)
+    local list = transStrToTable({
+      { name = 'e3o', chapter = 3 }, { name = 'e6k', chapter = 6 },
+    })
+    return list[battleActivityChapter] or {}
+  end)(settings.battleActivityChapter)
+  -- 入口
+  settings.battleActivityIntry = (function(battleActivityIntry)
+    local list = transStrToTable({ 'manule', 'a', 'b' })
+    return list[battleActivityIntry] or {}
+  end)(settings.battleActivityIntry)
 
   return ret, settings
   -- --转换settings结果

@@ -20,7 +20,11 @@ local o = {
   battle = moBattle,
 }
 
-local commonListener = {}
+local commonListener = {
+  { 'BATTLE_START', o.battle.isBigMapPage, 2000 },
+  { 'BATTLE_CHAPTER_INFO_PANEL', o.battle.isChapterInfoPanel, 2000 },
+  { 'BATTLE_FLEET_INFO_PAGE', o.battle.isFleetInfoPage, 2000 },
+}
 
 store.battle = store.battle or {}
 
@@ -31,67 +35,52 @@ local battle = function(action)
 
     if (action.type == 'BATTLE_INIT') then
 
-      local newstateTypes = c.yield(setScreenListeners({
-        { 'BATTLE_START', o.home.isHome },
+      local newstateTypes = c.yield(setScreenListeners(commonListener, {
+        { 'BATTLE_START', o.battle.isBigMapPage },
       }))
       return makeAction(newstateTypes)
 
     elseif (action.type == 'BATTLE_START') then
 
-      if settings.battleChapter == '0' then
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), battleListenerManue, {
-          { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
-        }))
-        return makeAction(newstateTypes)
+      stepLabel.setStepLabelContent('1.请切换到大地图页面，准备开始')
+      local newstateTypes = c.yield(setScreenListeners(commonListener, {
+        { 'BATTLE_SELECT_CHAPTER', o.battle.isBigMapPage },
+      }))
+      return makeAction(newstateTypes)
+
+    elseif (action.type == 'BATTLE_SELECT_CHAPTER') then
+
+      if settings.battleActivityChapter then
+        stepLabel.setStepLabelContent('2.点击章节' .. settings.battleActivityChapter.chapter)
+        o.battle.clickChapter(settings.battleActivityChapter.chapter)
       end
-      stepLabel.setStepLabelContent('2-1.等待HOME')
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), getHomeListener(), getLoginListener(), battleListener, {
-        { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome },
+
+      local newstateTypes = c.yield(setScreenListeners(commonListener, {
+        { 'BATTLE_CHAPTER_INFO_PANEL', o.battle.isChapterInfoPanel },
       }))
       return makeAction(newstateTypes)
 
-    elseif (action.type == 'BATTLE_HOME_CLICK_BATTLE') then
+    elseif (action.type == 'BATTLE_CHAPTER_INFO_PANEL') then
 
-      if settings.battleChapter == '0' then
-        local newstateTypes = c.yield(setScreenListeners(getComListener(), getLoginListener(), battleListenerManue, {
-          { 'BATTLE_READY_BATTLE_PAGE', o.battle.isReadyBattlePage },
-        }))
-        return makeAction(newstateTypes)
+      if settings.battleActivityIntry then
+        stepLabel.setStepLabelContent('3.点击入口 ' .. settings.battleActivityIntry)
+        o.battle.clickEntry(settings.battleActivityIntry)
       end
-      stepLabel.setStepLabelContent('2-2.点击出征')
-      o.home.clickBattleBtn()
-      stepLabel.setStepLabelContent('2-3.等待出征页面')
-
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
-        { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage },
-        { 'BATTLE_BATTLE_BATTLE_PAGE_LAG_AND_BACK', o.battle.isBattlePage },
+      o.battle.clickFleetPageBtn()
+      local newstateTypes = c.yield(setScreenListeners(commonListener, {
+        { 'BATTLE_FLEET_INFO_PAGE', o.battle.isFleetInfoPage },
       }))
       return makeAction(newstateTypes)
 
-    elseif (action.type == 'BATTLE_BATTLE_BATTLE_PAGE_LAG_AND_BACK') then
-
-      stepLabel.setStepLabelContent('2-4.由于在主界面卡住，一直点击出征导致直接跳进准备战斗页面，点击返回')
-      o.battle.clickReadyBattlePageBackBtn()
-
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
-        { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage, 2000 },
-        { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage, 2000 },
-      }))
-      return makeAction(newstateTypes)
-
-    elseif (action.type == 'BATTLE_BATTLE_PAGE') then
+    elseif (action.type == 'BATTLE_FLEET_INFO_PAGE') then
 
       stepLabel.setStepLabelContent('2-5.出征页面点击出征的出征按钮')
       c.yield(sleepPromise(500))
       o.battle.clickBattleBtn()
       stepLabel.setStepLabelContent('2-6.等待出征的出征界面')
 
-      local newstateTypes = c.yield(setScreenListeners(getComListener(), battleListener, {
-        { 'BATTLE_HOME_CLICK_BATTLE', o.home.isHome, 2000 },
-        { 'BATTLE_BATTLE_BATTLE_PAGE', o.battle.isBattleBattlePage, 2000 },
-        { 'BATTLE_BATTLE_PAGE', o.battle.isBattlePage },
+      local newstateTypes = c.yield(setScreenListeners(commonListener, {
+        { 'BATTLE_CHAPTER_INFO_PANEL', o.battle.isChapterInfoPanel },
       }))
       return makeAction(newstateTypes)
 

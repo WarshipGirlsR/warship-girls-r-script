@@ -93,10 +93,7 @@ co(c.create(function()
 
   local theMissionsQuery = {}
 
-  -- 是否运行任务
-  if (settings.missionEnable) then
-    table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_INIT' })
-  end
+  table.insert(theMissionsQuery, { isBase = true, type = 'BATTLE_INIT' })
 
   local theChain = createChain(missionsList)
 

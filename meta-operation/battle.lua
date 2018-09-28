@@ -2,105 +2,92 @@ local ImgInfo = require './img'
 
 local battle = {}
 
---  是否在出征界面
-battle.isBattlePage = function()
+--  是否在大地图界面
+battle.isBigMapPage = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 178, 622, 0x10597b },
-    { 278, 1007, 0x635d52 },
-    { 224, 613, 0xc5cac5 },
-    { 92, 969, 0xa47d42 },
-    { 169, 1014, 0xffffff },
-    { 195, 1033, 0xb58a5a },
+    { 841, 55, 0x216db5 }, { 911, 72, 0x1969ad },
+    { 1016, 47, 0x216dad }, { 1154, 62, 0x216db5 },
+    { 1009, 70, 0xffffff }, { 166, 192, 0x212d31 },
+    { 664, 470, 0x21313a }, { 1303, 539, 0x212d3a },
+    { 1823, 359, 0x21313a }, { 1142, 906, 0x29313a },
   }
-  -- 四个按钮的颜色
   local list2 = {
-    { 110, 148, 0xad4908 },
-    { 111, 290, 0x008ebd },
-    { 107, 429, 0x0092c5 },
-    { 111, 572, 0x008ebd },
+    { 823, 57, 0x842019 }, { 874, 52, 0x842021 },
+    { 1007, 69, 0xefe7e6 }, { 1122, 43, 0x842019 },
+    { 1216, 72, 0x842021 }, { 195, 218, 0x3a1c19 },
+    { 830, 384, 0x4a2421 }, { 1392, 524, 0x422021 },
+    { 1857, 567, 0x733531 }, { 1175, 763, 0x4a2429 },
   }
-  local result = multiColorS(list) and (not multiColorS(list2))
+  local result = multiColorS(list) or multiColorS(list2)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
 
--- 点击回港
-battle.clickBackToHomeBtn = function()
-  tap(98, 1016, 100)
-  return true
+-- 点击章节
+battle.clickChapter = function(chapter)
+  if chapter == 1 then
+    tap(339, 260, 100)
+  elseif chapter == 2 then
+    tap(943, 350, 100)
+  elseif chapter == 3 then
+    tap(1542, 285, 100)
+  elseif chapter == 4 then
+    tap(308, 673, 100)
+  elseif chapter == 5 then
+    tap(879, 755, 100)
+  elseif chapter == 6 then
+    tap(1515, 768, 100)
+  end
 end
 
 -- 出征页面
 
---  是否在出征的出征界面
-battle.isBattleBattlePage = function()
+--  是否在出征信息面板
+battle.isChapterInfoPanel = function()
   local __keepScreenState = keepScreenState
   if (not __keepScreenState) then keepScreen(true) end
   local list = {
-    { 178, 622, 0x10597b },
-    { 278, 1007, 0x635d52 },
-    { 224, 613, 0xc5cac5 },
-    { 92, 969, 0xa47d42 },
-    { 169, 1014, 0xffffff },
-    { 195, 1033, 0xb58a5a },
+    { 55, 90, 0x218ef7 }, { 65, 106, 0x218eef },
+    { 434, 80, 0x2192f7 }, { 438, 114, 0x2992f7 },
+    { 1473, 108, 0xe6ebe6 }, { 1829, 176, 0xe6ebe6 },
+    { 1840, 450, 0xe6e7e6 }, { 84, 959, 0xd6d2d6 },
+    { 1493, 932, 0x218ef7 }, { 1823, 948, 0x198aef },
   }
-  -- 四个按钮的颜色
-  local list2 = {
-    { 110, 148, 0xad4908 },
-    { 111, 290, 0x008ebd },
-    { 107, 429, 0x0092c5 },
-    { 111, 572, 0x008ebd },
-  }
-  local result = multiColorS(list) and multiColorS(list2)
+  local result = multiColorS(list)
   if (not __keepScreenState) then keepScreen(false) end
   return result
 end
 
--- 点击出征
-battle.clickBattleBtn = function()
-  tap(101, 110, 100)
-  return true
+-- 点击入口
+battle.clickEntry = function(entry)
+  if entry == 'a' then
+    tap(1569, 822, 100)
+  elseif entry == 'b' then
+    tap(1757, 817, 100)
+  end
 end
 
--- 移动到m-n章节
-battle.moveToChapter = function(chapter)
-  local chapterArr = strSplit(chapter, '-')
-  local m = tonumber(chapterArr[1]) or 1
-  local n = tonumber(chapterArr[2]) or 1
+-- 点击进入舰队面板
+battle.clickFleetPageBtn = function(entry)
+  tap(1665, 932, 100)
+end
 
-  local leftSissionButton = {
-    { 246, 463, 0x3a92a4 }, { 249, 510, 0x218a9c },
-    { 250, 489, 0x21dbd6 }, { 272, 488, 0x29fbf7 },
-    { 281, 488, 0x217594 },
+--  是否在舰队信息页
+battle.isFleetInfoPage = function()
+  local __keepScreenState = keepScreenState
+  if (not __keepScreenState) then keepScreen(true) end
+  local list = {
+    { 70, 56, 0x101021 }, { 1851, 34, 0x080c19 },
+    { 53, 185, 0x101c31 }, { 1778, 172, 0x212842 },
+    { 203, 831, 0x313d4a }, { 1317, 822, 0x215173 },
+    { 1528, 973, 0xffd729 }, { 1652, 996, 0x292429 },
+    { 1724, 1032, 0xffdf3a }, { 1832, 1021, 0xffdb31 },
   }
-
-  -- 先移到第一章
-  for i = 1, 12 do
-    tap(360, 958, 100)
-    mSleep(80)
-  end
-  -- 再移到第m章
-  for i = 2, m do
-    tap(1827, 961, 100)
-    mSleep(500)
-  end
-  -- 先移到第一节
-  for i = 1, 8 do
-    tap(256, 493, 100)
-    mSleep(80)
-  end
-  -- 再移到第n章
-  for i = 2, n do
-    tap(1889, 485, 100)
-    mSleep(500)
-  end
-end
-
--- 点击准备出征
-battle.clickReadyBattleBtn = function()
-  tap(1481, 729, 100)
+  local result = multiColorS(list)
+  if (not __keepScreenState) then keepScreen(false) end
+  return result
 end
 
 -- 等待出征准备界面
